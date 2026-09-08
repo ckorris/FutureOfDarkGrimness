@@ -1,11 +1,15 @@
+using System.IO;
 using System.Numerics;
+using System.Text.Json;
 using FDG;
 using FDG.ArmyBuilding;
 using FDG.Calculator;
 using FDG.Rules.Dispatch;
+using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 using FdgRaylib.Rendering.CombatCalc;
 using ImGuiNET;
+using TinyDialogsNet;
 
 namespace FdgRaylib.Rendering;
 
@@ -37,6 +41,9 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string RemoveJoinLabel = "Remove join";
     internal const string WhichHeroPrompt = "Which hero joins?";
     internal const string WhichUnitPrompt = "Join which unit?";
+    internal const string LoadListLabel = "Load list...";
+    internal const string ReadOnlyNote =
+        "This army carries no book, so its units are shown as they were saved and cannot be changed here.";
     internal const string VariablesHeader = "VARIABLES";
     internal const string DistanceLabel = "Distance (in)";
     internal const string CoverLabel = "Defender is in cover";
@@ -54,7 +61,17 @@ public class CombatCalculatorScreen : IAppScreen
     private readonly UnitPicker _attackerPicker = new();
     private readonly UnitPicker _defenderPicker = new();
 
-    private List<BookFile>? _armies;
+    private static readonly FileFilter ArmyFilter = new(
+        $"FDG Army (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
+        new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
+
+    private List<ArmySource>? _armies;
+
+    /// <summary>Armies loaded from disk this session. Shared by both columns, so a list opened for one
+    /// side is one click away on the other - the whole point of remembering them.</summary>
+    private readonly List<ArmySource> _loaded = new();
+
+    private string? _loadError;
     private CombatSituation _situation = new();
     private CombatReport? _report;
     private string _reportKey = string.Empty;
@@ -65,7 +82,13 @@ public class CombatCalculatorScreen : IAppScreen
         BookLibrary.LoadAsync();
     }
 
-    internal CombatCalculatorScreen(List<BookFile> armies) => _armies = armies;
+    internal CombatCalculatorScreen(List<BookFile> armies) =>
+        _armies = armies.Select(ArmySource.FromBook).ToList();
+
+    /// <summary>Bundled books first, then anything loaded from disk this session.</summary>
+    private IEnumerable<ArmySource> AllArmies => _armies!.Concat(_loaded);
+
+    internal IReadOnlyList<ArmySource> LoadedArmies => _loaded;
 
     // Test seams: the ImGui layout is hand-verified, the state underneath is not.
     internal CalculatorSide Attacker => _attacker;
@@ -77,7 +100,7 @@ public class CombatCalculatorScreen : IAppScreen
 
     public void Draw(int screenW, int screenH)
     {
-        _armies ??= BookLibrary.Load();
+        _armies ??= BookLibrary.Load().Select(ArmySource.FromBook).ToList();
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -168,6 +191,17 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.TextColored(DimText, $"UNIT {label}   {side.Points} pts");
         ImGui.Separator();
 
+        if (!side.IsEditable)
+        {
+            foreach (UnitFileEntry saved in side.SavedRows)
+            {
+                ForgeUnitDetail.DrawReadOnly(saved, side.Glossary);
+                ImGui.Spacing();
+            }
+            ImGui.TextColored(DimText, ReadOnlyNote);
+            return;
+        }
+
         // A joined pair splits the column into two rows, hero first.
         IReadOnlyList<BuilderUnit> rows = side.Rows();
         for (int row = 0; row < rows.Count; row++)
@@ -208,6 +242,8 @@ public class CombatCalculatorScreen : IAppScreen
 
     private static void DrawJoinControl(CalculatorSide side, UnitPicker picker, string id)
     {
+        if (!side.IsEditable) return;
+
         ImGui.Spacing();
 
         if (side.Joined is not null)
@@ -219,7 +255,7 @@ public class CombatCalculatorScreen : IAppScreen
         bool mainIsHero = side.MainIsHero;
         if (UiButton.NavigateSmall($"{(mainIsHero ? JoinUnitLabel : JoinHeroLabel)}##join-{id}"))
         {
-            picker.OpenForJoin(side.Book!,
+            picker.OpenForJoin(ArmySource.FromBook(side.Book!),
                 mainIsHero ? UnitPicker.ERoles.HostsOnly : UnitPicker.ERoles.HeroesOnly);
         }
     }
@@ -247,16 +283,11 @@ public class CombatCalculatorScreen : IAppScreen
             ImGui.Separator();
 
             DrawFilter(picker, id);
-            foreach (RosterUnit unit in UnitPicker.MatchingUnits(army, picker.Filter, picker.Roles))
+            foreach (UnitPicker.Entry entry in UnitPicker.MatchingUnits(army, picker.Filter, picker.Roles))
             {
-                if (ImGui.Selectable($"{unit.Name}##unit-{id}-{unit.Id}"))
-                {
-                    if (picker.JoinMode) side.SetJoin(unit.Id);
-                    else side.SetUnit(army, unit.Id);
-                    picker.Close();
-                }
+                if (ImGui.Selectable($"{entry.Name}##unit-{id}-{entry.Index}")) Choose(side, picker, army, entry);
                 ImGui.Indent();
-                ImGui.TextColored(DimText, ArmyForgeScreen.RosterStatLine(unit));
+                ImGui.TextColored(DimText, entry.StatLine);
                 ImGui.Unindent();
             }
             return;
@@ -264,13 +295,91 @@ public class CombatCalculatorScreen : IAppScreen
 
         if (side.HasUnit && UiButton.Back($"Cancel##cancel-{id}")) picker.Close();
         ImGui.TextColored(DimText, ArmyPrompt);
+
+        if (UiButton.NavigateSmall($"{LoadListLabel}##load-{id}")) LoadArmyFromDisk();
+        if (_loadError is not null) ImGui.TextColored(WarnText, _loadError);
+
         DrawFilter(picker, id);
 
-        foreach (BookFile candidate in UnitPicker.MatchingArmies(_armies!, picker.Filter))
+        foreach (ArmySource candidate in UnitPicker.MatchingArmies(AllArmies, picker.Filter))
         {
-            if (ImGui.Selectable($"{candidate.Name}##army-{id}-{candidate.Name}")) picker.ChooseArmy(candidate);
+            string tag = candidate.Path is null ? string.Empty
+                : candidate.IsEditable ? "  [saved list]" : "  [saved list, read-only]";
+            if (ImGui.Selectable($"{candidate.Name}{tag}##army-{id}-{candidate.Name}"))
+                picker.ChooseArmy(candidate);
         }
     }
+
+    /// <summary>Adopt the picked unit, from whichever kind of army it came out of.</summary>
+    private static void Choose(CalculatorSide side, UnitPicker picker, ArmySource army, UnitPicker.Entry entry)
+    {
+        if (army.Book is { } book)
+        {
+            string rosterId = book.Units[entry.Index].Id;
+            if (picker.JoinMode) side.SetJoin(rosterId);
+            else side.SetUnit(book, rosterId);
+        }
+        else if (army.Saved is { } saved)
+        {
+            // A saved unit brings its own joined hero, so there is no join step to offer.
+            side.SetSavedUnit(saved, saved.Units[entry.Index]);
+        }
+
+        picker.Close();
+    }
+
+    /// <summary>
+    /// Open a .fdgarmy and remember it for the rest of the session, so picking a second unit out of it
+    /// is a click rather than another trip through the file dialog. A file that cannot be read says so
+    /// and changes nothing - it never throws out of Draw.
+    /// </summary>
+    internal void LoadArmyFromDisk()
+    {
+        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", ArmyPaths.DefaultDialogPath,
+            false, ArmyFilter);
+        if (canceled) return;
+
+        string path = paths?.FirstOrDefault() ?? string.Empty;
+        if (string.IsNullOrEmpty(path)) return;
+
+        AdoptArmyFile(path);
+    }
+
+    /// <summary>The testable half of the load: everything after a path has been chosen.</summary>
+    internal bool AdoptArmyFile(string path)
+    {
+        _loadError = null;
+
+        if (_loaded.Any(army => army.Path == path)) return true; // already listed; nothing to do
+
+        try
+        {
+            if (!File.Exists(path))
+            {
+                _loadError = "That file no longer exists.";
+                return false;
+            }
+
+            // Read as the Forge's derived type so an army it built keeps its selections and book, and
+            // can therefore be edited here; a plain list simply leaves those null.
+            ArmyListFile? file = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options);
+            if (file is null || file.Units.Count == 0)
+            {
+                _loadError = "That file is empty, or is not an army list.";
+                return false;
+            }
+
+            _loaded.Add(ArmySource.FromSaved(path, file));
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException)
+        {
+            _loadError = "That file could not be read: " + ex.Message;
+            return false;
+        }
+    }
+
+    internal string? LoadError => _loadError;
 
     private static void DrawFilter(UnitPicker picker, string id)
     {

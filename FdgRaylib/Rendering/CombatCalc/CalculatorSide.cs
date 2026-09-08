@@ -1,4 +1,6 @@
+using System.Text.Json;
 using FDG.ArmyBuilding;
+using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 
 namespace FdgRaylib.Rendering.CombatCalc;
@@ -28,7 +30,20 @@ internal sealed class CalculatorSide
     /// </summary>
     internal BuilderUnit? Joined { get; private set; }
 
-    internal bool HasUnit => Book is not null && List.Units.Count > MainIndex;
+    private ArmyListFile? _saved;
+    private readonly List<UnitFileEntry> _savedRows = new();
+
+    internal bool HasUnit =>
+        (Book is not null && List.Units.Count > MainIndex) || _savedRows.Count > 0;
+
+    /// <summary>
+    /// Whether this column's unit can be edited here. A book-backed unit can; one read out of a saved
+    /// army that carries no book cannot - there are no upgrade options to offer, so it is shown as saved.
+    /// </summary>
+    internal bool IsEditable => Book is not null;
+
+    /// <summary>A read-only column's units, hero first.</summary>
+    internal IReadOnlyList<UnitFileEntry> SavedRows => _savedRows;
 
     /// <summary>Adopt a roster unit at its default size, discarding whatever was here before.</summary>
     internal void SetUnit(BookFile book, string rosterUnitId)
@@ -37,7 +52,32 @@ internal sealed class CalculatorSide
         Glossary = RuleGlossary.Build(book);
         List = new BuilderList { BookName = book.Name };
         Joined = null;
+        _saved = null;
+        _savedRows.Clear();
         BuilderListEditing.AddUnit(book, List, rosterUnitId);
+    }
+
+    /// <summary>
+    /// Adopt a unit out of a saved army that has no book. It is copied rather than referenced, so
+    /// editing one column can never disturb the file or the other column, and a hero the saved list
+    /// already joins to this unit comes along with it - that pairing was the author's intent.
+    /// </summary>
+    internal void SetSavedUnit(ArmyListFile source, UnitFileEntry unit)
+    {
+        Book = null;
+        List = new BuilderList();
+        Joined = null;
+        Glossary = RuleGlossary.Build(source.RuleDefinitions);
+        _saved = source;
+
+        _savedRows.Clear();
+        UnitFileEntry? hero = source.Units.FirstOrDefault(other =>
+            !ReferenceEquals(other, unit)
+            && !string.IsNullOrEmpty(other.JoinsUnitId)
+            && other.JoinsUnitId == unit.Id);
+
+        if (hero is not null) _savedRows.Add(CloneEntry(hero));
+        _savedRows.Add(CloneEntry(unit));
     }
 
     internal void Clear()
@@ -46,6 +86,8 @@ internal sealed class CalculatorSide
         Glossary = RuleGlossary.Empty;
         List = new BuilderList();
         Joined = null;
+        _saved = null;
+        _savedRows.Clear();
     }
 
     /// <summary>Takes over the other side's contents - the two halves of a Swap.</summary>
@@ -55,6 +97,9 @@ internal sealed class CalculatorSide
         Glossary = other.Glossary;
         List = other.List;
         Joined = other.Joined;
+        _saved = other._saved;
+        _savedRows.Clear();
+        _savedRows.AddRange(other._savedRows);
     }
 
     internal RosterUnit? Roster => HasUnit
@@ -76,7 +121,7 @@ internal sealed class CalculatorSide
     }
 
     /// <summary>Whether the main unit is a Hero, which decides which way round a join goes.</summary>
-    internal bool MainIsHero => HasUnit && ForceOrgValidator.IsHero(Detail().Unit);
+    internal bool MainIsHero => IsEditable && HasUnit && ForceOrgValidator.IsHero(Detail().Unit);
 
     /// <summary>
     /// Attach a second unit to this column: a Hero joining the main unit, or - when the main unit IS a
@@ -85,7 +130,7 @@ internal sealed class CalculatorSide
     /// </summary>
     internal void SetJoin(string rosterUnitId)
     {
-        if (!HasUnit) return;
+        if (!IsEditable || !HasUnit) return;
 
         RemoveJoin();
 
@@ -141,20 +186,49 @@ internal sealed class CalculatorSide
         ListCompiler.CompileUnitDetailed(book,
             new BuilderUnit { RosterUnitId = roster.Id, ModelCount = roster.BaseModelCount }).Unit;
 
-    internal bool CanCombine => HasUnit && BuilderListEditing.CanCombine(Book!, List, MainIndex);
+    internal bool CanCombine => IsEditable && HasUnit && BuilderListEditing.CanCombine(Book!, List, MainIndex);
 
-    internal bool IsCombined => HasUnit && BuilderListEditing.IsCombined(List, MainIndex);
+    internal bool IsCombined => IsEditable && HasUnit && BuilderListEditing.IsCombined(List, MainIndex);
 
     internal void SetCombined(bool on)
     {
-        if (HasUnit) BuilderListEditing.SetCombined(Book!, List, MainIndex, on);
+        if (IsEditable && HasUnit) BuilderListEditing.SetCombined(Book!, List, MainIndex, on);
     }
 
     /// <summary>The army the calculator fights with - the merged, fully-costed compilation.</summary>
-    internal ArmyListFile Compile() => Book is null ? new ArmyListFile() : ListCompiler.Compile(Book, List);
+    internal ArmyListFile Compile()
+    {
+        if (Book is not null) return ListCompiler.Compile(Book, List);
+        if (_saved is null) return new ArmyListFile();
 
-    internal int Points => HasUnit ? Compile().TotalPoints : 0;
+        // Carry the source's rule definitions, spells and effect-set defaults across: without them the
+        // units would load with their rule names unresolved and quietly do nothing.
+        var army = new ArmyListFile
+        {
+            Name = _saved.Name,
+            Faction = _saved.Faction,
+            GameSystem = _saved.GameSystem,
+            RuleDefinitions = new List<FDG.Rules.Definitions.SpecialRuleDefinition>(_saved.RuleDefinitions),
+            Spells = new List<FDG.Rules.Definitions.SpellDefinition>(_saved.Spells),
+            DefaultRangedEffectSet = _saved.DefaultRangedEffectSet,
+            DefaultMeleeEffectSet = _saved.DefaultMeleeEffectSet,
+        };
+
+        foreach (UnitFileEntry unit in _savedRows) army.Units.Add(CloneEntry(unit));
+        return army;
+    }
+
+    internal int Points => Book is not null
+        ? (HasUnit ? Compile().TotalPoints : 0)
+        : _savedRows.Sum(unit => unit.PointCost);
 
     /// <summary>Changes here mean the numbers are stale. Cheap enough to ask every frame.</summary>
-    internal string Fingerprint() => $"{Book?.Name ?? "-"}|{ArmyForgeScreen.ListFingerprint(List)}";
+    internal string Fingerprint() => Book is not null
+        ? $"{Book.Name}|{ArmyForgeScreen.ListFingerprint(List)}"
+        : $"saved:{_saved?.Name ?? "-"}|{string.Join(",", _savedRows.Select(unit => unit.Name + unit.ModelCount))}";
+
+    /// <summary>A deep copy that KEEPS the id, so a saved hero-to-host link survives the copy.</summary>
+    private static UnitFileEntry CloneEntry(UnitFileEntry unit) =>
+        JsonSerializer.Deserialize<UnitFileEntry>(
+            JsonSerializer.Serialize(unit, RuleJson.Options), RuleJson.Options)!;
 }

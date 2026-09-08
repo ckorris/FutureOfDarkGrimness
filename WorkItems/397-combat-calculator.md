@@ -20,6 +20,23 @@ and the deferred facets below are recorded rather than dropped.
 
 ## Notes
 
+- 2026-09-08 (slice 5, saved lists): app **2865/0** (+8), build clean, smoke exits 0. "Load list..."
+  opens a `.fdgarmy` through the file dialog and the army then stays in the picker as its own entry for
+  the session - shared by BOTH columns, which is the point: picking a second unit out of it never
+  reopens the dialog.
+  - `ArmySource` is the seam. The distinction that matters is whether the file brought a BOOK: a
+    Forge-built army embeds one, so it is adopted fully editable and behaves like a bundled faction; a
+    hand-authored or imported list has none, so its units are shown as saved and say why. All 27 lists
+    in `armies/` are of that second kind today.
+  - A saved unit brings along the hero its own list joined to it - that pairing was the author's intent,
+    and re-picking it by hand would be busywork. Its rule definitions, spells and effect-set defaults
+    are copied into the compiled army too; without them the units would load with their rule names
+    unresolved and quietly do nothing.
+  - Units are deep-copied out of the file (ids preserved, so the join link survives), so editing a
+    column can never write back to the file or disturb the other column.
+  - A file that is missing, empty or malformed reports on the panel and changes nothing; it never
+    throws out of Draw (the #307 lesson).
+
 - 2026-09-08 (slice 4, hero joins): app **2857/0** (+7), build clean. A column splits into two rows -
   hero always on top, whichever way the join was made - each row with its own gear and upgrades, and a
   Remove that leaves no dangling link.

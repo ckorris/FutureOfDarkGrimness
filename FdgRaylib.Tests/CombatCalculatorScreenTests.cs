@@ -1,7 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using FDG.ArmyBuilding;
 using FDG.Calculator;
+using FDG.Rules.Dispatch;
+using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 using FdgRaylib.Rendering;
 using FdgRaylib.Rendering.CombatCalc;
@@ -111,7 +116,7 @@ public class CombatCalculatorScreenTests
         // The point of the whole two-level design: picking a second unit from the same army must not
         // make you find the army again.
         var picker = new UnitPicker();
-        picker.ChooseArmy(Book);
+        picker.ChooseArmy(ArmySource.FromBook(Book));
         picker.Close();
 
         picker.Open();
@@ -119,7 +124,7 @@ public class CombatCalculatorScreenTests
         Assert.Multiple(() =>
         {
             Assert.That(picker.Level, Is.EqualTo(UnitPicker.ELevel.Units));
-            Assert.That(picker.Army, Is.SameAs(Book));
+            Assert.That(picker.Army!.Book, Is.SameAs(Book));
         });
 
         picker.BackToArmies();
@@ -135,7 +140,8 @@ public class CombatCalculatorScreenTests
             Assert.That(UnitPicker.Matches("Vanguard Warriors", "VANGUARD"), Is.True);
             Assert.That(UnitPicker.Matches("Vanguard Warriors", ""), Is.True, "an empty filter hides nothing");
             Assert.That(UnitPicker.Matches("Vanguard Warriors", "gunners"), Is.False);
-            Assert.That(UnitPicker.MatchingUnits(Book, "gun").Select(u => u.Id), Is.EqualTo(new[] { "gunners" }));
+            Assert.That(UnitPicker.MatchingUnits(ArmySource.FromBook(Book), "gun").Select(e => e.Name),
+                Is.EqualTo(new[] { "Heavy Gunners" }));
         });
     }
 
@@ -345,11 +351,12 @@ public class CombatCalculatorScreenTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(UnitPicker.MatchingUnits(force, "", UnitPicker.ERoles.HeroesOnly).Select(u => u.Id),
-                Is.EqualTo(new[] { "captain" }));
-            Assert.That(UnitPicker.MatchingUnits(force, "", UnitPicker.ERoles.HostsOnly).Select(u => u.Id),
-                Is.EqualTo(new[] { "squad" }));
-            Assert.That(UnitPicker.MatchingUnits(force, "", UnitPicker.ERoles.Any).Count(), Is.EqualTo(2));
+            ArmySource source = ArmySource.FromBook(force);
+            Assert.That(UnitPicker.MatchingUnits(source, "", UnitPicker.ERoles.HeroesOnly).Select(e => e.Name),
+                Is.EqualTo(new[] { "Captain" }));
+            Assert.That(UnitPicker.MatchingUnits(source, "", UnitPicker.ERoles.HostsOnly).Select(e => e.Name),
+                Is.EqualTo(new[] { "Squad" }));
+            Assert.That(UnitPicker.MatchingUnits(source, "", UnitPicker.ERoles.Any).Count(), Is.EqualTo(2));
         });
     }
 
@@ -359,18 +366,205 @@ public class CombatCalculatorScreenTests
         var picker = new UnitPicker();
         BookFile force = HeroBook();
 
-        picker.OpenForJoin(force, UnitPicker.ERoles.HeroesOnly);
+        ArmySource source = ArmySource.FromBook(force);
+        picker.OpenForJoin(source, UnitPicker.ERoles.HeroesOnly);
 
         Assert.Multiple(() =>
         {
             Assert.That(picker.JoinMode, Is.True);
             Assert.That(picker.Level, Is.EqualTo(UnitPicker.ELevel.Units), "no army level to wander into");
-            Assert.That(picker.Army, Is.SameAs(force));
+            Assert.That(picker.Army, Is.SameAs(source));
             Assert.That(picker.Roles, Is.EqualTo(UnitPicker.ERoles.HeroesOnly));
         });
 
         picker.Close();
         Assert.That(picker.JoinMode, Is.False, "closing leaves join mode behind");
+    }
+
+
+    // ---- saved army lists ----------------------------------------------------------------------
+
+    [Test]
+    public void APlainSavedList_IsAdoptedReadOnly_ButStillCarriesItsRules()
+    {
+        ArmyListFile saved = PlainArmy();
+        var side = new CalculatorSide();
+
+        side.SetSavedUnit(saved, saved.Units[0]);
+        ArmyListFile compiled = side.Compile();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(side.HasUnit, Is.True);
+            Assert.That(side.IsEditable, Is.False, "no book means no upgrades to offer");
+            Assert.That(side.SavedRows.Select(unit => unit.Name), Is.EqualTo(new[] { "Veterans" }));
+            Assert.That(side.Points, Is.EqualTo(90));
+            // Without these the units would load with their rule names unresolved and quietly do nothing.
+            Assert.That(compiled.RuleDefinitions, Is.Not.Empty, "the source's rule definitions come along");
+            Assert.That(compiled.Faction, Is.EqualTo("Saved Faction"));
+        });
+    }
+
+    [Test]
+    public void ASavedUnitActuallyFights()
+    {
+        ArmyListFile saved = PlainArmy();
+        var attacker = new CalculatorSide();
+        var defender = new CalculatorSide();
+        attacker.SetSavedUnit(saved, saved.Units[0]);
+        defender.SetSavedUnit(saved, saved.Units[0]);
+
+        CombatReport report = CombatCalculator.Run(attacker.Compile(), defender.Compile(),
+            new CombatSituation(DistanceInches: 12f));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(report.Volleys, Is.Not.Empty);
+            Assert.That(report.ExpectedWounds, Is.GreaterThan(0f));
+            Assert.That(report.Warnings, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void ASavedUnitBringsTheHeroItsListAlreadyJoinedToIt()
+    {
+        ArmyListFile saved = PlainArmyWithJoinedHero();
+        var side = new CalculatorSide();
+
+        side.SetSavedUnit(saved, saved.Units.First(unit => unit.Name == "Veterans"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(side.SavedRows.Select(unit => unit.Name),
+                Is.EqualTo(new[] { "Warlord", "Veterans" }), "the author's pairing, hero on top");
+            Assert.That(side.Compile().Units, Has.Count.EqualTo(2), "both halves go to the calculator");
+        });
+    }
+
+    [Test]
+    public void AForgeBuiltListIsAdoptedAsEditable()
+    {
+        // The Forge embeds the book it built against, so its armies keep their upgrade options here.
+        var list = new BuilderList { BookName = Book.Name };
+        BuilderListEditing.AddUnit(Book, list, "warriors");
+        ArmyListFile forgeBuilt = ListCompiler.Compile(Book, list);
+
+        ArmySource source = ArmySource.FromSaved("/tmp/forge.fdgarmy", forgeBuilt);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source.IsEditable, Is.True);
+            Assert.That(source.Book, Is.Not.Null);
+            Assert.That(UnitPicker.MatchingUnits(source, "").Select(entry => entry.Name),
+                Does.Contain("Vanguard Warriors"), "its units come from the embedded book");
+        });
+    }
+
+    [Test]
+    public void APlainListIsNotEditable()
+    {
+        ArmySource source = ArmySource.FromSaved("/tmp/plain.fdgarmy", PlainArmy());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source.IsEditable, Is.False);
+            Assert.That(source.Book, Is.Null);
+            Assert.That(source.UnitNames(), Is.EqualTo(new[] { "Veterans" }));
+        });
+    }
+
+    [Test]
+    public void LoadingAnArmyRemembersIt_AndLoadingItAgainDoesNotListItTwice()
+    {
+        string path = WriteTempArmy(PlainArmy());
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+
+        Assert.That(screen.AdoptArmyFile(path), Is.True);
+        Assert.That(screen.AdoptArmyFile(path), Is.True, "asking twice is not an error");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(screen.LoadedArmies, Has.Count.EqualTo(1), "one entry, however often it is opened");
+            Assert.That(screen.LoadedArmies[0].Name, Is.EqualTo("Saved Force"));
+            Assert.That(screen.LoadError, Is.Null);
+        });
+    }
+
+    [Test]
+    public void AFileThatCannotBeReadSaysSoAndChangesNothing()
+    {
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+
+        bool ok = screen.AdoptArmyFile(Path.Combine(Path.GetTempPath(), "no-such-army-397.fdgarmy"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(screen.LoadedArmies, Is.Empty);
+            Assert.That(screen.LoadError, Is.Not.Null.And.Contains("no longer exists"));
+        });
+    }
+
+    [Test]
+    public void GarbageInAnArmyFileIsReportedRatherThanThrown()
+    {
+        string path = Path.Combine(Path.GetTempPath(), $"broken-397-{Guid.NewGuid():N}.fdgarmy");
+        File.WriteAllText(path, "{ this is not json");
+        _temporaryFiles.Add(path);
+
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+
+        Assert.That(screen.AdoptArmyFile(path), Is.False);
+        Assert.That(screen.LoadError, Is.Not.Null.And.Contains("could not be read"));
+    }
+
+    private static ArmyListFile PlainArmy() => new()
+    {
+        Name = "Saved Force",
+        Faction = "Saved Faction",
+        Units =
+        {
+            new UnitFileEntry
+            {
+                Id = "vets", Name = "Veterans", ModelCount = 5, Quality = 4, Defense = 4, PointCost = 90,
+                SpecialRules = { new SpecialRuleEntry_Core("Stealth") },
+                Weapons = { new WeaponFileEntry { Name = "Rifle", Quantity = 5, RangeInches = 24, Attacks = 1 } },
+            },
+        },
+        RuleDefinitions = { CoreRuleCatalog.Stealth },
+    };
+
+    private static ArmyListFile PlainArmyWithJoinedHero()
+    {
+        ArmyListFile army = PlainArmy();
+        army.Units.Add(new UnitFileEntry
+        {
+            Id = "warlord", Name = "Warlord", ModelCount = 1, Quality = 3, Defense = 3, PointCost = 70,
+            JoinsUnitId = "vets",
+            SpecialRules = { new SpecialRuleEntry_Core("Hero") },
+            Weapons = { new WeaponFileEntry { Name = "Blade", Quantity = 1, RangeInches = 0, Attacks = 3 } },
+        });
+        return army;
+    }
+
+    private string WriteTempArmy(ArmyListFile army)
+    {
+        string path = Path.Combine(Path.GetTempPath(), $"army-397-{Guid.NewGuid():N}.fdgarmy");
+        File.WriteAllText(path, JsonSerializer.Serialize(army, RuleJson.Options));
+        _temporaryFiles.Add(path);
+        return path;
+    }
+
+    private readonly List<string> _temporaryFiles = new();
+
+    [TearDown]
+    public void RemoveTemporaryFiles()
+    {
+        foreach (string path in _temporaryFiles)
+        {
+            try { if (File.Exists(path)) File.Delete(path); } catch { /* a leftover temp file is harmless */ }
+        }
+        _temporaryFiles.Clear();
     }
 
     /// A tiny force with one squad and one Hero - DemoBook has no Hero to join.

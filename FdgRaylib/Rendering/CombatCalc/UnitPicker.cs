@@ -1,4 +1,5 @@
 using FDG.ArmyBuilding;
+using FDG.SaveLoad;
 
 namespace FdgRaylib.Rendering.CombatCalc;
 
@@ -34,7 +35,7 @@ internal sealed class UnitPicker
     /// <summary>True while picking a unit to JOIN the column's unit rather than to replace it.</summary>
     internal bool JoinMode { get; private set; }
 
-    internal BookFile? Army { get; private set; }
+    internal ArmySource? Army { get; private set; }
 
     /// <summary>Both columns start open, so a fresh screen asks for both units at once.</summary>
     internal bool IsOpen { get; private set; } = true;
@@ -55,7 +56,7 @@ internal sealed class UnitPicker
     /// Open it to pick a joining unit. Locked to <paramref name="army"/> and to one role: a hero joins
     /// a unit from its own army, so there is no army level to browse here.
     /// </summary>
-    internal void OpenForJoin(BookFile army, ERoles roles)
+    internal void OpenForJoin(ArmySource army, ERoles roles)
     {
         IsOpen = true;
         JoinMode = true;
@@ -72,7 +73,7 @@ internal sealed class UnitPicker
         Roles = ERoles.Any;
     }
 
-    internal void ChooseArmy(BookFile army)
+    internal void ChooseArmy(ArmySource army)
     {
         Army = army;
         Level = ELevel.Units;
@@ -89,22 +90,54 @@ internal sealed class UnitPicker
     internal static bool Matches(string text, string filter) =>
         filter.Length == 0 || text.Contains(filter, StringComparison.OrdinalIgnoreCase);
 
-    internal static IEnumerable<BookFile> MatchingArmies(IEnumerable<BookFile> armies, string filter) =>
+    internal static IEnumerable<ArmySource> MatchingArmies(IEnumerable<ArmySource> armies, string filter) =>
         armies.Where(army => Matches(army.Name, filter));
 
-    internal static IEnumerable<RosterUnit> MatchingUnits(BookFile army, string filter) =>
+    /// <summary>One offerable unit: where it sits in its army, and how to show it.</summary>
+    internal readonly record struct Entry(int Index, string Name, string StatLine);
+
+    internal static IEnumerable<Entry> MatchingUnits(ArmySource army, string filter) =>
         MatchingUnits(army, filter, ERoles.Any);
 
     /// <summary>
-    /// The army's units that match the filter AND the wanted role. A Hero whose Tough exceeds the join
-    /// cap is deliberately still listed: army creation refuses it and the result says so, which is more
-    /// use than a unit that silently is not there.
+    /// The army's units that match the filter AND the wanted role, whether it is a book's roster or a
+    /// saved list's entries. A Hero whose Tough exceeds the join cap is deliberately still listed: army
+    /// creation refuses it and the result says so by name, which is more use than a unit that silently
+    /// is not there.
     /// </summary>
-    internal static IEnumerable<RosterUnit> MatchingUnits(BookFile army, string filter, ERoles roles) =>
-        army.Units.Where(unit => Matches(unit.Name, filter) && roles switch
+    internal static IEnumerable<Entry> MatchingUnits(ArmySource army, string filter, ERoles roles)
+    {
+        if (army.Book is { } book)
         {
-            ERoles.HeroesOnly => CalculatorSide.IsHeroRoster(army, unit),
-            ERoles.HostsOnly => CalculatorSide.IsHostRoster(army, unit),
-            _ => true,
-        });
+            for (int i = 0; i < book.Units.Count; i++)
+            {
+                RosterUnit unit = book.Units[i];
+                if (!Matches(unit.Name, filter) || !AllowsRoster(book, unit, roles)) continue;
+                yield return new Entry(i, unit.Name, ArmyForgeScreen.RosterStatLine(unit));
+            }
+            yield break;
+        }
+
+        List<UnitFileEntry> saved = army.Saved?.Units ?? new List<UnitFileEntry>();
+        for (int i = 0; i < saved.Count; i++)
+        {
+            UnitFileEntry unit = saved[i];
+            if (!Matches(unit.Name, filter) || !AllowsSaved(unit, roles)) continue;
+            yield return new Entry(i, unit.Name, ArmyBuilderScreen.UnitStatLine(unit));
+        }
+    }
+
+    private static bool AllowsRoster(BookFile book, RosterUnit unit, ERoles roles) => roles switch
+    {
+        ERoles.HeroesOnly => CalculatorSide.IsHeroRoster(book, unit),
+        ERoles.HostsOnly => CalculatorSide.IsHostRoster(book, unit),
+        _ => true,
+    };
+
+    private static bool AllowsSaved(UnitFileEntry unit, ERoles roles) => roles switch
+    {
+        ERoles.HeroesOnly => ForceOrgValidator.IsHero(unit),
+        ERoles.HostsOnly => unit.ModelCount > 1 && !ForceOrgValidator.IsHero(unit),
+        _ => true,
+    };
 }
