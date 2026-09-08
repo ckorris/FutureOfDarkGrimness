@@ -23,6 +23,115 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (14:05, Fable 5.1) - SEARCH PERF PASS 2: THE STOPWATCH DRILL-DOWN FOUND THE COST (RULE DISPATCH
+ALLOCATING ON 6,000 CALLS PER ITERATION, THE SCORER RECOMPUTING PER-ENEMY FACTS 16x) AND A STRUCTURAL WASTE
+(44% OF EXPANSIONS ON BOARD A CLOSE WITHOUT A CHILD). TWO EXACT-SEMANTICS FIXES LANDED: 62.9 -> 59.5 ms AND
+44.9 -> 41.2 ms PER ITERATION, ALLOCATION 32.5 -> 23.2 MB PER ITERATION, TREES IDENTICAL.**
+
+Chris (13:1x): "we're also doing this because of performance ... any pure performance gain without tuning
+ramifications is a solid win across the board" - so the breadth slice stays queued (it costs nothing) and the
+pure-speed work runs first. His progressive-widening idea (plan 4, unlock more as a state earns visits) is
+recorded as the Phase 2 design if the slice says breadth matters.
+
+*Drill-down instrumentation (engine, opt-in via FDG_SEARCH_TIMING=1, one static-readonly branch when off):*
+`SearchTiming` now records bytes allocated per stage (process-wide, single-worker runs only), callee-level
+probes wrapped around whole methods - rule dispatch (`RuleEvaluator.Evaluate/CollectSurviving/GatherOffers`),
+combat math, move queries, sight, pathfinding, move planning, objective projection, the planner's
+`ChooseAction`, `MacroActionGenerator.Enumerate`, melee range, the sim's direct requester - and an
+ENGINE-STAGE TIMELINE (every `StageBase.Enter` the state machine performs inside a simulation is a span until
+the next stage is entered or the simulation returns), plus `Note(key)` event counters. Wrapping was done by
+`scratchpad/wrap_probes.py` (brace-matched, string-aware); bodies keep their original indentation.
+
+*What the drill-down said (board A, 300 iterations, 72 ms/iteration with probes on; board B agrees within a
+few points):* allocation **32.5 MB per iteration** (9.5 GB per 300); rule dispatch **1.89 million calls =
+6,300 per iteration, 29% of time, 1.5 KB allocated per call** (2.8 GB); combat estimates 126k calls, 25%,
+21.5 KB each (mostly the ~15 dispatches inside each); move queries 350k calls, 15.5%; move planning 10,090
+plans = **41 per enumerated unit before the prune to 16**, 0.44 ms and 269 KB each, 20%; sight, pathfinding
+and objective projection together < 5%. Inside the simulation, `ChooseActionStage` is 65% of `SimRun`
+(4.3 ms per entry, 2.3 entries per activation). The sampler's story (pathfinding, list growth, tokens) was
+wrong on every count; these numbers are exact.
+
+*Pass 2 (exact semantics, verified):* (1) `RuleEvaluator`: empty answers are a shared empty array, results
+are one exact-size list instead of LINQ chains, the suppression `HashSet` is built only when a `SuppressRule`
+op is actually present, and the per-rule `RuleInvocation` record is built only when an entry matches the
+hook and seat being dispatched (most rules have none). (2) `TacticianPlanner`: per-activation memos of the
+facts about an enemy that no candidate changes (centroid, has-melee, advance distance, melee threat reach
+against us) and of the two melee exchange estimates (us vs them, them vs us); `BestAlternativeTargetValue`
+hoists the enemy's advance out of its friendly loop. Same cache lifetime as the existing `_meleeApproach` et
+al. (cleared in `BeginActivation`; the search's scratch planner begins an activation per unit).
+
+| measure (board A unless noted) | before | after |
+|---|---|---|
+| ms/iteration, oracle run, A / B | 62.9 / 44.9 | **59.5 / 41.2** |
+| allocation per iteration | 32.5 MB | **23.2 MB** |
+| rule dispatch calls / KB per call | 1.89M / 1.5 | 1.15M / 0.7 |
+| combat time / calls | 5474 ms / 126k | 3167 ms / 113k |
+| move queries time / calls | 3377 ms / 350k | 1189 ms / 120k |
+| move planning | 4381 ms (20%) | 4381 ms (**26%, now the largest stage**) |
+
+**Identical-tree oracle: exact on both boards** (A: 276 nodes / depth 6 / 214 closed / Bot Swarms Contest
+(33,29) with 23 visits; B: 295 / 6 / 43 / Nightmares charge Jetpack Warriors with 24 visits - same on the
+Phase 1 binary and the new one). Engine 3290/0/1, app 2836/0, headless exit 0.
+
+*The structural finding.* 489 expansions produced 276 nodes on board A: **214 edges closed** - the engine
+refused the prescribed action at play time (or the line ended) and the simulation, plus the natural planner
+decision it fell through to, was thrown away. 43 of 337 on board B. Also 103 full `Enumerate` calls run
+INSIDE simulations (16.6 ms each, ~10% of the iteration): the post-cast and post-disembark re-entry, where
+the unit still has to decide its move - legitimate policy, but it means a Cast edge costs a Tactician
+decision the search did not price. Counting WHY edges close (`Note` counters on every fall-through, with the
+valid options the engine offered) is running now; the answer decides whether the generator's feasibility
+gate or the engine's action gate is lying to the other.
+
+**2026-09-08 (14:20, Fable 5.1) - THE CLOSED EDGES WERE A SEAM BUG, NOW FIXED: THE SEARCH PRESCRIBED "CHARGE"
+FOR A MENU ENTRY THE ENGINE ONLY OFFERS TO A UNIT ALREADY IN CONTACT, AND OPENED 16 EDGES FOR SHAKEN UNITS THE
+ENGINE IDLES WITHOUT ASKING. CLOSED EDGES 214 -> 4 (A), 43 -> 2 (B); WASTED IN-SIM TACTICIAN DECISIONS 103 -> 4;
+62.9 -> ~47 ms (A) AND 44.9 -> ~38 ms (B) PER ITERATION. THIS CHANGES WHAT THE STRATEGIST PLAYS - BENCH QUEUED
+TONIGHT.**
+
+*The counts (Note counters on every fall-through, with the options the engine offered).* Board A, 124 charge
+edges: every one fell through at the first Choose Action (`Charge` prescribed, engine offered
+`[Move,Shoot,Pass]`), the simulated unit then re-decided naturally (a full `Enumerate` + 16 scores INSIDE the
+simulation - the 103), and the edge survived (80) only when that natural move happened to end within 2" so
+that `Charge` appeared on the re-entry; 44 closed. The other ~170 closures came in uniform blocks of 11-22
+per candidate family: whole units whose activation the engine never offered a choice for - Shaken units
+(`ChooseActionStage` idles and recovers them on `StartedActivationShaken` before asking anyone).
+
+*Why.* `ChooseActionStage.ToCharge` binds straight to the melee stage; `GetCanCharge` requires an enemy inside
+the 2" melee cylinder (`MeleeRangeUtilities.AreUnitsInMeleeRange`, docs/ResolverGuide.md). A charge FROM RANGE
+in this engine is a Move whose path ends in contact (charge-length moves are legal when they end in melee
+range, `ChargeReachValidationTests`), then `Charge` on the re-entry - natural play gets there through the
+forced-charge band (Pass gated inside 1", Shoot forfeits) and the solo fallback. `TacticianActionSpace` built
+its prescription names from `OfferableActions`, which listed `Charge` unconditionally.
+
+*Fix (engine, `TacticianActionSpace` + `TacticianPlanner`):* a reachable charge whose target is not already
+in melee range is prescribed as `Move` with the charge macro; the planner's post-move branch takes `Charge`
+when the plan is a charge and the engine now offers it (natural play only reaches that branch with a charge
+plan after it has already fought, when Charge is no longer offered - so A-play is unchanged). A Shaken unit
+gets ONE unit-only edge ("idles and recovers") instead of a scored candidate set. Remaining closures: Hold
+edges (Shoot/Pass) for a unit standing inside the forced-charge band, where the engine offers only
+`[Charge]` - 4 on A, 2 on B; left as is.
+
+| board (300 iterations, single worker, probes on) | closed edges | nodes | in-sim Enumerate | ms/iteration |
+|---|---|---|---|---|
+| A before (pass 2) | 214 of 489 expansions | 276 | 103 | 56.0 |
+| A after | **4 of 304** | 301 | 4 | **48.9** |
+| B before (pass 2) | 43 of 337 | 295 | ~30 | 41.2 (oracle) |
+| B after | **2 of 302** | 301 | 2 | **38.5** |
+
+Expansions now equal iterations (one real simulation each; before, the search retried closed edges within an
+iteration). The root choice on board A moved from "Bot Swarms: Contest" to "Great Monolith: charge the Orc
+Warriors" - the search can now see charges. **This is a behaviour change, not an exact-semantics one**: the
+identical-tree oracle differs by design. It ships as its own engine commit (revertable) and is benchmarked
+tonight: `scratchpad/queue-seam-bench.sh` runs the breadth slice's cb16 cell (4 pairs x 48, benchmark budget,
+seeds 1000, shipped leaf) on the seam-fixed snapshot `seambin` right after the breadth slice; the gap to the
+breadth slice's own cb16 (Phase 1 binary, same seeds) is the seam fix's worth, out
+`FdgLab/reports/seam-slice-2026-09-08`.
+
+*Next pure-speed targets, in order:* move planning (41 plans per unit before the prune to 16, 0.43 ms and 269
+KB each - now ~35% of the iteration together with the rest of `Enumerate`), the sim's `ChooseActionStage`
+(2.9 ms per entry after pass 2: `GetCanCharge` walks every enemy model pair, two `GatherOffers` dispatches,
+a LINQ team lookup), allocation inside combat estimates (dice arrays, note lists, batch comparers).
+
 **2026-09-08 (11:45, Opus 5 / xhigh) - SEARCH PERF PASS, PHASE 1: SEMANTICS-PRESERVING EDITS VERIFIED EXACT BY
 AN IDENTICAL-TREE ORACLE, SPEEDUP ~0-3%. THE SAMPLER LIED ABOUT THE FINE STRUCTURE; STOPWATCHES GIVE THE REAL
 SPLIT: ~56% ENUMERATING CANDIDATES THE SEARCH NEVER EXPANDS, ~37% SIMULATING ONE ACTIVATION.**
