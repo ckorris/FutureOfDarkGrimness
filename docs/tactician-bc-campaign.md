@@ -364,9 +364,13 @@ re-slice. Two iterations maximum before the gate.
   5k games (~23 h at the observed rate). Recommendation: now - the slice is the critical path and the
   paused run resumes at its next game with nothing lost.
 
-### Step 15b - C lobby exposure (Sonnet / medium; folds into step 15)
-Unchanged: a new `EAiProfile` value, "Add <Name> Bot" button + slot picker entry in `LobbyScreen.cs`,
-name TBD with Chris, only once C4 is promoted (G9).
+### Step 15b - C lobby exposure (Sonnet / medium; folds into step 15) - DONE 2026-09-07 (Opus 5)
+**Superseded by Chris's 2026-09-07 call: REPLACE the Strategist's leaf, do not add a second bot.** No new
+`EAiProfile` value, no lobby button, no name needed - the lobby's Strategist simply searches with the shipped
+net (`BuiltInAssets/StrategistLeafV1.json`) instead of the hand evaluator. The hand leaf stays reachable in
+the lab as the C-gate control arm (`--evaluator hand`), and `FDG_STRATEGIST_WEIGHTS` still points the
+Strategist at a candidate net. Engine `1ca296e`, super `79fe8a4`, merged to master ahead of the gate (also
+Chris's call). Ledger 2026-09-07 20:30 entry has the detail.
 
 ### Step 16 - C-gate (as step 10; both sides search, so ~2x per game: matrix ~14 h + panels ~16 h at dop 6). **L2 merge.**
 Author the `lane-block` and `buff-anticipation` probes FIRST (gating, not yet written; step-10 probe

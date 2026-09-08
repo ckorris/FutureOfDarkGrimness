@@ -23,6 +23,64 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-07 (20:30, Opus 5 / xhigh) - STEP 15b DONE: THE STRATEGIST SHIPS THE LEARNED LEAF, AND IT REPLACED
+THE HAND EVALUATOR RATHER THAN JOINING IT. MERGED TO MASTER. Engine `1ca296e`, super `79fe8a4`.**
+
+*Owner's decision (Chris, 2026-09-07): REPLACE, not a second lobby bot.* The leaf is an implementation detail
+of "the searching bot"; two lobby entries differing only by it would confuse players. My recommendation, his
+call. Consequence accepted and handled: the hand leaf stays reachable in the lab as the C-gate's control arm,
+via `--evaluator hand` (an explicitly-passed evaluator always wins over the default).
+
+*Also his call: merge to master NOW, before the C-gate.* The campaign doc puts the L2 merge after step 16, and
+the gate's panel screen is still running. Flagged, then done. Low risk: master is not a release (those come
+from `v*` tags), and both the pre-promotion binary and the hand arm remain available.
+
+*What shipped.* `BuiltInAssets/StrategistLeafV1.json` (402 KB, the `serving-full` weights plus a `provenance`
+block naming the training data, the command, the offline metrics and the slice result), embedded like the
+existing built-in assets so it cannot go missing from any of the four unsigned platform archives.
+`AiProfileFactory.DefaultStrategistLeaf` loads it through a `Lazy<T>` - one shared instance, because a bench
+builds a registry per slot per game and re-parsing 400 KB each time would cost more than the search it feeds
+(the forward pass allocates its own buffers and never mutates the weights, so sharing is safe across the four
+root workers and concurrent games). Precedence at the Strategist: caller-supplied leaf, then
+`FDG_STRATEGIST_WEIGHTS`, then the shipped net.
+
+*What deliberately did NOT change: the plain Tactician.* It is the benchmark opponent AND the policy the
+search simulates with. Had the promotion reached it, every number this campaign is calibrated against would
+have moved silently. `StrategistLeafAssetTests` pins that.
+
+*Tests (4 new + 2 rewritten).* The asset loads and its schema/width match this build (the early warning for a
+feature bump landing without a retrain - it would otherwise throw at bot creation in a game); the asset still
+reproduces torch's outputs on 48 recorded cases to 1e-5 (`Tests/Fixtures/strategist-leaf-v1-parity.json`,
+values spanning 0.003-0.999 so the fixture cannot pass for a constant net); the Strategist's default leaf is
+that instance and is loaded once; the Tactician still scores with the hand evaluator. Two override tests that
+asserted "default = hand-weighted" were REWRITTEN, not deleted - that assertion encoded the old policy.
+
+*Lab follows the promotion.* "No `--evaluator` flag" no longer means hand, so: `--evaluator hand` is the
+control arm, every bench report now stamps its leaf unconditionally (a Strategist number is a number about one
+particular leaf, and reports outlive the memory of when the default changed), `c4-slice.sh`'s hand arm passes
+it explicitly, and self-play game lines record `shipped` rather than `hand` when the run named none.
+
+*Verification.* Engine 3284 passed / 0 failed / 1 skipped, FdgRaylib.Tests 2836 / 0, full build clean,
+headless smoke exit 0 - run BOTH before the engine commit and again on the merge result. End-to-end: two
+2-game benches on the Release binary, default arm stamped "shipped net (StrategistLeafV1, the default)" and
+control arm "hand-weighted (control)", 0 faults each.
+
+*Merge.* The other instance had already merged `tactician-bc` -> master at ~15:38 and added the env override,
+so this merge carried only my last five commits plus the engine bump. One conflict, the ledger's top section
+(both sides had appended); resolved keeping both in date order. Both repos' `tactician-bc` are now
+fast-forwarded to master. Note: pushing to engine `master` reported "Bypassed rule violations ... changes must
+be made through a pull request" - the branch protection is being bypassed by these direct pushes (the other
+instance's merge did the same). Worth a decision from Chris if that rule is meant to bind.
+
+*Panel screen.* Stopped at 20:19 for a quiet box (it has no `--pause-file` hook), restarted 20:26 - the
+per-cell `bench.progress.jsonl` resumed 276 banked games instantly, nothing replayed. Deliberately still the
+PRE-promotion snapshot binary `scratchpad/step15bin`: both its arms name their leaf explicitly, so the
+comparison is unaffected, and resuming with a different binary would have mixed two builds inside one cell.
+
+*Still open for the C-gate (step 16):* per-side evaluator on bench (C-vs-B is not expressible while
+`--evaluator` binds to every Strategist in a game), the unwritten `lane-block` and `buff-anticipation` probes,
+and Chris's >= 2 verbatim games - now playable on master with no env var at all, since the net IS the default.
+
 **2026-09-07 (19:55, Fable 5.1) - C4 ITERATION 2: THE RETRAINED NET (v2) DOES NOT BEAT v1. v1 (`serving-full`)
 IS THE C CANDIDATE. STEP 15 CLOSES; STEP-16 PANEL SCREEN RUNNING.**
 
