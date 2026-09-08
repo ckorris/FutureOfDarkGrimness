@@ -20,6 +20,19 @@ and the deferred facets below are recorded rather than dropped.
 
 ## Notes
 
+- 2026-09-08 (slice 6 taken early - melee; engine `HEAD`): engine **3307/0** (+6), build clean. The
+  melee tab already worked through the shared batch loop, so this slice was really about the one thing
+  melee has that shooting does not: **charge impact hits**, which now run through the engine's own
+  `ResolveImpactHitsStage` (a real `CombatActionContext`, `SetDefender`, `OnImpactResolved` bound to a
+  pass-through layer) rather than being approximated. A charger with no Impact rule produces no row at
+  all, and the dice are probed with the READ-ONLY evaluation so the stage's own live pass stays the only
+  one that logs or spends.
+  - Melee pins: melee swings melee weapons only (the guns sit it out), fatigue forces 6s, Impact lands
+    before any swing (6 dice on 2+ = 5 hits), and the report SAYS strike-back is not included rather
+    than leaving its absence to be discovered.
+  - Taken ahead of slices 4/5 because it completes the feature as described (shooting AND melee tabs);
+    hero joins and saved lists are additive on top.
+
 - 2026-09-08 (slice 3, the screen - shooting, books only): app suite **2850/0** (+12), engine
   **3301/0**, build clean, headless smoke exits 0. `CombatCalculatorScreen` + `CombatCalc/
   {CalculatorSide, UnitPicker}`, wired into the main menu (Combat Calculator sits below Army Forge;
