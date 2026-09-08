@@ -5,7 +5,10 @@
 # for the whole run (wall-clock search budgets are only honest on a quiet box) and unpaused at the end.
 #
 #   FdgLab/tools/c4-slice.sh <out-dir> <benchmark|interactive> <games-per-cell> <arm>...
-#   arm = hand | net | blend   (net/blend read $NET_WEIGHTS; default the full-v3 serving model)
+#   arm = hand | net | blend | net2   (hand = the hand-weighted control, passed explicitly since the
+#                                      shipped default became a net; net/blend read $NET_WEIGHTS,
+#                                      default the full-v3 serving model;
+#                                      net2 reads $NET2_WEIGHTS - the re-slice's retrained candidate)
 #
 # Example (the screen):  FdgLab/tools/c4-slice.sh FdgLab/reports/c4-slice-2026-09-06 benchmark 48 hand net blend
 # Example (the confirm): FdgLab/tools/c4-slice.sh FdgLab/reports/c4-confirm-2026-09-07 interactive 48 hand net
@@ -15,6 +18,7 @@ OUT=${1:?out dir}; BUDGET=${2:?benchmark|interactive}; GAMES=${3:?games per cell
 ARMS=("$@"); [ ${#ARMS[@]} -gt 0 ] || { echo "no arms named"; exit 2; }
 BIN=${FDGLAB_BIN:-FdgLab/bin/Release/net8.0/FdgLab}
 NET_WEIGHTS=${NET_WEIGHTS:-FdgLab/python/models/serving-full-weights.json}
+NET2_WEIGHTS=${NET2_WEIGHTS:-FdgLab/python/models/serving-v2-weights.json}
 DOP=${DOP:-6}; SEED_BASE=${SEED_BASE:-1000}
 mkdir -p "$OUT"
 export DOTNET_GCHeapHardLimit=0x300000000 DOTNET_GCRetainVM=1 DOTNET_GCName=libclrgc.so
@@ -25,14 +29,15 @@ declare -a P=("Alien Hives 2k - Horde Melee" "Battle Brothers 2k - Elite Shootin
 PAIRS=(2 3 5 7)
 arm_flags() {
   case "$1" in
-    hand)  echo "" ;;
+    hand)  echo "--evaluator hand" ;;   # explicit since 15b: no flag now means the SHIPPED net
     net)   echo "--evaluator $NET_WEIGHTS" ;;
     blend) echo "--evaluator $NET_WEIGHTS --blend 0.5" ;;
+    net2)  echo "--evaluator $NET2_WEIGHTS" ;;
     *) echo "unknown arm $1" >&2; exit 2 ;;
   esac
 }
 touch FdgLab/.pause-selfplay
-echo "=== C4 SLICE START budget=$BUDGET games=$GAMES arms=${ARMS[*]} bin=$BIN net=$NET_WEIGHTS === $(date)"
+echo "=== C4 SLICE START budget=$BUDGET games=$GAMES arms=${ARMS[*]} bin=$BIN net=$NET_WEIGHTS net2=$NET2_WEIGHTS === $(date)"
 for i in "${PAIRS[@]}"; do
   j=$(( (i+1) % 8 ))
   for arm in "${ARMS[@]}"; do

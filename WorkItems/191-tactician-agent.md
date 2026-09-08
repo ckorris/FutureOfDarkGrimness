@@ -23,6 +23,72 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-07 (19:55, Fable 5.1) - C4 ITERATION 2: THE RETRAINED NET (v2) DOES NOT BEAT v1. v1 (`serving-full`)
+IS THE C CANDIDATE. STEP 15 CLOSES; STEP-16 PANEL SCREEN RUNNING.**
+
+*Retrain.* `v3-plus-bnet.parquet` = 443,608 A-play + 81,639 B-play rows (31,199 games). `--balance-sources`
+weighted B-play rows x5.46 for equal total weight. Held-out games: v2 auc 0.8909 overall (A-play rows 0.9019,
+B-play rows 0.8229 vs hand 0.7807); unseen pairings 0.8810. Scored on identical rows with one scorer, v1 vs v2:
+A-play 0.856 vs 0.851, B-play 0.778 vs 0.781 - flat both ways. C# parity on `serving-v2-{weights,parity}`: 5/5.
+
+*Re-slice (net2 only, benchmark budget, same seeds and quiet box as the screen; hand/net/blend from the screen):*
+
+| Pair (A = Strategist vs Tactician) | hand | net v1 | blend | net v2 |
+|---|---|---|---|---|
+| Dark Elf Raiders vs Dwarf Guilds | 31.2 | 43.8 | 45.8 | 32.3 |
+| Dwarf Guilds vs High Elf Fleets | 55.2 | 62.5 | 65.6 | 68.8 |
+| Human Defense Force vs Orks | 41.7 | 43.8 | 37.5 | 44.8 |
+| Robot Legions vs Alien Hives | 42.7 | 56.2 | 45.8 | 41.7 |
+| **pooled (192 games each)** | **42.7** | **51.6** | **48.7** | **46.9** |
+
+*Decision:* v2 is +4.2 over hand (under the +5 bar) and -4.7 under v1; **v1 stays**, and it is the one that
+also passed the interactive confirm (+6.0). Two iterations were the maximum (plan sec 10) - both used. Read:
+5k regeneration games at ~17 rows each is 16% of the rows even after weighting, and the offline metric said
+"flat" before the board did; the leaf is not data-starved at this size, so a bigger net or new features
+(fatigue, firepower bands - schema sec 4) is the next lever if the gate misses, not more of the same data.
+Cell-to-cell swings of +-10 between v1 and v2 (DE-DG 43.8 -> 32.3, DG-HE 62.5 -> 68.8) are the 48-game
+instrument, not a signal.
+
+*Correction to the 19:30 caution:* the B-gate panel numbers (73/72/84) were INTERACTIVE budget; the regen
+numbers were benchmark. That comparison was apples-to-oranges on budget as well as sampling. The paired
+answer is now being measured directly.
+
+*Running (19:50):* `scratchpad/c-panels.sh` - hand-leaf and net-leaf Strategist vs Tactician on all four
+panels (points-1k/3k/4k, shape-2v2), 30 games/cell, seeds 6000 (the B-gate's panel seeds), BENCHMARK budget
+(plan sec 10: screen at benchmark first), dop 6, out `FdgLab/reports/c-panels-2026-09-07/<arm>/<panel>`.
+This is step 16's panel screen AND the paired answer to the level caution. ~3 h.
+
+*Step 16 build items still open:* per-side evaluator on bench (C-vs-B for the main matrix), the lane-block and
+buff-anticipation probes (unwritten, gate the gate), Chris's >= 2 verbatim games, and 15b's replace-vs-new
+decision (recommendation: replace). Step 16's model note: runs are Sonnet/low, failure analysis Opus/high.
+
+**2026-09-07 (19:30, Fable 5.1) - REGENERATION DONE: 5,000 NET-LEAF B-PLAY GAMES, 0 FAULTS. ITERATION-2 RETRAIN
++ RE-SLICE RUNNING.**
+
+`FdgLab/data/2026-09-07-v3-bplay-net`: 25 files, seeds 500000-504999, every game line `evaluator=serving-full-
+weights.json`, `search_budget=benchmark`; ~3,260 rows per 200-game file (~81k rows), ~45 min per batch at dop 6
+(265 games/h, 18.5 h wall). Stopped at the batch boundary 19:25 after draining.
+
+*A caution from the data, NOT a result.* Half the games are net-Strategist vs Tactician across the 20 training
+pairings; at 3,800 games the net Strategist scored 66.8 / 63.0 / 59.8 / 65.8 at 1k/2k/3k/4k and 55.4 in 2v2
+(61.8 pooled, n=1,721). The hand Strategist's B-gate PANEL numbers on these panels were 73/72/84 at 1k/3k/4k.
+Not paired (older engine, sampler draws rather than side-swapped seeds, no hand arm in this run), so it does
+not overturn the slice, but it is the first hint the net's gain may not be uniform across levels. Step 16's
+panels are the proper measurement; this line exists so nobody reads the 4-pair slice as the whole story.
+
+*Chain launched 19:25 (`scratchpad/retrain-v2.sh`, log `retrain-v2.log`):* load v3 + bplay-net into
+`v3-plus-bnet.parquet` -> `train.py --balance-sources --tag serving-v2 --export` (B-play rows weighted to equal
+total weight; report now slices by source) + a pairing-split fit -> C# parity on `serving-v2-{weights,parity}`
+-> `c4-slice.sh ... benchmark 48 net2` into the screen's directory -> combined hand/net/blend/net2 table
+(`summary-iter2.md`). net2 alone is re-run: hand/net/blend already have benchmark cells on these seeds from a
+quiet box, and wall-clock search means a re-run would not reproduce them bit-for-bit anyway.
+
+*Also today:* Chris asked for a merge-to-master prompt for another instance plus an `FDG_STRATEGIST_WEIGHTS`
+dev-only override so the lobby Strategist can load the net; `serving-full-weights.json` was sent to him directly
+(the models dir is gitignored by design - step 14 policy). Chris's 15b question - replace the Strategist's leaf
+vs a new lobby bot - my recommendation is REPLACE (hand leaf stays lab-reachable as the C-gate baseline); no
+decision recorded yet.
+
 **2026-09-07 (Fable 5.1) - merge to master done 2026-09-07, super `4339768`, engine `406c0c0` (merge) /
 `ae80842` (override); FDG_STRATEGIST_WEIGHTS dev override added.** `tactician-bc` merged into master
 with a real merge commit on both repos; engine suite 3275/0/1 at the merge, 3280/0/1 after the
