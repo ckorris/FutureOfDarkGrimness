@@ -41,13 +41,20 @@ public sealed class RuleGlossary
     /// it rather than claim the rule does nothing. Same comparer as the resolver means the glossary is
     /// silent exactly when army load would also fail to resolve the name.
     /// </remarks>
-    public static RuleGlossary Build(BookFile? book)
+    public static RuleGlossary Build(BookFile? book) => Build(book?.RuleDefinitions);
+
+    /// <summary>
+    /// The same glossary from a bare definition list, for a source that carries rules but no book -
+    /// a saved .fdgarmy opened in the Combat Calculator (#397), whose embedded definitions are all the
+    /// hovers have to go on.
+    /// </summary>
+    public static RuleGlossary Build(IEnumerable<SpecialRuleDefinition>? definitions)
     {
         var byName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (SpecialRuleDefinition definition in CoreRuleCatalog.All)
             byName[definition.Name] = definition.Description;
-        if (book is not null)
-            foreach (SpecialRuleDefinition definition in book.RuleDefinitions)
+        if (definitions is not null)
+            foreach (SpecialRuleDefinition definition in definitions)
                 byName[definition.Name] = definition.Description;
         return new RuleGlossary(byName);
     }

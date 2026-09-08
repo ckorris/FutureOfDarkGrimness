@@ -20,6 +20,23 @@ and the deferred facets below are recorded rather than dropped.
 
 ## Notes
 
+- 2026-09-08 (slice 2, shared Forge pieces; engine `e2a9679`): pure refactor, no behaviour change -
+  app suite **2838/0** (2836 before, +2 new glossary tests), engine **3301/0**, build clean, headless
+  smoke exits 0.
+  - `ArmyBuilding/BuilderListEditing` (engine) now owns the list/upgrade edit rules - add, remove,
+    combine, the choice mutations, hero-host candidates - beside `ListCompiler`/`ListValidator`, which
+    compile and validate the very lists it produces. `ArmyForgeScreen` keeps every member signature its
+    50 tests name, as one-line delegates, so those tests were not touched and still pass: that is what
+    makes this refactor safe to believe.
+  - `ForgeUnitDetail` (app) owns the third column's DRAWING (header, gear, the upgrade editors). The
+    availability MATHS stayed on `ArmyForgeScreen`, where its tests point - moving it would have churned
+    dozens of call sites for no gain. `ReplacePool` still needs `YieldsTo`, so that pair stayed put too.
+  - `BookLibrary` (app) parses the ~90 bundled books once for both screens instead of once per screen
+    (~0.5s of JSON), handing each caller its own list. The Forge's private `LoadLibrary` is deleted
+    rather than left as a second copy.
+  - `RuleGlossary.Build(IEnumerable<SpecialRuleDefinition>)` gives hovers to an army that carries
+    embedded rules but no book - the shape a saved `.fdgarmy` has, which slice 5 opens.
+
 - 2026-09-08 (slice 1, engine `ed9fd10`): `Calculator/{CombatCalculator, CombatReport,
   SandboxGameContext}.cs` + `StateMachine/PassThroughLayer.cs`. Shooting works end to end; the melee
   path already shares the same batch loop, but its Impact stage and its tests are slice 6. Engine suite

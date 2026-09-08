@@ -162,4 +162,28 @@ public class RuleGlossaryTests
             foreach (SpecialRuleEntry rule in unit.Rules)
                 Assert.That(glossary.Describe(rule), Is.Not.Null, $"no description for '{rule.PrintableName}'");
     }
+
+    // #397: the Combat Calculator can be pointed at a saved .fdgarmy, which carries embedded rule
+    // definitions but no book. The hovers have to come from those definitions alone.
+    [Test]
+    public void Build_FromBareDefinitions_DescribesThemAndStillKnowsTheCoreRules()
+    {
+        BookFile demo = DemoBook.Build();
+        RuleGlossary glossary = RuleGlossary.Build(demo.RuleDefinitions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(glossary.Describe("Stealth"), Is.Not.Null, "core rules are always known");
+            foreach (SpecialRuleDefinition definition in demo.RuleDefinitions)
+                Assert.That(glossary.Describe(definition.Name), Is.Not.Null,
+                    $"no description for embedded '{definition.Name}'");
+        });
+    }
+
+    [Test]
+    public void Build_FromNoDefinitions_IsStillTheCoreCatalog()
+    {
+        Assert.That(RuleGlossary.Build((IEnumerable<SpecialRuleDefinition>?)null).Describe("Stealth"),
+            Is.Not.Null);
+    }
 }
