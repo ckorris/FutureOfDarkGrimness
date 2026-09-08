@@ -23,6 +23,103 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (18:00, Fable 5.1) - SEARCH PERF PLAN, PASSES 3-5: WHERE THE REMAINING 38.6 ms PER ITERATION GOES
+ON BOARD A AND THE EXACT-SEMANTICS WORK QUEUED AGAINST IT (ALL ORACLE-VERIFIED, NO TUNING RAMIFICATIONS).**
+
+Baseline is the 17:28 single-worker run on board A (`timing2-A.log`): 38.6 ms and 13.6 MB allocated per
+iteration, 300 iterations = 4.0 GB of garbage per search. Inclusive split (stages overlap):
+
+| bucket | share | what it is |
+|---|---|---|
+| EnumerateEdges | 61% | Candidates 26% (MacroActionGenerator.Enumerate) + Scoring 35% (TacticianPlanner.Score x16) |
+| Expand | 28% | SimRun 22% (one prescribed activation + leaf capture; Continuation is 0) + SimServer 5.6% (FDGServer ctor) |
+| EnumerateUnits | 10.5% | TacticianActivationResolver.Urgency per unit (pairwise shooting estimates) |
+| Leaf | 2.5% | PositionEncoder + MLP |
+
+Cross-cutting callees: Combat 21% (92,831 estimates, 10.9 KB each), RuleDispatch 19% (870,644 walks, 0.7 KB
+each - almost all of them the 4 dispatches per volley inside Combat), PlanValidate 19% (21,147 validations,
+52 KB each), PlanMove 18% (8,583 plans, 119 KB each), MoveQuery 7%, ObjectiveProj 5% (11,057 calls of a
+board-fixed projection), Sight 3%. In-sim: ChooseActionStage is entered 3x per activation at 0.87 ms each
+(GetCanShoot/GetCanCharge/three dispatch walks), DeterminePlayerTurnStage 2x (progress write + reactivation
+offers, then the boundary capture + leaf).
+
+Queued, in the order I intend to take them (gain x confidence / effort). Every item is exact: the tree
+oracle (nodes/depth/closed/choice+visits) must be identical against a snapshot of the committed binary.
+
+1. **Hook-listener fast path in RuleEvaluator.** Per unit (static rules + weapons + models + RuleGrant
+   tokens) a bitmask of (hook, seat) pairs any rule has a passive entry for; Evaluate/EvaluateAll return
+   `Array.Empty` before renting DedupState or allocating the tagged list when nothing listens. Exact:
+   CollectFromRules produces nothing in that case and consume-grants is gated on the same test. Invalidate
+   on token-container change (grants). Expected: most of RuleDispatch's 19% and a slice of Combat/MoveQuery.
+2. **Board-fixed memos per activation** (the planner is pure during Enumerate+Score): ProjectObjectives
+   (5% on its own), per-unit Advance/Rush/Charge/PerModel budgets, terrain + sight-blocker lists, enemy
+   and friendly footprints (+ their zones), shared between Enumerate, Score, Urgency and the encoder. Small
+   change, ~8%.
+3. **Validation on the planner path.** ValidateWithBackoff only classifies faults (impassible present,
+   friendly present, friendly-only); give the private validators a first-fault-per-kind mode that returns
+   a kind bitmask and stops early; memo the "before" cohesion extents per unit per activation (recomputed
+   O(n^2) for every candidate today); precompute enemy zones once per footprint list (allocated per model x
+   enemy pair inside the loop now); bounding-circle reject before SurfaceGap2D/swept tests. Public overloads
+   the engine's resolver uses keep the full error list. Expected: PlanValidate 19% -> ~8%.
+4. **PlanMoveAlongRoute hoisting.** Terrain ToList, LiveEnemyFootprints, LiveFriendlyFootprints and
+   RouteToward's LINQ (Average x2, Any x2) run per plan; pass the per-enumeration facts from item 2 in.
+   ~3-5%.
+5. **CombatMath allocation diet.** Per volley: LivingModels x3, Ops().ToList x4, notes list, Dice.Roll
+   float[6] per roll, WeaponComparer+Batch per estimate, OfType/Sum/Count LINQ, `context with` copies.
+   Struct-return the sinks, reuse a scratch DiceResults. Target 10.9 KB -> ~2 KB per estimate; ~5-8%.
+6. **In-sim ChooseActionStage gates.** GetCanCharge (LINQ over armies + team lookup per entry),
+   GetCanShoot -> HasAnyFireableTarget (confirm it early-exits), three dispatch walks per entry (mostly
+   covered by item 1). ~3%.
+7. **SimServer construction drill** (2.17 ms per simulation, 5.6%): probe FDGServer's ctor (stage graph
+   build vs bus wiring vs logging) before deciding; nothing is known yet.
+8. **Runtime knobs, measured not assumed:** DOTNET_GCgen0size (fewer gen0 GCs at 13.6 MB/iteration),
+   concurrent GC off, and a 4-worker wall-clock measurement now that allocation has halved (the last
+   scaling number predates pass 2). Config only; ~0-8%.
+9. **Leaf encoder memo** (2.5%): the self and enemy blocks compute the same pairwise estimates mirrored.
+   Low priority.
+
+Explicitly not planned: AVX/SIMD (the MLP is ~20 us of a 960 us leaf; the geometry is per-pair scalar and
+the bounding reject in item 3 gets the win), InvariantGlobalization (no culture-sensitive string ops in
+the hot paths - every CompareTo found is on floats), and any change to candidate budgets, weights, priors
+or the widening rule (those are the breadth slice's question, still queued behind the panels).
+
+Rough expectation if items 1-6 land: 38.6 -> low/mid 20s ms per iteration on board A, allocation under
+5 MB per iteration. Each lands as its own commit with before/after and the identical-tree line.
+
+Determinism check, and a bug of my own found on the way (17:30-18:35). The 17:26 Release build carried an
+instrumentation slip: the "plan: snake accepted" note was inserted before an UNBRACED `return snake;`, which
+made the snake candidate return unconditionally - every snake was accepted, valid or not. That build produced
+the 17:28 split (38.6 ms, 0 closed, Bot Swarms) and the first two determinism arms (37.4 / 37.8 ms, identical
+to each other, so cross-process determinism does hold). Caught by
+`ValidateWithBackoff_SnakeThatBarelyAdvances_IsRejectedForTheHalvingLadder` on the commit-time test run,
+fixed (braces), suite 3291/0. The FIXED build reproduces the 14:12 tree EXACTLY: 301 nodes, depth 6, 4 closed
+edges, Great Monolith approach with 18 visits, 46.6 ms per iteration plain and 49.2 with the timing report on, twice
+in separate processes - so the 14:10
+`seambin` snapshot was the committed fix semantically and the 14:20 entry's board A numbers stand. The 4
+remaining closed edges are the forced-charge band (2 CLOSED Shoot/Hold + 2 CLOSED Pass/Hold: inside 1" of an
+enemy the stage offers neither), a seam still to close.
+
+The real baseline for the plan above is therefore the fixed build's report (`det2-fixed-timed.log`):
+49.0 ms and 19.9 MB per iteration. The split is the same shape with move planning heavier than the buggy run
+showed: PlanMove 28.3% (8,045 plans, 0.52 ms and 307 KB each), PlanValidate 28.8% (38,115 validations, 4.7 per
+plan: 6,037 first-try valid, 1,287 one retry, 993 lateral re-aims, 297 snakes, 676 plans exhausting the
+six-step ladder), Candidates 35.0%, Scoring 29.1%, Expand 27.2%, Combat 19.3%, RuleDispatch 18.1%, MoveQuery
+6.6%, EnumerateUnits 8.5%. Items 3 and 4 (validation and plan hoisting) move up to sit beside item 1.
+
+THE HANG IS REAL AND NONDETERMINISTIC. The 14:10 snapshot ran the identical board A command at 14:12 in 15 s and
+at 17:34 sat inside the 300-iteration search for 45 minutes: one thread at 100%, no output after the root
+probe line, `timeout 900` (no `-k`) never ended it, and dotnet-dump could not attach so there is no stack.
+Since that snapshot is semantically the committed code, the current build can hang. `hang-hunt.sh` (written,
+launched after the panels resume) repeats the run and dumps a process still alive at 240 s. Watch item for
+the overnight queue: a hang shows as a 1800 s game timeout inside a cell, not a stalled queue. `seambin` is
+re-snapshotted from the fixed build. Scripts from here on use `timeout -k 30`.
+
+Separately, the interactive panel screen's hand/points-3k cell died at 18:24 with SIGSEGV inside libcoreclr.so
+on a thread-pool worker (step15bin, 3 minutes after a restart; the kernel log has the fault, the systemd core
+is a system dump the DAC cannot read and the Ubuntu runtime build has no public symbols). The bench resumes
+from bench.progress.jsonl, so the screen now runs under `c-panels-interactive2.sh`, which re-runs a crashed
+cell up to 3 times with the same log markers the queue waits on.
+
 **2026-09-08 (14:05, Fable 5.1) - SEARCH PERF PASS 2: THE STOPWATCH DRILL-DOWN FOUND THE COST (RULE DISPATCH
 ALLOCATING ON 6,000 CALLS PER ITERATION, THE SCORER RECOMPUTING PER-ENEMY FACTS 16x) AND A STRUCTURAL WASTE
 (44% OF EXPANSIONS ON BOARD A CLOSE WITHOUT A CHILD). TWO EXACT-SEMANTICS FIXES LANDED: 62.9 -> 59.5 ms AND
