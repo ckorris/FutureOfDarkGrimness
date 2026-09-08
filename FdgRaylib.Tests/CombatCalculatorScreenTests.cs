@@ -216,6 +216,20 @@ public class CombatCalculatorScreenTests
     }
 
     [Test]
+    public void TheEmptyStateNamesTheSideThatIsStillMissing()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.EmptyStateHint(false, false),
+                Is.EqualTo(CombatCalculatorScreen.NoUnitsHint));
+            Assert.That(CombatCalculatorScreen.EmptyStateHint(true, false),
+                Is.EqualTo(CombatCalculatorScreen.NoDefenderHint));
+            Assert.That(CombatCalculatorScreen.EmptyStateHint(false, true),
+                Is.EqualTo(CombatCalculatorScreen.NoAttackerHint));
+        });
+    }
+
+    [Test]
     public void RangeTicksMarkEachDistinctWeaponReachInsideTheSlidersSpan()
     {
         var report = new CombatReport(ECombatMode.Shooting, "A", "B", 5f, 5f, new List<VolleyReport>
@@ -247,6 +261,14 @@ public class CombatCalculatorScreenTests
             CombatCalculatorScreen.NoUnitsHint,
             CombatCalculatorScreen.ArmyPrompt,
             CombatCalculatorScreen.VariablesHeader,
+            CombatCalculatorScreen.AssumptionsLabel,
+            CombatCalculatorScreen.AttackerBadge,
+            CombatCalculatorScreen.DefenderBadge,
+            CombatCalculatorScreen.NoAttackerHint,
+            CombatCalculatorScreen.NoDefenderHint,
+            CombatReportView.HitsCaption,
+            CombatReportView.WoundsCaption,
+            CombatReportView.AttacksVerb,
             CombatCalculatorScreen.DistanceLabel,
             CombatCalculatorScreen.CoverLabel,
             CombatCalculatorScreen.MovedLabel,

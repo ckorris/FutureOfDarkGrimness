@@ -35,7 +35,11 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string Title = "COMBAT CALCULATOR";
     internal const string SwapLabel = "Swap A <-> B";
     internal const string ChooseUnitLabel = "Choose unit";
+    internal const string AttackerBadge = "ATTACKER";
+    internal const string DefenderBadge = "DEFENDER";
     internal const string NoUnitsHint = "Choose a unit on both sides.";
+    internal const string NoAttackerHint = "Choose the attacking unit on the left.";
+    internal const string NoDefenderHint = "Choose the defending unit on the right.";
     internal const string ArmyPrompt = "Choose an army:";
     internal const string JoinHeroLabel = "+ Join a hero";
     internal const string JoinUnitLabel = "+ Join a unit";
@@ -45,7 +49,8 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string LoadListLabel = "Load list...";
     internal const string ReadOnlyNote =
         "This army carries no book, so its units are shown as they were saved and cannot be changed here.";
-    internal const string VariablesHeader = "VARIABLES";
+    internal const string VariablesHeader = "SITUATION";
+    internal const string AssumptionsLabel = "(i) what this does not account for";
     internal const string DistanceLabel = "Distance (in)";
     internal const string CoverLabel = "Defender is in cover";
     internal const string MovedLabel = "Attacker moved this activation";
@@ -132,6 +137,20 @@ public class CombatCalculatorScreen : IAppScreen
         if (UiButton.NavigateSmall(SwapLabel)) Swap();
     }
 
+    /// <summary>
+    /// Which side is still missing, in words. "Choose a unit on both sides" is unhelpful once one side
+    /// is filled - it tells the reader to do something they have half done and does not say which half.
+    /// Internal so the wording is pinned without a window.
+    /// </summary>
+    internal static string EmptyStateHint(bool hasAttacker, bool hasDefender) =>
+        (hasAttacker, hasDefender) switch
+        {
+            (false, false) => NoUnitsHint,
+            (true, false)  => NoDefenderHint,
+            (false, true)  => NoAttackerHint,
+            _              => NoUnitsHint,
+        };
+
     /// <summary>Exchanges the two columns, pickers included, so a swap keeps each side's browsing state.</summary>
     internal void Swap()
     {
@@ -161,9 +180,17 @@ public class CombatCalculatorScreen : IAppScreen
     {
         Vector2 avail = ImGui.GetContentRegionAvail();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
-        float sideWidth = avail.X * 0.27f;
+        // 30/40/30: the side columns hold the densest text on the screen (upgrade lines with
+        // parenthesised stats and point costs) and were clipping at 27%, while the middle column
+        // had the most room and the least text.
+        float sideWidth = avail.X * 0.30f;
 
-        ImGui.BeginChild("##calc-a", new Vector2(sideWidth, avail.Y), ImGuiChildFlags.Borders);
+        // A horizontal scrollbar rather than wrapped upgrade labels: an ImGui checkbox/radio label is a
+        // single line by construction, so wrapping one means replacing the control's own label with
+        // hand-laid text - a change to the SHARED Forge detail, and so to how the Army Forge itself
+        // looks. Out of scope here; this keeps every character reachable without touching that.
+        ImGui.BeginChild("##calc-a", new Vector2(sideWidth, avail.Y), ImGuiChildFlags.Borders,
+            ImGuiWindowFlags.HorizontalScrollbar);
         DrawSide(_attacker, _attackerPicker, "A", "a");
         ImGui.EndChild();
 
@@ -174,7 +201,8 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.EndChild();
 
         ImGui.SameLine(0, spacing);
-        ImGui.BeginChild("##calc-b", new Vector2(0, avail.Y), ImGuiChildFlags.Borders);
+        ImGui.BeginChild("##calc-b", new Vector2(0, avail.Y), ImGuiChildFlags.Borders,
+            ImGuiWindowFlags.HorizontalScrollbar);
         DrawSide(_defender, _defenderPicker, "B", "b");
         ImGui.EndChild();
     }
@@ -189,10 +217,7 @@ public class CombatCalculatorScreen : IAppScreen
             return;
         }
 
-        if (UiButton.NavigateSmall($"{ChooseUnitLabel}##pick-{id}")) picker.Open();
-        ImGui.SameLine();
-        ImGui.TextColored(DimText, $"UNIT {label}   {side.Points} pts");
-        ImGui.Separator();
+        DrawSideHeader(side, picker, label, id);
 
         if (!side.IsEditable)
         {
@@ -218,6 +243,32 @@ public class CombatCalculatorScreen : IAppScreen
         }
 
         DrawJoinControl(side, picker, id);
+    }
+
+    /// <summary>
+    /// The column's identity line: which side of the fight this is, what it is called, what it costs.
+    /// The role badge (not just the letter A/B) is what makes Swap legible - after a swap the badge
+    /// moves, so there is never a question of which unit is doing the shooting.
+    /// </summary>
+    private void DrawSideHeader(CalculatorSide side, UnitPicker picker, string label, string id)
+    {
+        bool isAttacker = ReferenceEquals(side, _attacker);
+        ImGui.TextColored(isAttacker ? ImGuiTheme.HeaderAccent : DimText,
+            isAttacker ? AttackerBadge : DefenderBadge);
+
+        ImGui.SameLine();
+        ImGui.TextColored(DimText, $"UNIT {label}");
+
+        // Points right-aligned, so the two columns' costs line up against the screen edges and can be
+        // compared at a glance rather than read out of the middle of a sentence.
+        string points = $"{side.Points} pts";
+        float pointsWidth = ImGui.CalcTextSize(points).X;
+        ImGui.SameLine(ImGui.GetContentRegionAvail().X - pointsWidth + ImGui.GetCursorPosX()
+            - ImGui.GetStyle().ItemSpacing.X);
+        ImGui.TextUnformatted(points);
+
+        if (UiButton.NavigateSmall($"{ChooseUnitLabel}##pick-{id}")) picker.Open();
+        ImGui.Separator();
     }
 
     private static void DrawUnitRow(CalculatorSide side, BuilderUnit unit, string id, int row)
@@ -288,10 +339,18 @@ public class CombatCalculatorScreen : IAppScreen
             DrawFilter(picker, id);
             foreach (UnitPicker.Entry entry in UnitPicker.MatchingUnits(army, picker.Filter, picker.Roles))
             {
-                if (ImGui.Selectable($"{entry.Name}##unit-{id}-{entry.Index}")) Choose(side, picker, army, entry);
-                ImGui.Indent();
-                ImGui.TextColored(DimText, entry.StatLine);
-                ImGui.Unindent();
+                // One Selectable covering BOTH lines. Drawing the name as the only hit target left the
+                // stat line under it dead - and the stat line is the half carrying what you are choosing
+                // on, so clicking it is the natural move and it silently did nothing.
+                if (ImGui.Selectable($"##unit-{id}-{entry.Index}", false, ImGuiSelectableFlags.None,
+                        new Vector2(0f, ImGui.GetTextLineHeight() * 2f)))
+                    Choose(side, picker, army, entry);
+
+                Vector2 rowMin = ImGui.GetItemRectMin();
+                ImDrawListPtr dl = ImGui.GetWindowDrawList();
+                dl.AddText(rowMin, ImGui.GetColorU32(ImGuiCol.Text), entry.Name);
+                dl.AddText(rowMin + new Vector2(ImGui.GetTextLineHeight(), ImGui.GetTextLineHeight()),
+                    ImGui.GetColorU32(DimText), entry.StatLine);
             }
             return;
         }
@@ -430,7 +489,7 @@ public class CombatCalculatorScreen : IAppScreen
     {
         if (_report is not { } report)
         {
-            ImGui.TextColored(DimText, NoUnitsHint);
+            ImGui.TextColored(DimText, EmptyStateHint(_attacker.HasUnit, _defender.HasUnit));
             return;
         }
 
@@ -448,7 +507,9 @@ public class CombatCalculatorScreen : IAppScreen
         {
             ImGui.Spacing();
             ImGui.Separator();
-            foreach (string note in view.Notes) ImGui.TextColored(DimText, note);
+            ImGui.TextColored(DimText, AssumptionsLabel);
+            if (ImGui.IsItemHovered())
+                RuleHoverText.ShowTooltip(string.Join("\n", view.Notes));
         }
     }
 

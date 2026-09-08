@@ -37,6 +37,13 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-08 (slices 4-5, the side columns and polish): app **2879/0**, build clean. Columns widened to
+  30/40/30 (finding 5); each column headed by an **ATTACKER/DEFENDER badge** that follows Swap, with the
+  points right-aligned so the two costs line up against the screen edges and can be compared; the unit
+  picker's rows are now ONE two-line Selectable, closing the dead stat-line trap logged in #397; the
+  empty state names the side that is missing rather than repeating "choose a unit on both sides"; the
+  caveat wall became a single hoverable "(i) what this does not account for".
+
 - 2026-09-08 (slices 1-3, the middle column): app **2878/0**, build clean. The pane now reads
   headline -> table -> working:
   - **Headline**: the two numbers in `LargeFont` on the header accent, captioned, with a wound meter
@@ -63,7 +70,42 @@ _Newest on top._
 
 ## Decisions
 
+- **The middle column speaks the in-game combat notation, not the Forge's.** Two notations exist in the
+  app already: the Forge prints `(24", A6, AP(4), Reliable)` and the in-game shoot panel prints
+  `24", A6 AP1, Rending`. The calculator's side columns ARE the Forge's unit detail, so they keep the
+  first; the results pane is a combat forecast, so it now uses the second via
+  `RuleHoverText.WeaponStatLine` - the same call the live shoot panel makes. Three notations became
+  two, each matching its surface, and the results pane inherits the #292 underline+hover convention
+  instead of drawing rules as flat blue text.
+- **The view model never derives arithmetic.** `CombatReportView` renders report fields to text and, in
+  exactly one place, ADDS numbers the report itself split apart (save buckets sharing a threshold). No
+  probability, threshold or modifier is computed there. #397's whole premise is that the figures come
+  from the real stage chain, and a formatting layer is precisely where that would quietly erode.
+- **Merging same-threshold save buckets is presentation, not a change of answer.** Furious injects hits
+  saved at the SAME number the rest are; the report reports them separately because the stages produce
+  them separately. Drawing them as two "Save 5+" lines asked the reader to add 1.5 and 0.5 and implied
+  two different saves were being rolled. Genuinely different thresholds (Rending) still get their own
+  line - merging those would be a lie rather than a tidy-up.
+- **One chip palette, two renderers.** The dice overlay paints chips with Raylib on the canvas; the
+  calculator paints them with ImGui in a panel, so they cannot share a draw call. They now share the
+  colour constants (`UiChrome.ChipBackgroundRaylib`/`ChipForegroundRaylib`), which is what makes a
+  calculator chip and a live-roll chip read as the same object.
+- **Distance is a slider first, a number second.** The number was always available; what was missing was
+  the ability to sweep it. Dragging walks the whole table through its thresholds, which is how a
+  range-gated rule (the screenshot's unexplained `[Ferocious]`, live only over 9in) shows itself.
+
 ## Deferred (recorded, not silently cut)
+
+- **Wrapped upgrade labels - NOT done, deliberately.** The plan said long upgrade lines would wrap. An
+  ImGui checkbox/radio label is a single line by construction, so wrapping one means replacing the
+  control's own label with hand-laid text plus an invisible hit target - inside `ForgeUnitDetail`, which
+  the **Army Forge** shares. That would restyle the Forge as a side effect of a calculator ticket. The
+  columns were widened to 30% and given a horizontal scrollbar instead, so nothing is unreachable; the
+  wrap wants its own item, taken against the Forge with the Forge in front of you.
+- **Segmented-control tabs - NOT done.** The plan floated replacing the ImGui tab bar with a custom
+  segmented control. The tab bar is already themed, is the idiom used elsewhere in the app, and carries
+  keyboard/focus behaviour a hand-drawn pair of buttons would have to reimplement. Not worth the risk
+  for a cosmetic difference; say the word if you want it.
 
 - **Expected models killed** stays deferred (it already was, in #397). Under `ProbabilisticDiceRoller`
   wounds are fractional, so a model holding 0.4 wounds is alive and a living-model count would read as
@@ -71,6 +113,30 @@ _Newest on top._
   distribution work, which is where it belongs.
 
 ## HAND-VERIFY (owner)
+
+The layout itself is ImGui and cannot be asserted; the strings and the tick arithmetic under it are.
+
+1. **Headline** - the two numbers are large and accent-coloured, captioned "expected hits"/"expected
+   wounds", with the wound meter and "N of M wounds remain" beneath.
+2. The meter empties as the attack gets deadlier, and a defender reduced to nothing leaves an empty
+   track rather than a stray dot.
+3. **Table** - one row per weapon, columns DICE / HIT / HITS / SAVE / WOUNDS, numbers aligned down the
+   column; WOUNDS is accented.
+4. The weapon subline reads `24in, A6 AP0` with rule names underlined, and hovering one shows its
+   tooltip - inside the table, which is where it was most likely to break.
+5. A volley with no modifiers shows NO chip line and no blank gap (the old empty-tag-line bug).
+6. **Ferocious case** - Assault Buggy vs Warriors at 12in: the two "Save 5+" rows are now one line
+   reading `2.00 hits (Ferocious)`. Drag the distance below 9in and it should vanish entirely.
+7. **Slider** - ticks appear at each weapon's reach; dragging past one greys that row to "out of range
+   - reaches Nin" live.
+8. The numeric distance field and the slider stay in step, and neither goes below 0 or above 48.
+9. **Melee tab** - the bar swaps to charging/fatigued, and charging starts ON.
+10. **Badges** - the left column reads ATTACKER, the right DEFENDER; after **Swap** they follow the
+    units, and the points stay right-aligned in both.
+11. **Picker** - clicking the STAT LINE of a unit row now selects it, not just the name.
+12. Empty state names the missing side ("Choose the defending unit on the right").
+13. "(i) what this does not account for" shows the assumptions on hover.
+14. Side columns: a long upgrade line is reachable by horizontal scroll rather than being cut off.
 
 ## Outcome
 _Open._
