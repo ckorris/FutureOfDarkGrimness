@@ -37,6 +37,14 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-08 (slice 0, view model): app **2877/0** (+11), build clean. `CombatReportView` +
+  `VolleyRowView` + `SaveLineView` (`FdgRaylib/Rendering/CombatCalc/CombatReportView.cs`) turn a
+  `CombatReport` into every string the pane draws, so the formatting is unit-testable and the ImGui code
+  is a painter. Fixes findings 1 (number format), 6 (empty tag line) and the save-bucket half of 3
+  before a single pixel moves. `CombatReportViewTests` (11) pin two-decimal formatting, the locale trap
+  (a de-DE machine would otherwise print "2,78"), merged-vs-split save buckets, and the wipe-out
+  divide-by-zero.
+
 ## Decisions
 
 ## Deferred (recorded, not silently cut)

@@ -435,35 +435,35 @@ public class CombatCalculatorScreen : IAppScreen
             return;
         }
 
-        ImGui.TextColored(HeadText, $"{report.AttackerName} -> {report.DefenderName}");
-        ImGui.Text($"Expected hits {report.ExpectedHits:0.##}      Expected wounds {report.ExpectedWounds:0.##}");
-        ImGui.TextColored(DimText,
-            $"Defender {report.DefenderWoundsBefore:0.##} -> {report.DefenderWoundsAfter:0.##} wounds");
+        var view = CombatReportView.From(report);
 
-        foreach (string warning in report.Warnings) ImGui.TextColored(WarnText, "! " + warning);
+        ImGui.TextColored(HeadText, view.Headline);
+        ImGui.Text($"{CombatReportView.HitsCaption} {view.HitsValue}      " +
+            $"{CombatReportView.WoundsCaption} {view.WoundsValue}");
+        ImGui.TextColored(DimText, view.WoundBarText);
+
+        foreach (string warning in view.Warnings) ImGui.TextColored(WarnText, "! " + warning);
 
         ImGui.Separator();
 
-        foreach (VolleyReport volley in report.Volleys) DrawVolley(volley);
+        foreach (VolleyRowView row in view.Rows) DrawVolley(row);
 
-        if (report.Notes.Count > 0)
+        if (view.Notes.Count > 0)
         {
             ImGui.Spacing();
             ImGui.Separator();
-            foreach (string note in report.Notes) ImGui.TextColored(DimText, note);
+            foreach (string note in view.Notes) ImGui.TextColored(DimText, note);
         }
     }
 
-    private static void DrawVolley(VolleyReport volley)
+    private static void DrawVolley(VolleyRowView row)
     {
         ImGui.Spacing();
-        string copies = volley.Copies > 1 ? $"{volley.Copies}x " : string.Empty;
-        ImGui.TextUnformatted($"{copies}{volley.Weapon.Name}");
+        ImGui.TextUnformatted($"{row.CopiesPrefix}{row.Weapon.Name}");
         ImGui.SameLine();
-        ImGui.TextColored(DimText,
-            $"({volley.Weapon.RangeInches:0.##}in, A{volley.Weapon.Attacks} AP{volley.Weapon.ArmorPenetration})");
+        ImGui.TextColored(DimText, "(" + WeaponStats(row.Weapon) + ")");
 
-        foreach (RuleHoverText.Segment rule in RuleHoverText.RuleSegments(volley.Weapon))
+        foreach (RuleHoverText.Segment rule in RuleHoverText.RuleSegments(row.Weapon))
         {
             ImGui.SameLine();
             ImGui.TextColored(RuleText, rule.Text);
@@ -471,31 +471,33 @@ public class CombatCalculatorScreen : IAppScreen
         }
 
         ImGui.Indent();
-        if (!volley.InRange)
+        if (!row.InRange)
         {
-            ImGui.TextColored(DimText, $"Out of range - reaches {volley.EffectiveRangeInches:0.##}in.");
+            ImGui.TextColored(DimText, row.OutOfRangeText);
             ImGui.Unindent();
             return;
         }
 
-        ImGui.TextUnformatted($"Hit {volley.HitRollNeeded}+   {Tags(volley.HitTags)}");
+        ImGui.TextUnformatted($"Hit {row.Hit}   {Chips(row.HitChips)}");
         ImGui.SameLine();
-        ImGui.TextColored(DimText, $"-> {volley.ExpectedHits:0.##} hits from {volley.AttackDice:0.##} dice");
+        ImGui.TextColored(DimText, $"-> {row.Hits} hits from {row.Dice} dice");
 
-        foreach (SaveBucket bucket in volley.Saves)
-        {
-            string source = string.IsNullOrEmpty(bucket.Label) ? string.Empty : $" [{bucket.Label}]";
-            ImGui.TextUnformatted($"Save {bucket.SaveNeeded}+   {bucket.Hits:0.##} hits{source}");
-        }
+        foreach (SaveLineView save in row.SaveLines)
+            ImGui.TextUnformatted($"Save {save.SaveNeeded}+   {save.Describe()}");
 
-        ImGui.TextColored(DimText, $"{Tags(volley.SaveTags)}");
-        ImGui.TextUnformatted($"-> {volley.ExpectedWounds:0.##} wounds");
+        if (row.SaveChips.Count > 0) ImGui.TextColored(DimText, Chips(row.SaveChips));
+        ImGui.TextUnformatted($"-> {row.Wounds} wounds");
 
-        foreach (string note in volley.Notes) ImGui.TextColored(DimText, note);
+        foreach (string note in row.Notes) ImGui.TextColored(DimText, note);
         ImGui.Unindent();
     }
 
-    private static string Tags(IReadOnlyList<string> tags) => tags.Count == 0 ? string.Empty : "[" + string.Join(", ", tags) + "]";
+    /// <summary>The weapon's numbers, in the notation the in-game shoot panel uses.</summary>
+    private static string WeaponStats(IWeapon weapon) =>
+        $"{CombatReportView.Inches(weapon.RangeInches)}, A{weapon.Attacks} AP{weapon.ArmorPenetration}";
+
+    private static string Chips(IReadOnlyList<string> chips) =>
+        chips.Count == 0 ? string.Empty : "[" + string.Join(", ", chips) + "]";
 
     private void DrawVariables()
     {
