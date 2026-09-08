@@ -5,7 +5,9 @@
 # for the whole run (wall-clock search budgets are only honest on a quiet box) and unpaused at the end.
 #
 #   FdgLab/tools/c4-slice.sh <out-dir> <benchmark|interactive> <games-per-cell> <arm>...
-#   arm = hand | net | blend | net2   (net/blend read $NET_WEIGHTS, default the full-v3 serving model;
+#   arm = hand | net | blend | net2   (hand = the hand-weighted control, passed explicitly since the
+#                                      shipped default became a net; net/blend read $NET_WEIGHTS,
+#                                      default the full-v3 serving model;
 #                                      net2 reads $NET2_WEIGHTS - the re-slice's retrained candidate)
 #
 # Example (the screen):  FdgLab/tools/c4-slice.sh FdgLab/reports/c4-slice-2026-09-06 benchmark 48 hand net blend
@@ -27,7 +29,7 @@ declare -a P=("Alien Hives 2k - Horde Melee" "Battle Brothers 2k - Elite Shootin
 PAIRS=(2 3 5 7)
 arm_flags() {
   case "$1" in
-    hand)  echo "" ;;
+    hand)  echo "--evaluator hand" ;;   # explicit since 15b: no flag now means the SHIPPED net
     net)   echo "--evaluator $NET_WEIGHTS" ;;
     blend) echo "--evaluator $NET_WEIGHTS --blend 0.5" ;;
     net2)  echo "--evaluator $NET2_WEIGHTS" ;;

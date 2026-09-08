@@ -181,7 +181,11 @@ public static class SelfPlay
                         sample.Value.Shape2v2 ? "2v2" : "1v1", sample.Value.ArmyA, sample.Value.ArmyB,
                         sample.Value.ProfileA.ToString(), sample.Value.ProfileB.ToString(),
                         result.Outcome.ToString(), result.RoundsPlayed,
-                        sample.Value.SearchBudget, options.EvaluatorLabel ?? "hand"));
+                        sample.Value.SearchBudget,
+                        // No search in this game means no leaf was consulted; otherwise the run's
+                        // own choice, or the shipped default (#191 step 15b - it was "hand" until
+                        // 2026-09-07, which is what every v1-v3 file records).
+                        sample.Value.SearchBudget == "none" ? "none" : options.EvaluatorLabel ?? "shipped"));
                 });
 
             if (firstSample == null)

@@ -300,8 +300,10 @@ public static class Benchmark
             sb.AppendLine($"- Weight overrides: `{options.WeightOverrides}`");
         if (options.SearchBudgetLabel != null)
             sb.AppendLine($"- Search budget: **{options.SearchBudgetLabel}** (default benches use the 1-2s benchmark budget)");
-        if (options.EvaluatorLabel != null)
-            sb.AppendLine($"- Leaf evaluator: **{options.EvaluatorLabel}** (default benches use the hand-weighted evaluator)");
+        // Always stamped since #191 step 15b: the default leaf CHANGED on 2026-09-07 (hand -> the
+        // shipped net), so a report without this line cannot be read years later without knowing
+        // its date. Every Strategist number is a number about one particular leaf.
+        sb.AppendLine($"- Leaf evaluator: **{options.EvaluatorLabel ?? "shipped net (StrategistLeafV1, the default)"}**");
         int resumedCount = rows.Count - freshRows.Count;
         if (resumedCount > 0)
             sb.AppendLine($"- Resumed: {resumedCount} game(s) carried over from an earlier (crashed/interrupted) attempt via `bench.progress.jsonl`");

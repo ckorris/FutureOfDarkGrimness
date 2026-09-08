@@ -49,10 +49,14 @@ static int Usage()
                                      #198 position-write trace next to each log
                   [--triangle]       pool: unordered pairs only (pre-2026-07-10 shape; skews the
                                      aggregate toward profile A's alphabetically-early armies)
-                  [--evaluator PATH]   #191 step 14: a learned leaf evaluator (the weights JSON
-                                       from FdgLab/python/train.py --export). Default: hand-weighted.
-                  [--blend W]          #191 C4: with --evaluator, play W net + (1-W) hand (the slice's
-                                       middle arm; W in (0,1)). Also honoured by selfplay.
+                  [--evaluator PATH|hand]   #191 step 14/15b: the Strategist's leaf. A weights JSON
+                                       (from FdgLab/python/train.py --export) plays that net;
+                                       'hand' plays the hand-weighted evaluator, the control arm.
+                                       DEFAULT since 2026-09-07 is the SHIPPED net, not hand - every
+                                       bench before that date measured the hand leaf, so pass
+                                       '--evaluator hand' to reproduce one. Stamped in every report.
+                  [--blend W]          #191 C4: with --evaluator PATH, play W net + (1-W) hand (the
+                                       slice's middle arm; W in (0,1)). Also honoured by selfplay.
                   [--search-budget benchmark|interactive]   #191 step 10: what a Strategist
                                      thinks under. Default benchmark (1-2s/activation, what every
                                      bench before 2026-09-05 measured); interactive is the 5-10s
@@ -406,6 +410,21 @@ static bool TryEvaluatorArg(string[] args, out FDG.Ai.Tactician.Search.IPosition
     evaluator = null;
     label = null;
     string? path = Arg(args, "--evaluator");
+    // #191 step 15b: the Strategist's DEFAULT leaf is now the shipped net, so "no flag" no longer
+    // means the hand evaluator - `--evaluator hand` is how a run asks for the control arm (the
+    // C-gate's B side, and every pre-2026-09-07 bench's bot). Callers pass it explicitly and the
+    // engine's env override never touches an explicit choice.
+    if (string.Equals(path, "hand", StringComparison.OrdinalIgnoreCase))
+    {
+        if (Arg(args, "--blend") != null)
+        {
+            Console.Error.WriteLine("--blend needs a net to blend with; '--evaluator hand' is the control arm.");
+            return false;
+        }
+        evaluator = new FDG.Ai.Tactician.Search.HandWeightedEvaluator();
+        label = "hand-weighted (control)";
+        return true;
+    }
     if (path == null)
     {
         if (Arg(args, "--blend") != null)
