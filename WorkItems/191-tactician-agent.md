@@ -23,6 +23,47 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (00:30, Fable 5.1) - NIGHT WRAP-UP: PASS 10 LANDED; ITEM 8 MEASURED (4 WORKERS SCALE 4.8x, NO GC KNOB
+MOVES ANYTHING); THE HANG HUNT TURNED UP CRASHES, NOT HANGS; THE INTERACTIVE PANEL SCREEN FINISHED EXCEPT THE
+NET 3k CELL (RE-RUN QUEUED); THE BREADTH SLICE IS RUNNING.**
+
+Pass 10, exact (`RuleEvaluator.GatherOffersFromRules`, `GrantedRules`): a rule with no activated ability at
+the hook is skipped before its invocation record is built (`SpecialRuleDefinition.ActivatesAt`, a bitset
+like `ListensAt`); a unit with no grant tokens gets `Array.Empty` instead of a fresh list. Suite 3291/0/1,
+both boards identical, zero non-timing diff lines. Too small to time above the noise; committed on the
+oracle. Ten passes today, all exact: board A plain 46.6 -> 26.6 ms per iteration (-43%), allocation 19.9 ->
+9.5 MB.
+
+Item 8 (`scaling.sh`, quiet box, board A, pass 9 build): 1 worker 27.1 ms per iteration; 4 workers 5.8 ms per
+iteration aggregate (4.8x vs serial on the spike's own accounting - the workers do not contend);
+`DOTNET_gcConcurrent=0` 26.7 (noise); `DOTNET_GCgen0size=64MB` 5.7 at 4 workers (noise), and its 1-worker
+run died in the search section without a core. Verdict: no runtime knob is worth setting.
+
+The hang hunt (20 runs of the committed build's board A search under the original lab environment - Server
+GC, libclrgc, 12 GiB hard limit, RetainVM - alongside the panels): 17 clean, run 1 aborted at 15 s with
+glibc's "*** stack smashing detected ***" (native memory corruption), runs 4 and 12 segfaulted after their
+search had completed. No hang. Together with the panel screen's nine crashes (three of them under
+workstation GC, 21:37-21:44, while the hunt and a build were also loading the box) the picture is: GC
+flavour, hard limit, heap count and PGO are not the variable; failures cluster when the box is heavily
+loaded; a process unrelated to us (timeshift) segfaulted at 18:00. Hardware (memory under load) is now the
+leading suspect. RECOMMENDATION FOR CHRIS: a memtest86 pass on this box at a convenient time. Until then:
+crash dumps stay on, cells retry, and the lab runs one heavy job at a time.
+
+Interactive panel screen (Strategist vs Tactician, interactive budget, scored for the Strategist; the net
+leaf vs the hand leaf, same seeds; the question is whether the shipped net leaf holds at interactive):
+| panel | hand | net |
+|---|---|---|
+| points-1k (4 pairs, 120 games) | 77.5% | 78.3% |
+| shape-2v2 (6 cells, 180 games) | 93.3 / 58.3 / 70.0 / 53.3 / 55.0 / 55.0 | 81.7 / 51.7 / 75.0 / 75.0 / 58.3 / 71.7 |
+| points-3k (5 pairs, 150 games) | 73.0% | INCOMPLETE - 69 of 150 (55.8% so far), abandoned after 3 crashes |
+| points-4k (3 pairs, 90 games) | 81.7 / 58.3 / 58.3 (66.1%) | 76.7 / 58.3 / 70.0 (68.3%) |
+The net leaf is level or ahead everywhere it is complete; the 3k verdict waits for `queue-net3k.sh` (queued
+behind the seam bench; workstation GC, three games at a time, six attempts, resumes at 69).
+
+Queue: breadth slice (phase1bin, cb16 / cb8 / cb4, 4 pairs x 48 games, benchmark budget) started 00:23;
+then the seam bench (seambin, cb16); then the net 3k re-run. `c4-slice.sh` has no retry - a crashed cell
+shows as a missing row and gets re-run by hand.
+
 **2026-09-08 (21:10, Fable 5.1) - SEARCH PERF PASS 9 LANDED (PILE-IN GEOMETRY: BOARD A PLAIN 27.7 -> 26.6 ms PER
 ITERATION), AND THE 3k CRASH IS ISOLATED: ONE GAME SEGFAULTS A GC THREAD UNDER SERVER GC AND COMPLETES UNDER
 WORKSTATION GC. THE HAND 3k CELL FINISHED UNDER WORKSTATION GC.**
