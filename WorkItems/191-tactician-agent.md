@@ -23,6 +23,100 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (13:30, Opus 5) - THE BUDGET DOES NOT BUY DEPTH. MAX DEPTH IS PINNED AT 6 FROM 64 TO 512
+ITERATIONS ON BOTH A 3-UNIT AND A 7-UNIT ROOT. THE BREADTH/DEPTH KNOBS - ALL TUNED AT 20 ITERATIONS AND
+NEVER REVISITED - ARE WHAT DECIDES HOW DEEP THE BOT LOOKS.**
+
+Chris asked whether a nearly-empty board (say 3 units left) could spend its budget going DEEPER instead of
+wider. I answered yes from reading the widening formula. The measurement says no, and the formula pointed
+the opposite way from what the tree actually does. `depth-probe.sh` / `depth-narrow.sh`, 1 worker, pinned.
+
+| iterations | 3-unit root: nodes / depth / closed / root edges | 7-unit root: nodes / depth / closed |
+|---|---|---|
+| 32 | 33 / 5 / 0 / 5 | 33 / 5 / 0 |
+| 64 | 65 / **6** / 0 / 8 | 65 / **6** / 2 |
+| 128 | 129 / **6** / 0 / 11 | 129 / **6** / 4 |
+| 256 | 257 / **6** / 0 / 15 | 257 / **6** / 4 |
+| 512 | 513 / **6** / 0 / 21 | 513 / **6** / 4 |
+
+Nodes come out at exactly iterations+1, so every iteration expands one node - they are simply not going
+downward. What the extra budget buys instead is root breadth, and that has a closed form:
+
+**edges examined per unit = ceil(0.5 \* sqrt(iterations / rootUnits))**
+
+which reproduces the data exactly (256 iterations / 3 units -> 3 x ceil(0.5\*sqrt(85)) = 15 opened, observed
+15; at 512 -> 3 x ceil(0.5\*sqrt(171)) = 21, observed 21).
+
+*That formula is the per-unit scaling law the high-priority ledger item was asking for.* What makes the bot
+smarter or dumber in different places is not depth, it is how many options each unit gets examined, and
+holding THAT constant needs iterations LINEAR in root units - affordable, not the quadratic I feared.
+Anchored on current wide-board quality (4 edges/unit at 256 iterations, 7 units) that is
+`iterations = 37 * rootUnits`: 3u -> 111 (~0.9s), 7u -> 259 (~5.4s), 10u -> 370 (~11s, over ceiling).
+The 10-second ceiling binds around 9 units, so above that a cap takes over and per-unit quality still
+falls. No way around that inside 10 seconds.
+
+**Retracted from the 12:45 entry's neighbourhood:** I recommended a taper (`clamp(32*u, 96, 256)`) on the
+theory that a narrow root saturates and extra iterations hit solved lines. Closed edges are ZERO at every
+level on the narrow board, so nothing is saturating. The taper's shape happens to be roughly right but the
+reason was wrong; the coverage formula above is the real basis.
+
+**Chris's decision rule (13:30):** *"if the advantage to going deeper doesn't buy us much more win rate,
+then it would be better to take the faster bot."* This flips the default - absent a measured strength gain,
+the cheaper configuration wins. Applies to the depth work below and to the 256-vs-lower budget question.
+
+**Why depth is pinned, and the first evidence it is fixable:** widening is `k(N) = ceil(C * N^alpha)` per
+unit branch, and the shipped C=0.5 / alpha=0.5 was tuned at B4 on a **20-iteration** measurement (the note
+is in `SearchOptions.cs` itself). At 256 iterations that tuning is an order of magnitude out of date. A
+first smoke at 32 iterations on the 3-unit board: **C=0.5 -> depth 5; C=0.25 -> depth 10; alpha=0.3 ->
+depth 10 on 11 nodes.** Depth is entirely available; the constant was holding it back.
+
+**Lab (step 1, done):** new `FdgLab/SearchShape.cs` parses `c=F;alpha=F;exploration=F;continuation=N`
+(the `--weights` idiom). `--search-shape` on both `bench` and `b0` reshapes every search in a run;
+`--shape-sweep "SPEC|SPEC|..."` replaces b0 phase (d)'s hardcoded ladder, which only ever walked C down to
+0.5 - the SHIPPED value - and so could never answer whether narrower buys depth. Sweep rows apply to the
+shipped shape, not to `--search-shape`, so each row means exactly what its label says.
+
+**Step 2 result (13:55) - DEPTH IS FREE, AND ONLY ONE OF THE FOUR KNOBS MATTERS.** `shape-sweep.sh`,
+256 iterations, 1 worker, pinned; same budget in every row, so differences are shape alone.
+
+| WideningC | 3-unit root: depth / root edges / ms | 7-unit root: depth / root edges / ms |
+|---|---|---|
+| 0.5 (shipped) | 6 / 15 / 3214 | 6 / 23 / 7431 |
+| 0.35 | 10 / 11 / 3194 | 10 / 15 / 7326 |
+| 0.25 | **18** / 8 / 3314 | **18** / 9 / 7175 |
+| 0.15 | 24 / 5 / 1737 | **41** / 6 / 6242 |
+
+Three times the depth at identical wall clock and identical node count (257). Best-edge visits rise with
+it - 15 -> 47 on the wide board - so the root commits instead of sampling everything thinly.
+
+*The other three knobs are settled and can be dropped from the design:*
+- **ExplorationC is INERT.** 1.4 / 1.0 / 0.6 / 0.3 all give depth 6 and 22-23 root edges on the wide board,
+  and it stays inert layered on C=0.25 (identical to C=0.25 alone). Under the shipped widening most nodes
+  have one legal child, so PUCT has nothing to choose between. Not a knob.
+- **Continuation is a bad deal.** 0 -> 1 -> 2 costs 7431 -> 12562 -> 17283 ms on the wide board and buys
+  ZERO depth (6 / 6 / 6). Fails Chris's rule outright.
+- **WideningAlpha is dominated by C.** alpha=0.25 reaches depth 18-19 on 4 root edges; C=0.25 reaches the
+  same depth on 8-9. Same depth, twice the coverage. Leave alpha at 0.5.
+
+*The trade, stated honestly:* shipped examines 23 root options 6 deep; C=0.25 examines 9 options 18 deep.
+The chosen move changes on BOTH boards, so this is a different bot and narrower root coverage is a real
+cost. C=0.15 starts returning fewer nodes than iterations (134 of 257 on the narrow board) - deep lines are
+reaching game end and terminal hits expand nothing.
+
+**Proposed step 3 arms (NOT run - awaiting Chris):** vs Tactician, panel, several hundred games each.
+1. control C=0.5 / 256 iterations (the 78.3% config, 7.4s); 2. C=0.25 / 256 (depth 18, same cost);
+3. **C=0.25 / 128** - the faster bot. Arm 3 exists because of Chris's rule: if depth is what carries
+strength, we should be able to buy the time back. If arm 3 matches the control, "deeper and faster" settles
+the iteration-budget question outright. If nothing beats the control, C=0.5 stays and the cheapest budget
+that holds wins - also his rule.
+
+**Open (step 3, NOT run):** depth is not strength. This is determinized MCTS - each worker searches one
+sampled future, so a 10-ply line is 10 activations of assumed-known dice, and deeper leans harder on the
+search and less on the 15b learned leaf that got us to 78.3%. The shapes that win on depth have to be
+benched against Tactician on a real panel before any of this ships. Per Chris's rule above, a shape that
+does not move the win rate loses to the cheaper one.
+
+
 **2026-09-09 (12:45, Opus 5) - COST AND SCALING MEASURED AT 1k/2k/4k, AND A 32-37% FREE SPEEDUP FOUND:
 PINNING THE 4 SEARCH WORKERS TO CORES THAT SHARE AN L3 BEATS LETTING THE SCHEDULER SPREAD THEM. THE "SLOW
 LAPTOP" WORRY INVERTS - THIS BOX IS THE OUTLIER, NOT THE LAPTOP.**

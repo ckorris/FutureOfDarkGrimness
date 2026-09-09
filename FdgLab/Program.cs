@@ -65,6 +65,15 @@ static int Usage()
                                      bench before 2026-09-05 measured); interactive is the 5-10s
                                      budget that actually ships to players (~4.3x the time at 2k).
                                      Recorded in the report header either way.
+                  [--search-shape "c=F;alpha=F;exploration=F;continuation=N"]   #191 2026-09-09:
+                                     the breadth/depth knobs, as opposed to the budget. Widening is
+                                     k(N)=ceil(C*N^alpha) per unit branch; exploration is the PUCT
+                                     weight; continuation is how many natural activations an edge
+                                     plays before the child boundary. An iteration sweep on 2026-09-09
+                                     found max depth PINNED at 6 from 64 to 512 iterations on both a
+                                     3-unit and a 7-unit root, so these - not the budget - are what
+                                     decides how deep the bot looks. All four were tuned at B4 on a
+                                     20-iteration measurement. Stamped in the report header.
                   [--search-budget-b BUDGET]   #191 2026-09-09: side B's budget when it must differ
                                      from side A's - the Strategist/Mastermind iteration ladder
                                      plays e.g. --search-budget iters:512 --search-budget-b
@@ -91,6 +100,11 @@ static int Usage()
           b0      [--a <army>] [--b <army>] [--label L] [--profile P] [--boundary N | --round R]
                   [--round-trips N] [--advances N] [--soak N] [--timeout S]
                   [--search-iterations N [--search-budget benchmark|interactive] [--search-workers W]]
+                  [--search-shape SPEC]  reshape every search this run does (see bench above)
+                  [--shape-sweep "SPEC|SPEC|..."]  #191 2026-09-09: replaces phase (d)'s widening
+                  ladder, which only ever walked C down to 0.5 - the SHIPPED value - and so could
+                  never say whether narrower buys depth. Each SPEC prints nodes/depth/closed
+                  edges/root edges opened at the same iteration budget.
                   (--round R captures the first boundary of round R; --search-budget adds a
                   time-budgeted search from that boundary and prints its max depth - #191 step 10)
                   #191 Phase B spike (campaign step 3): measures GameSaveSerializer round-trip cost
@@ -188,6 +202,21 @@ static async Task<int> RunBench(string[] args)
         FDG.Ai.Tactician.Search.UctOptions baseBudget = searchBudget ?? GameRunner.LabSearchBudget;
         searchBudget = baseBudget with { Tree = baseBudget.Tree with { CandidateBudget = candidateBudget } };
         searchBudgetLabel = $"{searchBudgetLabel ?? "benchmark (1-2s/activation)"}, candidate budget {candidateBudget}";
+    }
+    // #191 2026-09-09: --search-shape reshapes the search's breadth/depth (widening C/alpha, PUCT
+    // exploration, continuation) without touching the budget. The 2026-09-09 iteration sweep found
+    // max depth pinned at 6 from 64 to 512 iterations, so these - not the budget - are what decides
+    // how deep the bot looks. All four were tuned at B4 on a 20-iteration measurement.
+    if (Arg(args, "--search-shape") is string shapeSpec)
+    {
+        if (!SearchShape.TryParse(shapeSpec, out SearchShape? benchShape, out string? shapeError))
+        {
+            Console.Error.WriteLine($"--search-shape: {shapeError}. Syntax: {SearchShape.Syntax}");
+            return 2;
+        }
+        searchBudget = benchShape!.ApplyTo(searchBudget ?? GameRunner.LabSearchBudget);
+        if (searchBudgetB != null) searchBudgetB = benchShape.ApplyTo(searchBudgetB);
+        searchBudgetLabel = $"{searchBudgetLabel ?? "benchmark (1-2s/activation)"}, shape {benchShape.Label}";
     }
     if (!TryEvaluatorArg(args, out FDG.Ai.Tactician.Search.IPositionEvaluator? benchEvaluator,
             out string? benchEvaluatorLabel))

@@ -82,6 +82,32 @@ public static class B0Spike
         // last-round measurements need a round-4 start, and where that falls depends on the armies).
         int captureRound = IntArg(args, "--round", 0);
         int searchSoak = IntArg(args, "--search-soak", 0);
+        // #191 2026-09-09: the breadth/depth knobs, all tuned at B4 on a 20-iteration measurement.
+        // --search-shape reshapes EVERY search this run does; --shape-sweep "SPEC|SPEC|..." replaces
+        // phase (d)'s hardcoded widening ladder, so a sweep can walk alpha or exploration too.
+        SearchShape? shape = null;
+        if (Arg(args, "--search-shape") is { } shapeSpec)
+        {
+            if (!SearchShape.TryParse(shapeSpec, out shape, out string? shapeError))
+            {
+                Console.Error.WriteLine($"--search-shape: {shapeError}. Syntax: {SearchShape.Syntax}");
+                return 2;
+            }
+        }
+
+        var shapeSweep = new List<SearchShape>();
+        if (Arg(args, "--shape-sweep") is { } sweepSpec)
+        {
+            foreach (string one in sweepSpec.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (!SearchShape.TryParse(one, out SearchShape? parsedSweep, out string? sweepError))
+                {
+                    Console.Error.WriteLine($"--shape-sweep '{one}': {sweepError}. Syntax: {SearchShape.Syntax}");
+                    return 2;
+                }
+                shapeSweep.Add(parsedSweep!);
+            }
+        }
         int timeoutSeconds = IntArg(args, "--timeout", 60);
         EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
         {
@@ -498,6 +524,16 @@ public static class B0Spike
                 InSimProfile = profile,
                 TimeoutSeconds = timeoutSeconds,
             };
+            // #191: --search-shape rides on baseTree, which every phase below passes as Tree, so the
+            // widening/continuation overrides reach all of them. ExplorationC lives on UctOptions
+            // instead, so it is stamped per search.
+            SearchOptions shippedTree = baseTree;
+            if (shape != null)
+            {
+                baseTree = shape.ApplyTo(baseTree);
+                Console.WriteLine($"     search shape: {shape.Label}");
+            }
+            float explorationC = shape?.ExplorationC ?? new UctOptions().ExplorationC;
 
             // (a) The leaf evaluator on THIS board, standalone - B3's open question.
             // The probe faults occasionally (that is what (a2) below measures), and an UNGUARDED
@@ -574,6 +610,7 @@ public static class B0Spike
             await UctSearch.RunAsync(snapshot, new UctOptions
             {
                 RootSeed = 1, Workers = 1, Iterations = searchIterations, Tree = baseTree,
+                ExplorationC = explorationC,
             }, evaluator);
 
             FDG.Ai.Tactician.Search.SearchTiming.Reset();
@@ -584,6 +621,7 @@ public static class B0Spike
                 Workers = 1,
                 Iterations = searchIterations,
                 Tree = baseTree,
+                ExplorationC = explorationC,
             }, evaluator);
             searchSw.Stop();
             double perIteration = searchSw.Elapsed.TotalMilliseconds / Math.Max(1, single.Iterations);
@@ -618,6 +656,7 @@ public static class B0Spike
             SearchResult repeat = await UctSearch.RunAsync(snapshot, new UctOptions
             {
                 RootSeed = 4242, Workers = 1, Iterations = searchIterations, Tree = baseTree,
+                ExplorationC = explorationC,
             }, evaluator);
             repeatSw.Stop();
             Console.WriteLine($"     same search again (serial, warm): {repeatSw.Elapsed.TotalMilliseconds:F0}ms => " +
@@ -633,6 +672,7 @@ public static class B0Spike
             SearchResult parallel = await UctSearch.RunAsync(snapshot, new UctOptions
             {
                 RootSeed = 4242, Workers = searchWorkers, Iterations = searchIterations, Tree = baseTree,
+                ExplorationC = explorationC,
             }, evaluator);
             parallelSw.Stop();
             Console.WriteLine($"     {searchWorkers} workers x {searchIterations} iterations: {parallelSw.Elapsed.TotalMilliseconds:F0}ms " +
@@ -643,17 +683,34 @@ public static class B0Spike
             // (d) Widening constants: the design doc left C/alpha to B4 "on measurement". The
             // measurement available without games is tree SHAPE at a fixed budget - narrower widening
             // must actually buy depth, or there is nothing to trade.
-            foreach ((float c, float alpha) in new[] { (2f, 0.5f), (1f, 0.5f), (0.5f, 0.5f) })
+            // #191 2026-09-09: the historical ladder only ever walked C down to 0.5, which is the
+            // SHIPPED value - so the sweep could never answer whether going narrower buys more depth.
+            // --shape-sweep replaces it with any list of shapes (alpha and exploration included).
+            IReadOnlyList<SearchShape> sweep = shapeSweep.Count > 0
+                ? shapeSweep
+                : new[]
+                {
+                    new SearchShape(WideningC: 2f, WideningAlpha: 0.5f),
+                    new SearchShape(WideningC: 1f, WideningAlpha: 0.5f),
+                    new SearchShape(WideningC: 0.5f, WideningAlpha: 0.5f),
+                };
+            foreach (SearchShape sweepShape in sweep)
             {
-                SearchResult shaped = await UctSearch.RunAsync(snapshot, new UctOptions
+                var sweepSw = Stopwatch.StartNew();
+                // Each row applies to the SHIPPED shape, not to --search-shape: a sweep row must mean
+                // exactly what its label says, or two rows differing in one key are not comparable.
+                SearchResult shaped = await UctSearch.RunAsync(snapshot, sweepShape.ApplyTo(new UctOptions
                 {
                     RootSeed = 4242,
                     Workers = 1,
                     Iterations = searchIterations,
-                    Tree = baseTree with { WideningC = c, WideningAlpha = alpha },
-                }, evaluator);
-                Console.WriteLine($"     widening C={c:F1} alpha={alpha:F1}: {shaped.Nodes} nodes, max depth {shaped.MaxDepth}, " +
-                                  $"root edges opened {shaped.Root.Count}");
+                    Tree = shippedTree,
+                }), evaluator);
+                sweepSw.Stop();
+                Console.WriteLine($"     shape [{sweepShape.Label}]: {shaped.Nodes} nodes, max depth {shaped.MaxDepth}, " +
+                                  $"{shaped.ClosedEdges} closed edges, root edges opened {shaped.Root.Count}, " +
+                                  $"{sweepSw.ElapsedMilliseconds}ms; choice {shaped.Choice?.Label ?? "(none)"} " +
+                                  $"with {shaped.Choice?.Visits ?? 0} visits");
             }
 
             // (e) What a real time budget buys, at the benchmark cap. NOT reproducible by design.
