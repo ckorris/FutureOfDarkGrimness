@@ -74,6 +74,12 @@ static int Usage()
                                      3-unit and a 7-unit root, so these - not the budget - are what
                                      decides how deep the bot looks. All four were tuned at B4 on a
                                      20-iteration measurement. Stamped in the report header.
+                  [--search-shape-b SPEC]   #191 2026-09-09: side B's shape, companion to
+                                     --search-budget-b. Two shapes head to head is far better powered
+                                     than comparing each against a common opponent (the Strategist is
+                                     at ~78% vs the Tactician, so a 3-point shape difference needs
+                                     ~1500 games/arm there against ~400 for a direct match). Side B
+                                     inherits side A's budget unless --search-budget-b says otherwise.
                   [--search-budget-b BUDGET]   #191 2026-09-09: side B's budget when it must differ
                                      from side A's - the Strategist/Mastermind iteration ladder
                                      plays e.g. --search-budget iters:512 --search-budget-b
@@ -217,6 +223,22 @@ static async Task<int> RunBench(string[] args)
         searchBudget = benchShape!.ApplyTo(searchBudget ?? GameRunner.LabSearchBudget);
         if (searchBudgetB != null) searchBudgetB = benchShape.ApplyTo(searchBudgetB);
         searchBudgetLabel = $"{searchBudgetLabel ?? "benchmark (1-2s/activation)"}, shape {benchShape.Label}";
+    }
+    // #191 2026-09-09: side B's SHAPE, the companion to --search-budget-b. Two shapes played head to
+    // head is far better powered than comparing each one's win rate against a common opponent: the
+    // Strategist sits at ~78% vs the Tactician, so a 3-point shape difference needs ~1500 games per
+    // arm there, against ~400 for a direct match. Side B inherits side A's budget unless
+    // --search-budget-b says otherwise, so "same budget, different shape" is the default comparison.
+    if (Arg(args, "--search-shape-b") is string shapeSpecB)
+    {
+        if (!SearchShape.TryParse(shapeSpecB, out SearchShape? benchShapeB, out string? shapeErrorB))
+        {
+            Console.Error.WriteLine($"--search-shape-b: {shapeErrorB}. Syntax: {SearchShape.Syntax}");
+            return 2;
+        }
+        searchBudgetB = benchShapeB!.ApplyTo(searchBudgetB ?? searchBudget ?? GameRunner.LabSearchBudget);
+        searchBudgetLabelB = $"{searchBudgetLabelB ?? searchBudgetLabel ?? "benchmark (1-2s/activation)"}"
+                           + $", shape {benchShapeB.Label}";
     }
     if (!TryEvaluatorArg(args, out FDG.Ai.Tactician.Search.IPositionEvaluator? benchEvaluator,
             out string? benchEvaluatorLabel))
