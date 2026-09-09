@@ -23,6 +23,32 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (07:15, Fable 5.1) - THE OVERNIGHT CHAIN HUNG AT 00:38 AND LOST THE NIGHT; DUMPED, KILLED, RESUMED.
+THE HANG IS A GC THAT NEVER FINISHES. THE JIT THEORY IS OUT; ONLY WORKSTATION GC HAS EVER COMPLETED THE
+REPRODUCING GAME, SO THE BENCHES NOW RUN ON IT.**
+
+The breadth slice's cb4/pair2 cell hung at 00:38 with 21 of 48 games banked: one non-managed thread at
+100%, memory flat for 6.5 hours, no progress, and the per-game watchdog (1800 s) never fired. `dotnet-dump`
+attached this time (`logs/hang-cb4-52583.dmp`): 24 threads hold engine frames, all parked mid-work at
+safepoints with no CPU - the signature of a garbage collection that suspended everyone and never came
+back. Yesterday's 45-minute hang (17:34) looked the same from outside. So the hangs and the GC-thread
+segfaults are one family: the collector's own state gets corrupted.
+
+Tests this morning on the reproducing game (`repro-3k.sh`, Eternal Dynasty vs DAO Union, seed 6001):
+`DOTNET_TC_QuickJitForLoops=0` (no on-stack replacement) crashed at 48 s, so the JIT/OSR reading of the
+"instruction pointer on a data address" kernel lines is out. Tally: Server GC default crashes (72 s, 4:43),
+PGO off crashes, no-OSR crashes, tiering off ran 46 minutes without a fault (too slow to finish; stopped),
+workstation GC completed both games (7 min). Workstation GC is therefore the bench configuration from here
+(`slice-ws.sh` = the retrying runner with `DOTNET_gcServer=0`, default collector, no hard limit, no RetainVM;
+`overnight-ws.sh` restarted the chain at 07:12, reusing the two finished cells and resuming cb4/pair2 from
+game 21; the net 3k re-run behind it already used workstation GC). Throughput is lower - the chain should
+finish late morning rather than overnight. Hardware remains unexcluded (the workstation-GC panel cell did
+crash three times last night while the box ran three heavy jobs); the memtest86 recommendation stands.
+
+Dumps for whoever files the runtime bug: `logs/repro-crash-*.dmp` (Server GC, PGO off, no-OSR), the hang
+dump above, and the panel-cell dumps `logs/crash-*.dmp` (17 in all). Engine `06c05f5` (step15bin) and the
+Phase 1 snapshot both show it; the engine has no unsafe code.
+
 **2026-09-09 (00:30, Fable 5.1) - NIGHT WRAP-UP: PASS 10 LANDED; ITEM 8 MEASURED (4 WORKERS SCALE 4.8x, NO GC KNOB
 MOVES ANYTHING); THE HANG HUNT TURNED UP CRASHES, NOT HANGS; THE INTERACTIVE PANEL SCREEN FINISHED EXCEPT THE
 NET 3k CELL (RE-RUN QUEUED); THE BREADTH SLICE IS RUNNING.**
@@ -63,6 +89,11 @@ behind the seam bench; workstation GC, three games at a time, six attempts, resu
 Queue: breadth slice (phase1bin, cb16 / cb8 / cb4, 4 pairs x 48 games, benchmark budget) started 00:23;
 then the seam bench (seambin, cb16); then the net 3k re-run. `c4-slice.sh` has no retry - a crashed cell
 shows as a missing row and gets re-run by hand.
+
+00:35 addendum: the slice runner's second cell (cb8/pair2) segfaulted a minute in, so both queued benches were
+replaced by `overnight.sh`, which runs `c4-slice-retry.sh` (the repo runner with a five-attempt retry per
+cell; the bench resumes from `bench.progress.jsonl`) for the breadth slice and then the seam slice into the
+same report directories, then releases the net 3k re-run. Same binaries, seeds, flags and environment.
 
 **2026-09-08 (21:10, Fable 5.1) - SEARCH PERF PASS 9 LANDED (PILE-IN GEOMETRY: BOARD A PLAIN 27.7 -> 26.6 ms PER
 ITERATION), AND THE 3k CRASH IS ISOLATED: ONE GAME SEGFAULTS A GC THREAD UNDER SERVER GC AND COMPLETES UNDER
