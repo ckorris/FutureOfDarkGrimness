@@ -23,6 +23,57 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (11:55, Opus 5) - CORRECTION + THE NUMBER: FDG USES ALTERNATING ACTIVATIONS, SO A "TURN" IS ONE
+ACTIVATION AND THE PLAYER WAITS FOR ONE SEARCH, NOT EIGHT. THE 11:05 AND 11:20 ENTRIES' TURN MODEL IS WRONG
+AND IS SUPERSEDED HERE. AT 2k ON THIS BOX, 256 ITERATIONS PER WORKER = 8.2 s OF SEARCH; CHRIS'S 5 s GOAL IS
+~128 AND HIS 10 s CEILING IS ~256 - WHICH IS WHAT THE SHIPPED TIME BUDGET ALREADY SPENDS.**
+
+Chris (2026-09-09): "recall that this game uses alternating activations, so one turn is one activation."
+Both earlier entries multiplied one search by ~8 units to get a "turn", which inflated every wait by 8x and
+made the budget look ~20x tighter than it is. Everything downstream of that multiplication in those entries
+is void; the cost line itself (43 ms per iteration in-game) stands.
+
+*Measured, board A (Orks vs Robot Legions, 2k, 7 root units), post-perf, quiet box, 4 workers:*
+
+| iterations per worker | pure search (1 worker, quiet) | in a real game (4 workers + engine work) |
+|---|---|---|
+| 64 | 2.2 s | 2.8 s |
+| 128 | 4.3 s | 5.5 s |
+| 256 | 8.2 s | ~11 s |
+| 512 | ~16 s | ~22 s |
+
+Per-iteration cost is flat at 31.9-34.2 ms across the three measured rungs, so cost is linear in the cap and
+the 512 row extrapolates safely. The in-game column is the same work with 4 workers contending plus
+per-activation setup, taken from the DOP 1 bench cell (2.78 s per search at 64 iterations = 43 ms each).
+
+*Strength so far, vs the Tactician, scored for the Strategist:* 1k panel, 192 games, 4 iterations per worker
+= 60.7%. The same panel at the shipping time budget (~256 iterations) = 78.3%, which Chris calls "very
+smart". So the whole range from 4 to 256 is worth about 17 points - a real curve, but the bot keeps most of
+what it knows at a much smaller budget.
+
+*Where this lands.* Chris favours smartness and accepts up to 10 s. That makes **256 the candidate default
+and 128 the safe pick**, and it means the iteration cap is NOT a strength sacrifice: it reproduces roughly
+what ships today, while making that strength identical on every machine instead of a function of the
+player's CPU. Still to measure: 128 vs 256 head to head (the ladder), the 4-core laptop proxy, and the
+per-army-size scaling below.
+
+*HIGH PRIORITY (Chris, 2026-09-09): scale the cap with root branching.* Fork F1 from the 11:05 entry is now
+a priority item, not an open question. The design mirrors what the time budget already does
+(`BudgetMsPerRootUnit`, base + per-root-unit, floor and cap) so the bot is not smarter at 1k and dumber at
+4k. Note it now costs far less than feared: with one activation per turn, scaling the cap up at 4k does not
+multiply against a unit count, it only pays the higher per-iteration cost of a bigger board.
+
+*The crash is now IN the target range and is therefore a blocker, not a curiosity.* A bench at `iters:256`
+segfaulted 3 times out of 3 within ~25 s of a game starting, while `iters:64` ran clean and a single b0
+search at 512 iterations x 4 workers ran clean. So it needs a full game's repeated searches, which is
+exactly shipped play at the budget we are about to choose. The dump (`logs/crash-92957.dmp`) shows a MANAGED
+thread faulting on an interface dispatch on a component store, inside `StoreClone.Clone` ->
+`GetTypeMapWithCapacities` -> `TacticianActionSpace.Load`, i.e. a bad reference read out of the store's
+plain `Dictionary`. That is a different signature from the GC-thread faults blamed on hardware on 2026-09-08,
+and it reads like a data race. Next test: whether the same bench crashes under the pre-existing
+`--search-budget interactive` (~190 iterations at 2k) on this same binary. If it does, the bug predates the
+`iters:N` path and has been in shipped play all along - which would also explain the nine panel crashes.
+
 **2026-09-09 (11:20, Opus 5) - DECISION REVISED (Chris): NO MASTERMIND FOR NOW. ONE BOT, THE STRATEGIST, ON
 AN ITERATION CAP, SET AS HIGH AS IS REASONABLE WITHOUT "COOKING PEOPLE'S COMPUTERS". SUPERSEDES THE TWO-BOT
 ENTRY BELOW (11:05); EVERYTHING ELSE IN IT - THE ITERATION-CAP RATIONALE, THE FORKS, THE LADDER - STANDS.**
