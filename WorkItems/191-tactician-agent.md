@@ -23,6 +23,48 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (11:20, Opus 5) - DECISION REVISED (Chris): NO MASTERMIND FOR NOW. ONE BOT, THE STRATEGIST, ON
+AN ITERATION CAP, SET AS HIGH AS IS REASONABLE WITHOUT "COOKING PEOPLE'S COMPUTERS". SUPERSEDES THE TWO-BOT
+ENTRY BELOW (11:05); EVERYTHING ELSE IN IT - THE ITERATION-CAP RATIONALE, THE FORKS, THE LADDER - STANDS.**
+
+Chris (2026-09-09): "Let's not do Mastermind, that can be an eventual goal. Let's instead do just Strategist,
+but make it still based on an iterations count... a level of iterations where it will not take a million
+years to run each turn, but it is still a massive improvement on Tactician." Mastermind stays on the list as
+a later goal, and costs nothing to add once the curve is known: it is one more constant.
+
+*Assessment recorded, because it shapes the number.*
+1. **Returns are logarithmic, cost is linear.** The only slope we have: the same four panels at ~58 vs ~256
+   iterations per worker scored 67.7 -> 72.2 vs the Tactician (540 games a side). ~+2 points per doubling,
+   for 2x the wait every time. "As high as tolerable" therefore buys very little for a lot of seconds; the
+   target is the KNEE of the curve, not the ceiling. The ladder measures the slope properly - the two-panel
+   estimate is coarse and taken near a ceiling, where it understates the true slope.
+2. **The cap fixes strength across machines; it does NOT fix the wait.** That is the deliberate trade Chris
+   accepted. The consequence is that the number must be chosen against a REFERENCE MACHINE THAT IS NOT THE
+   DEV BOX. This box is a 16-core Threadripper 1950X where the shipping time budget already works out to
+   ~256 iterations per worker; a mid-range laptop at 2-3x slower would wait 2-3x longer for that same cap.
+   Choosing on this box ships something that cooks exactly the players the constraint is meant to protect.
+3. **The unit that matters is seconds per TURN, not per activation.** A player waits through every activation
+   in the turn - roughly 8-12 units at 2k. A "5 s per activation" cap is a ~60 s turn.
+4. **Perf work is now the main lever on smartness.** Under a time budget, speed WAS strength. Under a cap,
+   speed is headroom: the 1.6x already banked (passes 3-10) means the same wait now affords 1.6x the
+   iterations, or the same strength at ~60% of the wait. Every future perf pass converts directly into a
+   higher affordable cap, with play at a fixed cap provably identical (the identical-tree oracle). This is
+   the "pure performance gain without tuning ramifications" Chris asked for, now literally true.
+5. **The candidate-budget reading flips under a cap.** The breadth slice showed 4 and 16 candidates equal at
+   equal TIME, which means 4 needed ~1.7x the iterations to match 16. At equal ITERATIONS, 16 is therefore
+   the stronger setting - keep it. Open question worth a cell later: does MORE than 16 pay under a cap?
+
+*Open input needed from Chris (does not block the measurement):* the target wall clock per turn, and on what
+reference machine. Proposal to react to: ~20-30 s per turn at 2k on a mid-range 4-8 core laptop, which is
+2-3x slower than this box. Everything else follows from that number plus the measured per-iteration cost.
+
+*Running now: the cost probe* (`iter-cost.sh`, `iter-cost2.sh`) - DOP 1 on a quiet box, because a player
+runs ONE uncontended game and a contended bench would understate the search and overstate the wait. Cells:
+1k/2k/4k at 64 and 256 iterations per worker, 2 games each, measuring per-game wall, decisions per game and
+worst-case decision. Cost is linear in iterations by construction, so two rungs per size validate the line
+and the rest extrapolates. The strength ladder (adjacent-rung head-to-head via the new `--search-budget-b`)
+follows once the cost curve says which rungs are affordable at all.
+
 **2026-09-09 (11:05, Opus 5) - DECISION (Chris): THE LOBBY GETS TWO BOTS, "STRATEGIST" AND "MASTERMIND",
 DIFFERING ONLY IN MAX SEARCH ITERATIONS - NOT TIME. NOT IMPLEMENTED YET; THIS RECORDS THE DESIGN, THE FORKS
 IT OPENS, AND THE MEASUREMENT THAT PICKS THE TWO NUMBERS.**
