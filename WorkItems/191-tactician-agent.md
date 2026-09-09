@@ -23,6 +23,58 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (12:15, Opus 5) - RETRACTION: THE 256-ITERATION CRASH IS NOT REPRODUCIBLE AND IS NOT A DATA RACE.
+THE 11:55 ENTRY'S "IN-RANGE BLOCKER" READING IS WITHDRAWN. A FULL AUDIT OF THE SEARCH'S SHARED STATE FOUND
+NO HEAP-CORRUPTING WRITE; TWO REAL BUT NON-CORRUPTING RACES WERE FOUND AND FIXED (ENGINE `628a27a`).**
+
+*The discriminator run* (`crash-test.sh`, same binary, same 2k pair, DOP 1, 4 games, only the budget flag
+differing): `--search-budget interactive` (~190 iterations per worker) completed 4 games clean in 16 min;
+`--search-budget iters:256` then ALSO completed 4 games clean, in 23 min. Earlier the same `iters:256`
+configuration died 3 times out of 3 within ~25 s. So the crash is intermittent, not depth-triggered, and
+reading that cluster of three as determinism was my error. Peak RSS across the whole run was 0.52 GB, so
+memory exhaustion is excluded too.
+
+*The audit* (full sweep of static/shared mutable state reachable from the 4 search workers). The decisive
+structural fact: **there is no `unsafe`, `stackalloc`, `Span`, `MemoryMarshal`, `Unsafe.*`, `fixed`,
+`GCHandle` or `Marshal.*` anywhere in the engine or FdgLab.** Without one of those, a racy managed
+`Dictionary`/`List`/`HashSet` throws, spins, or silently loses entries - every write is bounds-checked and
+reference stores are atomic. It cannot produce the wild pointer that faulted
+`IComponentStore.get_Capacity()`. Also verified: `StoreClone.Clone` never writes its `source` (every typed
+cloner writes only the target; `TokenContainer.Clone` takes the source's own lock), so the shared frozen
+root snapshot being cloned by 4 workers at once is safe.
+
+*Fixed anyway, both real:*
+1. `SpecialRuleDefinition._listeners`/`_activators` (perf passes 4 and 10) memoized with `??=` on
+   definitions that are process-wide shared - the core catalog's singletons plus army definitions from pass
+   7's content-keyed cache - and `StoreClone` shares `ResolvedRule` by reference, so all 4 workers race the
+   memo. Cannot corrupt memory (the array is fully built before the reference is published, and that store
+   is atomic), but on a weak memory model a reader can see the reference before the element writes, read a
+   stale zero bit and skip a rule that should have fired. That is **arm64 only - the shipped osx-arm64
+   build** - and it would break "same seed, same tree" there. Now built in the constructor.
+2. `UnitFileEntry`/`WeaponFileEntry.StableID` used a non-atomic `_nextID++` while army files are
+   deserialized concurrently; two entries could share the ID other data keys on. `Interlocked.Increment`.
+
+Engine suite green (3291). **Trees verified unchanged on both oracle boards:** A = 301 nodes / depth 6 / 4
+closed / Great Monolith 18 visits; B = 301 / 6 / 2 closed / Nightmares 25 visits. Both match the canonical
+values exactly, so the fixes are semantics-preserving like every perf pass.
+
+*Verified safe, recorded so nobody re-hunts them:* `HookContextCatalog.Default` (filled in its constructor,
+never written again), `Weapon._profileKey` (weapons are copied per clone), `ArmyRuleDataPersistence`'s parse
+cache (ConcurrentDictionary, and every consumer read-only), `TerrainGridCache` (locked), `TerrainGrid`
+route memos (concurrent + Interlocked), `MovementUtilities` terrain/cohesion caches and `RuleEvaluator`'s
+dedup pool (all `[ThreadStatic]`), `TokenContainer` (fully locked), the MLP leaf and `SideMap` (immutable
+after construction). Worker isolation confirmed: each worker owns its tree, action space, expander, rule
+evaluator, scratch and planner; the only shared objects are the root snapshot, the side map, the leaf
+evaluator and the cancellation source, all read-only.
+
+*One latent trap, not live today:* `StoreClone`'s `SerializeValue` fallback would run Newtonsoft on 4
+threads through one shared settings object, but it is unreachable because all 15 registered types have
+typed cloners. It goes live the day someone registers a 16th type without one - worth a guard or a test.
+
+*Where the crash stands:* back with the box, which is where the 2026-09-08 note had it before I over-read
+three fast failures. The memtest86 pass remains the recommended next step; further managed-code hunting is
+not justified by the evidence.
+
 **2026-09-09 (11:55, Opus 5) - CORRECTION + THE NUMBER: FDG USES ALTERNATING ACTIVATIONS, SO A "TURN" IS ONE
 ACTIVATION AND THE PLAYER WAITS FOR ONE SEARCH, NOT EIGHT. THE 11:05 AND 11:20 ENTRIES' TURN MODEL IS WRONG
 AND IS SUPERSEDED HERE. AT 2k ON THIS BOX, 256 ITERATIONS PER WORKER = 8.2 s OF SEARCH; CHRIS'S 5 s GOAL IS
