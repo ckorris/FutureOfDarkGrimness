@@ -23,6 +23,55 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (15:20, Opus 5) - DEPTH LOSES, DECISIVELY. THE SHIPPED WIDENING STAYS. STEP 3 STOPPED
+EARLY BY THE BOX; THE RESULT IS ALREADY 8 SIGMA.**
+
+Head to head, both sides Strategist, points-1k panel, `iters:256` both sides, budgets riding on the
+SLOT so side-swapped seeds keep each bot with its army (`shape-match.sh`, cell `match1`):
+
+| | side A: C=0.5 (shipped) | side B: C=0.25 (depth 18) |
+|---|---|---|
+| **A score** | **77.0%** | 23.0% |
+
+224 of 600 games, SE 3.3 points - about 8 sigma from even. Side-swap balance exact (112/112). The two
+matchups that played agree closely (76.7% over n=150, 77.7% over n=74), so it is not one lopsided
+pairing. **Caveat, stated plainly: matchups 2 and 3 never played, and both completed matchups share the
+same side-A army (Alien Hives).** The number could move a few points; the direction could not plausibly
+reverse.
+
+*Chris's call (15:20): skip the depth increase.* `WideningC` stays at 0.5 and the search shape is
+settled. This closes the re-tune-the-widening thread opened at 13:30 - the B4 tuning at 20 iterations
+landed on a good value for reasons that still hold at 256.
+
+*Why deeper played worse, most likely:* C=0.25 examines 9 root options instead of 23, and this is
+determinized MCTS - an 18-ply line commits to 18 activations of assumed-known dice. Root breadth is what
+carries this bot's strength, not lookahead. Recorded because it is the opposite of the intuition that
+started the thread (mine and Chris's both), and worth not re-deriving.
+
+*Head-to-head was the right design and should be reused:* the Strategist sits at ~78% vs the Tactician,
+so near that ceiling a 3-point shape difference needs ~1500 games/arm; a direct match where 50% is the
+null needs ~600. `--search-shape-b` (commit 80c13c1) exists for this.
+
+**IN FLIGHT AT SESSION END:** `shape-match.sh` (task ber8sap0u) still running. `match1` is stuck at
+224/600 - four consecutive segfaults, each within ~2 minutes of resume, giving up after attempt 5.
+`match2` (C=0.5/256 vs C=0.25/128, the "faster bot" arm) and `anchor-c025` have NOT started. Given the
+depth decision above, **match2 and the anchor are now moot and can be killed** - they only measured
+variations of a shape we are not shipping. The one cell still worth running is matchups 2 and 3 of
+match1 (run them directly with `--a`/`--b`, ~3h at DOP 4) if the coverage gap matters to anyone later.
+
+**Box, 2026-09-09:** a full-heap crash dump of a DOP-6 Strategist bench is **12.5 GB**; one of them ate
+the 31 GB box's memory and got a 4-hour run killed by the harness. The segfault itself cost nothing -
+`bench.progress.jsonl` survived it intact. Set `DOTNET_DbgMiniDumpType=1` and point
+`DOTNET_DbgMiniDumpName` into the scratch dir (small dumps are ~26 MB). Budget ~2 GB resident per
+concurrent Strategist game at 256 iterations, so `--dop 4` is the cap on this box.
+
+**STILL OPEN (unchanged by today):** the Strategist iteration default - 256 flat vs `37 * rootUnits`
+capped (the coverage formula in the 13:30 entry). Chris's standing rule applies: absent a measured
+strength gain, the cheaper configuration wins. A perf-focused prompt for a fresh instance is at
+`/home/chris/Projects/fdg-lab-scratch/perf-instance-prompt.md`; thread affinity (31-37%, measured, not
+implemented) is the biggest known win.
+
+
 **2026-09-09 (13:30, Opus 5) - THE BUDGET DOES NOT BUY DEPTH. MAX DEPTH IS PINNED AT 6 FROM 64 TO 512
 ITERATIONS ON BOTH A 3-UNIT AND A 7-UNIT ROOT. THE BREADTH/DEPTH KNOBS - ALL TUNED AT 20 ITERATIONS AND
 NEVER REVISITED - ARE WHAT DECIDES HOW DEEP THE BOT LOOKS.**
