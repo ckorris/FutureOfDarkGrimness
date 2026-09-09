@@ -23,6 +23,42 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (19:20, Fable 5.1) - SEARCH PERF PASS 4 LANDED: THE RULE-DISPATCH LISTENER FAST PATH. BOARD A
+38.9 -> 35.4 ms PER ITERATION, RULE DISPATCH 2552 -> 905 ms OVER THE SAME 932,265 WALKS, TREES IDENTICAL.**
+
+Plan item 1, exact: `SpecialRuleDefinition.ListensAt(hook, seat)` is a bitset over (hook x seat) built once
+per definition (definitions are immutable and never copied); `RuleEvaluator.Evaluate` and
+`CollectSurviving` (behind EvaluateAll / EvaluateAllNamed / EvaluateAllNamedLive) ask
+`AnyoneListens` - static unit, weapon and model attachments plus token-granted rules - before renting the
+dedup state or allocating the tagged list, and return the shared empty answer when nothing listens. A
+one-shot grant is spent only when its rule listens at the hook, which is the same test, so nothing is
+skipped that could have fired, logged, suppressed or spent. A grant that would not resolve, or that
+reads arguments, answers "listens" so the full walk still raises its once-only warning. Tracing keeps
+the full walk (it narrates hooks that nobody answers). `CollectFromRules` also skips non-listening rules
+before the dedup registration (registration only blocks another instance of the same rule, which
+listens the same way). Suite 3291/0/1.
+
+| board A, quiet box, timing on | pass 3 | pass 4 |
+|---|---|---|
+| ms per iteration | 38.9 | 35.4 |
+| MB allocated per iteration | 12.5 | 11.1 |
+| RuleDispatch (932,265 walks) | 2552 ms, 0.7 KB/walk | 905 ms, 0.3 KB/walk |
+| Combat (93,876 estimates) | 2905 ms | 2005 ms |
+| MoveQuery (90,538 calls) | 936 ms | 497 ms |
+
+Oracle: both boards' tree lines identical to the committed build's (A: 301 / 6 / 4 closed / Great Monolith
+18; B: 301 / 6 / 2 closed / Nightmares 25); full logs identical under the timing/id masks except one
+line of the b0 spike's own decision-table verdict, which is a function of the measured milliseconds.
+Under the panel load: A 43.9 -> 36.8 ms, B 38.9 -> 29.4 ms.
+
+Remaining split: Scoring 35.4%, Expand 35.2% (SimRun 27.5%, SimServer 6.7%), Candidates 19.5%,
+EnumerateUnits 9.6%; callees Combat 18.9% (9.3 KB per estimate), PlanMove 14.4%, PlanValidate 11.5%,
+RuleDispatch 8.5%, ObjectiveProj 6.0%. Pass 5 is the combat-estimate allocation diet (plan item 5).
+
+Panel screen: the net/points-3k cell ran 7 minutes under the standalone GC without a fault before the
+pass 4 timing pause; at the 19:19 restart the screen moved to `c-panels-interactive4.sh` (default GC,
+same 12 GiB hard limit, runtime crash dumps on) and hand/points-3k resumed from its 78 banked games.
+
 **2026-09-08 (19:10, Fable 5.1) - SEARCH PERF PASS 3 LANDED: MOVE VALIDATION BUILDS EACH HULL ONCE AND REJECTS FAR
 PAIRS, THE PLANNER READS FAULT KINDS INSTEAD OF A PER-MODEL LIST, ONE SCENE SERVES A WHOLE ENUMERATION. BOARD A
 49.0 -> 38.9 ms PER ITERATION (-21%), 19.9 -> 12.5 MB ALLOCATED, TREES IDENTICAL ON BOTH BOARDS.**
