@@ -23,6 +23,57 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (12:45, Opus 5) - COST AND SCALING MEASURED AT 1k/2k/4k, AND A 32-37% FREE SPEEDUP FOUND:
+PINNING THE 4 SEARCH WORKERS TO CORES THAT SHARE AN L3 BEATS LETTING THE SCHEDULER SPREAD THEM. THE "SLOW
+LAPTOP" WORRY INVERTS - THIS BOX IS THE OUTLIER, NOT THE LAPTOP.**
+
+DOP 1, 2 games per cell, `iters:128`, post-perf, `iter-scale3.sh`. "Per activation" is the bench's worst-p95
+decision, which is the search; with alternating activations that IS the player's wait.
+
+| army size | 16 cores (unpinned) | pinned to cores 0-3 | gain | per iteration, pinned | decisions/game |
+|---|---|---|---|---|---|
+| 1k | 3.36 s | 2.11 s | -37% | 16.5 ms | 190 |
+| 2k | 5.58 s | 3.79 s | -32% | 29.6 ms | 319 |
+| 4k | 6.73 s | 4.66 s | -31% | 36.4 ms | 469 |
+
+*Two findings.*
+
+**1. Cost grows SUBLINEARLY with army size.** 1k -> 2k costs 1.7x per iteration, but 2k -> 4k only 1.2x,
+while unit count (read off decisions per game) grows 1 : 1.68 : 2.47. So a bigger board is much cheaper per
+unit of thinking than feared, and the high-priority "scale the cap with root branching" item is affordable:
+matching 2k's per-unit thinking at 4k needs ~1.5x the iterations at only ~1.2x the per-iteration cost.
+
+**2. Thread affinity is worth 32-37%, free.** `lscpu` confirms the 1950X has FOUR separate L3 caches (32
+MiB in 4 instances; cores 0-3 + SMT siblings 16-19 share one; NUMA reports a single node, so this is L3
+locality, not memory distance). Unpinned, the scheduler scatters the 4 workers across 4 cache complexes and
+they pay cross-CCX coherence on shared reads and on allocation - and an iteration allocates ~9.5 MB, with
+one workstation-GC heap shared by all of them. Pinned to one CCX they share an 8 MiB L3. This is a bigger
+win than any single perf pass 3-10 and it changes no play semantics.
+*Consequence for the reference-machine question (Chris was right to push back):* the 4-core cells were not
+simulating a slow laptop, they were accidentally simulating a WELL-LAID-OUT one. A 4-core laptop has all
+cores on one L3 already, so it gets the pinned numbers naturally. Unpinned, this box is the SLOWER machine
+for this workload. Every cost figure quoted earlier today came from the unpinned config and is pessimistic
+by about a third.
+*New work item candidate:* pin the search's workers to L3-sharing cores at search start. Open questions: how
+to pick the core set portably (Linux `sched_setaffinity` via `Process.ProcessorAffinity`, macOS has no
+equivalent), whether to leave the choice to the OS on <=4-core machines (where it is a no-op), and whether
+more workers pinned per CCX beats 4 (workers are an ensemble over determinizations, so extra workers are not
+free strength).
+
+*What the budget costs, pinned, scaled linearly from the 128 measurement (linearity verified across 64/128/
+256 at 31.9-34.2 ms):*
+
+| iterations per worker | 1k | 2k | 4k |
+|---|---|---|---|
+| 128 | 2.1 s | 3.8 s | 4.7 s |
+| 256 | 4.2 s | 7.6 s | 9.3 s |
+| 384 | 6.3 s | 11.4 s | 14.0 s |
+
+Against Chris's target (5 s good, 10 s ceiling): **a flat 256 fits everywhere** - 4.2 / 7.6 / 9.3 - with 1k
+comfortably inside the 5 s goal. Evening out per-unit quality at 4k would need ~380 iterations there, i.e.
+~14 s, which is over the ceiling; so the per-root-unit slope has to be capped, exactly as
+`MaxBudgetMs` caps the time budget today.
+
 **2026-09-09 (12:15, Opus 5) - RETRACTION: THE 256-ITERATION CRASH IS NOT REPRODUCIBLE AND IS NOT A DATA RACE.
 THE 11:55 ENTRY'S "IN-RANGE BLOCKER" READING IS WITHDRAWN. A FULL AUDIT OF THE SEARCH'S SHARED STATE FOUND
 NO HEAP-CORRUPTING WRITE; TWO REAL BUT NON-CORRUPTING RACES WERE FOUND AND FIXED (ENGINE `628a27a`).**
