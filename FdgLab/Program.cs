@@ -60,11 +60,15 @@ static int Usage()
                   [--candidate-budget N]   #191 search perf pass: macro-actions planned+scored per
                                      unit per opened node (default 16). Breadth vs depth; stamped
                                      in the report header beside the search budget.
-                  [--search-budget benchmark|interactive]   #191 step 10: what a Strategist
+                  [--search-budget benchmark|interactive|iters:N]   #191 step 10: what a Strategist
                                      thinks under. Default benchmark (1-2s/activation, what every
                                      bench before 2026-09-05 measured); interactive is the 5-10s
                                      budget that actually ships to players (~4.3x the time at 2k).
                                      Recorded in the report header either way.
+                  [--search-budget-b BUDGET]   #191 2026-09-09: side B's budget when it must differ
+                                     from side A's - the Strategist/Mastermind iteration ladder
+                                     plays e.g. --search-budget iters:512 --search-budget-b
+                                     iters:256. Omitted = both sides think under the same budget.
                   [--fresh]          #191: ignore/delete any bench.progress.jsonl already in --out
                                      instead of resuming from it (a deliberate full rerun reusing an
                                      old --out dir - changed weights, changed engine, etc.)
@@ -163,6 +167,9 @@ static async Task<int> RunBench(string[] args)
         return 2;
 
     if (!TryApplyWeights(args)) return 2;
+    if (!TrySearchBudgetArg(args, out FDG.Ai.Tactician.Search.UctOptions? searchBudgetB,
+            out string? searchBudgetLabelB, "--search-budget-b"))
+        return 2;
     if (!TrySearchBudgetArg(args, out FDG.Ai.Tactician.Search.UctOptions? searchBudget,
             out string? searchBudgetLabel))
         return 2;
@@ -203,6 +210,8 @@ static async Task<int> RunBench(string[] args)
         Fresh: args.Contains("--fresh"),
         SearchBudget: searchBudget,
         SearchBudgetLabel: searchBudgetLabel,
+        SearchBudgetB: searchBudgetB,
+        SearchBudgetLabelB: searchBudgetLabelB,
         Evaluator: benchEvaluator,
         EvaluatorLabel: benchEvaluatorLabel);
 
@@ -487,14 +496,14 @@ static bool TryEvaluatorArg(string[] args, out FDG.Ai.Tactician.Search.IPosition
 }
 
 static bool TrySearchBudgetArg(string[] args, out FDG.Ai.Tactician.Search.UctOptions? budget,
-    out string? label)
+    out string? label, string flag = "--search-budget")
 {
     budget = null;
     label = null;
-    string? raw = Arg(args, "--search-budget");
+    string? raw = Arg(args, flag);
     if (raw == null) return true;
     if (SearchBudgets.TryParse(raw, SearchBudgets.DefaultWorkers, out budget, out label)) return true;
-    Console.Error.WriteLine($"Unknown --search-budget '{raw}'. Known: {SearchBudgets.KnownNames}.");
+    Console.Error.WriteLine($"Unknown {flag} '{raw}'. Known: {SearchBudgets.KnownNames}.");
     return false;
 }
 

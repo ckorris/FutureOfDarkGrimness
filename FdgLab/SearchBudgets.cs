@@ -28,9 +28,22 @@ public static class SearchBudgets
                 label = "interactive (5-10s/activation - the budget that ships to players)";
                 return true;
             default:
+                // #191 2026-09-09: "iters:N" caps the search at N iterations PER WORKER and ignores the
+                // clock, so a run is reproducible and a faster box buys speed rather than strength. This is
+                // the scale the planned Strategist/Mastermind lobby split is tuned on; the ladder that picks
+                // those two numbers benches rungs through this flag. Today's time budgets sit at roughly
+                // 58 (benchmark) and 256 (interactive) iterations per worker on a 2k board post-perf.
+                if (name.Trim().ToLowerInvariant() is { } iters && iters.StartsWith("iters:")
+                    && int.TryParse(iters["iters:".Length..], out int n) && n > 0)
+                {
+                    budget = UctOptions.Benchmark with { Workers = workers, Iterations = n };
+                    label = $"{n} iterations/activation per worker x {workers} workers "
+                          + "(deterministic - no clock, so the same seeds replay on any machine)";
+                    return true;
+                }
                 return false;
         }
     }
 
-    public const string KnownNames = "benchmark, interactive";
+    public const string KnownNames = "benchmark, interactive, iters:N (N iterations per worker, deterministic)";
 }

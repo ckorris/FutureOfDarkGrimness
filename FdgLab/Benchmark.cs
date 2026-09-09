@@ -49,6 +49,10 @@ public sealed record BenchmarkOptions(
     // as WeightOverrides above.
     FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null,
     string? SearchBudgetLabel = null,
+    // #191 2026-09-09: side B's own search budget (--search-budget-b). Null = side B thinks under
+    // the same budget as side A, which is every bench before the Strategist/Mastermind ladder.
+    FDG.Ai.Tactician.Search.UctOptions? SearchBudgetB = null,
+    string? SearchBudgetLabelB = null,
     // #191 step 14: a learned leaf evaluator (--evaluator PATH) for every Strategist in the run.
     // Null = the hand-weighted evaluator the B gate was measured on. EvaluatorLabel goes in the
     // report header for the same reason SearchBudgetLabel does: a run with a learned evaluator must
@@ -201,11 +205,16 @@ public static class Benchmark
     // convention and reduces to the historical [a,b]/[b2,a2] order for one-army-per-side matchups.
     private static GameSpec BuildSpec(Matchup matchup, int seed, bool swapped, BenchmarkOptions options, bool dump)
     {
-        List<SlotSpec> BuildSide(IReadOnlyList<string> specs, FDG.Ai.EAiProfile profile, int team) =>
-            specs.Select(spec => Armies.LoadSlot(spec) with { Profile = profile, Team = team }).ToList();
+        List<SlotSpec> BuildSide(IReadOnlyList<string> specs, FDG.Ai.EAiProfile profile, int team,
+            FDG.Ai.Tactician.Search.UctOptions? budget) =>
+            specs.Select(spec => Armies.LoadSlot(spec)
+                with { Profile = profile, Team = team, SearchBudget = budget }).ToList();
 
-        List<SlotSpec> sideA = BuildSide(matchup.SideA, options.ProfileA, team: swapped ? 1 : 0);
-        List<SlotSpec> sideB = BuildSide(matchup.SideB, options.ProfileB, team: swapped ? 0 : 1);
+        // Side B's budget is null unless --search-budget-b was given, in which case side B plays a
+        // different bot than side A (the iteration ladder's head-to-head cells).
+        List<SlotSpec> sideA = BuildSide(matchup.SideA, options.ProfileA, team: swapped ? 1 : 0, budget: null);
+        List<SlotSpec> sideB = BuildSide(matchup.SideB, options.ProfileB, team: swapped ? 0 : 1,
+            budget: options.SearchBudgetB);
         List<SlotSpec> slots = swapped ? sideB.Concat(sideA).ToList() : sideA.Concat(sideB).ToList();
         return new GameSpec(slots, seed, options.Randomness, options.WatchdogSeconds,
             CaptureLog: dump, Trace: dump && options.Trace, SearchBudget: options.SearchBudget,
@@ -300,6 +309,8 @@ public static class Benchmark
             sb.AppendLine($"- Weight overrides: `{options.WeightOverrides}`");
         if (options.SearchBudgetLabel != null)
             sb.AppendLine($"- Search budget: **{options.SearchBudgetLabel}** (default benches use the 1-2s benchmark budget)");
+        if (options.SearchBudgetLabelB != null)
+            sb.AppendLine($"- Search budget (side B): **{options.SearchBudgetLabelB}** - side A and side B play DIFFERENT bots in this run");
         // Always stamped since #191 step 15b: the default leaf CHANGED on 2026-09-07 (hand -> the
         // shipped net), so a report without this line cannot be read years later without knowing
         // its date. Every Strategist number is a number about one particular leaf.

@@ -67,7 +67,7 @@ public static class GameRunner
 
             var aiGame = new FDGGame_AsLocal(store, bus);
             var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog,
-            spec.SearchBudget, spec.Evaluator);
+            slotSpec.SearchBudget ?? spec.SearchBudget, spec.Evaluator);
             if (registryWrapper != null)
                 registry = registryWrapper(registry, aiGame);
             var timed = new TimingRegistry(registry, samples, sampleLock, byType);

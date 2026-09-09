@@ -65,7 +65,14 @@ public sealed record GameSpec(
 /// existing 1v1/FFA caller unchanged); set it to group slots into shared teams (2v2 etc).
 /// </summary>
 public sealed record SlotSpec(string ArmyLabel, ArmyListFile Army, EAiProfile Profile = EAiProfile.SoloRules,
-    int? Team = null);
+    int? Team = null,
+    // #191 2026-09-09: a PER-SLOT search budget, overriding the game-level GameSpec.SearchBudget for
+    // this slot only. Null = the game's budget (every existing caller). This is what lets one bench
+    // play two DIFFERENT bots against each other - the Strategist/Mastermind iteration ladder needs
+    // side A at N iterations and side B at M. It rides on the slot rather than the seat index on
+    // purpose: a side-swapped seed moves the side to the other slot block, and the budget has to
+    // travel with the army, not stay behind at a seat.
+    FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null);
 
 /// <summary>What one game produced. <see cref="Result"/> is the engine's structured record (#192).</summary>
 public sealed record GameRecord(
