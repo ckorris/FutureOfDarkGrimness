@@ -23,6 +23,50 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (17:40, Opus 5) - THE SNAPSHOT CLONES ARE 4.6% OF ALLOCATION, NOT THE HOG. HEADROOM
+ITEM 2's PREMISE IS WRONG: A WHOLE-STORE COPY IS 170 KB AND THERE ARE THREE PER EXPANSION - HALF A
+MEGABYTE OF THE 10.1 MB AN ITERATION ALLOCATES. 61% OF IT IS MACRO ENUMERATION AND SCORING.**
+
+Measured with the existing `FDG_SEARCH_TIMING=1` accumulators, one worker (the byte counters are
+process-wide, so only a single-worker run attributes), board A round 2, 128 iterations, pinned
+(`alloc-profile.sh`). A `SimCapture` probe was added around the line's second store copy, which had
+no accumulator of its own. Per iteration: 22.17 ms, **10381 KB**.
+
+| stage (inclusive) | KB/call | total MB | share of bytes | % of iteration wall |
+|---|---|---|---|---|
+| **EnumerateEdges** | 6948 | **787** | **61%** | 53.2% |
+| - Candidates (`MacroActionGenerator.Enumerate`) | 3085 | 349 | 27% | 21.6% |
+| - Scoring (`Planner.Score`, 1856 calls = 16 per node) | 241 | 436 | 34% | 31.3% |
+| - ScratchMaterialize (store clone) | 171 | 15.9 | 1.2% | 0.7% |
+| **Expand** | 2899 | **374** | **29%** | 36.3% |
+| - SimRun (the simulated activation actually playing) | 2504 | 325 | 25% | 32.3% |
+| - SimMaterialize (store clone) | 170 | 22.1 | 1.7% | 0.8% |
+| - SimCapture (store clone) | 171 | 22.2 | 1.7% | 0.8% |
+| - SimServer / SimRegistries | 166 / 38 | 21.6 / 4.9 | 2.0% | 3.2% |
+| EnumerateUnits | 1491 | 138 | 11% | 10.4% |
+| Leaf | 249 | 32 | 2.5% | 2.4% |
+
+**All three store clones together: 60 MB of 1298 MB.** `StoreClone` did its job at #396 - a typed copy
+of this game's store is only ~170 KB and ~0.18 ms. Copy-on-write, delta/undo or pooling would be
+attacking 4.6% of the allocation and 2.3% of the wall.
+
+*Where it really goes, leaf-level* (these drill-downs overlap their callers): Combat 334 MB / 18.4% of
+wall over 42,285 calls at 8.1 KB each; PlanMove 281 MB / 16.9%; PlanValidate 215 MB / 13.3% over
+18,335 calls at 12.0 KB; RuleDispatch 90 MB; Request 83 MB; MoveQuery 49 MB.
+
+*And the memory ceiling separately:* the tree's live heap after a benchmark-budget search is 61-86 MiB
+(b0 reports it), so node snapshots are NOT what makes a concurrent game cost ~2 GB resident - that is
+GC headroom over a 10 MB-per-iteration churn. Cutting allocation ANYWHERE relieves the `--dop 4` cap;
+cutting the snapshots specifically would barely move it.
+
+**Consequence: headroom items 2 and 3 should swap places.** The 16 candidates per node are enumerated
+AND scored in full because the softmax priors and the opening order need every score - so "lazy
+enumeration" in the strict same-candidates-same-priors sense has little room, and the in-scope work is
+making `Enumerate` and `Score` themselves cheaper (memoization across the 16, allocation diets in
+Combat and PlanValidate). Noted for the record: the 2026-09-09 08:30 breadth slice found 16, 8 and 4
+candidates score the SAME (34.1 / 34.1 / 34.9), so cutting `CandidateBudget` would take a large bite
+out of the 53% - but it changes the tree, so it is a tuning decision, not this strand's.
+
 **2026-09-09 (17:10, Opus 5) - COST TABLE REFRESHED ON THE DEDICATED-THREAD BUILD: -21 to -29%
 ACROSS 1k/2k/4k, HASHES UNCHANGED AT ALL THREE SIZES. AND THE ONE NUMBER THAT DECIDES SLICE 2:
 4k AT 256 ITERATIONS IS 10.6 s UNPINNED, 9.6 s PINNED - THE CEILING SITS BETWEEN THEM.**
