@@ -23,6 +23,34 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (08:30, Fable 5.1) - BREADTH SLICE RESULT: 16, 8 AND 4 CANDIDATES SCORE THE SAME (34.1 / 34.1 / 34.9
+POOLED). BREADTH DOES NOT MATTER AT THE BENCHMARK BUDGET; NO PHASE 2 WIDENING WORK IS MOTIVATED.**
+
+The question (asked 2026-09-08 morning, Chris's framing): "do we consider 16 move options and think about
+all of them a little, or 4 or 8 and think about each more deeply?" Same seeds, same four low-ceiling 2k
+pairs, benchmark budget, Phase 1 snapshot (`phase1bin`), Strategist vs Tactician scored for the Strategist,
+48 games per cell; a per-cell score is wins plus half the ties, so the gap between arms is the number.
+
+| pair | cb16 | cb8 | cb4 |
+|---|---|---|---|
+| Dark Elf Raiders vs Dwarf Guilds | 35.4 | 36.5 | 38.5 |
+| Dwarf Guilds vs High Elf Fleets | 44.8 | 42.7 | 41.7 |
+| Human Defense Force vs Orks | 32.3 | 27.1 | 29.2 |
+| Robot Legions vs Alien Hives | 24.0 | 30.2 | 30.2 |
+| pooled (192 games each) | 34.1 | 34.1 | 34.9 |
+
+Per pair the arms trade places by a few points in both directions; pooled they are equal to within the
+~3.5-point noise of 192 games. So at this budget the extra depth a 4-candidate search buys does not
+help, and the breadth a 16-candidate search buys does not either: the decision is not breadth-limited.
+Decision: keep the default of 16 (no evidence to change a shipped parameter), and drop progressive
+widening / lazy enumeration (the Phase 2 design of 2026-09-08) - it would only have paid if breadth
+mattered. The pure-speed passes deliver the same "more thinking per second" without touching the tree.
+Fallback noted: 4 candidates is a free 4x cut to the enumeration cost wherever a cheaper decision is
+wanted (an in-sim policy, a training-data run), at no measured strength cost on these pairs.
+
+The chain moved on to the seam bench (the committed seam fix, cb16, same cells) at 08:26; its pooled score
+against 34.1 says what the seam fix did to play strength. Net 3k re-run follows.
+
 **2026-09-09 (07:15, Fable 5.1) - THE OVERNIGHT CHAIN HUNG AT 00:38 AND LOST THE NIGHT; DUMPED, KILLED, RESUMED.
 THE HANG IS A GC THAT NEVER FINISHES. THE JIT THEORY IS OUT; ONLY WORKSTATION GC HAS EVER COMPLETED THE
 REPRODUCING GAME, SO THE BENCHES NOW RUN ON IT.**
