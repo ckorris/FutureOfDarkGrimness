@@ -23,6 +23,56 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (17:10, Opus 5) - COST TABLE REFRESHED ON THE DEDICATED-THREAD BUILD: -21 to -29%
+ACROSS 1k/2k/4k, HASHES UNCHANGED AT ALL THREE SIZES. AND THE ONE NUMBER THAT DECIDES SLICE 2:
+4k AT 256 ITERATIONS IS 10.6 s UNPINNED, 9.6 s PINNED - THE CEILING SITS BETWEEN THEM.**
+
+Same instrument, seeds and flags as the 12:45 table (`bench --dop 1`, worst-p95 decision, which with
+alternating activations IS the player's wait). `iter-scale5.sh`, `ceiling-4k.sh`.
+
+| army | before (12:45 unpinned) | after | delta | before, PINNED |
+|---|---|---|---|---|
+| 1k | 3.36 s | **2.39 s** | -29% | 2.11 s |
+| 2k | 5.58 s | **4.08 s** | -27% | 3.79 s |
+| 4k | 6.73 s | **5.29 s** | -21% | 4.66 s |
+
+Per-game wall fell with it - 76.4 -> 55.7 s, 154.2 -> 116.4, 257.7 -> 202.6 - so bench throughput
+gained the same 21-27%, which is experiment time as well as player time. Outcome hashes identical to
+the pre-change build at every size (`16548CA4F4A6566F`, `B8AA38A6D04F614B`, `780DF55F1C9E786D`): a
+second independent pass of the strand's gate, at a different budget and three army sizes.
+
+*Instrument check, by accident:* the first attempt at this table ran against a stale Release binary
+(the baseline build the stash left behind) and returned 3.41 / 5.70 / 6.69 - the 12:45 unpinned
+column reproduced to within 2%. Worth knowing the instrument is that repeatable across hours.
+
+**At the shipping budget, measured directly rather than scaled (the ceiling call turns on it):**
+
+| cell, `iters:256` | worst-p95 activation | per-game wall |
+|---|---|---|
+| 2k unpinned | 8.47 s | 268 s |
+| 4k unpinned | **10.64 s** | 386 s |
+| 4k pinned to cores 0-3 | **9.61 s** | 343 s |
+
+So against Chris's targets (5 s good, 10 s ceiling) a flat 256 now gives: 1k ~4.8 s (comfortable),
+2k 8.5 s (inside), 4k 10.6 s (**over**). Slice 2's cache-group affinity is worth exactly the
+difference - 10.64 -> 9.61, -9.6% - and is the whole reason to build it.
+
+**Slice 2 re-recommended, with the caveat stated plainly.** The 16:10 entry recommended holding it at
+"only 10%"; the 4k measurement changes that, because 10% is the ceiling. The caveat: this box has
+FOUR L3 complexes, and pinning only helps a machine that has more than one. A typical Intel laptop or
+desktop has a single shared L3, where slice 2 is a no-op by construction - so it fixes 4k on Zen
+desktops/Threadrippers and does nothing for the players most likely to be on a small machine. The
+cheaper alternative is Chris's own standing rule: cap 4k's iterations (about 224 lands at ~9.3 s)
+rather than buy the time back with interop that only some machines can use.
+
+**Open for Chris (three ways to put 4k under the ceiling, pick one):** (a) build slice 2 and accept
+that it is a no-op on single-L3 machines; (b) scale the iteration cap down with army size so 4k gets
+~224 instead of 256 - no new code, and the 13:30 coverage formula already says per-unit quality falls
+at 4k whatever we do; (c) accept 10.6 s at 4k as inside the spirit of a 10 s ceiling. My
+recommendation is (b) first, since it costs nothing and applies on every machine, with (a) after the
+allocation work if the ceiling still binds.
+
+
 **2026-09-09 (16:10, Opus 5) - SLICE 1 LANDED: EVERY ROOT WORKER NOW OWNS AN OS THREAD. BOARD A's
 256-ITERATION ACTIVATION DROPS FROM 13.7 s TO 10.2 s (-26%) AND THE SERIAL ARM FROM 30.3 TO 19.8 ms
 PER ITERATION (-35%). THE BENCH OUTCOME HASH AND BOTH ORACLE TREES ARE UNCHANGED.**
