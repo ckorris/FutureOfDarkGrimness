@@ -23,6 +23,67 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (18:45, Opus 5) - CLOSING THE PERF STRAND. THE HONEST READ: WE BANKED A REAL 21-29% AND
+THE REMAINING EXACT LEVERS CANNOT REACH THE NEXT STEP OF ROOT COVERAGE. THE VALUE LEFT IS IN
+CONFIRMING WHAT WE BANKED, NOT IN A THIRTEENTH PASS. (Chris, 18:45: "good enough right now".)**
+
+**What the strand bought.** One structural change and two allocation passes, all exact:
+
+| | before | after |
+|---|---|---|
+| worst-p95 activation, `iters:128`, 1k / 2k / 4k | 3.36 / 5.58 / 6.73 s | **2.39 / 4.08 / 5.29 s** (-29 / -27 / -21%) |
+| 2k activation at the shipping 256 | ~10.7 s | **8.47 s** |
+| bench per-game wall, 1k / 2k / 4k | 76.4 / 154.2 / 257.7 s | 55.7 / 116.4 / 202.6 s |
+| allocation per iteration | 10381 KB | 9752 KB |
+
+Slice 1 (a dedicated OS thread and a single-threaded SynchronizationContext per root worker) is
+essentially all of it; passes 11 and 12 are allocation-only and both land under the ~3% noise floor.
+
+**Why stopping here is right, and not just fatigue.** Root coverage moves in STEPS -
+`edges/unit = ceil(0.5 * sqrt(iterations / rootUnits))` - and the steps are large:
+
+| root units | edges/unit at 256 | iterations needed for one more |
+|---|---|---|
+| 3 | 5 | +18% |
+| 7 | 4 | **+75%** |
+| 10 | 3 | +41% |
+
+Slice 1's +26-29% clears the step on a nearly-empty board and NOTHING on a typical 7-unit root. So
+what we actually took is a shorter wait, not a stronger bot. And nothing exact that remains is close
+to +75%: thread affinity is a measured ~10% (declined 17:15 - no-op on single-L3 machines, needs
+Windows + Linux interop, permanent macOS gap), rule dispatch is unsized and has been worked twice
+(passes 4 and 8), snapshot/copy-on-write measured 4.6% of allocation and 2.3% of wall, and strict
+lazy enumeration has no room because all 16 candidates must be scored for the softmax and the
+ordering. Stacking every one of them would not clear a step at 7 units.
+
+**The lever that WOULD clear a step is a tuning decision, not an engineering one.**
+`CandidateBudget` 16 -> 4 scored the same as 16 on the 08:30 breadth slice (34.1 / 34.1 / 34.9), and
+Scoring is 30.2% of an iteration with Candidates another 21.9% - so cutting it plausibly buys ~1.5x
+throughput, which clears every row of the table above. It changes the tree, so it is out of scope for
+this strand by construction; it belongs to the tuning strand, where its strength side is already
+half-measured. **This is the single highest-value open item the perf work turned up.**
+
+**Recommended next, and the reason the strand closes rather than continues:** bench whether slice 1's
+21-29% converts to win rate at all. It is the one thing that says what any of this was worth, and no
+further pass changes that answer.
+
+**Filed, not done (pick up only if the ceiling binds again):**
+- *Rule dispatch sizing.* After pass 11 the volley estimate's 4.0 KB hit phase is 1.1 KB in the
+  modifier dispatch and 2.0 KB in the HitRollComplete dispatch - `RuleEvaluator`, not `CombatMath`.
+  Size it before building anything; passes 4 and 8 already took the obvious wins.
+- *`PlanValidate`.* 215 MB and 12.6% of the iteration over 18,335 calls at 12.0 KB each, through
+  `ValidatePathsForPlanning` -> `ValidateCore`. Deferred at 17:55 and still untouched; the 17:40
+  profile is current for it.
+- *Thread affinity.* Measured 9.9 -> 8.9 ms per iteration on board A, i.e. ~10%, on a multi-L3
+  machine only. `SearchWorkerThread` already owns the threads, so the pin has a home if it is ever
+  wanted.
+
+**Instruments left behind for whoever picks this up:** `FDG_SEARCH_TIMING=1` now attributes the whole
+expansion path including `SimCapture` and the four `Volley*` accumulators; the oracle gate is
+`slice1-gate.sh` (board B tree + bench outcome hash, and it builds Release itself); the cost table is
+`iter-scale5.sh`; the allocation profile is `alloc-profile.sh`. All in
+`/home/chris/Projects/fdg-lab-scratch/`.
+
 **2026-09-09 (18:30, Opus 5) - SEARCH PERF PASS 12: THE SHOOTING-ESTIMATE MEMO. IT HITS 12.9%, WORTH
 ~1.1% OF AN ITERATION - AND THE SCOUTING THAT SIZED IT IS THE REAL RESULT: SCORING IS ~30% OF THE
 ITERATION AND ALMOST ALL OF IT IS `CombatMath.EstimateShooting`, WHOSE OWN COST IS `RuleEvaluator`.**
