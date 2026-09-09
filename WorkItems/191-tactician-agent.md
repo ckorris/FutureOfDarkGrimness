@@ -23,6 +23,69 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (19:10, Fable 5.1) - SEARCH PERF PASS 3 LANDED: MOVE VALIDATION BUILDS EACH HULL ONCE AND REJECTS FAR
+PAIRS, THE PLANNER READS FAULT KINDS INSTEAD OF A PER-MODEL LIST, ONE SCENE SERVES A WHOLE ENUMERATION. BOARD A
+49.0 -> 38.9 ms PER ITERATION (-21%), 19.9 -> 12.5 MB ALLOCATED, TREES IDENTICAL ON BOTH BOARDS.**
+
+Exact-semantics changes (engine, plan items 3 and 4): `EnemyModelFootprint` carries its hull, zone and
+circumscribed radius (built once per footprint instead of once per moving-model pair); each validation
+pass builds every moving model's start and end hull once (`MoveGeometry`) and the pair tests use
+`BaseShapeGeometry.FootprintGap` - the same expression `SurfaceGap2D` evaluates, so the same float; a
+circumscribed-circle distance reject skips pairs that cannot touch, cross, or end inside the standoff
+band (each flag needs one of those); `ValidatePathsForPlanning` reports the SET of fault kinds
+(`EMoveFaultKinds`) and each validator stops at the first fault of every kind it can produce - the
+ladder's three tests (impassible present, friendly present, friendly-only) read exactly that set; the
+before-move cohesion extents and the impassible/difficult terrain subsets are memoized per thread with
+full-identity checks; `MovementPlanner.PlanningScene` (terrain, enemy and friendly footprints) is built
+once per `MacroActionGenerator.Enumerate` and handed to every plan. Engine resolvers keep the full
+per-model error list. Suite 3291/0/1.
+
+| board A, quiet box, timing on | pass 2 (committed) | pass 3 |
+|---|---|---|
+| ms per iteration | 49.0 | 38.9 |
+| MB allocated per iteration | 19.9 | 12.5 |
+| PlanValidate (38,115 calls) | 4233 ms, 66.9 KB/call | 1120 ms, 11.4 KB/call |
+| PlanMove (8,045 plans) | 4167 ms, 307 KB/plan | 1386 ms, 72 KB/plan |
+| Candidates (259 enumerations) | 19.9 ms each | 7.7 ms each |
+| PlanFootprints calls | 20,877 | 1,289 |
+
+Oracle: board A 301 nodes / depth 6 / 4 closed / Great Monolith 18 visits and board B 301 / 6 / 2 closed /
+Nightmares 25 visits, identical to the committed build's; the two full b0 logs per board are identical once
+timings, stack line numbers and the per-run player ids are masked; the backoff-ladder counters (6,037 /
+1,287 / 993 / 537 / 480 / 315 / 297 / 196 / 190 / 100) are unchanged to the unit. Under the panel load the
+plain runs read A 58.6 -> 43.9 ms, B 52.2 -> 38.9 ms.
+
+What is left on the move side is now Scoring (39.2%, 1.11 ms per candidate) and the sim (32.6%); the
+callees are Combat 24.9%, RuleDispatch 21.8% (932,265 walks), MoveQuery 8.0%, ObjectiveProj 5.2%. Pass 4
+is the rule-dispatch listener fast path (plan item 1).
+
+The 3k panel cell crashed a SECOND time at 19:05 (12 minutes into its resumed run): this time a WRITE fault
+inside libclrgc.so on a Server GC thread, against this morning's null read in libcoreclr.so on a worker -
+two different runtime-internal sites in the one memory-heavy cell, which points at the GC configuration
+(standalone segments GC + 12 GiB hard limit + RetainVM) rather than game code. The wrapper now retries
+(attempt 2 resumed at 19:05:42 with 78 games banked) and runs with `DOTNET_DbgEnableMiniDump=1` so the next
+crash leaves a dump SOS can read; an RSS log (`fdg-lab-scratch/logs/rss.log`, every 20 s) will show whether
+the process nears the limit first. GC mode cannot change outcomes (#392), so switching the 3k/4k cells to the
+default GC is the fallback if a third crash lands.
+
+**2026-09-08 (18:55, Fable 5.1) - THE BOX REBOOTED AT 18:48 (ACCIDENTAL); LAB REBUILT UNDER A PERSISTENT
+DIRECTORY, PANELS RESUMED FROM THEIR BANKED GAMES, BOTH QUEUED BENCHES RE-ARMED.**
+
+Lost with `/tmp`: every lab script, the three Release snapshots (`step15bin`, `phase1bin`, `seambin`), all
+timing/determinism logs, and the hang hunt (5 of 20 runs done before the reboot, every one the identical
+board A tree in 150 s - no hang in those 5). Survived: the repo, this ledger, and every
+`bench.progress.jsonl` under `FdgLab/reports/c-panels-interactive-2026-09-08/` (1k and 2v2 complete for both
+arms; hand/points-3k at 66 of 120 games; net 3k and both 4k cells not started).
+
+Rebuilt in `/home/chris/Projects/fdg-lab-scratch/` (scripts, snapshots, `logs/`; nothing lab-side goes under
+`/tmp` again): `step15bin` from superproject `569c0d9` / engine `06c05f5` (the PRE-promotion lab: no flag =
+hand leaf, `--evaluator` = net leaf, exactly what the banked panel games were played with), `phase1bin` from
+`6fb3162` / `883b676`, `seambin` = the untouched Release build of the committed state (`55ca00b`), each via
+`git archive` exports so the live tree was never touched. The panel screen resumed 18:53 on the retrying
+wrapper; the breadth slice (phase1bin, cb16/cb8/cb4) and the seam bench (seambin, cb16) are queued behind
+it as before. The pinner process the earlier handoff said not to disturb did not survive the reboot and is
+not mine to restart.
+
 **2026-09-08 (18:00, Fable 5.1) - SEARCH PERF PLAN, PASSES 3-5: WHERE THE REMAINING 38.6 ms PER ITERATION GOES
 ON BOARD A AND THE EXACT-SEMANTICS WORK QUEUED AGAINST IT (ALL ORACLE-VERIFIED, NO TUNING RAMIFICATIONS).**
 
