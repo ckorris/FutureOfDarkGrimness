@@ -23,6 +23,46 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (10:40, Opus 5) - NET 3K RE-RUN DONE (73.7 vs 73.0 HAND). THE INTERACTIVE PANEL SCREEN IS NOW
+COMPLETE ON BOTH ARMS: NET 72.2 POOLED vs HAND 69.9 OVER 540 GAMES A SIDE. THE 15b NET-LEAF PROMOTION STANDS.**
+
+The 3k cell that crashed three times on 2026-09-08 finished on the first attempt this morning (08:57-10:35,
+98 minutes, workstation GC, nothing else running, 0 faults) - which is the "one heavy job at a time" rule
+paying for itself, not a code change. It resumed from 69 banked and completed all 150 games.
+
+Interactive budget (5-10 s per activation, the budget that ships to players), Strategist vs the Tactician bot,
+scored for the Strategist:
+
+| panel | games/arm | hand leaf | net leaf | delta |
+|---|---|---|---|---|
+| points-1k | 120 | 77.5 | 78.3 | +0.8 |
+| shape-2v2 | 180 | 64.2 | 68.9 | +4.7 |
+| points-3k | 150 | 73.0 | 73.7 | +0.7 |
+| points-4k | 90 | 66.1 | 68.3 | +2.2 |
+| **pooled** | **540** | **69.9** | **72.2** | **+2.3** |
+
+Per-panel 3k detail (net): Battle Brothers-Goblin Reclaimers 50.0, Knight Brothers-Robot Legions 60.0,
+Saurian Starhost-Soul-Snatcher Cults 76.7, Eternal Dynasty-DAO Union 96.7, Titan Lords-Goblin Reclaimers 85.0.
+Against hand (63.3 / 66.7 / 65.0 / 81.7 / 88.3) the two arms trade cells in both directions by up to 12 points
+and land 0.7 apart pooled: at 3k the leaf choice does not decide games.
+
+*Reading.* +2.3 pooled is ~0.8 SE - not a result on its own. What carries more than the pooled number is that
+all four panels came out positive; a 4-of-4 sign test is p=0.06 one-sided. Combined with the earlier
+benchmark-budget screen (+1.8 pooled, 540 games), the net leaf is level-or-slightly-ahead of the hand
+evaluator at both budgets and at every army size, and the 1k regression that made the 15b evidence contested
+(-7.1 at benchmark budget) does NOT reproduce at the shipping budget (+0.8). **Decision: 15b stands, the
+Strategist ships the learned leaf.** No further leaf work is motivated - the search is compute-bound, not
+knowledge-bound (B-gate: 4.3x thinking time = 56.6 -> 70.1 vs the Tactician; the leaf swap = ~+2).
+
+*Standing caveat, unchanged:* every strength number above was measured on PRE-PERF binaries (`step15bin` for
+the panels, `phase1bin` for the breadth slice, `seambin` for the seam bench). Passes 3-10 (-43% ms per
+iteration) are committed but have never been scored. Since budgets are milliseconds, not iterations, the
+speedup should convert into strength (the b0 timed runs show 56 -> 61 iterations in the same 1840 ms window,
+probe overhead included); the B-gate slope puts a 0.8-doubling gain at maybe +4-5 points, less near these
+panels' ceiling. A single panel re-run on the optimized build against its recorded pre-perf number would
+settle it (~40 min for points-1k). Not queued - Chris's call, along with the "4 candidates at half budget"
+throughput arm.
+
 **2026-09-09 (09:05, Fable 5.1) - SEAM BENCH: THE SEAM FIX SCORES 37.8 POOLED AGAINST 34.1 FOR THE PRE-SEAM
 SNAPSHOT (+3.7, ~1 SIGMA). THE FIX STANDS. NET 3K RE-RUN STARTED 08:57.**
 
