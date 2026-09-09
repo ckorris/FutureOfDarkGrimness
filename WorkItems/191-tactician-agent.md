@@ -23,6 +23,52 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (16:10, Opus 5) - SLICE 1 LANDED: EVERY ROOT WORKER NOW OWNS AN OS THREAD. BOARD A's
+256-ITERATION ACTIVATION DROPS FROM 13.7 s TO 10.2 s (-26%) AND THE SERIAL ARM FROM 30.3 TO 19.8 ms
+PER ITERATION (-35%). THE BENCH OUTCOME HASH AND BOTH ORACLE TREES ARE UNCHANGED.**
+
+`SearchWorkerThread` (engine, `Ai/Tactician/Search/`) replaces the per-worker `Task.Run` with a
+dedicated background thread carrying a single-threaded `SynchronizationContext`, so every await
+inside a worker resumes on the thread it left instead of on the global pool queue. That is the
+15:50 entry's finding turned into code, and it collects the same win `taskset` was collecting.
+
+| cell (board A = Orks/RL 2k r2, board B = DE/Dwarf 2k r3) | before | after | delta |
+|---|---|---|---|
+| A, 1 worker | 30.3 ms/it | **19.8** | -35% |
+| A, 4 workers, unpinned | 13.3 ms/it (13.7 s wall) | **9.9** (10.2 s) | -26% |
+| A, 4 workers, `taskset -c 0-3` | 9.0 ms/it | 8.9 | -1% |
+| B, 1 worker | 25.5 ms/it | **16.3** | -36% |
+| B, 4 workers, unpinned | 10.9 ms/it | **7.9** | -28% |
+
+*Read the third row.* Pinning was worth 32% before and is worth 10% now (9.9 -> 8.9), because
+`taskset -c 0-3` and this change were collecting the SAME win by different means - a 4-CPU mask
+happens to hold the pool to four threads. What is left is the genuine L3 half, and it is slice 2's
+whole remaining budget.
+
+*The serial arm gained MORE than the parallel one*, which is worth keeping in mind: even a single
+worker was migrating on every expansion. Anything that runs one search - the probes, `analyze`, a
+1-worker lab cell - just got a third faster.
+
+**Gate (the standing rule for this strand: same iterations in, same tree out).**
+- Bench outcome hash `D9577EB4D76AC8CA` before AND after (1k Alien Hives vs Blood Brothers,
+  Strategist vs Tactician, `iters:64`, 2 games, DOP 1).
+- Board A tree identical: 257 nodes, max depth 6, 4 closed edges, 7 root units, choice Great
+  Monolith ChargeToContact with 15 visits; 1028 nodes across 4 workers.
+- Board B tree identical: 257 nodes, max depth 6, 2 closed edges, 6 root units, choice Nightmares
+  (Combined) ChargeToContact with 22 visits.
+- Engine suite 3292/0/1 (the new test included), full `dotnet build`, headless smoke exit 0.
+
+New test `EachWorker_KeepsItsWholeDescent_OnOneDedicatedThread`: an expander that genuinely yields
+(`Task.Yield`, the hop an authored expander otherwise never makes) records the thread on both sides
+of the await; each worker must show exactly one thread, and the four must differ. It fails on the
+old `Task.Run` shape.
+
+**Slice 2 (cache-group affinity) is now a 10% item, not a 32% one.** Recommend measuring the cost of
+the rest of the ladder before spending Windows/Linux interop and topology parsing on it - the
+`--dop 4` bench cap and the snapshot-per-node allocation (~9.5 MB/iteration) are still the larger
+structural items, and this slice moved the numbers those decisions are made against.
+
+
 **2026-09-09 (15:50, Opus 5) - THE 32-37% AFFINITY WIN IS MOSTLY NOT L3 LOCALITY. IT IS THE THREAD
 POOL SPREADING 4 LOGICAL WORKERS OVER ~10 OS THREADS. CAPPING THE POOL AT 4 ON THE UNPINNED BOX
 RECOVERS 26 OF THE 33 POINTS, WITH NO AFFINITY AT ALL.**
