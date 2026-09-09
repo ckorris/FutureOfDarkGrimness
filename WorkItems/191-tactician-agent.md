@@ -23,6 +23,46 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (20:03, Fable 5.1) - SEARCH PERF PASS 8 LANDED: SHARED HOOK CATALOG, CACHED WEAPON PROFILE KEYS, ONE
+SIGHT-BLOCKER SET PER SHOOT REQUEST, NO COVER EVALUATION ON THE GATE PATH, LINE OF SIGHT MEMOIZED PER
+ATTACKER ACROSS ITS WEAPONS. BOARD A 32.1 -> 28.2 ms PER ITERATION (TIMING ON), PLAIN 30.0 -> 27.7, TREES
+IDENTICAL.**
+
+Exact, engine-wide (real play shares every one of these paths): `HookContextCatalog.Default` is built once
+(each simulated game built two by reflecting over the whole assembly - 1.44 of the server's 1.87 ms);
+`Weapon` caches its `WeaponProfileKey`, dropped whenever its rule list changes (stats are immutable);
+`LineOfSightUtilities.BuildModelBlockerSet` builds the model blockers once per shoot request or gate and
+`Excluding(defender)` filters per enemy unit in table order (the old per-enemy build allocated a zone per
+model on the table, eight times over); `BuildWeaponOptions(wantCover: false)` on the gate path skips the
+attackers x defenders cover evaluation whose answer the gate never reads; `ShotEligibility.CanHitAny` takes
+a per-attacker sight memo so a model's weapons share each line-of-sight answer (only the range test is
+per weapon). Suite 3291/0/1; both boards identical, zero non-timing diff lines.
+
+| board A, quiet box | pass 7 | pass 8 |
+|---|---|---|
+| ms per iteration, timing on | 32.1 | 28.2 |
+| ms per iteration, plain (two samples) | 31.3 / 30.0 | 29.0 / 27.7 |
+| MB allocated per iteration | 10.2 | 9.9 |
+| SimServer per simulation | 1.87 ms (SrvResolver 1.44) | 0.43 ms (SrvResolver 0.03) |
+| GateShoot per action-stage entry | 0.46 ms, 108.8 KB | 0.18 ms, 50.5 KB |
+| Sight-line evaluations | 183,704 | 101,133 |
+| ChooseActionStage span | 0.88 ms | 0.61 ms |
+
+Cumulative since the 14:20 seam fix (board A, plain): 46.6 -> 27.7 ms per iteration (-41%); allocation 19.9
+-> 9.9 MB. Remaining split: Scoring 33.7%, Expand 32.6% (SimRun 29.9%: ChooseActionStage 23%, PileInStage
+16%, DeterminePlayerTurnStage 15%), Candidates 22.4%, EnumerateUnits 11.0%; callees Combat 19.7%,
+PlanMove 16.6%, PlanValidate 13.0%, RuleDispatch 9.1%.
+
+Panel screen, the 3k hand cell: crashes five (19:49, no hard limit / no RetainVM / default GC), six (19:54,
+8 GC heaps) and seven (19:55, one minute into the retry) - every one a non-managed GC thread. Matchups 0-2
+of the cell are complete (90 games); the crashes began with matchup 3 (3k Eternal Dynasty vs 3k DAO Union,
+10 of 30 banked) and now land within a minute of resuming it, so one of that matchup's remaining games is
+the trigger and this is deterministic, not random hardware. (The 94.5 C `Tctl` reading noted at 19:50 is
+this Threadripper's +27 C offset; `Tdie` was 66 C - no thermal problem.) The screen runs on
+`c-panels-interactive8.sh` (workstation GC, the last GC-side variable) since 19:55; a standalone
+reproduction of that matchup at seed 6001, one game at a time with the panel binary, started 20:02
+(`repro-3k.sh`).
+
 **2026-09-08 (19:47, Fable 5.1) - SEARCH PERF PASS 7: THE ARMY RULE-DATA PARSE IS MEMOIZED (SIMULATED SERVER
 2.31 -> 1.87 ms), AND THE NEW PROBES NAME THE NEXT TWO TARGETS: THE CORE RULE RESOLVER IS REBUILT PER
 SIMULATION (1.44 ms, 4.6% OF AN ITERATION) AND THE SHOOT GATE IS THE WHOLE ACTION-STAGE COST (0.46 ms PER
