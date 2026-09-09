@@ -23,6 +23,59 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (15:50, Opus 5) - THE 32-37% AFFINITY WIN IS MOSTLY NOT L3 LOCALITY. IT IS THE THREAD
+POOL SPREADING 4 LOGICAL WORKERS OVER ~10 OS THREADS. CAPPING THE POOL AT 4 ON THE UNPINNED BOX
+RECOVERS 26 OF THE 33 POINTS, WITH NO AFFINITY AT ALL.**
+
+`taskset -c 0-3` does two things at once and the 12:45 entry credited only one of them: it gives the
+4 workers a shared L3, AND it makes the runtime SEE a 4-CPU box (`Environment.ProcessorCount`, and
+through it the thread pool's thread count). Cells that hold one constant and vary the other, board A
+round 2, `--search-iterations 256`, 4 workers, workstation GC, identical tree in every cell (1028
+nodes, same choice) - so every difference is scheduling, not search (`affinity-why.sh`,
+`affinity-why2.sh`):
+
+| cpus visible | L3 groups | 1 worker | 4 workers | vs baseline |
+|---|---|---|---|---|
+| 32 (unpinned) | 4 | 31.5 / 30.3 ms | 13.4 / 13.3 ms | - |
+| 0-15 | 4 | 30.7 ms | 13.3 ms | 0% |
+| 0-3,16-19 (8 logical, one CCX) | 1 | 31.8 ms | 11.9 ms | -11% |
+| 0,4,8,12 (4 cores, FOUR CCX) | 4 | 28.9 ms | 10.0 ms | -25% |
+| 0-3 (4 cores, ONE CCX) | 1 | 32.0 ms | **9.0 ms** | **-32%** |
+
+The 4-worker cost tracks **how many CPUs the runtime can see**, monotonically, and only weakly tracks
+cache sharing: at an equal 4 CPUs, one L3 (9.0) beats four L3s (10.0) - 10% of a 32% effect. Note the
+1-worker column is flat at 29-32 ms everywhere; the whole effect lives in the parallel arm.
+
+**The mechanism, confirmed directly.** `DOTNET_ThreadPool_Force{Min,Max}WorkerThreads`, unpinned, all
+32 CPUs available:
+
+| pool cap | 4 workers | vs baseline |
+|---|---|---|
+| default | 13.3 ms | - |
+| 8 | 13.4 ms | 0% |
+| **4** | **9.9 ms** | **-26%** |
+| 4 + `taskset -c 0-3` | 8.7 ms | -35% |
+
+A cap of 8 buys nothing and a cap of 4 buys almost everything, so the threshold is exactly "no more
+runnable pool threads than workers". The cause is that the workers are `Task.Run` bodies over
+`async` code: `SimulationService.Run` completes on `RunContinuationsAsynchronously` TCSs, so EVERY
+edge expansion posts its continuation to the global pool queue and the logical worker resumes on
+whichever thread grabs it. Measured with `/proc/<pid>/task/*/stat` over one 4-worker search
+(`thread-topo2.sh`): **10 distinct `.NET TP Worker` threads carried it**, CPU split 1198 / 1147 /
+1120 / 934 / 708 / 667 / 594 / 526 / 417 / 108 ticks. Every hop is a cold TLAB, a cold stack and a
+queue latency, and four workers on a 32-CPU box only scale 2.3-2.4x for it (pinned: 3.6-3.7x).
+
+*Consequence for the plan.* Thread affinity was filed as the biggest known win; it is really the
+SMALLER half of one. The portable fix - give each root worker its own OS thread and a single-threaded
+SynchronizationContext so its continuations come back to it - targets the 26-point half, needs no
+P/Invoke, no core-set selection and no macOS gap, and leaves the process's other threads alone (a
+process-wide pool cap is not an option: the app has networking and the lab runs 4 concurrent games).
+Cache-group affinity then rides on top of those threads for the remaining ~10%, Linux + Windows only.
+Audit for the SynchronizationContext hazard, done: engine production code has NO `.Wait()`,
+`.Result` or `GetAwaiter().GetResult()`, and every `ConfigureAwait(false)` in the engine is in
+`Network/`, which a search never enters.
+
+
 **2026-09-09 (15:20, Opus 5) - DEPTH LOSES, DECISIVELY. THE SHIPPED WIDENING STAYS. STEP 3 STOPPED
 EARLY BY THE BOX; THE RESULT IS ALREADY 8 SIGMA.**
 
