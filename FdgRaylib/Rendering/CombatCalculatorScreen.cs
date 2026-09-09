@@ -205,8 +205,10 @@ public class CombatCalculatorScreen : IAppScreen
         // single line by construction, so wrapping one means replacing the control's own label with
         // hand-laid text - a change to the SHARED Forge detail, and so to how the Army Forge itself
         // looks. Out of scope here; this keeps every character reachable without touching that.
-        ImGui.BeginChild("##calc-a", new Vector2(sideWidth, avail.Y), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.HorizontalScrollbar);
+        // No horizontal scrollbar: the upgrade labels wrap now (#398), so there is nothing to scroll
+        // sideways to - and a horizontally scrollable child reports a content width that the wrap would
+        // have had to fight.
+        ImGui.BeginChild("##calc-a", new Vector2(sideWidth, avail.Y), ImGuiChildFlags.Borders);
         DrawSide(_attacker, _attackerPicker, "A", "a");
         ImGui.EndChild();
 
@@ -217,8 +219,7 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.EndChild();
 
         ImGui.SameLine(0, spacing);
-        ImGui.BeginChild("##calc-b", new Vector2(0, avail.Y), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.HorizontalScrollbar);
+        ImGui.BeginChild("##calc-b", new Vector2(0, avail.Y), ImGuiChildFlags.Borders);
         DrawSide(_defender, _defenderPicker, "B", "b");
         ImGui.EndChild();
     }

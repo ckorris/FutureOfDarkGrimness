@@ -123,11 +123,11 @@ internal static class ForgeUnitDetail
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
                     ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
-                    if (ImGui.RadioButton($"{ArmyForgeScreen.OptionSummary(option)}##{section.Id}-{option.Id}", chosen))
-                        BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, 1);
-                    // Inside the disabled scope so the underline picks up the same dimmed text color.
-                    RuleTextFlow.DecorateControlLabel(
-                        RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option)), glossary);
+                    string id = $"{section.Id}-{option.Id}";
+                    bool hit = ImGui.RadioButton($"##{id}", chosen);
+                    ImGui.SameLine();
+                    hit |= DrawWrappedOptionLabel(option, glossary, id);
+                    if (hit) BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, 1);
                     ImGui.EndDisabled();
                 }
             }
@@ -137,15 +137,54 @@ internal static class ForgeUnitDetail
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
                     ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
-                    if (ImGui.Checkbox($"{ArmyForgeScreen.OptionSummary(option)}##{section.Id}-{option.Id}", ref chosen))
-                        BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, chosen ? 1 : 0);
-                    RuleTextFlow.DecorateControlLabel(
-                        RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option)), glossary);
+                    string id = $"{section.Id}-{option.Id}";
+                    bool hit = ImGui.Checkbox($"##{id}", ref chosen);
+                    ImGui.SameLine();
+                    // Clicking the label toggles, so the box's state is what the label reports back.
+                    if (DrawWrappedOptionLabel(option, glossary, id))
+                    {
+                        chosen = !chosen;
+                        hit = true;
+                    }
+                    if (hit) BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, chosen ? 1 : 0);
                     ImGui.EndDisabled();
                 }
             }
             ImGui.Unindent();
         }
+    }
+
+    /// <summary>
+    /// An upgrade option's label, WRAPPED, with its rule names underlined and hoverable, and the whole
+    /// block clickable so it still toggles the control beside it.
+    ///
+    /// <para>An ImGui checkbox/radio label is one line by construction: a long option
+    /// ("Uranium Rifle (30\", A1, AP(1), Reliable, Shred, Takedown)") ran off the edge of the column and
+    /// the tail was simply lost. So the control is drawn with NO label and the text is laid out
+    /// separately by <see cref="RuleTextFlow.Draw"/>, which wraps at the remaining width and hangs
+    /// continuation lines under the first.</para>
+    ///
+    /// <para>That would have cost the label as a click target - the thing you actually aim at - so an
+    /// invisible button is laid over the text afterwards. It does not interfere with the rule tooltips:
+    /// <c>Draw</c> paints to the draw list and hit-tests the mouse position itself, in the same frame,
+    /// before this button is ever submitted.</para>
+    /// </summary>
+    private static bool DrawWrappedOptionLabel(UpgradeOption option, RuleGlossary glossary, string id)
+    {
+        RuleTextFlow.Draw(RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option)),
+            glossary, ImGuiCol.Text);
+
+        // The Dummy that Draw reserved IS the text's footprint, so the last item's rect is the region to
+        // cover - no re-measuring, and it stays correct however many lines the text wrapped to.
+        Vector2 min = ImGui.GetItemRectMin();
+        Vector2 size = ImGui.GetItemRectMax() - min;
+        if (size.X <= 0f || size.Y <= 0f) return false;
+
+        Vector2 restore = ImGui.GetCursorPos();
+        ImGui.SetCursorScreenPos(min);
+        bool clicked = ImGui.InvisibleButton($"##label-{id}", size);
+        ImGui.SetCursorPos(restore);
+        return clicked;
     }
 
     // Counted-section control: [-] [count] [+] label. The buttons gray individually at their bound (- at 0,
