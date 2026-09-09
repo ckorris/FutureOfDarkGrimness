@@ -23,6 +23,57 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (18:30, Opus 5) - SEARCH PERF PASS 12: THE SHOOTING-ESTIMATE MEMO. IT HITS 12.9%, WORTH
+~1.1% OF AN ITERATION - AND THE SCOUTING THAT SIZED IT IS THE REAL RESULT: SCORING IS ~30% OF THE
+ITERATION AND ALMOST ALL OF IT IS `CombatMath.EstimateShooting`, WHOSE OWN COST IS `RuleEvaluator`.**
+
+Chris picked target 2, "memoize across the 16 candidates". Scouting first, because the strand's rule
+is same candidates, same priors, same order - so only candidate-INVARIANT work may be hoisted.
+
+*What was already memoized* (pass 6 did more here than the profile suggested): `FactsOf`,
+`MeleeSelfVs` / `MeleeEnemyVs`, `BudgetsOf`, `RouteToEnemy`, `ObjectiveProjections`,
+`EnemyMaxRangeAgainstUs`, and - the one I expected to find open -
+`BestAlternativeTargetValue`, which runs an estimate per FRIENDLY per enemy and is keyed on the enemy
+alone. Nothing candidate-invariant is left unmemoized in `Score`.
+
+*What is left is candidate-DEPENDENT by construction.* `Score` makes up to three shooting estimates
+per (candidate x enemy) - our shot from the endpoint, their retaliation onto it, and the projected
+arrival - and each carries the endpoint through `AttackContext.DistanceInches`. So the only exact
+memo available keys on the distance too, and the question is purely how often a distance repeats.
+
+**Measured: 3,011 hits against 20,290 misses, 12.9%.** The hits come from the clamps -
+`Math.Max(1f, ...)` and `Math.Min(projReach, maxRange)` collapse distinct endpoints onto one key - and
+from Hold candidates sharing an endpoint. Effects, board A, 128 iterations, 1 worker:
+
+| | pass 11 | pass 12 |
+|---|---|---|
+| KB per iteration | 9933 | **9752** (-1.8%) |
+| Combat calls | 42,285 | **39,274** (-7.1%) |
+| Scoring | 217.3 KB / 944 ms | **205.0 KB / 890 ms** |
+
+**Wall clock: not measurable.** Board A plain 19.8/20.5 -> 20.5/20.5 serial, 9.9 -> 10.2/10.1 at 4
+workers; board B 16.4 -> 16.9 and 7.9 -> 7.8. All inside the ~3% run-to-run spread, in both
+directions. The counts say what the clock cannot: a hit skips an 11.5 us estimate for a ~0.1 us
+lookup, so 3,011 hits save 0.271 ms per iteration against 0.018 ms of lookup on all 23,301 calls -
+**net ~1.1%**, which is exactly the size of thing that cannot be timed here. Landed on the pass-10
+standard (exact, oracle-verified, too small to time).
+
+*Validity window, checked rather than assumed:* the memo is cleared in `BeginActivation` like its
+pass-6 neighbours, and `Score` runs ONLY before the unit moves - `ChooseAction`'s post-move re-entry
+returns on `_plan != null` and never reaches the scoring loop. So there is no post-move staleness
+exposure, and the memo's window is strictly inside the documented "frozen from BeginActivation until
+the planner's own move".
+
+**Gate:** bench outcome hash `D9577EB4D76AC8CA` unchanged; board B tree identical (257 nodes, depth 6,
+2 closed edges, 6 root units, 22 visits); engine suite 3310/0/1 and app suite 2879/0/0.
+
+**The finding that matters more than the pass.** Scoring allocates 205 KB per call and makes ~21
+shooting estimates at 6.5 KB each, so Scoring IS `EstimateShooting`, and after pass 11 that estimate's
+remaining 4.0 KB hit phase is 1.1 KB in the modifier dispatch and 2.0 KB in the HitRollComplete
+dispatch - i.e. **`RuleEvaluator`, not `CombatMath`**. There is no more room at the Score level; the
+next real lever on the search's 30% scoring bill is rule dispatch, which passes 4 and 8 have already
+been through once. Recommend sizing that before spending another pass anywhere else.
+
 **2026-09-09 (18:10, Opus 5) - MERGED origin/master (#397/#398 COMBAT CALCULATOR) INTO THE PERF WORK.
 CLEAN BOTH SIDES, SEARCH OUTCOMES UNCHANGED - AND THE APP SUITE TURNED OUT TO HAVE BEEN RED SINCE PERF
 PASS 4 FOR A BUG THAT PASS'S OWN SESSION COULD NOT HAVE SEEN, BECAUSE IT ONLY RAN THE ENGINE SUITE.**
