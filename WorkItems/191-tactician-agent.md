@@ -23,6 +23,42 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (18:10, Opus 5) - MERGED origin/master (#397/#398 COMBAT CALCULATOR) INTO THE PERF WORK.
+CLEAN BOTH SIDES, SEARCH OUTCOMES UNCHANGED - AND THE APP SUITE TURNED OUT TO HAVE BEEN RED SINCE PERF
+PASS 4 FOR A BUG THAT PASS'S OWN SESSION COULD NOT HAVE SEEN, BECAUSE IT ONLY RAN THE ENGINE SUITE.**
+
+Local master had drifted 29 commits ahead / 13 behind while this strand ran. Submodule merged first
+(cadence), then the superproject with the gitlink resolved to that merge. **Zero file overlap on
+either side** - #397/#398 is `Calculator/`, `ArmyBuilding/`, `FdgRaylib/Rendering/`; this strand is
+`Ai/Tactician/`, `Rules/Dispatch/`, `Simulation/`. Engine merge `92f74fe`, super `4923d9e`.
+
+*Search outcomes unchanged by the merge*, checked rather than assumed (#397's melee work landed in the
+Calculator's sandbox, not in the melee stages): bench outcome hash `D9577EB4D76AC8CA`, board B tree
+identical (257 nodes, depth 6, 2 closed edges, 6 root units, 22 visits), 16.4 ms serial / 7.9 ms at
+4 workers - both inside the noise of the pre-merge numbers.
+
+**The bug the merge exposed.** `dotnet test FdgRaylib.Tests` failed 2 of 2879:
+`RuleSupplementSetTests` deserializes the loader's documented minimal supplement entry
+(`{ "name", "scope", "description" }`) and got a `NullReferenceException` out of
+`HookListeners.Build`. Cause: perf passes 4 and 10 made the `SpecialRuleDefinition` constructor walk
+`Passive` and `Activated` eagerly to build its (hook, seat) bitsets, and System.Text.Json passes null
+for an absent array. Fixed in the engine (`7b2cf81`): null means "no entries", which is what an absent
+array says; plus an engine-side regression test that deserializes exactly that minimal entry and
+asserts it listens and activates nowhere. **Nothing shipped was affected** - the bundled GDF (251
+entries) and AoF (86) supplements both always write the arrays - but the CLI's supplement flags take
+hand-authored files, so this crashed on legal user input.
+
+*The process lesson, worth more than the fix:* passes 4-11 all verified with
+`dotnet test FutureOfDarkGrimness` and a full `dotnet build`, which is what CLAUDE.md asks for, and a
+BUILD does not run `FdgRaylib.Tests`. Engine changes reach the app suite. Both suites now green:
+engine 3310/0/1, app 2879/0/0.
+
+*Second lesson, mine, and it cost two measurement runs:* `dotnet build` produces Debug, and a lab cell
+run straight after it silently measures whatever the Release tree last held. The first cost-table run
+(17:0x) re-measured the pre-slice-1 binary and came back flat; a gate run at 18:03 raced a background
+Release build. `slice1-gate.sh` now builds Release itself before measuring. **Check the binary's
+mtime against the clock before believing a lab number.**
+
 **2026-09-09 (17:55, Opus 5) - SEARCH PERF PASS 11: THE WEAPON-BATCH OWNER GATHER. THE COMBAT ESTIMATE
 DROPS 8.0 -> 6.7 KB PER CALL AND THE ITERATION 10381 -> 9933 KB (-4.3%), TREES AND HASH IDENTICAL.
 NO MEASURABLE WALL-CLOCK CHANGE - THIS IS AN ALLOCATION PASS, AND IT IS REPORTED AS ONE.**
