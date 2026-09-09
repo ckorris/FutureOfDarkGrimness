@@ -23,6 +23,50 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (17:55, Opus 5) - SEARCH PERF PASS 11: THE WEAPON-BATCH OWNER GATHER. THE COMBAT ESTIMATE
+DROPS 8.0 -> 6.7 KB PER CALL AND THE ITERATION 10381 -> 9933 KB (-4.3%), TREES AND HASH IDENTICAL.
+NO MEASURABLE WALL-CLOCK CHANGE - THIS IS AN ALLOCATION PASS, AND IT IS REPORTED AS ONE.**
+
+Chris picked "Combat + PlanValidate allocation diets" off the 17:40 profile. Drilling into Combat with
+four new accumulators (`VolleyHit` / `VolleySave` / `VolleyMods` / `VolleyComplete`) put 55% of the
+combat estimate's bytes in the HIT phase, and the cause was one helper:
+
+`HeroStatRules.LivingWeaponBatchOwners` was `unit.Models.Where(...).ToList()` with a **fresh
+`WeaponComparer` per call**, an outer closure, and a nested LINQ `Any()` over every model's weapons -
+so a twenty-model Ork mob paid an enumerator and a closure per model, ~2.5 KB a call. `EstimateVolley`
+called it TWICE per volley (once per dispatch, through `ActorWithBatch`). Now: a shared static
+comparer (it is stateless), a pre-sized loop, `Array.Empty` for the batch nobody living carries - same
+models, same order - and the attacker's batch participant and the defender's seat are each built once
+per volley and handed to both dispatches (the pass-5 idiom, which had done this for the defender's
+model list but not for either participant).
+
+| board A, 1 worker, 128 iterations, timing on | before | after |
+|---|---|---|
+| KB allocated per iteration | 10381 | **9933** (-4.3%) |
+| Combat, 42,285 estimates | 8.0 KB each | **6.7** (-16%) |
+| VolleyHit, 32,353 volleys | 5.8 KB / 316 ms | **4.0 KB / 208 ms** (-30% / -34%) |
+
+**Wall clock: no change above noise.** Board A plain, 256 iterations: 19.8 -> 19.8 / 20.5 ms serial and
+9.9 -> 10.0 / 9.8 at 4 workers; board B 16.3 -> 16.2 and 7.9 -> 7.8. Run-to-run spread is ~3% and this
+is smaller than that. Landed anyway on the pass-10 standard: it is exact, it cuts the allocation that
+sets the `--dop` ceiling, and it speeds the LIVE game's hit stages too (`RollToHitStage`,
+`DetermineHitRollStage`, `ShootingForecast` all call the same helper).
+
+**Gate:** bench outcome hash `D9577EB4D76AC8CA` unchanged; board B tree identical (257 nodes, depth 6,
+2 closed edges, 6 root units, 22 visits) and board A identical (257 / 6 / 4 / 7 units, 15 visits);
+suite 3292/0/1.
+
+**Where the rest of the hit phase goes, for whoever picks this up:** VolleyHit is still 4.0 KB, of
+which `VolleyComplete` (the HitRollComplete dispatch + splitter + sinks) is 2.0 KB and `VolleyMods`
+1.1 KB. Both are dominated by `RuleEvaluator` itself, not by CombatMath - that is a dispatch pass, with
+its own risk surface, and passes 4 and 8 have already been through there.
+
+**DEFERRED, not dropped: `PlanValidate`** - the other half of what Chris picked. 215 MB and 12.6% of
+the iteration over 18,335 calls at 12.0 KB each, entered through
+`MovementUtilities.ValidatePathsForPlanning` -> `ValidateCore`, which builds a `MoveGeometry[]` per call
+plus two budget closures and then runs nine validators. Not started: the combat half was one slice and
+this is another, and the profile above is still current for it.
+
 **2026-09-09 (17:40, Opus 5) - THE SNAPSHOT CLONES ARE 4.6% OF ALLOCATION, NOT THE HOG. HEADROOM
 ITEM 2's PREMISE IS WRONG: A WHOLE-STORE COPY IS 170 KB AND THERE ARE THREE PER EXPANSION - HALF A
 MEGABYTE OF THE 10.1 MB AN ITERATION ALLOCATES. 61% OF IT IS MACRO ENUMERATION AND SCORING.**
