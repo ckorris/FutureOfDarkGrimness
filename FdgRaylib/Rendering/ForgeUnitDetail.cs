@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using FDG.ArmyBuilding;
@@ -24,26 +25,105 @@ internal static class ForgeUnitDetail
 {
     private static readonly Vector4 CyanText = new(0.45f, 0.80f, 0.90f, 1f);
 
-    /// <summary>Name, model count, stat line and points.</summary>
+    /// <summary>
+    /// Name and model count, then the stats as the printed army list badges them (#329/#398): Quality
+    /// and Defense always, Tough when the unit carries one. The numbers a player actually reads off a
+    /// unit are the ones worth making findable at a glance, and they were previously buried mid-sentence
+    /// in "Cult Rangers [5] - Qua 4+ Def 4+".
+    /// </summary>
     internal static void DrawHeader(UnitFileEntry unit)
     {
-        ImGui.TextUnformatted(ArmyBuilderScreen.UnitStatLine(unit));
+        ImGui.TextUnformatted($"{unit.Name} [{unit.ModelCount}]");
         ImGui.SameLine();
         ImGui.TextDisabled($"({unit.PointCost} pts)");
+
+        UiChrome.DrawPill("Quality", $"{unit.Quality}+", ImGuiTheme.AccentBlue);
+        ImGui.SameLine(0f, 8f);
+        UiChrome.DrawPill("Defense", $"{unit.Defense}+", ImGuiTheme.AccentBlue);
+        if (ToughValue(unit) is { } tough)
+        {
+            ImGui.SameLine(0f, 8f);
+            UiChrome.DrawPill("Tough", tough, ImGuiTheme.AccentBlue);
+        }
         ImGui.Separator();
     }
 
-    /// <summary>Weapons, wargear and special rules, each rule underlined with its hover (#259).</summary>
+    /// <summary>
+    /// The unit's Tough rating for its pill, or null when it has none. A saved unit carries no resolved
+    /// wound count - Tough is a rule on the list - so it is read off the TYPED entry
+    /// (<see cref="SpecialRuleEntry_CoreNumeric"/>) rather than by re-parsing the "Tough(3)" string this
+    /// very code formats: the number is right there, and a parser would be a second place to be wrong.
+    /// An alias ("Ancient Hide (Tough(6))") counts - the unit is Tough however the book names it.
+    /// Internal so the walk is pinned by tests.
+    /// </summary>
+    internal static string? ToughValue(UnitFileEntry unit)
+    {
+        foreach (SpecialRuleEntry rule in unit.SpecialRules)
+            if (ToughOf(rule) is { } value)
+                return value;
+        return null;
+    }
+
+    private static string? ToughOf(SpecialRuleEntry rule) => rule switch
+    {
+        SpecialRuleEntry_CoreNumeric numeric
+            when string.Equals(numeric.Name, "Tough", StringComparison.OrdinalIgnoreCase)
+            => numeric.NumericValue.ToString(CultureInfo.InvariantCulture),
+        SpecialRuleEntry_Alias alias => ToughOf(alias.AliasedRule),
+        _ => null,
+    };
+
+    /// <summary>
+    /// Weapons as the printed list tabulates them - Weapon / RNG / ATK / AP / SPE - then wargear and the
+    /// unit's own rules as text. The weapons were a run of parenthesised sentences whose numbers never
+    /// lined up with each other; as columns two guns can actually be compared, which is the one thing a
+    /// player does with this block. Rules keep their underline and hover (#259).
+    /// </summary>
     internal static void DrawGear(UnitFileEntry unit, IReadOnlyList<ItemEntry> items, RuleGlossary glossary)
     {
+        DrawWeaponTable(unit, glossary);
+
         ImGui.Indent();
-        foreach (WeaponFileEntry weapon in unit.Weapons)
-            RuleTextFlow.Draw(RuleTextFlow.WeaponLine(weapon), glossary, ImGuiCol.TextDisabled);
         foreach (ItemEntry item in items)
             RuleTextFlow.Draw(RuleTextFlow.ItemLine(item), glossary, ImGuiCol.TextDisabled);
         if (unit.SpecialRules.Count > 0)
             RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.SpecialRules), glossary, ImGuiCol.TextDisabled);
         ImGui.Unindent();
+    }
+
+    private static void DrawWeaponTable(UnitFileEntry unit, RuleGlossary glossary)
+    {
+        if (unit.Weapons.Count == 0) return;
+        if (!ImGui.BeginTable("##gear", 5,
+            ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp)) return;
+
+        float em = ImGui.GetFontSize();
+        ImGui.TableSetupColumn("Weapon", ImGuiTableColumnFlags.WidthStretch, 3f);
+        ImGui.TableSetupColumn("RNG", ImGuiTableColumnFlags.WidthFixed, em * 2.6f);
+        ImGui.TableSetupColumn("ATK", ImGuiTableColumnFlags.WidthFixed, em * 2.2f);
+        ImGui.TableSetupColumn("AP", ImGuiTableColumnFlags.WidthFixed, em * 2.2f);
+        ImGui.TableSetupColumn("SPE", ImGuiTableColumnFlags.WidthStretch, 2f);
+        ImGui.TableHeadersRow();
+
+        foreach (WeaponFileEntry weapon in unit.Weapons)
+        {
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextUnformatted(ArmyListLayout.CountedName(weapon.Quantity, weapon.Name));
+            ImGui.TableSetColumnIndex(1);
+            ImGui.TextDisabled(ArmyListLayout.RangeText(weapon.RangeInches));
+            ImGui.TableSetColumnIndex(2);
+            ImGui.TextDisabled(ArmyListLayout.AttacksText(weapon.Attacks));
+            ImGui.TableSetColumnIndex(3);
+            ImGui.TextDisabled(ArmyListLayout.ApText(weapon.ArmorPenetration));
+
+            ImGui.TableSetColumnIndex(4);
+            if (weapon.SpecialRules.Count == 0) ImGui.TextDisabled("-");
+            else RuleTextFlow.Draw(RuleTextFlow.RuleList(weapon.SpecialRules), glossary, ImGuiCol.TextDisabled);
+        }
+
+        ImGui.EndTable();
     }
 
     /// <summary>
@@ -65,7 +145,7 @@ internal static class ForgeUnitDetail
     {
         if (roster.Sections.Count == 0) return;
         ImGui.Spacing();
-        ImGui.TextDisabled("UPGRADES");
+        ImGui.TextColored(ImGuiTheme.HeaderAccent, "UPGRADES");
         ImGui.Separator();
 
         foreach (UpgradeSection section in roster.Sections)

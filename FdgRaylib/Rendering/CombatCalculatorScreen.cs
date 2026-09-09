@@ -37,6 +37,7 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string SwapLabel = "Swap A <-> B";
     internal const string ChooseUnitLabel = "Choose unit";
     internal const string AttackerBadge = "ATTACKER";
+    internal const string HeroTag = "HERO";
     internal const string DefenderBadge = "DEFENDER";
     internal const string NoUnitsHint = "Choose a unit on both sides.";
     internal const string NoAttackerHint = "Choose the attacking unit on the left.";
@@ -292,6 +293,11 @@ public class CombatCalculatorScreen : IAppScreen
     {
         (UnitFileEntry compiled, List<ItemEntry> items) = side.DetailOf(unit);
         bool isMain = ReferenceEquals(unit, side.List.Units[CalculatorSide.MainIndex]);
+
+        // Rows() puts the hero first whenever a pair is joined, so row 0 of a joined column IS the hero.
+        // Tagged in #227's gold, the same colour the printed army list marks a hero with.
+        if (side.Joined is not null && row == 0)
+            ImGui.TextColored(ImGuiTheme.HeroGold, HeroTag);
 
         ForgeUnitDetail.DrawHeader(compiled);
         ForgeUnitDetail.DrawGear(compiled, items, side.Glossary);
@@ -589,20 +595,24 @@ public class CombatCalculatorScreen : IAppScreen
             DrawBigNumber(view.HitsValue, CombatReportView.HitsCaption);
 
             ImGui.TableNextColumn();
-            DrawBigNumber(view.WoundsValue, CombatReportView.WoundsCaption);
+            // Amber for wounds, blue for hits: the two headline numbers are different KINDS of thing
+            // (dice that landed vs damage that stuck), and the colour ties the wounds figure to the
+            // amber slice of the meter below and to the WOUNDS column in the table.
+            DrawBigNumber(view.WoundsValue, CombatReportView.WoundsCaption, ImGuiTheme.DamageAmber);
 
             ImGui.EndTable();
         }
 
         ImGui.Spacing();
-        UiChrome.DrawMeter(view.WoundFractionRemaining, ImGui.GetContentRegionAvail().X, ImGuiTheme.AccentBlue);
+        UiChrome.DrawMeter(view.WoundFractionRemaining, ImGui.GetContentRegionAvail().X,
+            ImGuiTheme.AccentBlue, ImGuiTheme.DamageAmber);
         ImGui.TextColored(DimText, view.WoundBarText);
     }
 
-    private static void DrawBigNumber(string value, string caption)
+    private static void DrawBigNumber(string value, string caption, Vector4? color = null)
     {
         ImGui.PushFont(RaylibRenderer.LargeFont);
-        ImGui.TextColored(ImGuiTheme.HeaderAccent, value);
+        ImGui.TextColored(color ?? ImGuiTheme.HeaderAccent, value);
         ImGui.PopFont();
         ImGui.TextColored(DimText, caption);
     }
@@ -671,7 +681,7 @@ public class CombatCalculatorScreen : IAppScreen
         Cell(row.Hit);
         Cell(row.Hits);
         Cell(row.Save);
-        Cell(row.Wounds, ImGuiTheme.HeaderAccent);
+        Cell(row.Wounds, ImGuiTheme.DamageAmber);
 
         return hovered;
     }

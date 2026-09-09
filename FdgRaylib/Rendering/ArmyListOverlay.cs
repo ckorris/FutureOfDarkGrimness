@@ -57,9 +57,8 @@ public sealed class ArmyListOverlay
     private readonly Dictionary<UnitID, float> _cardHeights = new();
 
     private static readonly Vector4 ActivatedRed  = new(1f, 0.30f, 0.30f, 1f);   // tooltip's red
-    private static readonly Vector4 HeroGold      = new(1f, 0.85f, 0.3f, 1f);    // #227 hero tag
+    private static readonly Vector4 HeroGold      = ImGuiTheme.HeroGold;        // #227, shared (#398)
     private static readonly Vector4 WoundedAmber  = new(0.72f, 0.48f, 0.16f, 1f);
-    private static readonly Vector4 PillText      = new(1f, 1f, 1f, 1f);
 
     public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         IReadOnlyList<PlayerID> localPlayerIDs, GuiResolverOverlay? resolverOverlay)
@@ -605,31 +604,11 @@ public sealed class ArmyListOverlay
         ImGui.Spacing();
     }
 
-    private static float PillWidth(string label, string value) =>
-        ImGui.CalcTextSize(label).X + ImGui.CalcTextSize(value).X + 4f * PillPad;
+    // #398: the pill itself now lives in UiChrome, shared with the Combat Calculator's unit columns.
+    private static float PillWidth(string label, string value) => UiChrome.PillWidth(label, value);
 
-    private const float PillPad = 7f;
-
-    // Two-tone pill: label on the accent field, value on a dark well, one rounded outline — the
-    // printed list's stat badge.
-    private static void DrawPill(string label, string value, Vector4 labelBg)
-    {
-        var dl = ImGui.GetWindowDrawList();
-        Vector2 pos = ImGui.GetCursorScreenPos();
-        float h = ImGui.GetTextLineHeight() + 8f;
-        float labelW = ImGui.CalcTextSize(label).X + 2f * PillPad;
-        float valueW = ImGui.CalcTextSize(value).X + 2f * PillPad;
-        const float rounding = 5f;
-
-        dl.AddRectFilled(pos, pos + new Vector2(labelW + valueW, h),
-            ImGui.GetColorU32(ImGuiTheme.InkWell), rounding);
-        dl.AddRectFilled(pos, pos + new Vector2(labelW, h),
-            ImGui.GetColorU32(labelBg), rounding, ImDrawFlags.RoundCornersLeft);
-        dl.AddText(pos + new Vector2(PillPad, 4f), ImGui.GetColorU32(PillText), label);
-        dl.AddText(pos + new Vector2(labelW + PillPad, 4f), ImGui.GetColorU32(PillText), value);
-
-        ImGui.Dummy(new Vector2(labelW + valueW, h));
-    }
+    private static void DrawPill(string label, string value, Vector4 labelBg) =>
+        UiChrome.DrawPill(label, value, labelBg);
 
     // The unit's special rules as one comma-joined line of underlined hover targets, wrapped at rule
     // boundaries — the #292 convention (solid underline = documented, faded = inert in play).

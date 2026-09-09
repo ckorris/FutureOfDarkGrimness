@@ -37,6 +37,32 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-08 (round 3, wrapping + the army-list look): app **2891/0** (+3), engine 3308/0, build clean,
+  smoke exits 0.
+  - **Wrapping, now authorized.** The control is drawn with NO label and the text laid out by
+    `RuleTextFlow.Draw`, which already wrapped (the stepper had been using it all along); an invisible
+    button over the reserved rect keeps the label clickable, which the naive fix would have cost. The
+    rule tooltips are unaffected - `Draw` hit-tests the mouse itself, in the same frame, before that
+    button is ever submitted. `DecorateControlLabel` had no other caller and no tests, so it went, and
+    the side columns' horizontal scrollbars went with it: they were standing in for this, and a
+    horizontally scrollable child reports a content width the wrap would have had to fight.
+  - **The unit columns now wear the printed list's own badges.** `UiChrome.DrawPill` is
+    `ArmyListOverlay`'s two-tone pill promoted, not a lookalike - `ArmyListOverlay` calls the promoted
+    one. Quality/Defense/Tough as pills; weapons as the list's `Weapon / RNG / ATK / AP / SPE` table
+    through the shared `ArmyListLayout` formatters, so two guns can be compared down a column instead of
+    across parenthesised sentences.
+  - **Tough is read off the TYPED rule** (`SpecialRuleEntry_CoreNumeric.NumericValue`), not by parsing
+    the "Tough(3)" string this same code formats - the number is right there, and a parser would be a
+    second place to be wrong. An alias ("Ancient Hide (Tough(6))") counts.
+  - **Colour now means something.** `ImGuiTheme.DamageAmber` = damage, wherever damage appears: the
+    wounds headline, the WOUNDS column, and the spent slice of the wound meter (which gained a second
+    segment - filled is what survives, amber is what the attack took off). Hits stay blue, because a
+    die landing and a wound sticking are different kinds of thing. `HeroGold` moved to the theme and is
+    shared, so a joined hero is tagged in the calculator in the same gold the army list uses.
+  - **The Army Forge inherits all of this** - wrapping, pills, weapon table, UPGRADES header - because
+    it is literally the same `ForgeUnitDetail`. That was the accepted trade for the wrap; keeping the
+    two divergent would have been the worse outcome, and the Forge wanted the same fixes.
+
 - 2026-09-08 (round 2, owner screenshot): app **2888/0** (+9), build clean, smoke exits 0.
   - **Game-system filter** (owner request): Grimdark Future / Age of Fantasy, mutually exclusive, GDF
     default, **per side**, remembered in `UserConfig` as `CalculatorSystemA`/`B`. Slugs rather than an
@@ -113,12 +139,7 @@ _Newest on top._
 
 ## Deferred (recorded, not silently cut)
 
-- **Wrapped upgrade labels - NOT done, deliberately.** The plan said long upgrade lines would wrap. An
-  ImGui checkbox/radio label is a single line by construction, so wrapping one means replacing the
-  control's own label with hand-laid text plus an invisible hit target - inside `ForgeUnitDetail`, which
-  the **Army Forge** shares. That would restyle the Forge as a side effect of a calculator ticket. The
-  columns were widened to 30% and given a horizontal scrollbar instead, so nothing is unreachable; the
-  wrap wants its own item, taken against the Forge with the Forge in front of you.
+- ~~Wrapped upgrade labels~~ - **done in round 3** once the owner authorized the Forge change.
 - **Segmented-control tabs - NOT done.** The plan floated replacing the ImGui tab bar with a custom
   segmented control. The tab bar is already themed, is the idiom used elsewhere in the app, and carries
   keyboard/focus behaviour a hand-drawn pair of buttons would have to reimplement. Not worth the risk

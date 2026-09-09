@@ -332,6 +332,7 @@ public class CombatCalculatorScreenTests
             CombatCalculatorScreen.VariablesHeader,
             CombatCalculatorScreen.AssumptionsLabel,
             CombatCalculatorScreen.AttackerBadge,
+            CombatCalculatorScreen.HeroTag,
             CombatCalculatorScreen.DefenderBadge,
             CombatCalculatorScreen.NoAttackerHint,
             CombatCalculatorScreen.NoDefenderHint,

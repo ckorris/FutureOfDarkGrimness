@@ -5,6 +5,8 @@ using System.Threading;
 using FDG;
 using FDG.Calculator;
 using FDG.Rules.Dispatch;
+using FDG.SaveLoad;
+using FdgRaylib.Rendering;
 using FdgRaylib.Rendering.CombatCalc;
 using NUnit.Framework;
 
@@ -192,4 +194,38 @@ public class CombatReportViewTests
             Thread.CurrentThread.CurrentCulture = original;
         }
     }
+    [Test]
+    public void AToughRatingIsReadOffTheTypedRuleForItsPill()
+    {
+        var unit = new UnitFileEntry
+        {
+            SpecialRules = { new SpecialRuleEntry_Core("Fearless"), new SpecialRuleEntry_CoreNumeric("Tough", 6) },
+        };
+
+        Assert.That(ForgeUnitDetail.ToughValue(unit), Is.EqualTo("6"));
+    }
+
+    [Test]
+    public void AToughHidingBehindABooksOwnNameStillCounts()
+    {
+        // "Ancient Hide (Tough(6))" - the unit is Tough however the book chose to name it.
+        var unit = new UnitFileEntry
+        {
+            SpecialRules =
+            {
+                new SpecialRuleEntry_Alias("Ancient Hide", new SpecialRuleEntry_CoreNumeric("Tough", 6)),
+            },
+        };
+
+        Assert.That(ForgeUnitDetail.ToughValue(unit), Is.EqualTo("6"));
+    }
+
+    [Test]
+    public void AUnitWithNoToughRuleGetsNoToughPill()
+    {
+        var unit = new UnitFileEntry { SpecialRules = { new SpecialRuleEntry_Core("Fearless") } };
+
+        Assert.That(ForgeUnitDetail.ToughValue(unit), Is.Null);
+    }
+
 }

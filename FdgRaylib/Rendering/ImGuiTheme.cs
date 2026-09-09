@@ -46,6 +46,14 @@ public static class ImGuiTheme
     // The darkest well tone, for the value half of a two-tone pill (#329).
     public static readonly Vector4 InkWell = Ink;
 
+    // #398: amber means DAMAGE, wherever damage is shown - the wounds figure, the spent portion of a
+    // wound meter, a wounded unit's pill. The army list already used this family for a wounded Tough
+    // pill; this is the same idea given one name, bright enough to carry large text on the charcoal.
+    public static readonly Vector4 DamageAmber = new(0.95f, 0.72f, 0.30f, 1f);
+
+    // #227's hero gold, shared so a hero reads the same in the printed list and in the calculator.
+    public static readonly Vector4 HeroGold = new(1f, 0.85f, 0.3f, 1f);
+
     // Opaque panel fill for modal dialogs that float above a dimmed backdrop (Host/Client). Matches the
     // lobby's panel tone (the theme window body) so the dialogs read as the same surface, not a blue slab.
     public static readonly Vector4 DialogPanelBg = Panel;
