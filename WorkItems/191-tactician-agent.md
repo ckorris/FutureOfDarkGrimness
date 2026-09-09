@@ -23,6 +23,73 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (11:05, Opus 5) - DECISION (Chris): THE LOBBY GETS TWO BOTS, "STRATEGIST" AND "MASTERMIND",
+DIFFERING ONLY IN MAX SEARCH ITERATIONS - NOT TIME. NOT IMPLEMENTED YET; THIS RECORDS THE DESIGN, THE FORKS
+IT OPENS, AND THE MEASUREMENT THAT PICKS THE TWO NUMBERS.**
+
+*Chris's framing (2026-09-09):* "The tuning will be the max iterations they can spend, nothing else. But I
+don't want to clock it on time, because that would mean the bot is smarter on a faster computer. I consider
+it acceptable that a slower computer takes longer to think." Targets: the Strategist should beat the
+Tactician by a good margin, and the Mastermind should be a significant gap above the Strategist.
+
+*Cost to build: almost nothing in the search.* `UctOptions.Iterations` already exists, is documented as
+"Iterations PER WORKER. Set => the search is deterministic and ignores the clock", and already flows through
+`RunWorkerAsync`; setting it makes `SearchResult.Deterministic` true. So this is a configuration + lobby/UI
+change plus two numbers, not new search machinery. The lab currently has no way to bench an iteration cap
+(`bench` takes only `--search-budget benchmark|interactive`; only the `b0` spike takes `--search-iterations`),
+so the measurement below needs one lab-side flag first.
+
+*Three consequences worth recording.*
+1. **Benches become reproducible.** Today every panel is time-budgeted and therefore not reproducible by
+   design - the b0 spike says so in its own output, and `bench.md`'s "Outcome hash (deterministic)" is only
+   a deterministic function OF the rows, not a promise the rows repeat. Under an iteration cap the hash
+   becomes a real regression check: same seeds + same cap => same games, on any machine.
+2. **The perf work changes meaning, in the direction Chris asked for.** Under a time budget, speed IS
+   strength (today's confirm: 1.6x the iterations per decision). Under an iteration cap, speed is only
+   speed: identical play, less waiting. That makes every future perf pass exactly the "pure performance gain
+   without tuning ramifications" Chris wants, with no strength re-measurement needed.
+3. **Iterations are PER WORKER, and workers are an ensemble, not depth.** Lobby play and the lab both use 4
+   workers, each searching its own determinization; merging four 256-iteration trees is not one
+   1024-iteration tree. So each bot must be defined as (iterations, workers) with workers pinned, or the
+   numbers do not mean anything.
+
+*Two design forks for Chris - not decided here.*
+- **(F1) Flat cap, or iterations scaled by root branching?** The time budget deliberately scales with root
+  units (`BudgetMsPerRootUnit`, "a 4k game gets more time, not a shallower tree", within a cap). A FLAT
+  iteration cap drops that rule: a 4k game would spread the same iterations over ~3x the root branching and
+  get a genuinely shallower tree than a 1k game. Recommend keeping the shape - iterations per root unit with
+  a floor and a cap - so the two bots mean the same thing at every army size. This is the more consequential
+  fork of the two.
+- **(F2) Any wall-clock backstop?** A pure iteration cap has no upper bound in seconds; on a slow machine, or
+  a pathological board, one activation could take a long time with no feedback. Options: pure cap (accept
+  it, matches Chris's stated preference), or cap + a generous timeout that only bites in the tail
+  (reintroduces hardware dependence, but only where the alternative is an apparent hang). A progress
+  indicator in the GUI may cover the real concern without a timeout.
+
+*Where the numbers sit today* (board A, 2k, 7 root units, post-perf, 30.1-30.8 ms per iteration measured
+this morning): the benchmark budget (1840 ms) buys ~58 iterations per worker; the interactive budget that
+ships (7800 ms here, 5-10 s range) buys ~256. So the shipping Strategist is already a "~256 iterations"
+bot on this hardware, and every panel number in this ledger is a measurement of roughly that.
+
+*Slope we already have.* The same four panels at ~58 vs ~256 iterations per worker, net leaf, 540 games a
+side: 67.7 -> 72.2 pooled vs the Tactician. That is +4.5 points for 4.4x the search, about +2.1 per
+doubling, and it is compressed by the ceiling - the Strategist already wins ~7 games in 10, so vs-Tactician
+score cannot resolve "a significant gap" between two strong bots. The older B-gate figure (+13.5 for 4.3x)
+was measured on weaker code at a lower base and should not be used for placing these budgets.
+
+*Measurement that picks the two numbers (queued behind the perf confirm).*
+- **Instrument: head-to-head.** Strategist(N) vs Strategist(M) directly, because that is the quantity Chris
+  is specifying ("a significant gap above Strategist") and it does not saturate. A vs-Tactician anchor runs
+  alongside for the absolute number ("beats the Tactician a lot more").
+- **Rungs (per worker, 4 workers):** 32 / 64 / 128 / 256 / 512 / 1024, spanning today's benchmark (~58) and
+  today's interactive (~256) so the new scale ties back to every existing result.
+- **Order:** a cost probe first (one game per rung, wall clock per rung - cost is linear in iterations, and
+  1024 will be ~4x a 256 game), then size the batch to the box rather than guess. Adjacent-rung head-to-head
+  cells plus vs-Tactician anchors at the candidate pair.
+- **Reading it:** pick the Strategist rung where vs-Tactician is comfortably high and a game still feels
+  responsive, then pick the Mastermind rung that beats that Strategist by a clear head-to-head margin
+  (a 60/40 head-to-head is a real gap even when both beat the Tactician ~72%).
+
 **2026-09-09 (10:40, Opus 5) - NET 3K RE-RUN DONE (73.7 vs 73.0 HAND). THE INTERACTIVE PANEL SCREEN IS NOW
 COMPLETE ON BOTH ARMS: NET 72.2 POOLED vs HAND 69.9 OVER 540 GAMES A SIDE. THE 15b NET-LEAF PROMOTION STANDS.**
 
