@@ -23,6 +23,43 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-09 (09:05, Fable 5.1) - SEAM BENCH: THE SEAM FIX SCORES 37.8 POOLED AGAINST 34.1 FOR THE PRE-SEAM
+SNAPSHOT (+3.7, ~1 SIGMA). THE FIX STANDS. NET 3K RE-RUN STARTED 08:57.**
+
+Same four low-ceiling 2k pairs, same seeds, benchmark budget, 16 candidates, Strategist vs Tactician scored for
+the Strategist, 48 games per cell, workstation GC, zero faults: `seambin` (the committed seam fix, super
+`55ca00b` / engine `d16d479`: a charge from range is prescribed as its Move, a Shaken unit is one edge; closed
+edges 214 -> 4 on board A) against the breadth slice's cb16 column (`phase1bin`, `6fb3162` / `883b676`, the
+same code without the fix).
+
+| pair | phase1 cb16 | seam cb16 |
+|---|---|---|
+| Dark Elf Raiders vs Dwarf Guilds | 35.4 | 39.6 |
+| Dwarf Guilds vs High Elf Fleets | 44.8 | 47.9 |
+| Human Defense Force vs Orks | 32.3 | 28.1 |
+| Robot Legions vs Alien Hives | 24.0 | 35.4 |
+| pooled (192 games each) | 34.1 | 37.8 |
+
+Three pairs up, one down; pooled +3.7 on 192 games a side, about one sigma of the ~3.5-point noise. Read it
+as level-or-better: the fix was a correctness change (charge edges that used to fall through at play now
+play as prescribed) and it costs nothing in strength, so `d16d479` stays and no revert is needed. Every perf
+pass since (3-10) sits on top of it with identical trees, so the panel numbers and this bench describe the
+shipped search.
+
+Candidate budget follow-up (Chris, 08:55: "if 4 candidates is 4x faster than 16 but does not matter for
+smarts, why not just do it?"). Answer given: the search is time-budgeted, so fewer candidates already turn
+into more iterations inside the same wall time - that is exactly what the slice measured as equal strength -
+and a game takes the same time either way; and the per-iteration saving is ~1.7x, not 4x (edge enumeration
+is 57% of an iteration on board A by the pass-9 stage table, the simulation and leaf are untouched). The
+real prize would be "4 candidates at half the budget" matching "16 at the full budget": a genuine 2x on
+training/validation throughput. Proposed as a two-arm follow-up on the same four pairs (~70 minutes with the
+retrying runner), queued only on Chris's say-so, behind the net 3k re-run. Caveats recorded: four weak 2k
+pairs at 192 games each can hide a 3-point effect, and a shipped-default change would re-baseline every
+panel (all ran at 16).
+
+Net 3k re-run (`queue-net3k.sh`, `step15bin` net leaf, points-3k panel, workstation GC, three games at a time)
+released at 08:57:03 and resumed from 69 banked of 150. Its result closes the 3k hand-vs-net question.
+
 **2026-09-09 (08:30, Fable 5.1) - BREADTH SLICE RESULT: 16, 8 AND 4 CANDIDATES SCORE THE SAME (34.1 / 34.1 / 34.9
 POOLED). BREADTH DOES NOT MATTER AT THE BENCHMARK BUDGET; NO PHASE 2 WIDENING WORK IS MOTIVATED.**
 
