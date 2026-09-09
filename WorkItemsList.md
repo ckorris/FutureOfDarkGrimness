@@ -155,6 +155,8 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
+- [~] 397 - Combat Calculator: new main-menu screen pitting unit A against unit B (Shooting/Melee tabs), each side built Forge-style (upgrades, combined squads, joined hero) from a bundled book or a loaded .fdgarmy. Expected hits/wounds come from running the REAL stage chain in a throwaway sandbox, never a mirror; every bundled unit probed. Bell curve + strike-back explicitly deferred. Implemented + tested; **awaiting GUI hand-verify**. ([WorkItems/397](WorkItems/397-combat-calculator.md))
+- [ ] 398 - Combat Calculator visual/usability pass: headline block in LargeFont, one pipeline row per weapon (Attacks->Hits->Saves->Wounds) with shared chips and the #292 rule underline, situation bar moved beside the results, 30/40/30 columns with wrapped upgrade lines. ([WorkItems/398](WorkItems/398-combat-calculator-ux.md))
 - [~] 393 - Large 3-point terrain pieces: the heavy tier was seven pieces, so games placed one of each. Ten palette-only templates added (9-11.5" long side, all four filter types), auto layout untouched. Implemented + tested; **awaiting GUI hand-verify**. ([WorkItems/393](WorkItems/393-large-terrain-pieces.md))
 - [~] 394 - Terrain picker type filter: All / Impassible / Cover / Difficult / Dangerous buttons above the piece list, filtering as a pure view (pool indices untouched). CLI picker deferred. Implemented + tested; **awaiting GUI hand-verify** (the ImGui row is not unit-testable). ([WorkItems/394](WorkItems/394-terrain-picker-type-filter.md))
 

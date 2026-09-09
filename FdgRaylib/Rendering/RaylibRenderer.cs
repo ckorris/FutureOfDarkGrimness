@@ -50,6 +50,7 @@ public class RaylibRenderer
     public MainMenuScreen    MainMenu     { get; } = new();
     public ArmyBuilderScreen ArmyBuilder  { get; } = new();
     public ArmyForgeScreen   ArmyForge    { get; } = new();
+    public CombatCalculatorScreen CombatCalculator { get; } = new();
     public HostModal         HostModal    { get; } = new();
     public ClientModal       ClientModal  { get; } = new();
     public LobbyScreen       LobbyScreen  { get; } = new();

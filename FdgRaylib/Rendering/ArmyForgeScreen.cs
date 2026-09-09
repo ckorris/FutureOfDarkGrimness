@@ -137,7 +137,7 @@ public class ArmyForgeScreen : IAppScreen
 
     public ArmyForgeScreen()
     {
-        _libraryTask = Task.Run(LoadLibrary);
+        _libraryTask = BookLibrary.LoadAsync();
     }
 
     /// <summary>Joins the background library load and adopts the first book as current. No-op once the
@@ -145,7 +145,7 @@ public class ArmyForgeScreen : IAppScreen
     private void EnsureLibrary()
     {
         if (_library is not null) return;
-        _library = _libraryTask!.GetAwaiter().GetResult();
+        _library = new List<BookFile>(_libraryTask!.GetAwaiter().GetResult());
         _libraryTask = null;
         _libraryNames = _library.Select(b => b.Name).ToArray();
         InitSystems();
@@ -217,29 +217,6 @@ public class ArmyForgeScreen : IAppScreen
     {
         _book = book;
         _glossary = RuleGlossary.Build(book);
-    }
-
-    // Every .fdgbook bundled under Assets/Books/ (the imported OPR snapshots). The hand-authored demo book
-    // is deliberately NOT in the dropdown (it confused the list next to real factions — hand-verify round 2);
-    // it remains only as a fallback so the screen still works in an environment with no bundled books.
-    private static List<BookFile> LoadLibrary()
-    {
-        var books = new List<BookFile>();
-        string dir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
-        if (Directory.Exists(dir))
-        {
-            foreach (string path in Directory.EnumerateFiles(dir, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p))
-            {
-                try
-                {
-                    BookFile? book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options);
-                    if (book is not null) books.Add(book);
-                }
-                catch { /* skip a malformed book rather than crash the screen */ }
-            }
-        }
-        if (books.Count == 0) books.Add(DemoBook.Build());
-        return books;
     }
 
     private void SwitchBook(int index)
@@ -626,27 +603,16 @@ public class ArmyForgeScreen : IAppScreen
     internal void AddToList(string rosterId)
     {
         EnsureLibrary();
-        RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == rosterId);
-        if (roster is null) return;
-        _list.Units.Add(new BuilderUnit { RosterUnitId = roster.Id, ModelCount = roster.BaseModelCount });
-        _selectedListIndex = _list.Units.Count - 1;
+        int added = BuilderListEditing.AddUnit(_book, _list, rosterId);
+        if (added < 0) return;
+        _selectedListIndex = added;
         _selectedRosterId = null; // list + roster selection are mutually exclusive (the config pane shows one)
     }
 
     internal void RemoveFromList(int index)
     {
         EnsureLibrary();
-        if (index < 0 || index >= _list.Units.Count) return;
-        string? removedId = _list.Units[index].Id;
-        _list.Units.RemoveAt(index);
-        // Clear any dangling link to the removed unit so a surviving combine/join partner stays a clean,
-        // warning-free independent unit (e.g. removing one half of a combined pair un-combines the other).
-        if (!string.IsNullOrEmpty(removedId))
-            foreach (BuilderUnit u in _list.Units)
-            {
-                if (u.CombinedWithId == removedId) u.CombinedWithId = null;
-                if (u.JoinsUnitId == removedId) u.JoinsUnitId = null;
-            }
+        if (!BuilderListEditing.RemoveUnit(_list, index)) return;
         _selectedListIndex = _list.Units.Count == 0 ? null : Math.Min(_selectedListIndex ?? 0, _list.Units.Count - 1);
     }
 
@@ -995,19 +961,8 @@ public class ArmyForgeScreen : IAppScreen
         // Recompile this unit with its wargear-item detail (names survive) for display + target availability.
         (UnitFileEntry unit, List<ItemEntry> items) = ListCompiler.CompileUnitDetailed(_book, bu);
 
-        ImGui.TextUnformatted(ArmyBuilderScreen.UnitStatLine(unit));
-        ImGui.SameLine();
-        ImGui.TextDisabled($"({unit.PointCost} pts)");
-        ImGui.Separator();
-
-        ImGui.Indent();
-        foreach (WeaponFileEntry weapon in unit.Weapons)
-            RuleTextFlow.Draw(RuleTextFlow.WeaponLine(weapon), _glossary, ImGuiCol.TextDisabled);
-        foreach (ItemEntry item in items)
-            RuleTextFlow.Draw(RuleTextFlow.ItemLine(item), _glossary, ImGuiCol.TextDisabled);
-        if (unit.SpecialRules.Count > 0)
-            RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.SpecialRules), _glossary, ImGuiCol.TextDisabled);
-        ImGui.Unindent();
+        ForgeUnitDetail.DrawHeader(unit);
+        ForgeUnitDetail.DrawGear(unit, items, _glossary);
 
         DrawHeroJoin(idx, unit, rows);
         DrawCombinedCheckbox(idx, unit);
@@ -1018,7 +973,7 @@ public class ArmyForgeScreen : IAppScreen
             // When combined, the partner copy is the mirror target for whole-unit (Affects=All) upgrades.
             int partnerIdx = CombinePartnerIndex(idx);
             BuilderUnit? mirror = partnerIdx >= 0 ? _list.Units[partnerIdx] : null;
-            DrawUpgradeEditors(_book, _glossary, bu, roster, unit, items, mirror);
+            ForgeUnitDetail.DrawUpgrades(_book, _glossary, bu, roster, unit, items, mirror);
         }
     }
 
@@ -1080,18 +1035,7 @@ public class ArmyForgeScreen : IAppScreen
     internal int CombinePartnerIndex(int idx)
     {
         EnsureLibrary();
-        if (idx < 0 || idx >= _list.Units.Count) return -1;
-        BuilderUnit bu = _list.Units[idx];
-        for (int i = 0; i < _list.Units.Count; i++)
-        {
-            if (i == idx) continue;
-            BuilderUnit other = _list.Units[i];
-            if (other.RosterUnitId != bu.RosterUnitId) continue;
-            bool buLinksOther = !string.IsNullOrEmpty(bu.CombinedWithId) && bu.CombinedWithId == other.Id;
-            bool otherLinksBu = !string.IsNullOrEmpty(other.CombinedWithId) && other.CombinedWithId == bu.Id;
-            if (buLinksOther || otherLinksBu) return i;
-        }
-        return -1;
+        return BuilderListEditing.CombinePartnerIndex(_list, idx);
     }
 
     internal bool IsCombined(int idx) => CombinePartnerIndex(idx) >= 0;
@@ -1102,53 +1046,18 @@ public class ArmyForgeScreen : IAppScreen
     internal void SetCombined(int idx, bool on)
     {
         EnsureLibrary();
-        if (idx < 0 || idx >= _list.Units.Count) return;
-        int partner = CombinePartnerIndex(idx);
-        if (on)
-        {
-            if (partner >= 0 || !CanCombine(idx)) return;
-            BuilderUnit bu = _list.Units[idx];
-            var copy = new BuilderUnit
-            {
-                RosterUnitId = bu.RosterUnitId,
-                ModelCount = bu.ModelCount,
-                CombinedWithId = EnsureId(bu),
-            };
-            SeedMirroredChoices(bu, copy); // whole-unit (Affects=All) picks start mirrored on the new copy
-            _list.Units.Insert(idx + 1, copy);
-            _selectedListIndex = idx; // keep viewing the base copy
-        }
-        else
-        {
-            if (partner < 0) return;
-            // Remove the SPAWNED copy (the one carrying the link); the base survives as a normal unit.
-            int spawned = !string.IsNullOrEmpty(_list.Units[idx].CombinedWithId) ? idx : partner;
-            int survivor = spawned == idx ? partner : idx;
-            RemoveFromList(spawned);
-            // RemoveFromList's generic clamp doesn't know which row survived — point the selection at the
-            // surviving partner explicitly (its index shifts down by one if it sat after the removed row).
-            _selectedListIndex = survivor > spawned ? survivor - 1 : survivor;
-        }
+        int selected = BuilderListEditing.SetCombined(_book, _list, idx, on);
+        if (selected >= 0) _selectedListIndex = selected;
     }
 
     /// <summary>A unit may be combined only if it is multi-model and not a Hero (mirrors the OPR eligibility
     /// the compiler/validator assume).</summary>
-    private bool CanCombine(int idx)
-    {
-        (UnitFileEntry unit, _) = ListCompiler.CompileUnitDetailed(_book, _list.Units[idx]);
-        return unit.ModelCount > 1 && !ForceOrgValidator.IsHero(unit);
-    }
+    private bool CanCombine(int idx) => BuilderListEditing.CanCombine(_book, _list, idx);
 
     /// <summary>List indices of units a hero at <paramref name="heroIdx"/> may join: other multi-model,
     /// non-Hero units (mirrors the #006 eligibility the engine enforces at setup).</summary>
-    internal List<int> HostCandidates(int heroIdx, IReadOnlyList<UnitFileEntry> rows)
-    {
-        var hosts = new List<int>();
-        for (int i = 0; i < rows.Count; i++)
-            if (i != heroIdx && rows[i].ModelCount > 1 && !ForceOrgValidator.IsHero(rows[i]))
-                hosts.Add(i);
-        return hosts;
-    }
+    internal List<int> HostCandidates(int heroIdx, IReadOnlyList<UnitFileEntry> rows) =>
+        BuilderListEditing.HostCandidates(rows, heroIdx);
 
     // Disambiguates duplicate squads in combos: "Retributors [5]", "Retributors [5] #2", ...
     private string ListRowLabel(int idx, IReadOnlyList<UnitFileEntry> rows)
@@ -1160,100 +1069,9 @@ public class ArmyForgeScreen : IAppScreen
         return nth > 1 ? $"{unit.Name} [{unit.ModelCount}] #{nth}" : $"{unit.Name} [{unit.ModelCount}]";
     }
 
-    internal static string EnsureId(BuilderUnit unit) =>
-        unit.Id ??= Guid.NewGuid().ToString("N");
+    internal static string EnsureId(BuilderUnit unit) => BuilderListEditing.EnsureId(unit);
 
-    // Interactive upgrade sections: mutate the BuilderUnit's choices; the per-frame recompile re-costs live.
-    // When <paramref name="mirror"/> is non-null this unit is combined, and whole-unit (Affects=All) sections
-    // are shared: any edit to one is copied to the partner copy (marked "[linked]"), so a "Replace all X" swap
-    // applies to both halves and is paid on both. Per-model/one/any sections stay independent per copy.
-    private static void DrawUpgradeEditors(BookFile book, RuleGlossary glossary, BuilderUnit bu, RosterUnit roster,
-        UnitFileEntry compiledUnit, List<ItemEntry> items, BuilderUnit? mirror = null)
-    {
-        if (roster.Sections.Count == 0) return;
-        ImGui.Spacing();
-        ImGui.TextDisabled("UPGRADES");
-        ImGui.Separator();
 
-        foreach (UpgradeSection section in roster.Sections)
-        {
-            bool isReplace = section.Variant == UpgradeVariant.Replace;
-            bool linked = mirror != null && section.Affects == UpgradeAffects.All;
-            // #324: when a single-target all-swap above this section has been taken, the compiler now leaves
-            // this section its copies rather than eating the pool - so availability must be measured against
-            // that same reservation, or the Forge would gray out a swap the compiler would honour. Only pay
-            // for the extra compile when such a rival is actually selected.
-            int available = !isReplace ? int.MaxValue
-                : YieldingAllSwapChosen(bu, roster, section)
-                    ? ReplacePool(book, bu, roster, section, excludeOwn: false)
-                    : ListCompiler.AvailableApplications(compiledUnit.Weapons, items, section.Targets);
-            // Availability ignoring this section's OWN pick: a mutually-exclusive (radio) pick returns its
-            // replaced target to the pool the moment you switch away, so other options must not gray out
-            // just because the current pick consumed the target (hand-verify round 2). Also drives the
-            // header: "(none to replace)" only when there's no target even without this section's choice.
-            int switchAvailable = isReplace ? AvailableExcludingSection(book, bu, section) : int.MaxValue;
-
-            ImGui.TextUnformatted(section.Label);
-            if (linked)
-            {
-                ImGui.SameLine();
-                ImGui.TextColored(CyanText, "[linked]");
-            }
-            if (isReplace && switchAvailable == 0)
-            {
-                ImGui.SameLine();
-                ImGui.TextDisabled("(none to replace)");
-            }
-            ImGui.Indent();
-
-            if (section.IsCounted) // "any"/"up to N" or add-models → a stepper
-            {
-                // #383: a per-model section ("Any model may replace/take ...") spends one pick per MODEL,
-                // shared across its options — 3 models may take 3x of one gun OR spread across guns, never
-                // 3 of each. Other counted sections keep independent steppers.
-                int sectionTotal = section.PerModelBudget
-                    ? section.Options.Sum(o => ChoiceCount(bu, section.Id, o.Id))
-                    : 0;
-                foreach (UpgradeOption option in section.Options)
-                {
-                    int v = ChoiceCount(bu, section.Id, option.Id);
-                    DrawStepper(bu, glossary, section, option, v,
-                        StepperMax(section, roster, compiledUnit, available, v, sectionTotal - v));
-                }
-            }
-            else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
-            {
-                bool noneChosen = !section.Options.Any(o => IsChosen(bu, section.Id, o.Id));
-                if (ImGui.RadioButton($"- none -##{section.Id}-none", noneChosen))
-                    ApplyChoice(bu, mirror, section, string.Empty, 0);
-                foreach (UpgradeOption option in section.Options)
-                {
-                    bool chosen = IsChosen(bu, section.Id, option.Id);
-                    ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
-                    if (ImGui.RadioButton($"{OptionSummary(option)}##{section.Id}-{option.Id}", chosen))
-                        ApplyChoice(bu, mirror, section, option.Id, 1);
-                    // Inside the disabled scope so the underline picks up the same dimmed text color.
-                    RuleTextFlow.DecorateControlLabel(
-                        RuleTextFlow.OptionLabel(option, OptionSummary(option)), glossary);
-                    ImGui.EndDisabled();
-                }
-            }
-            else // single option (binary) or multi-select → checkboxes
-            {
-                foreach (UpgradeOption option in section.Options)
-                {
-                    bool chosen = IsChosen(bu, section.Id, option.Id);
-                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
-                    if (ImGui.Checkbox($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref chosen))
-                        ApplyChoice(bu, mirror, section, option.Id, chosen ? 1 : 0);
-                    RuleTextFlow.DecorateControlLabel(
-                        RuleTextFlow.OptionLabel(option, OptionSummary(option)), glossary);
-                    ImGui.EndDisabled();
-                }
-            }
-            ImGui.Unindent();
-        }
-    }
 
     /// <summary>
     /// Upper bound for one option's stepper in a counted section: the section's own hard cap ("up to N"),
@@ -1285,35 +1103,7 @@ public class ArmyForgeScreen : IAppScreen
         return max;
     }
 
-    // Counted-section control: [-] [count] [+] label. The buttons gray individually at their bound (- at 0,
-    // + at max) and the type-in box has no internal step buttons (step 0), so it's wide enough for the number.
-    private static void DrawStepper(BuilderUnit bu, RuleGlossary glossary, UpgradeSection section,
-        UpgradeOption option, int v, int max)
-    {
-        string id = $"{section.Id}-{option.Id}";
-        float frameH = ImGui.GetFrameHeight();
 
-        ImGui.BeginDisabled(v <= 0);
-        if (ImGui.Button($"-##{id}-dec", new Vector2(frameH, frameH)))
-            SetChoice(bu, section, option.Id, v - 1);
-        ImGui.EndDisabled();
-        ImGui.SameLine();
-
-        int typed = v;
-        ImGui.SetNextItemWidth(ImGui.GetFontSize() * 2.5f);
-        ImGui.BeginDisabled(max == 0 && v == 0);
-        if (ImGui.InputInt($"##{id}-val", ref typed, 0))
-            SetChoice(bu, section, option.Id, Math.Clamp(typed, 0, max));
-        ImGui.EndDisabled();
-        ImGui.SameLine();
-
-        ImGui.BeginDisabled(v >= max);
-        if (ImGui.Button($"+##{id}-inc", new Vector2(frameH, frameH)))
-            SetChoice(bu, section, option.Id, v + 1);
-        ImGui.EndDisabled();
-        ImGui.SameLine();
-        RuleTextFlow.Draw(RuleTextFlow.OptionLabel(option, OptionSummary(option)), glossary, ImGuiCol.Text);
-    }
 
     /// <summary>Replace-target availability computed WITHOUT this section's own choices — the pool an
     /// option could draw on if the section's current pick were released (radio switching, header text).</summary>
@@ -1323,15 +1113,19 @@ public class ArmyForgeScreen : IAppScreen
         return roster is null ? 0 : ReplacePool(book, bu, roster, section, excludeOwn: true);
     }
 
+
+
+
+
     /// <summary>Whether a single-target all-swap that must YIELD to <paramref name="section"/> (#324) is
     /// currently selected — the only case where availability has to be re-measured against the reservation
     /// rather than read off the already-compiled unit.</summary>
-    private static bool YieldingAllSwapChosen(BuilderUnit bu, RosterUnit roster, UpgradeSection section) =>
+    internal static bool YieldingAllSwapChosen(BuilderUnit bu, RosterUnit roster, UpgradeSection section) =>
         bu.Choices.Any(c => YieldsTo(roster, c.SectionId, section));
 
     // The all-swap at `sectionId` leaves copies for `claimant` when it is a single-target all-swap authored
     // ABOVE the claimant and they compete for the same weapon — mirroring ListCompiler's reservation rule.
-    private static bool YieldsTo(RosterUnit roster, string sectionId, UpgradeSection claimant)
+    internal static bool YieldsTo(RosterUnit roster, string sectionId, UpgradeSection claimant)
     {
         int index = roster.Sections.FindIndex(s => s.Id == sectionId);
         if (index < 0 || index >= roster.Sections.FindIndex(s => s.Id == claimant.Id)) return false;
@@ -1652,53 +1446,30 @@ public class ArmyForgeScreen : IAppScreen
     // ── Choice-mutation seams (unit-tested without ImGui) ───────────────────────────────────────────────
 
     internal static int ChoiceCount(BuilderUnit unit, string sectionId, string optionId) =>
-        unit.Choices.FirstOrDefault(c => c.SectionId == sectionId && c.OptionId == optionId)?.Count ?? 0;
+        BuilderListEditing.ChoiceCount(unit, sectionId, optionId);
 
     internal static bool IsChosen(BuilderUnit unit, string sectionId, string optionId) =>
-        ChoiceCount(unit, sectionId, optionId) > 0;
+        BuilderListEditing.IsChosen(unit, sectionId, optionId);
 
     /// <summary>Set (count &gt; 0) or clear (count == 0) an option. A single-select section (toggle with
     /// MaxPicks ≤ 1) is mutually exclusive — choosing one clears the section's other pick. (MaxPicks &gt; 1
     /// caps are deferred — no demo/OPR section needs them yet.)</summary>
-    internal static void SetChoice(BuilderUnit unit, UpgradeSection section, string optionId, int count)
-    {
-        bool singleSelect = !section.IsCounted && section.MaxPicks <= 1;
-        if (singleSelect)
-            unit.Choices.RemoveAll(c => c.SectionId == section.Id);
-        else
-            unit.Choices.RemoveAll(c => c.SectionId == section.Id && c.OptionId == optionId);
-
-        if (count > 0)
-            unit.Choices.Add(new UpgradeChoice { SectionId = section.Id, OptionId = optionId, Count = count });
-    }
+    internal static void SetChoice(BuilderUnit unit, UpgradeSection section, string optionId, int count) =>
+        BuilderListEditing.SetChoice(unit, section, optionId, count);
 
     /// <summary>Apply a choice to <paramref name="unit"/>, then — for a shared whole-unit (Affects=All)
     /// section of a combined pair — mirror the section's whole resulting choice set onto <paramref
     /// name="mirror"/>, so both halves carry the same "Replace all X" swap (and each pays for it).</summary>
-    internal static void ApplyChoice(BuilderUnit unit, BuilderUnit? mirror, UpgradeSection section, string optionId, int count)
-    {
-        SetChoice(unit, section, optionId, count);
-        if (mirror != null && section.Affects == UpgradeAffects.All)
-            MirrorSection(unit, mirror, section.Id);
-    }
+    internal static void ApplyChoice(BuilderUnit unit, BuilderUnit? mirror, UpgradeSection section, string optionId, int count) =>
+        BuilderListEditing.ApplyChoice(unit, mirror, section, optionId, count);
 
     /// <summary>Replace <paramref name="to"/>'s choices for one section with a clone of <paramref name="from"/>'s
     /// — a full resync (robust to multi-select and prior divergence), not a per-toggle echo.</summary>
-    private static void MirrorSection(BuilderUnit from, BuilderUnit to, string sectionId)
-    {
-        to.Choices.RemoveAll(c => c.SectionId == sectionId);
-        to.Choices.AddRange(from.Choices
-            .Where(c => c.SectionId == sectionId)
-            .Select(c => new UpgradeChoice { SectionId = c.SectionId, OptionId = c.OptionId, Count = c.Count }));
-    }
+    private static void MirrorSection(BuilderUnit from, BuilderUnit to, string sectionId) =>
+        BuilderListEditing.MirrorSection(from, to, sectionId);
 
     /// <summary>Seed a freshly spawned combined copy with the base's whole-unit (Affects=All) choices, so the
     /// pair starts already mirrored rather than only syncing on the next edit.</summary>
-    private void SeedMirroredChoices(BuilderUnit from, BuilderUnit to)
-    {
-        RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == from.RosterUnitId);
-        if (roster is null) return;
-        foreach (UpgradeSection s in roster.Sections.Where(s => s.Affects == UpgradeAffects.All))
-            MirrorSection(from, to, s.Id);
-    }
+    private void SeedMirroredChoices(BuilderUnit from, BuilderUnit to) =>
+        BuilderListEditing.SeedMirroredChoices(_book, from, to);
 }
