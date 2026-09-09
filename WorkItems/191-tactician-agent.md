@@ -23,6 +23,37 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (19:47, Fable 5.1) - SEARCH PERF PASS 7: THE ARMY RULE-DATA PARSE IS MEMOIZED (SIMULATED SERVER
+2.31 -> 1.87 ms), AND THE NEW PROBES NAME THE NEXT TWO TARGETS: THE CORE RULE RESOLVER IS REBUILT PER
+SIMULATION (1.44 ms, 4.6% OF AN ITERATION) AND THE SHOOT GATE IS THE WHOLE ACTION-STAGE COST (0.46 ms PER
+ENTRY, 4.6%).**
+
+Exact: `ArmyRuleDataPersistence.Deserialize` keeps one parse per distinct JSON (a search resumes hundreds
+of games from clones of one store; every consumer only reads the result - the resolver keeps the
+definition references, spells are re-resolved into new RuntimeSpell objects, SpawnUnit reads the
+auxiliary specs). Probes (instrumentation only) on the seven action-stage gates and the three parts of
+the simulated server's resume constructor. Suite 3291/0/1; both boards identical, zero non-timing diff
+lines.
+
+| board A, quiet box | pass 6 | pass 7 |
+|---|---|---|
+| ms per iteration, timing on | 32.0 | 32.1 |
+| ms per iteration, plain (two samples) | - | 31.3 / 30.0 |
+| SimServer per simulation | 2.31 ms | 1.87 ms (SrvResolver 1.44, SrvRestore 0.08, SrvLaunch 0.14) |
+| MB allocated per iteration | 10.2 | 10.2 |
+
+Gate split per action-stage entry (969 entries): GateShoot 0.46 ms (108.8 KB), GateCast 0.05, GateCharge
+0.04, GatePass 0.04, GateOffers 0.01, GateMove and GateAllowed ~0. In-sim spans: ChooseActionStage 29.4%
+of SimRun, PileInStage 14.2% (2.34 ms per span), DeterminePlayerTurnStage 13.7% (the boundary capture and
+leaf sit inside it), CastSpellStage 6.9%, ChooseRangedAttackStage 6.3%.
+
+Panel screen: the hand/points-3k cell crashed a THIRD and FOURTH time (19:09 x2 on retry, 19:37 under
+the default GC); the runtime's own dumps show a non-managed GC thread faulting each time and the engine
+has no unsafe code, so the collector is tripping on its own heap. The settings all four crashes shared
+are the 12 GiB hard limit and RetainVM, and this is the cell with the largest heaps; at 19:40 the screen
+moved to `c-panels-interactive5.sh` (Server GC defaults, no hard limit, no RetainVM, crash dumps on;
+`rss.log` watches memory). Next single change if it recurs: tiered PGO off.
+
 **2026-09-08 (19:36, Fable 5.1) - SEARCH PERF PASS 6 LANDED: PER-ACTIVATION MEMOS OF THE OBJECTIVE PROJECTION
 AND THE PER-UNIT MOVE BUDGETS. THE WORK IT TARGETED DROPS (PROJECTIONS 11,111 -> 2,703 CALLS, MOVE QUERIES
 90,538 -> 62,087) BUT THE SINGLE TIMED RUN READS 32.0 -> 32.0 ms: INSIDE THIS MEASUREMENT'S NOISE.**
