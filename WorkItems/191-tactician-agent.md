@@ -65,12 +65,17 @@ desktops/Threadrippers and does nothing for the players most likely to be on a s
 cheaper alternative is Chris's own standing rule: cap 4k's iterations (about 224 lands at ~9.3 s)
 rather than buy the time back with interop that only some machines can use.
 
-**Open for Chris (three ways to put 4k under the ceiling, pick one):** (a) build slice 2 and accept
-that it is a no-op on single-L3 machines; (b) scale the iteration cap down with army size so 4k gets
-~224 instead of 256 - no new code, and the 13:30 coverage formula already says per-unit quality falls
-at 4k whatever we do; (c) accept 10.6 s at 4k as inside the spirit of a 10 s ceiling. My
-recommendation is (b) first, since it costs nothing and applies on every machine, with (a) after the
-allocation work if the ceiling still binds.
+**Chris's call (17:15): ACCEPT 10.6 s at 4k.** The 10 s figure is a target at the largest army size,
+not a hard bound, and it is not worth either an iteration cap or the affinity interop to shave one
+second off the biggest game anyone plays. So: **the flat 256 stands at every size, slice 2 (thread
+affinity) is NOT being built**, and the three options that were open here - affinity, a size-scaled
+cap, accept - are closed in favour of the third. Affinity stays on record as a measured ~10% that a
+multi-L3 machine could still collect if the ceiling ever binds again.
+
+**Chris's call (17:15), next in this strand: the snapshot-per-node allocation** (headroom item 2,
+~9.5 MB per iteration through `StoreClone.Clone` / `StoreSnapshot.Materialize`). It is the largest
+structural win left and it relieves the `--dop 4` bench cap, so it buys experiment throughput as well
+as player wait.
 
 
 **2026-09-09 (16:10, Opus 5) - SLICE 1 LANDED: EVERY ROOT WORKER NOW OWNS AN OS THREAD. BOARD A's
