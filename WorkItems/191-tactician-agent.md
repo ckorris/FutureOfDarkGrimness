@@ -23,6 +23,34 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (19:36, Fable 5.1) - SEARCH PERF PASS 6 LANDED: PER-ACTIVATION MEMOS OF THE OBJECTIVE PROJECTION
+AND THE PER-UNIT MOVE BUDGETS. THE WORK IT TARGETED DROPS (PROJECTIONS 11,111 -> 2,703 CALLS, MOVE QUERIES
+90,538 -> 62,087) BUT THE SINGLE TIMED RUN READS 32.0 -> 32.0 ms: INSIDE THIS MEASUREMENT'S NOISE.**
+
+Plan item 2, exact: `TacticianPlanner` keeps the objective projection and each unit's Advance / Rush /
+Charge budgets from `BeginActivation` until the activation's own move (the planner scores exactly once
+per activation before any board change; the two early returns that change the board first - cast and
+disembark - drop the memos); `FactsOf`, `MeleeApproachAgainst`, `MarkerContestable`,
+`BestAlternativeTargetValue`, `ProjectedEnemyPosition`, `MeleeThreatTotal`, `ObjectiveApproach`,
+`ObjectiveDelta`, `Posture` and `WantsDisembark` read them. `TacticianActivationResolver.ActivationScores`
+memoizes each enemy's advance across the units it scores; `MacroActionGenerator` computes the unit's own
+charge budget once per enumeration instead of once per charge target. Suite 3291/0/1.
+
+| board A, quiet box, timing on | pass 5 | pass 6 |
+|---|---|---|
+| ms per iteration | 32.0 | 32.0 |
+| MB allocated per iteration | 10.6 | 10.2 |
+| ObjectiveProj | 574 ms, 11,111 calls | 168 ms, 2,703 calls |
+| MoveQuery | 474 ms, 90,538 calls | 309 ms, 62,087 calls |
+| RuleDispatch walks | 932,265 | 786,357 |
+| Scoring (4,144 candidates) | 0.79 ms each | 0.74 ms each |
+
+The ~600 ms the counters say were removed should read as ~2 ms per iteration; stages this pass does not
+touch moved by as much between the two runs (Combat 1633 -> 1781, EnumerateUnits 897 -> 1003), so one
+timed run cannot resolve it. From pass 7 on each build gets the timed run plus two plain runs
+(`measure-quiet2.sh`), and the plain minimum is the number. Oracle: both boards identical to the committed
+build, zero non-timing diff lines.
+
 **2026-09-08 (19:27, Fable 5.1) - SEARCH PERF PASS 5 LANDED: THE COMBAT-ESTIMATE ALLOCATION DIET. BOARD A
 35.4 -> 32.0 ms PER ITERATION, COMBAT 2005 -> 1633 ms OVER THE SAME 93,876 ESTIMATES, TREES IDENTICAL.**
 
