@@ -23,6 +23,41 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (21:10, Fable 5.1) - SEARCH PERF PASS 9 LANDED (PILE-IN GEOMETRY: BOARD A PLAIN 27.7 -> 26.6 ms PER
+ITERATION), AND THE 3k CRASH IS ISOLATED: ONE GAME SEGFAULTS A GC THREAD UNDER SERVER GC AND COMPLETES UNDER
+WORKSTATION GC. THE HAND 3k CELL FINISHED UNDER WORKSTATION GC.**
+
+Pass 9, exact, inside `PileInUtilities`: the moving body's hull is built once per test instead of once per
+pair; a body whose circumscribed circle cannot come within the overlap tolerance (or cannot beat the best
+gap so far, or cannot be reached within the step bound) is skipped before the hull gap; each charger's hull
+is built once per contact-slot bisection instead of 24 times per direction. Suite 3291/0/1; both boards
+identical to the committed build, zero non-timing diff lines (175 pile-ins on board A alone).
+
+| board A, quiet box | pass 8 | pass 9 |
+|---|---|---|
+| ms per iteration, plain (two samples) | 29.0 / 27.7 | 26.6 / 26.9 |
+| ms per iteration, timing on | 28.2 | 29.0 (noise) |
+| MB allocated per iteration | 9.9 | 9.5 |
+| PileInStage span (175) | 2.35 ms, 901.7 KB | 1.47 ms, 277.5 KB |
+
+Cumulative since the 14:20 seam fix (board A, plain): 46.6 -> 26.6 ms per iteration (-43%), 19.9 -> 9.5 MB.
+
+THE CRASH. Standalone: `repro-3k.sh` plays matchup 3 of the 3k panel (`armies/3k - Eternal Dynasty` vs
+`armies/3k - DAO Union`, seed 6001, one game at a time, the panel binary) and segfaults on a GC thread in
+~72 s under Server GC (default settings, no hard limit, no RetainVM); with `DOTNET_TieredPGO=0` it still
+crashes (4:43 in); with `DOTNET_gcServer=0` both games complete (7 minutes). Tiering-off ran 46 minutes
+without a fault but at a fraction of the speed and was stopped with one of its two games done; the
+hardware-intrinsics variant was skipped. The engine has no unsafe code. Conclusion: a .NET 8.0.26 Server GC
+fault that this game's allocation pattern triggers; nothing engine-side to fix, so 3k/4k cells run with
+`DOTNET_gcServer=0` (`c-panels-interactive8.sh`, since 19:55; outcomes are GC-independent per #392).
+Recorded in memory (`project_server_gc_crash`) with the repro command, to re-check after any runtime update.
+
+Panel screen: hand/points-3k COMPLETE at 20:32 under workstation GC (Battle Brothers vs Goblin Reclaimers
+63.3, Knight Brothers vs Robot Legions 66.7, Saurian Starhost vs Soul-Snatcher Cults 65.0, Eternal Dynasty vs
+DAO Union 81.7, Titan Lords vs Goblin Reclaimers 88.3 - Strategist score, 30 games each); net/points-3k
+running since 20:33 (62 banked at 21:03); 4k cells follow, then the queued breadth slice and seam bench.
+Item 8 (worker scaling, GC knobs) is running on the quiet box now.
+
 **2026-09-08 (20:03, Fable 5.1) - SEARCH PERF PASS 8 LANDED: SHARED HOOK CATALOG, CACHED WEAPON PROFILE KEYS, ONE
 SIGHT-BLOCKER SET PER SHOOT REQUEST, NO COVER EVALUATION ON THE GATE PATH, LINE OF SIGHT MEMOIZED PER
 ATTACKER ACROSS ITS WEAPONS. BOARD A 32.1 -> 28.2 ms PER ITERATION (TIMING ON), PLAIN 30.0 -> 27.7, TREES
