@@ -23,6 +23,36 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (19:27, Fable 5.1) - SEARCH PERF PASS 5 LANDED: THE COMBAT-ESTIMATE ALLOCATION DIET. BOARD A
+35.4 -> 32.0 ms PER ITERATION, COMBAT 2005 -> 1633 ms OVER THE SAME 93,876 ESTIMATES, TREES IDENTICAL.**
+
+Plan item 5, exact, all inside `CombatMath`: `Ops` returns `Array.Empty` for the (usual) empty answer and
+copies with a loop otherwise; the defender's living models are gathered once per volley instead of once
+per dispatch (three); every sink is built and applied only when its operation list is non-empty (an empty
+list leaves each sink at its default: no floor, net 0, multiplier 1, no reroll, no injection, no ignore);
+the per-hit splitter is skipped for an empty list (it would return exactly the one-group list built in
+its place); the volley context record is copied once per estimate rather than per weapon batch; the
+weapon batcher uses one shared comparer and no closure; melee builds the defender's participant array
+once and reads StrikeFirst / ExtraMeleeWoundCount without LINQ. Suite 3291/0/1.
+
+| board A, quiet box, timing on | pass 4 | pass 5 |
+|---|---|---|
+| ms per iteration | 35.4 | 32.0 |
+| MB allocated per iteration | 11.1 | 10.6 |
+| Combat (93,876 estimates) | 2005 ms, 9.3 KB each | 1633 ms, 7.9 KB each |
+| Scoring (4,144 candidates) | 0.91 ms each | 0.79 ms each |
+
+Oracle: both boards' trees identical to the committed build's; full logs identical under the timing and
+id masks (the spike's own decision-table verdict aside, and on board B the section-1 capture probe's
+5-second stop window, which the loaded box missed in this run - a watchdog line, the search after it is
+identical). Cumulative since the 14:20 seam fix: 46.6 -> 32.0 ms per iteration plain-equivalent (49.0 ->
+32.0 with the timing report on), 19.9 -> 10.6 MB per iteration.
+
+Remaining: Scoring 34.2%, Expand 36.3% (SimRun 28.1%, SimServer 7.0%), Candidates 19.9%, EnumerateUnits
+9.3%; callees Combat 17.0%, PlanMove 14.7%, PlanValidate 11.7%, RuleDispatch 8.8%, ObjectiveProj 6.0%,
+MoveQuery 4.9%. Pass 6 is plan item 2 (per-activation memos of the objective projection and the per-unit
+move budgets), then the in-sim action gates (item 6) and the server-construction drill (item 7).
+
 **2026-09-08 (19:20, Fable 5.1) - SEARCH PERF PASS 4 LANDED: THE RULE-DISPATCH LISTENER FAST PATH. BOARD A
 38.9 -> 35.4 ms PER ITERATION, RULE DISPATCH 2552 -> 905 ms OVER THE SAME 932,265 WALKS, TREES IDENTICAL.**
 
