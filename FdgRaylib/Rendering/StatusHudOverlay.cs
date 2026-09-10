@@ -113,14 +113,22 @@ public static class StatusHudOverlay
             var (color, playerName, taskName) = waiting[i];
             string prefix = "Waiting on ";
             string rest   = $": {taskName}";
-            int prefixW = Raylib.MeasureText(prefix, WaitFontSize);
-            int nameW   = Raylib.MeasureText(playerName, WaitFontSize);
-            int restW   = Raylib.MeasureText(rest, WaitFontSize);
 
-            int x = (areaWidth - (prefixW + nameW + restW)) / 2;
-            DrawTextShadow(prefix, x, y, WaitDim, WaitFontSize);
-            DrawTextShadow(playerName, x + prefixW, y, color, WaitFontSize);
-            DrawTextShadow(rest, x + prefixW + nameW, y, WaitDim, WaitFontSize);
+            // #399: the line is drawn in three runs so the player's name can carry their table colour,
+            // and each run has to start where the previous run's LAST GLYPH ends - plus the gap raylib
+            // would have put between two glyphs of one string. MeasureText returns
+            // sum(advances) + (count - 1) * spacing: no trailing spacing, because a string has nothing
+            // after its last glyph. Laying the runs out at raw measured widths therefore closed one
+            // `spacing` at every seam, which is why the colon sat hard against the name.
+            var (prefixX, nameX, restX) = WaitLineRuns(areaWidth,
+                Raylib.MeasureText(prefix, WaitFontSize),
+                Raylib.MeasureText(playerName, WaitFontSize),
+                Raylib.MeasureText(rest, WaitFontSize),
+                GlyphSpacing(WaitFontSize));
+
+            DrawTextShadow(prefix, prefixX, y, WaitDim, WaitFontSize);
+            DrawTextShadow(playerName, nameX, y, color, WaitFontSize);
+            DrawTextShadow(rest, restX, y, WaitDim, WaitFontSize);
             y += WaitFontSize + WaitLineGap;
         }
 
@@ -131,6 +139,34 @@ public static class StatusHudOverlay
                 WaitDim, WaitFontSize);
         }
     }
+
+    /// <summary>
+    /// #399 - where each of the "Waiting on " / name / ": task" runs starts, centred as one line.
+    /// The line is painted in three pieces so the name can carry the player's table colour, and each
+    /// piece has to begin one <paramref name="glyphSpacing"/> past where the last one ended:
+    /// <see cref="Raylib.MeasureText"/> returns sum(advances) + (count - 1) * spacing, with no
+    /// trailing gap, because a string has nothing after its last glyph. Laying the runs out at raw
+    /// measured widths therefore closed one gap at every seam - which is why the colon sat hard
+    /// against the player's name. Two seams, so the centred whole is two spacings wider than the sum.
+    ///
+    /// <para>Pure integer layout, kept separate from the drawing so it can be pinned by a test:
+    /// <see cref="Raylib.MeasureText"/> needs a loaded font and answers 0 without a window.</para>
+    /// </summary>
+    internal static (int prefixX, int nameX, int restX) WaitLineRuns(
+        int areaWidth, int prefixW, int nameW, int restW, int glyphSpacing)
+    {
+        int totalW = prefixW + glyphSpacing + nameW + glyphSpacing + restW;
+        int prefixX = (areaWidth - totalW) / 2;
+        int nameX = prefixX + prefixW + glyphSpacing;
+        return (prefixX, nameX, nameX + nameW + glyphSpacing);
+    }
+
+    /// <summary>
+    /// The character spacing <c>DrawText</c>/<c>MeasureText</c> use with the default font: raylib
+    /// derives it as fontSize / defaultFontSize (10), integer division, with the size floored at 10.
+    /// Mirrored rather than guessed so the seam matches the glyph gaps on either side of it exactly.
+    /// </summary>
+    internal static int GlyphSpacing(int fontSize) => Math.Max(10, fontSize) / 10;
 
     private static readonly Color Shadow = new(0, 0, 0, 190);
 

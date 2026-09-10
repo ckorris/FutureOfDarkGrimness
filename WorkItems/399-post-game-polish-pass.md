@@ -21,7 +21,7 @@ commit) or explicitly deferred with a reason recorded here.
   marker the deployment subsystem *reads* (its own doc comment says so), but `RuleEvaluator.Log`
   narrates it, and `ChooseUnitToActivateStage.GetUnavailableReason` re-evaluates it for every reserved
   unit on every activation prompt. Same shape as the #197 `CapabilityOperation` spam stream.
-- [ ] **C — Colon too tight after the player's name** in the status HUD's "Waiting on Bob: ..." line.
+- [x] **C — Colon too tight after the player's name** in the status HUD's "Waiting on Bob: ..." line.
   `StatusHudOverlay.DrawWaitingLines` positions three separately-measured runs; raylib's `MeasureText`
   omits the trailing inter-glyph spacing, so every seam loses one `fontSize/10`.
 - [x] **D — Terrain: impassible == blocking, no height values.** Authored palette only (owner's call,
@@ -35,6 +35,11 @@ commit) or explicitly deferred with a reason recorded here.
 
 ## Notes
 
+- 2026-09-09: **C shipped.** `StatusHudOverlay.WaitLineRuns` - pure integer layout for the three runs,
+  each starting one `GlyphSpacing` past the last one's end. raylib's `MeasureText` is
+  sum(advances) + (count - 1) * spacing, no trailing gap, so laying the runs out at raw measured widths
+  closed a gap at every seam. Extracted rather than inlined because `MeasureText` needs a loaded font
+  and answers 0 with no window - `FdgRaylib.Tests/StatusHudWaitLineTests.cs` pins the offsets instead.
 - 2026-09-09: **A shipped.** `GroupSelfOverlap` (new file,
   `FdgRaylib/Rendering/Resolvers/`) holds the pairwise rule as a pure function over poses;
   `GuiDefineMovementResolver.MarkGroupSelfOverlaps` builds the poses and draws one `SelfOverlapLabel`
