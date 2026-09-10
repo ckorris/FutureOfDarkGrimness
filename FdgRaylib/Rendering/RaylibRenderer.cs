@@ -551,6 +551,16 @@ public class RaylibRenderer
                     SpellOverlay.Draw(spellBeat, spellProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 }
 
+                // #399: the dust a unit throws up arriving from reserve. Drawn after the spell layer and
+                // over the models - they are already placed by the time the beat plays, so the cloud
+                // settling is what reveals them.
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveArrival(out var arrivalBeat, out var arrivalProgress))
+                {
+                    DustOverlay.Draw(arrivalBeat, arrivalProgress, layout.Scale, layout.OriginX,
+                        layout.OriginY, TableHIn);
+                }
+
                 // #327: handed to the tooltip overlay below. Its unit labels are ImGui draw-list text and
                 // therefore land ON TOP of these Raylib-drawn panels, so they have to know where the stack
                 // is in order to yield to it.

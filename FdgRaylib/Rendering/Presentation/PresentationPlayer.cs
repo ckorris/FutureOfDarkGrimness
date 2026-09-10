@@ -211,6 +211,12 @@ public class PresentationPlayer : IPresentationSink
     // currently-active SpellEffectBeat (null when none). Non-held, so it owns the active slot for its
     // full duration — that ordering IS the feature: assists, then the outcome, then the targets.
     private SpellEffectBeat? _activeSpell;
+
+    // #399 arrival from reserve. Same shape as the spell/save tracks: the beat plus its 0..1 progress,
+    // read once per frame by the overlay. Nothing is pre-registered at enqueue the way a move or a
+    // death is - the models are already placed and already drawn, and the cloud goes over them.
+    private UnitArrivedBeat? _activeArrival;
+    private float _arrivalProgress;
     private float _spellProgress;
 
     private static readonly TextColor DeathTint = new(220, 40, 40, 255);  // red, fades out
@@ -628,6 +634,10 @@ public class PresentationPlayer : IPresentationSink
                 _activeSpell = spell;
                 _spellProgress = t;
                 break;
+            case UnitArrivedBeat arrived:
+                _activeArrival = arrived;
+                _arrivalProgress = t;
+                break;
             // ModelWoundedBeat is a presence flag (registered at enqueue, cleared on finish) — no per-frame work.
         }
     }
@@ -657,6 +667,9 @@ public class PresentationPlayer : IPresentationSink
                 break;
             case SpellEffectBeat:
                 _activeSpell = null;
+                break;
+            case UnitArrivedBeat:
+                _activeArrival = null;
                 break;
             case ModelWoundedBeat wounded:
                 _wounded.Remove(wounded.Model.ID); // back to normal color
@@ -746,6 +759,17 @@ public class PresentationPlayer : IPresentationSink
             beat = _activeSpell!;
             progress = _spellProgress;
             return _activeSpell != null;
+        }
+    }
+
+    /// <summary>The arrival from reserve being shown this frame, if any, with its 0..1 progress (#399).</summary>
+    public bool TryGetActiveArrival(out UnitArrivedBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeArrival!;
+            progress = _arrivalProgress;
+            return _activeArrival != null;
         }
     }
 

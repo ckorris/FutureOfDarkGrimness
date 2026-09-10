@@ -29,12 +29,24 @@ commit) or explicitly deferred with a reason recorded here.
 - [x] **E — "Activated" tag overlaps a long unit name** in the in-game army list card.
   `ArmyListOverlay.DrawCardHeader` centres the header, then `SameLine`s the tag at the right margin with
   no width reserved.
-- [~] **F — Dust cloud when an ambusher arrives.** New engine presentation beat (owner's call).
+- [x] **F — Dust cloud when an ambusher arrives.** New engine presentation beat (owner's call).
 - [x] **G — "Finish the move" overruns its button** in the done-confirmation popup: `Vector2(160f, h)`
   is hard-coded while the app scales its style and font for the display.
 
 ## Notes
 
+- 2026-09-09: **F front-end half shipped.** `DustCloudPlan` (pure geometry) + `DustOverlay` (Raylib
+  drawing), on the same active-beat + progress track as the spell and save overlays. Two layers per
+  model: a ground ring that snaps out in the first 45% (the kick) and seven puffs that bloom, drift out
+  and thin (the cloud), staggered by model index so a rank ripples. No RNG anywhere - the beat crosses
+  the wire, so the cloud has to be a pure function of it or two clients would draw different clouds;
+  `DustCloudPlanTests` pins that. Drawn over the models: they are already placed when the beat plays,
+  so the dust settling is what reveals them. Deliberately no sound cue - `CueFor` falls through to null
+  and adding one would mean a new cue key plus placeholder samples, which is a separate change.
+- 2026-09-09: Bookkeeping: the submodule pointer bump for B, D and F's engine half rode the facet A
+  commit (596b030) rather than getting its own - `git add -A` at the superproject root staged it. The
+  cadence held (submodule committed first, pointer bumped alongside app-side changes); noting it so the
+  history is not confusing to read back.
 - 2026-09-09: **G shipped.** `ResolverPanelLayout.ConfirmButtonWidth` sizes a confirmation row from its
   labels (longest + frame padding both sides, floored at 8 ems so "Yes"/"No" pairs stay clickable).
   Applied to all three popups that carried pixel constants, not just the reported one: the move
