@@ -26,7 +26,7 @@ commit) or explicitly deferred with a reason recorded here.
   omits the trailing inter-glyph spacing, so every seam loses one `fontSize/10`.
 - [x] **D — Terrain: impassible == blocking, no height values.** Authored palette only (owner's call,
   2026-09-09).
-- [ ] **E — "Activated" tag overlaps a long unit name** in the in-game army list card.
+- [x] **E — "Activated" tag overlaps a long unit name** in the in-game army list card.
   `ArmyListOverlay.DrawCardHeader` centres the header, then `SameLine`s the tag at the right margin with
   no width reserved.
 - [~] **F — Dust cloud when an ambusher arrives.** New engine presentation beat (owner's call).
@@ -35,6 +35,12 @@ commit) or explicitly deferred with a reason recorded here.
 
 ## Notes
 
+- 2026-09-09: **E shipped.** `UnitCardHeaderLayout.Decide` reserves the tag's room first: the header
+  centres in what is left when it fits there, otherwise the tag drops to its own right-aligned line
+  under the header (what the compact table view already did). Nothing is truncated - the name is how a
+  player finds the unit. The header is measured at the 1.12x scale it is DRAWN at, or names just inside
+  the boundary would be judged against 1x widths and overlap again. `CenterNextText` gained a
+  centre-within-width overload. Tests: `FdgRaylib.Tests/UnitCardHeaderLayoutTests.cs`.
 - 2026-09-09: **C shipped.** `StatusHudOverlay.WaitLineRuns` - pure integer layout for the three runs,
   each starting one `GlyphSpacing` past the last one's end. raylib's `MeasureText` is
   sum(advances) + (count - 1) * spacing, no trailing gap, so laying the runs out at raw measured widths

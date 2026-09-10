@@ -57,6 +57,11 @@ public sealed class ArmyListOverlay
     private readonly Dictionary<UnitID, float> _cardHeights = new();
 
     private static readonly Vector4 ActivatedRed  = new(1f, 0.30f, 0.30f, 1f);   // tooltip's red
+
+    // Named once so the width the card header reserves for the tag and the text it draws can never
+    // drift apart (#399) - a reservation measured from a different string is how the tag ends up on
+    // the name again.
+    private const string ActivatedTag = "Activated";
     private static readonly Vector4 HeroGold      = new(1f, 0.85f, 0.3f, 1f);    // #227 hero tag
     private static readonly Vector4 WoundedAmber  = new(0.72f, 0.48f, 0.16f, 1f);
     private static readonly Vector4 PillText      = new(1f, 1f, 1f, 1f);
@@ -340,7 +345,7 @@ public sealed class ArmyListOverlay
         }
         else if (UnitActivation.HasActivated(_tableState!.Progress, unit))
         {
-            ImGui.TextColored(ActivatedRed, "Activated");
+            ImGui.TextColored(ActivatedRed, ActivatedTag);
         }
         DrawTokenChips(unit);
 
@@ -547,16 +552,32 @@ public sealed class ArmyListOverlay
             ? $"{unit.Name} {count} - {ud.PointCost}pts"
             : $"{unit.Name} {count}";
 
+        bool activated = !destroyed && UnitActivation.HasActivated(_tableState!.Progress, unit);
+
+        // #399: the tag is right-aligned on the header's own line, which worked only while headers were
+        // short - the header is CENTERED, so a long one ("Immortal Guardian Bodyguard [5] - 285pts")
+        // grows past the width the tag needs and the red text lands on top of the name. Reserve the tag's
+        // room first: when the header still fits in what is left, centre it there and keep the tag beside
+        // it; when it does not, the tag drops to its own right-aligned line under the header, which is
+        // what the compact table view has always done.
+        float tagW = activated ? ImGui.CalcTextSize(ActivatedTag).X : 0f;
+        float availW = ImGui.GetContentRegionAvail().X;
+
+        // The header is measured at the scale it is DRAWN at, or a 1.12x header would be judged against
+        // 1x widths and the tag would go back on top of it for names just inside the boundary.
         ImGui.SetWindowFontScale(1.12f);
-        CenterNextText(header);
+        float headerW = ImGui.CalcTextSize(header).X;
+        var plan = UnitCardHeaderLayout.Decide(headerW, tagW, ImGui.GetStyle().ItemSpacing.X, availW);
+        CenterNextText(header, plan.CenterHeaderWithin);
         ImGui.TextUnformatted(header);
         ImGui.SetWindowFontScale(1f);
 
-        if (!destroyed && UnitActivation.HasActivated(_tableState!.Progress, unit))
+        if (activated)
         {
-            ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X
-                - ImGui.CalcTextSize("Activated").X);
-            ImGui.TextColored(ActivatedRed, "Activated");
+            float tagX = ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - tagW;
+            if (plan.TagOnHeaderLine) ImGui.SameLine(tagX);
+            else ImGui.SetCursorPosX(tagX);
+            ImGui.TextColored(ActivatedRed, ActivatedTag);
         }
 
         // After the Activated tag, whose SameLine has to attach to the header itself.
@@ -769,8 +790,16 @@ public sealed class ArmyListOverlay
     }
 
     private static void CenterNextText(string text)
+        => CenterNextText(text, ImGui.GetContentRegionAvail().X);
+
+    /// <summary>
+    /// Centres the next text within <paramref name="withinWidth"/> rather than the whole content
+    /// region (#399) - so a header sharing its line with a right-aligned tag centres in the space the
+    /// tag left it, instead of centring across the tag and running underneath it.
+    /// </summary>
+    private static void CenterNextText(string text, float withinWidth)
     {
-        float indent = (ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize(text).X) * 0.5f;
+        float indent = (withinWidth - ImGui.CalcTextSize(text).X) * 0.5f;
         if (indent > 0f) ImGui.SetCursorPosX(ImGui.GetCursorPosX() + indent);
     }
 
