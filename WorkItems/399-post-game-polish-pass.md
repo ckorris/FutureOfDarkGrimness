@@ -1,6 +1,6 @@
 # 399 — Post-game polish pass (2026-09-09 session report)
 
-**Status**: in-progress
+**Status**: done
 **Related**: #366 (ValidateNoSelfOverlap), #277 (group formations), #197 (CapabilityOperation log spam),
 #393/#394 (terrain palette), #329 (army list cards), #322 (status HUD)
 
@@ -103,4 +103,32 @@ commit) or explicitly deferred with a reason recorded here.
 
 ## Outcome
 
-_Written when the item closes._
+All seven facets shipped, one commit each, engine first (three submodule commits: the DeferDeployment
+log drop, the terrain pool, `UnitArrivedBeat`) then the app. Engine suite 3318 green, app suite 2910
+green, headless smoke exits 0.
+
+Two extra defects of the same class were found and fixed alongside the reported ones, rather than left
+for the next report:
+- `GuiConsolidationMoveResolver` had the identical self-overlap gap as the movement resolver
+  (`PhantomOverlapsOtherUnit` skips the moving unit), and a consolidation step is not rigid even when
+  its rotation is - the formation morph, the coherency repair and the per-model table clamp each move
+  one model relative to another.
+- Single-model movement's `WouldOverlapAnyModel` took a unitmate's POSITION from its plan but its
+  FACING from its resting attitude, measuring a base that exists nowhere. Invisible for circles.
+- The hard-coded confirm-button width was in three popups, not one; all three were sized from their
+  labels.
+
+Deliberately NOT done, so it is on the record rather than quietly dropped:
+- **Terrain height stayed in the schema.** Per the owner's call the change is authored-palette only:
+  `HeightInches` remains on `ITerrain`, `TerrainData`, `TerrainPieceEntry` and `ScenarioFile`, and the
+  table tooltip still prints it when a piece has one - so a hand-authored layout or scenario file can
+  still set a height, and can still separate Impassible from Blocking. Only the built-in pool is
+  normalized. If height is to leave the model entirely, that is a schema change worth its own number.
+- **`ETerrainType.Elevated` untouched** - see Decisions.
+- **No sound cue for the arrival.** `PresentationSoundCues.CueFor` falls through to null for
+  `UnitArrivedBeat`. Adding one means a new cue key plus placeholder samples; the ask was a visual.
+- **Aircraft return and Reinforcement arrival get no dust cloud.** They share `PlaceFromReserve` /
+  the same stage but come on from a table edge, which is a different entrance; the beat is emitted from
+  the ambush path only. Easy to widen if the owner wants it.
+- **The dust cloud is unverified on screen.** Its geometry is unit-tested and the beat plumbing is
+  integration-tested, but nobody has watched an ambush land in the GUI yet.

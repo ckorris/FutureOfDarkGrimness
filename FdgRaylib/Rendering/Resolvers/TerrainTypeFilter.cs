@@ -10,9 +10,11 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// button carries, and the single predicate the button row and the list both run, so a button can never
 /// claim a count the list disagrees with.
 ///
-/// <para><see cref="ETerrainType.Blocking"/> deliberately has no button: every Blocking piece in the
-/// built-in palette is also Impassible, so it would duplicate that button's contents. A hand-authored
-/// layout file with a Blocking-only piece is reachable under All, which is always offered.</para>
+/// <para><see cref="ETerrainType.Blocking"/> deliberately has no button: it would duplicate the
+/// Impassible button's contents exactly. Since #399 that is true in BOTH directions - the built-in pool
+/// no longer separates the two flags, so there is no "walk around it, shoot over it" tier for a second
+/// button to find. A hand-authored layout file may still carry a piece with one flag and not the other;
+/// it is reachable under All, which is always offered.</para>
 ///
 /// <para><see cref="ETerrainType.Elevated"/> has no button either - no engine code reads the flag, so
 /// filtering by it would always come back empty (see <c>DefaultTerrainPool</c>).</para>
