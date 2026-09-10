@@ -30,11 +30,17 @@ commit) or explicitly deferred with a reason recorded here.
   `ArmyListOverlay.DrawCardHeader` centres the header, then `SameLine`s the tag at the right margin with
   no width reserved.
 - [~] **F — Dust cloud when an ambusher arrives.** New engine presentation beat (owner's call).
-- [ ] **G — "Finish the move" overruns its button** in the done-confirmation popup: `Vector2(160f, h)`
+- [x] **G — "Finish the move" overruns its button** in the done-confirmation popup: `Vector2(160f, h)`
   is hard-coded while the app scales its style and font for the display.
 
 ## Notes
 
+- 2026-09-09: **G shipped.** `ResolverPanelLayout.ConfirmButtonWidth` sizes a confirmation row from its
+  labels (longest + frame padding both sides, floored at 8 ems so "Yes"/"No" pairs stay clickable).
+  Applied to all three popups that carried pixel constants, not just the reported one: the move
+  done-confirm (160f), the aircraft fly-off confirm (140f) and the stop-shooting confirm (150f) - the
+  same latent overrun in each, since the app scales its font for the display. Tests appended to
+  `ResolverPanelLayoutTests`.
 - 2026-09-09: **E shipped.** `UnitCardHeaderLayout.Decide` reserves the tag's room first: the header
   centres in what is left when it fits there, otherwise the tag drops to its own right-aligned line
   under the header (what the compact table view already did). Nothing is truncated - the name is how a

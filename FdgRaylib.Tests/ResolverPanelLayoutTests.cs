@@ -59,4 +59,60 @@ public class ResolverPanelLayoutTests
         Assert.That(ResolverPanelLayout.OptionRowLineMultiple, Is.GreaterThan(2f),
             "Back/Cancel (2.0 line heights) must read as subordinate to a full option row");
     }
+
+    // #399 - the confirmation popups carried hard-coded button widths (140f, 150f, 160f) while the app
+    // scales its font for the display, so "Finish the move" ran off the side of its button. The widths
+    // now come from the labels; ImGui.CalcTextSize needs a live frame, so the arithmetic overload is
+    // what is pinned.
+    [Test]
+    public void ConfirmButtonWidth_FitsTheLongestLabelPlusPaddingOnBothSides()
+    {
+        const float padding = 6f;
+
+        // Both labels comfortably clear the ems floor, so this pins the text branch on its own.
+        float w = ResolverPanelLayout.ConfirmButtonWidth(fontSize: 18f, framePaddingX: padding,
+            220f, 80f);
+
+        Assert.That(w, Is.EqualTo(220f + padding * 2f).Within(0.001f),
+            "the longest label decides, and it must not sit flush against either edge");
+    }
+
+    [Test]
+    public void ConfirmButtonWidth_IsOneWidthForTheWholeRow()
+    {
+        // Both buttons of a pair are drawn at this width, so the answer must not depend on which label
+        // is asked about first - a mismatched pair reads as one button being the "real" one.
+        float a = ResolverPanelLayout.ConfirmButtonWidth(18f, 6f, 220f, 80f);
+        float b = ResolverPanelLayout.ConfirmButtonWidth(18f, 6f, 80f, 220f);
+
+        Assert.That(a, Is.EqualTo(b).Within(0.001f));
+    }
+
+    [Test]
+    public void ConfirmButtonWidth_ScalesWithTheFont()
+    {
+        // The defect in one assertion: a 4K font makes the same label wider, and the button must follow
+        // it. A pixel constant does not, which is how the label came to overrun.
+        float small = ResolverPanelLayout.ConfirmButtonWidth(18f, 6f, 220f);
+        float large = ResolverPanelLayout.ConfirmButtonWidth(25f, 8f, 220f * (25f / 18f));
+
+        Assert.That(large, Is.GreaterThan(small));
+    }
+
+    [Test]
+    public void ConfirmButtonWidth_FloorsShortLabelsAtTheMinimum()
+    {
+        // "Yes" / "No" must not collapse into two little squares now that the width follows the text.
+        float w = ResolverPanelLayout.ConfirmButtonWidth(fontSize: 18f, framePaddingX: 6f, 20f);
+
+        Assert.That(w, Is.EqualTo(18f * ResolverPanelLayout.ConfirmButtonMinEms).Within(0.001f));
+    }
+
+    [Test]
+    public void ConfirmButtonWidth_MinimumAlsoScalesWithTheFont()
+    {
+        Assert.That(ResolverPanelLayout.ConfirmButtonWidth(25f, 6f, 20f),
+            Is.GreaterThan(ResolverPanelLayout.ConfirmButtonWidth(18f, 6f, 20f)),
+            "the floor is in ems, so it grows with the display like everything else does");
+    }
 }

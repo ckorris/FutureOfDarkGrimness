@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using ImGuiNET;
 
@@ -62,6 +63,41 @@ public static class ResolverPanelLayout
 
     /// <inheritdoc cref="ActionRowLineMultiple"/>
     public static float ActionRowHeight() => ActionRowHeight(ImGui.GetTextLineHeight());
+
+    /// <summary>
+    /// #399 - the minimum width of a confirmation button, in multiples of the font size. Keeps a pair of
+    /// short answers ("Yes" / "No") from collapsing into two little squares now that the width follows
+    /// the text instead of a hard-coded pixel count.
+    /// </summary>
+    public const float ConfirmButtonMinEms = 8f;
+
+    /// <summary>
+    /// Width for a row of confirmation buttons: wide enough for the LONGEST of
+    /// <paramref name="labelWidths"/> plus the frame padding on both sides, floored at
+    /// <see cref="ConfirmButtonMinEms"/> ems. One width for the whole row, so the buttons match each
+    /// other regardless of which label is longer.
+    ///
+    /// <para>#399: these popups carried hard-coded widths (140f, 150f, 160f). The app scales its whole
+    /// style AND its font for the display (<c>ScaleAllSizes</c> plus an <c>18f * uiScale</c> font), so a
+    /// pixel count tuned on one monitor is a label running off the edge of the button on a bigger one -
+    /// which is exactly what "Finish the move" did. Pure arithmetic, like the row heights above; the
+    /// live-font overload measures for callers inside a frame.</para>
+    /// </summary>
+    public static float ConfirmButtonWidth(float fontSize, float framePaddingX,
+        params float[] labelWidths)
+    {
+        float widest = 0f;
+        foreach (float w in labelWidths) widest = MathF.Max(widest, w);
+        return MathF.Max(widest + framePaddingX * 2f, fontSize * ConfirmButtonMinEms);
+    }
+
+    /// <inheritdoc cref="ConfirmButtonWidth(float, float, float[])"/>
+    public static float ConfirmButtonWidth(params string[] labels)
+    {
+        var widths = new float[labels.Length];
+        for (int i = 0; i < labels.Length; i++) widths[i] = ImGui.CalcTextSize(labels[i]).X;
+        return ConfirmButtonWidth(ImGui.GetFontSize(), ImGui.GetStyle().FramePadding.X, widths);
+    }
 
     /// <summary>
     /// Pins the next window to the resolver panel region and begins it with docked flags (no move/resize,

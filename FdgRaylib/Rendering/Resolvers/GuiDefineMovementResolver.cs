@@ -103,6 +103,10 @@ public class GuiDefineMovementResolver
     /// behind it, and a stray click would drop a waypoint the player never saw them place.</summary>
     private bool _donePopupOpen;
     private const string DonePopupTitle = "Finish the move?";
+
+    // Named so the width the popup reserves and the text it draws are measured from the same strings.
+    private const string FinishMoveLabel = "Finish the move";
+    private const string KeepMovingLabel = "Keep moving";
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
     // #162 tactical overlay hook: hover-anchored fields, band snap, pips. Null in headless / before
@@ -1613,7 +1617,11 @@ public class GuiDefineMovementResolver
 
         ImGui.Spacing();
         float confirmH = ResolverPanelLayout.OptionRowHeight();
-        if (ImGui.Button("Finish the move", new Vector2(160f, confirmH)))
+        // #399: sized from the labels, not a hard-coded 160f - the app scales its font for the display,
+        // so "Finish the move" outgrew the box it was given.
+        var confirmSize = new Vector2(
+            ResolverPanelLayout.ConfirmButtonWidth(FinishMoveLabel, KeepMovingLabel), confirmH);
+        if (ImGui.Button(FinishMoveLabel, confirmSize))
         {
             ImGui.CloseCurrentPopup();
             ImGui.EndPopup();
@@ -1623,7 +1631,7 @@ public class GuiDefineMovementResolver
             return true;
         }
         ImGui.SameLine();
-        if (ImGui.Button("Keep moving", new Vector2(160f, confirmH)))
+        if (ImGui.Button(KeepMovingLabel, confirmSize))
         {
             ImGui.CloseCurrentPopup();
             _donePopupOpen = false;

@@ -178,7 +178,8 @@ public class GuiAircraftAdvanceResolver
                     "(no shooting), and it flies back on from a table edge at the start of the next round.");
                 ImGui.Spacing();
                 float confirmH = ResolverPanelLayout.OptionRowHeight();   // #298
-                if (ImGui.Button("Yes, fly off", new Vector2(140f, confirmH)))
+                if (ImGui.Button("Yes, fly off", new Vector2(
+                    ResolverPanelLayout.ConfirmButtonWidth("Yes, fly off", "No, keep moving"), confirmH)))
                 {
                     ImGui.CloseCurrentPopup();
                     ImGui.EndPopup();
@@ -186,7 +187,8 @@ public class GuiAircraftAdvanceResolver
                     return;
                 }
                 ImGui.SameLine();
-                if (ImGui.Button("No, keep moving", new Vector2(140f, confirmH)))
+                if (ImGui.Button("No, keep moving", new Vector2(
+                    ResolverPanelLayout.ConfirmButtonWidth("Yes, fly off", "No, keep moving"), confirmH)))
                 {
                     ImGui.CloseCurrentPopup();
                     _confirmOpen = false;

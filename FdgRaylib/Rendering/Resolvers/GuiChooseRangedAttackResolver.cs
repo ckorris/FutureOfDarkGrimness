@@ -722,7 +722,12 @@ public class GuiChooseRangedAttackResolver
 
         ImGui.Spacing();
         float confirmH = ResolverPanelLayout.OptionRowHeight();
-        if (ImGui.Button(DeclaredShotText.StopConfirmLabel(request.DeclareFirst), new Vector2(150f, confirmH)))
+        // #399: one text-derived width for the pair, so neither label can outgrow its button.
+        string stopLabel = DeclaredShotText.StopConfirmLabel(request.DeclareFirst);
+        string keepLabel = request.DeclareFirst ? "Keep declaring" : "Keep shooting";
+        var confirmSize = new Vector2(
+            ResolverPanelLayout.ConfirmButtonWidth(stopLabel, keepLabel), confirmH);
+        if (ImGui.Button(stopLabel, confirmSize))
         {
             ImGui.CloseCurrentPopup();
             ImGui.EndPopup();
@@ -730,7 +735,7 @@ public class GuiChooseRangedAttackResolver
             return true;
         }
         ImGui.SameLine();
-        if (ImGui.Button(request.DeclareFirst ? "Keep declaring" : "Keep shooting", new Vector2(150f, confirmH)))
+        if (ImGui.Button(keepLabel, confirmSize))
         {
             ImGui.CloseCurrentPopup();
             _donePopupOpen = false;
