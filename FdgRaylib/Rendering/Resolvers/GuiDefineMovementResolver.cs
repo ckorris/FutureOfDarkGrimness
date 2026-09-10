@@ -635,7 +635,7 @@ public class GuiDefineMovementResolver
             float cumWithGhost = totalSoFar + allowed;
             MoveBand ghostBand = ClassifyBand(cumWithGhost, maxAdvance, maxRush, hasChargeBand);
             ghostExtraDist = allowed;
-            ghostOverlaps  = WouldOverlapAnyModel(ghostPos.Value, ghostFacing, _selectedModel, request, paths);
+            ghostOverlaps  = WouldOverlapAnyModel(ghostPos.Value, ghostFacing, _selectedModel, request, pt, paths);
 
             // #213: a path that would move THROUGH impassible terrain is invalid - a model can't cross it. Flag
             // it up front (red base + red line + un-clickable) instead of letting you place it and only blocking
@@ -1162,6 +1162,24 @@ public class GuiDefineMovementResolver
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
         }
 
+        // #399: and the pair the loop above cannot see - two models of THIS unit landing on top of each
+        // other. GroupPositionBlocked skips the moving unit outright ("my own cohesion governs my models'
+        // spacing"), but cohesion is a MAXIMUM-distance rule: two models 0" apart satisfy it perfectly.
+        // The engine's ValidateNoSelfOverlap catches it at Done; nothing caught it while placing, so the
+        // step committed and only the Done gate complained, pointing at a waypoint already on the table.
+        //
+        // The case that surfaced it is specific to non-circular bases: a group step turns every phantom
+        // to ONE shared heading, so dragging a rank of rectangles sideways swings each 2.36"-long base
+        // across its neighbours while their centres keep the spacing they had. Circles are
+        // rotation-invariant and never showed it, which is why it read as a jetbike bug.
+        (Position at, float radiusInches)? selfOverlapAnchor = MarkGroupSelfOverlaps(
+            models, pt, paths, lastPositions, newPositions, groupFacings, blocked, ref allValid);
+        // One label for the unit, not one per flagged model - a copy over every phantom of a stacked
+        // rank buries the formation in text, the same reason the difficult-terrain shortfall shows one.
+        if (selfOverlapAnchor is { } stack)
+            DrawTerrainReasonLabel(dl, stack.at, stack.radiusInches,
+                SelfOverlapLabel.HEADER, SelfOverlapLabel.DETAIL, ImpassibleTextCol);
+
         // #317: difficult-terrain shortfall pass - one pale phantom per model that the terrain held back, each
         // linked to its real phantom by a dotted gray line, with ONE label for the unit (a copy per model would
         // bury the formation in text). Drawn before the real phantoms so those paint over it where they overlap.
@@ -1253,6 +1271,38 @@ public class GuiDefineMovementResolver
     /// would overlap a live model of another unit or sit on impassible terrain — measured by the true
     /// oriented footprints (#150), not a bounding circle. Same-unit models are ignored (the group moves
     /// rigidly, so internal spacing is preserved).</summary>
+    /// <summary>
+    /// #399 - the group preview's self-overlap gate. Builds each phantom's start and end POSE and hands
+    /// the pairwise rule to <see cref="GroupSelfOverlap"/>; see that class for why the rule exists and
+    /// why it is "not worsened" rather than absolute.
+    /// </summary>
+    private static (Position at, float radiusInches)? MarkGroupSelfOverlaps(
+        IReadOnlyList<IModel> models, PathTemplate pt,
+        IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
+        IReadOnlyList<Position> lastPositions, IReadOnlyList<Position> newPositions,
+        IReadOnlyList<Float2> groupFacings, bool[] blocked, ref bool allValid)
+    {
+        var starts = new GroupSelfOverlap.Pose?[models.Count];
+        var ends   = new GroupSelfOverlap.Pose?[models.Count];
+        for (int i = 0; i < models.Count; i++)
+        {
+            if (!models[i].GetIsAlive()) continue;
+
+            // Each phantom's DEPARTING pose - where its base stands right now, at the offset its last
+            // committed step was placed with (#282). The same definition departFacings uses above.
+            Float2 startFacing = PlannedPose(pt, models[i],
+                paths.TryGetValue(models[i], out var committed)
+                    ? committed : (IReadOnlyList<Position>)Array.Empty<Position>()).facing;
+
+            starts[i] = new GroupSelfOverlap.Pose(models[i].BaseShape, lastPositions[i], startFacing);
+            ends[i]   = new GroupSelfOverlap.Pose(models[i].BaseShape, newPositions[i], groupFacings[i]);
+        }
+
+        var anchor = GroupSelfOverlap.Mark(starts, ends, blocked);
+        if (anchor != null) allValid = false;
+        return anchor;
+    }
+
     private bool GroupPositionBlocked(Position p, IBaseShape shape, Float2 facing, IUnit ownUnit)
     {
         foreach (var unit in _tableState.Units.Objects)
@@ -2092,7 +2142,7 @@ public class GuiDefineMovementResolver
     }
 
     private bool WouldOverlapAnyModel(Position ghostPos, Float2 ghostFacing, IModel ghostModel,
-        DefineMovementPathRequest request,
+        DefineMovementPathRequest request, PathTemplate pt,
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths)
     {
         var ownUnit = request.UnitDataBinding.GetValue();
@@ -2104,13 +2154,18 @@ public class GuiDefineMovementResolver
                 if (!m.GetIsAlive()) continue;
                 if (ReferenceEquals(m, ghostModel)) continue;
 
-                // Same-unit models follow their planned path's end; others stay where they are.
+                // Same-unit models follow their planned path's end - POSE, not just position (#399).
+                // Taking the position from the plan but the facing from the model's resting attitude
+                // measured a base that does not exist anywhere: a unitmate that already turned to
+                // follow its own travel presents a different footprint, which is the whole difference
+                // for a rectangular base. Others stay where they are, resting facing and all.
                 Position p = m.Position;
+                Float2 facing = m.Facing;
                 if (isOwnUnit && paths.TryGetValue(m, out var path) && path.Count > 0)
-                    p = path[^1];
+                    (_, p, facing) = PlannedPose(pt, m, path);
 
                 // True oriented footprints (#150), not a bounding circle.
-                if (BaseShapeGeometry.AreColliding(ghostModel.BaseShape, ghostPos, ghostFacing, m.BaseShape, p, m.Facing))
+                if (BaseShapeGeometry.AreColliding(ghostModel.BaseShape, ghostPos, ghostFacing, m.BaseShape, p, facing))
                     return true;
             }
         }

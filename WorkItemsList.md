@@ -17,6 +17,9 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [ ] 399 — Post-game polish pass from one reported game: grouped rectangular bases stack, "held in
+  reserve" log spam, HUD colon spacing, terrain impassible==blocking + no heights, "Activated" tag
+  overlap, ambush dust cloud, button text overrun. ([WorkItems/399](WorkItems/399-post-game-polish-pass.md))
 - [ ] 395 — **HIGH PRIORITY (Chris, 2026-09-04):** Random Army is a silent no-op for humans AND bots outside a dist build - the catalog scans an `armies/` folder beside the executable that build trees (VS F5, `dotnet run`) never get. Fix the path + say so in the lobby. ([WorkItems/395](WorkItems/395-random-army-silent-outside-dist.md))
 - [~] 366 — Snake (#256 S4) piled every rank that overran the arc onto one route point, so a big unit ended
   with its own models stacked and its front rank dragged backwards; no validator forbade a same-unit

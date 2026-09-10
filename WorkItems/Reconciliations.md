@@ -715,3 +715,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-09-08 - number 398 filed clean.** `git fetch origin` before filing: `origin/master`'s index
 > high-water mark **397**, archive max **396**, detail files max **397**, and no `WorkItems/398*` on any
 > remote branch. **398 = Combat Calculator visual/usability pass.** No collision.
+
+> **2026-09-09 - number 399 filed clean.** `git fetch origin` + pull before filing (superproject
+> `470729d` -> `cd7fd12`, engine -> `4bd0f7b`): `origin/master`'s index high-water mark **398**,
+> archive max **396**, and no `WorkItems/399*` on any remote branch. **399 = post-game polish pass**
+> (seven owner-reported defects from one game, filed as one item with a facet ledger). No collision.

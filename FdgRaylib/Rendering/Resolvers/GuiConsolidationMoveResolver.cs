@@ -461,6 +461,27 @@ public class GuiConsolidationMoveResolver
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
             _ghostSnapshot[models[i]] = newPositions[i]; // #280
         }
+
+        // #399: the same self-overlap gate the move resolver gained, for the same reason -
+        // PhantomOverlapsOtherUnit skips the moving unit, and cohesion is a maximum-distance rule that
+        // two models 0" apart satisfy. A consolidation step is not rigid even when the rotation is: the
+        // formation morph, the coherency repair and the per-model table clamp above each move one model
+        // relative to another, so a step CAN newly stack a pair. The engine refuses it at Done
+        // (ValidatePaths -> ValidateNoSelfOverlap); this is what stops the player committing it first.
+        var selfStarts = new GroupSelfOverlap.Pose?[models.Count];
+        var selfEnds   = new GroupSelfOverlap.Pose?[models.Count];
+        for (int i = 0; i < models.Count; i++)
+        {
+            if (!models[i].GetIsAlive()) continue;
+            // #283: a committed waypoint keeps the rotation its step was placed with - the same
+            // departing attitude the ghost-path preview above derives.
+            IReadOnlyList<float> stored = pt.GetModelFacingOffsets(models[i]);
+            Float2 startFacing = RotateFloat2(models[i].Facing, stored.Count > 0 ? stored[^1] : 0f);
+            selfStarts[i] = new GroupSelfOverlap.Pose(models[i].BaseShape, lastPositions[i], startFacing);
+            selfEnds[i]   = new GroupSelfOverlap.Pose(models[i].BaseShape, newPositions[i], groupFacings[i]);
+        }
+        GroupSelfOverlap.Mark(selfStarts, selfEnds, blocked);
+
         bool allValid = plan.WithinBudget && !blocked.Any(b => b);
 
         for (int i = 0; i < models.Count; i++)
