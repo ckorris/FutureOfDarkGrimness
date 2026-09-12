@@ -198,7 +198,7 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(margin, playerListY));
         ImGui.BeginChild("##players", new Vector2(mainW, playerListH), ImGuiChildFlags.Borders);
         ImGui.SetWindowFontScale(panelScale);  // rows + font ~50% bigger than the rest of the lobby
-        DrawPlayerList(mainW);
+        DrawPlayerList(mainW, panelScale);
         ImGui.EndChild();
 
         // ── Chat Log ──────────────────────────────────────────────────────────
@@ -260,7 +260,7 @@ public class LobbyScreen : IAppScreen
         ImGui.End();
     }
 
-    private void DrawPlayerList(float panelW)
+    private void DrawPlayerList(float panelW, float panelScale)
     {
         AutoArmyNewSlots();
 
@@ -286,8 +286,8 @@ public class LobbyScreen : IAppScreen
             ImGui.TableSetupColumn("Type",    ImGuiTableColumnFlags.WidthStretch, 0.07f);
             ImGui.TableSetupColumn("Army",    ImGuiTableColumnFlags.WidthStretch, 0.15f);
             ImGui.TableSetupColumn("Faction", ImGuiTableColumnFlags.WidthStretch, 0.12f);
-            ImGui.TableSetupColumn("Pts",     ImGuiTableColumnFlags.WidthStretch, 0.06f);
-            ImGui.TableSetupColumn("Team",    ImGuiTableColumnFlags.WidthStretch, 0.10f);
+            ImGui.TableSetupColumn("Pts",     ImGuiTableColumnFlags.WidthStretch, 0.051f);
+            ImGui.TableSetupColumn("Team",    ImGuiTableColumnFlags.WidthStretch, 0.085f);
             ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.12f);
             // #372: every row now carries Load Army AND Random Army, so Actions takes the width back
             // from Army/Faction (both of which wrap gracefully; a clipped button does not).
@@ -304,16 +304,16 @@ public class LobbyScreen : IAppScreen
                 ImGui.TableNextRow();
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted(info.PlayerName);
+                TextFitted(info.PlayerName, panelScale);
 
                 ImGui.TableNextColumn();
                 ImGui.TextUnformatted(info.PlayerType.ToString());
 
                 ImGui.TableNextColumn();
-                DrawArmyCell(info.ArmyListSummary, _viewModel.IsResumeMode);
+                DrawArmyCell(info.ArmyListSummary, _viewModel.IsResumeMode, panelScale);
 
                 ImGui.TableNextColumn();
-                DrawFactionCell(info.ArmyListSummary, _viewModel.AllowedGameSystems);
+                DrawFactionCell(info.ArmyListSummary, _viewModel.AllowedGameSystems, panelScale);
 
                 ImGui.TableNextColumn();
                 DrawPointsCell(info.ArmyListSummary, _viewModel.ArmyPoints);
@@ -448,7 +448,7 @@ public class LobbyScreen : IAppScreen
 
     internal const string DerpBotTooltip =
         "Based off the solo play rules from OnePageRules. Very dumb. Can\n" +
-        "occasionally beat a human through dumb luck.";
+        "occasionally beat a human through sheer luck.";
 
     /// <summary>#405: the four add-button tooltips, so the ASCII guard can sweep them all.</summary>
     internal static IReadOnlyList<string> AddPlayerTooltips { get; } = new[]
@@ -605,12 +605,57 @@ public class LobbyScreen : IAppScreen
 
     /// <summary>The Army cell. Red when the slot carries no army at all - except on a resume, where
     /// every slot reports none and the save holds the real ones.</summary>
-    private static void DrawArmyCell(ArmyListSummary summary, bool isResume)
+    // #405 -----------------------------------------------------------------------------------------
+    // Squishing text to fit its cell. The roster's three text columns (Name / Army / Faction) hold names
+    // the player chose, so there is no width that always fits - "Human Defense Force" clipped at Chris's
+    // resolution. Rather than truncate (which hides the end of the name) or wrap (which makes one long
+    // name grow every row), the text shrinks just enough to fit and stops at a floor, below which it
+    // would be unreadable and clipping is the lesser evil.
+
+    /// <summary>How far text may shrink before clipping is preferable, as a fraction of the row's
+    /// normal size.</summary>
+    private const float MinFitScale = 0.65f;
+
+    /// <summary>
+    /// #405: the font scale that fits <paramref name="unscaledTextWidth"/> into
+    /// <paramref name="availableWidth"/>. Never above <paramref name="baseScale"/> (text that already
+    /// fits is never enlarged) and never below <see cref="MinFitScale"/> of it.
+    ///
+    /// <para>The width passed in must be the RAW <c>CalcTextSize</c> result: CalcTextSize ignores
+    /// SetWindowFontScale (the same gotcha the Back button measures around above), so it reports text at
+    /// scale 1 while the space it has to fit into is real screen pixels. That is exactly what makes the
+    /// ratio here a scale rather than a ratio of like quantities.</para>
+    /// </summary>
+    internal static float FitFontScale(float unscaledTextWidth, float availableWidth, float baseScale)
+    {
+        // Nothing to measure against: leave the row alone rather than divide by zero.
+        if (unscaledTextWidth <= 0f || availableWidth <= 0f || baseScale <= 0f)
+            return baseScale;
+
+        float needed = availableWidth / unscaledTextWidth;
+        if (needed >= baseScale)
+            return baseScale; // already fits at full size
+
+        return MathF.Max(needed, baseScale * MinFitScale);
+    }
+
+    /// <summary>Draws one line of text, shrunk to fit the remaining cell width when it would clip.
+    /// Leaves the item on the stack as TextUnformatted would, so callers keep their hover tooltips.</summary>
+    private static void TextFitted(string text, float baseScale)
+    {
+        float scale = FitFontScale(ImGui.CalcTextSize(text).X, ImGui.GetContentRegionAvail().X, baseScale);
+
+        if (scale != baseScale) ImGui.SetWindowFontScale(scale);
+        ImGui.TextUnformatted(text);
+        if (scale != baseScale) ImGui.SetWindowFontScale(baseScale);
+    }
+
+    private static void DrawArmyCell(ArmyListSummary summary, bool isResume, float baseScale)
     {
         bool missing = LobbyArmySource.IsMissingArmy(summary, isResume);
 
         if (missing) ImGui.PushStyleColor(ImGuiCol.Text, OverPointsColor);
-        ImGui.TextUnformatted(summary.ArmyName);
+        TextFitted(summary.ArmyName, baseScale);
         if (missing) ImGui.PopStyleColor();
 
         if (missing && ImGui.IsItemHovered())
@@ -618,12 +663,12 @@ public class LobbyScreen : IAppScreen
     }
 
     /// <summary>The Faction cell. Red when the army is from a game system this lobby doesn't take.</summary>
-    private static void DrawFactionCell(ArmyListSummary summary, EAllowedGameSystems allowed)
+    private static void DrawFactionCell(ArmyListSummary summary, EAllowedGameSystems allowed, float baseScale)
     {
         bool wrongSystem = LobbyArmySource.IsWrongSystem(summary, allowed);
 
         if (wrongSystem) ImGui.PushStyleColor(ImGuiCol.Text, OverPointsColor);
-        ImGui.TextUnformatted(summary.FactionName);
+        TextFitted(summary.FactionName, baseScale);
         if (wrongSystem) ImGui.PopStyleColor();
 
         if (wrongSystem && ImGui.IsItemHovered())

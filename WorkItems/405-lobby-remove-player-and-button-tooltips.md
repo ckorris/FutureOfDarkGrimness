@@ -13,6 +13,11 @@ client, resumed or launched lobby, client's screen).
 
 ## Notes
 
+- 2026-09-12: Tweaks off Chris's first look. DerpBot tooltip "dumb luck" -> "sheer luck". Name /
+  Army / Faction now shrink text to fit instead of clipping (`FitFontScale`, floor 0.65 of the row's
+  scale) - "Human Defense Force" was cut off at his resolution. Pts 0.06 -> 0.051 and Team 0.10 ->
+  0.085 (-15% each); stretch-prop hands the freed width to the text columns, which helps the same
+  clipping a second way. 8 new tests. App 2990/2990, engine 3361/3361, smoke exit 0.
 - 2026-09-12: Implemented. Engine: `CheckCanRemovePlayer` + `RemovePlayer` on `ILobbyViewModel`, host
   implementation, client refuses. App: Remove in the Actions column, four tooltips, Actions widened
   0.22 -> 0.26. 6 new engine tests (`LobbyPlayerRemovalTests`), ASCII guard extended app-side.
@@ -46,6 +51,13 @@ client, resumed or launched lobby, client's screen).
 
 - **No confirmation dialog** (Chris, 2026-09-12). Re-adding is one click and the lobby rolls a fresh army
   automatically, so a misclick is cheap.
+
+- **Squish, don't truncate or wrap** (Chris, 2026-09-12). Roster text is player-chosen, so no column
+  width always fits. Truncating hides the end of a name and wrapping makes one long name grow every row,
+  so the text shrinks to fit and stops at a floor, below which clipping is the lesser evil. The measured
+  width must be the raw `CalcTextSize` - it ignores `SetWindowFontScale`, which is what makes the
+  quotient a scale rather than a ratio of like quantities (the same gotcha the Back button measures
+  around).
 
 - **Removing mid-loop is safe.** `RemovePlayer` publishes a *new* list, so the `players` snapshot the
   frame is iterating is unaffected; the row vanishes next frame.

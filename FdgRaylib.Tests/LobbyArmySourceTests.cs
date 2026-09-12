@@ -139,4 +139,56 @@ public class LobbyArmySourceTests
         Assert.That(tip, Does.StartWith("Cannot launch:"));
         Assert.That(tip, Does.Contain("Bob").And.Contain("Cid"));
     }
+
+    // ── #405: squishing roster text to fit its column ───────────────────────────────────────
+    //
+    // The widths below are RAW CalcTextSize results (CalcTextSize ignores SetWindowFontScale), measured
+    // against real pixels of cell - so the quotient is a font scale, not a ratio of like quantities.
+
+    [Test]
+    public void TextThatAlreadyFitsIsNeverResized()
+    {
+        // 60px of text at scale 1.5 renders 90px wide, and the cell has 200px.
+        Assert.That(LobbyScreen.FitFontScale(60f, 200f, 1.5f), Is.EqualTo(1.5f));
+    }
+
+    [Test]
+    public void TextThatFitsExactlyIsNotShrunk()
+    {
+        // 100px of text at scale 1.5 is exactly the 150px available - the boundary must not shrink.
+        Assert.That(LobbyScreen.FitFontScale(100f, 150f, 1.5f), Is.EqualTo(1.5f));
+    }
+
+    [Test]
+    public void OverlongTextShrinksJustEnoughToFit()
+    {
+        // 120px of text at scale 1.5 wants 180px but has 150px: 1.25 makes it exactly fit, and that is
+        // comfortably above the 0.975 floor (1.5 * 0.65), so the shrink is exact rather than clamped.
+        float scale = LobbyScreen.FitFontScale(120f, 150f, 1.5f);
+
+        Assert.That(scale, Is.EqualTo(1.25f).Within(0.0001f));
+        Assert.That(120f * scale, Is.EqualTo(150f).Within(0.01f), "the whole point is that it now fits");
+        Assert.That(scale, Is.LessThan(1.5f), "and it is genuinely smaller than the row's normal size");
+    }
+
+    [Test]
+    public void VeryLongTextStopsAtTheFloorRatherThanBecomingUnreadable()
+    {
+        // 2000px into 150px would need 0.075 - far past the 0.65-of-base floor (1.5 * 0.65 = 0.975).
+        float scale = LobbyScreen.FitFontScale(2000f, 150f, 1.5f);
+
+        Assert.That(scale, Is.EqualTo(1.5f * 0.65f).Within(0.0001f));
+        Assert.That(scale * 2000f, Is.GreaterThan(150f),
+            "at the floor the text genuinely still clips - that is the accepted trade, not a fit");
+    }
+
+    [TestCase(0f, 150f)]
+    [TestCase(-5f, 150f)]
+    [TestCase(100f, 0f)]
+    [TestCase(100f, -5f)]
+    public void DegenerateMeasurementsLeaveTheRowAlone(float textWidth, float available)
+    {
+        // A cell can measure zero on the frame a table is first laid out; never divide by it.
+        Assert.That(LobbyScreen.FitFontScale(textWidth, available, 1.5f), Is.EqualTo(1.5f));
+    }
 }
