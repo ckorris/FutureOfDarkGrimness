@@ -15,20 +15,22 @@ namespace FdgRaylib.Rendering;
 /// </summary>
 public static class ImGuiTheme
 {
-    // Base palette (cool charcoal -> steel). #398: lifted about a third of the way towards mid-grey at
-    // the owner's request - the app was dark enough that every panel read as the same black rectangle
-    // and there was no room BELOW the body tone to show something switched off. Relative order is
-    // unchanged, so every colour below still means what it meant.
-    private static readonly Vector4 Ink        = R(30, 33, 39);    // darkest wells (title, scrollbar bg)
-    private static readonly Vector4 Panel       = R(47, 51, 59);   // window body
-    private static readonly Vector4 PanelRaised = R(62, 68, 78);   // buttons, headers
-    private static readonly Vector4 Frame        = R(38, 42, 49);   // input fields
-    private static readonly Vector4 FrameHover   = R(55, 60, 69);
-    private static readonly Vector4 FrameActive  = R(68, 74, 85);
-    private static readonly Vector4 Steel        = R(98, 107, 121); // borders, grips, separators
-    private static readonly Vector4 SteelDim     = R(68, 75, 86);
-    private static readonly Vector4 Text         = R(232, 235, 240);
-    private static readonly Vector4 TextDim      = R(146, 153, 164);
+    // Base palette (cool charcoal -> steel). #398: every background tone is exactly 10/255 lighter than
+    // it originally was - enough to stop each panel reading as the same black rectangle, and to leave a
+    // shade BELOW the body tone for showing something switched off, without turning the grimdark grey.
+    // (A first pass lifted them ~3x that far and was too much; the owner asked for 10.) Relative order
+    // is unchanged, so every colour below still means what it meant. Text tones are the originals: the
+    // backgrounds moved a hair, so their contrast did not need buying back.
+    private static readonly Vector4 Ink        = R(25, 27, 30);    // darkest wells (title, scrollbar bg)
+    private static readonly Vector4 Panel       = R(36, 39, 44);   // window body
+    private static readonly Vector4 PanelRaised = R(44, 48, 54);   // buttons, headers
+    private static readonly Vector4 Frame        = R(31, 34, 38);   // input fields
+    private static readonly Vector4 FrameHover   = R(43, 47, 53);
+    private static readonly Vector4 FrameActive  = R(50, 55, 62);
+    private static readonly Vector4 Steel        = R(74, 81, 92);   // borders, grips, separators
+    private static readonly Vector4 SteelDim     = R(54, 59, 67);
+    private static readonly Vector4 Text         = R(224, 227, 231);
+    private static readonly Vector4 TextDim      = R(126, 132, 142);
 
     // Blue accent + a muted "pressed" variant.
     private static readonly Vector4 Accent     = R(66, 135, 224);
@@ -72,17 +74,17 @@ public static class ImGuiTheme
     // screen: neutral grey undoes (Back, Cancel, Quit), muted blue goes somewhere (Choose unit, Load
     // list, Swap), full accent commits (LAUNCH, CREATE). Telling them apart was guesswork when all
     // three were the same grey.
-    public static readonly Vector4 ButtonBack        = R(72, 78, 88);
-    public static readonly Vector4 ButtonBackHovered = R(94, 101, 113);
-    public static readonly Vector4 ButtonGo          = R(52, 74, 108);
-    public static readonly Vector4 ButtonGoHovered   = R(72, 100, 142);
+    public static readonly Vector4 ButtonBack        = R(64, 70, 80);
+    public static readonly Vector4 ButtonBackHovered = R(84, 91, 102);
+    public static readonly Vector4 ButtonGo          = R(44, 64, 96);
+    public static readonly Vector4 ButtonGoHovered   = R(62, 88, 126);
     public static readonly Vector4 ButtonCommit      = Accent;
     public static readonly Vector4 ButtonCommitHover = AccentHot;
     public static readonly Vector4 ButtonPressed     = AccentDim;
 
     /// <summary>A tab nobody is on: darker than the body it sits above, so the accent-blue selected tab
     /// is the only lit thing in the strip.</summary>
-    public static readonly Vector4 TabIdle = R(36, 40, 47);
+    public static readonly Vector4 TabIdle = R(28, 31, 36);
 
     /// <summary>The brighter accent, for a selected tab or a hovered commit.</summary>
     public static readonly Vector4 AccentBright = AccentHot;
@@ -92,7 +94,7 @@ public static class ImGuiTheme
     /// which is what "recessed" has to mean now the body itself is lighter; paired with the disabled
     /// alpha on its text it is unmistakable at a glance, which greyed text alone was not.
     /// </summary>
-    public static readonly Vector4 DisabledRowBg = R2(14, 15, 18, 0.45f);
+    public static readonly Vector4 DisabledRowBg = R2(10, 11, 13, 0.45f);
 
     // #398: the three bands of the calculator's distance track - every weapon reaches this far, only
     // some do, none do. Traffic-light reading, but darkened well below the text and the slider grab that
@@ -153,11 +155,11 @@ public static class ImGuiTheme
         c[(int)ImGuiCol.SliderGrabActive]      = AccentHot;
         // Buttons sit clearly above the window body so they read as controls, not flat panels. This is
         // the unclassed default; UiButton pushes a role colour over it (see ButtonBack/Go/Commit).
-        c[(int)ImGuiCol.Button]                = R(70, 77, 89);
-        c[(int)ImGuiCol.ButtonHovered]         = R(90, 99, 112);
+        c[(int)ImGuiCol.Button]                = R(58, 65, 75);
+        c[(int)ImGuiCol.ButtonHovered]         = R(72, 81, 93);
         c[(int)ImGuiCol.ButtonActive]          = AccentDim;
         c[(int)ImGuiCol.Header]                = SteelDim;
-        c[(int)ImGuiCol.HeaderHovered]         = R(52, 58, 67);
+        c[(int)ImGuiCol.HeaderHovered]         = R(62, 68, 77);
         c[(int)ImGuiCol.HeaderActive]          = AccentDim;
         c[(int)ImGuiCol.Separator]             = A(Steel, 0.50f);
         c[(int)ImGuiCol.SeparatorHovered]      = Accent;
@@ -174,7 +176,7 @@ public static class ImGuiTheme
         c[(int)ImGuiCol.PlotLinesHovered]      = AccentHot;
         c[(int)ImGuiCol.PlotHistogram]         = Accent;
         c[(int)ImGuiCol.PlotHistogramHovered]  = AccentHot;
-        c[(int)ImGuiCol.TableHeaderBg]         = R(50, 60, 78); // subtle blue band -- header text carries the emphasis
+        c[(int)ImGuiCol.TableHeaderBg]         = R(45, 53, 67); // subtle blue band -- header text carries the emphasis
         c[(int)ImGuiCol.TableBorderStrong]     = Steel;
         c[(int)ImGuiCol.TableBorderLight]      = SteelDim;
         c[(int)ImGuiCol.TableRowBg]            = new Vector4(0, 0, 0, 0);

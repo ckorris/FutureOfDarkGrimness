@@ -37,6 +37,26 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-12 (round 6, two owner reports): app **2912/0** (+1), engine 3308/0 (1 skipped), build clean,
+  smoke exits 0.
+  - **The "??" and the nonsense text were a printf bug, not a font problem.** `ImGui.Text`,
+    `TextColored`, `TextDisabled`, `TextWrapped` and `SetTooltip` take a FORMAT string. Round 5 started
+    printing percentages, so "40.7%" reached `TextColored` as a format, ImGui read the '%' as a
+    conversion specifier and printed whatever sat next on the varargs stack - which is why the screen
+    showed "6.8??", "any remainder." and "0 skips terrain placeme" (that last one is literally the
+    terrain-count tooltip two hundred lines away in `LobbyScreen`). Every "cutoff" the owner saw was one
+    of those garbage strings being clipped.
+  - `UiText.Colored/Disabled/Wrapped/Tooltip` wrap `TextUnformatted`, which has no format pass, and the
+    calculator, the shared unit detail, the Forge, the Builder, the lobby and the printed-list overlay
+    now use them throughout. **ImGui.NET cannot pass varargs at all**, so the format behaviour was
+    never usable here - it was pure hazard.
+  - `CalculatorTextSafetyTests` is a source lint over those files: any reintroduced format-API call
+    fails with the reason. The bug was invisible to every other kind of test - the VALUES were right,
+    and the drawing is ImGui - so a lint is the only guard that could have caught it.
+  - **The lightening was too much**: every background tone is now exactly 10/255 above its original
+    value (was ~3x that), and the text tones are back to the originals - the backgrounds moved a hair,
+    so their contrast did not need buying back.
+
 - 2026-09-12 (round 5, the owner's second review pass): app **2911/0** (+6), engine 3308/0 (1 skipped),
   build clean, smoke exits 0.
   - **One rule blue, app-wide.** A rule name was blue in the calculator's middle column, white in the
@@ -235,6 +255,10 @@ _Newest on top._
   the calculator, where a rule name was three different colours; the printed-list overlay draws rules in
   the line's own colour by design and the owner singled that surface out as one they like.
 
+- **Format-string APIs are banned where authored text is printed.** Not app-wide yet: the resolver
+  panels and overlays still call `ImGui.Text*` directly, and they mostly print engine-composed strings.
+  The lint names the files it covers, and widening it is one line each once the call sites are converted.
+
 ## Deferred (recorded, not silently cut)
 
 - ~~Wrapped upgrade labels~~ - **done in round 3** once the owner authorized the Forge change.
@@ -254,6 +278,10 @@ _Newest on top._
   needed) and would have caught both. Not built yet for one reason: `IM_ASSERT` aborts the process, so a
   regression would take the whole `dotnet test` run down with it rather than failing one test. Worth
   doing behind its own test project or an assert redirect.
+- **The rest of the app's `ImGui.Text*` call sites.** The resolver panels, the tactical overlay and the
+  in-game HUD still use the format versions. No bundled book contains a '%' and those surfaces mostly
+  print engine-composed text, so the exposure is small - but a player-typed army name reaches some of
+  them. Mechanical conversion plus a line in the lint's file list, whenever one of them is touched.
 - **Expected models killed** stays deferred (it already was, in #397). Under `ProbabilisticDiceRoller`
   wounds are fractional, so a model holding 0.4 wounds is alive and a living-model count would read as
   a false integer. The headline shows the wound bar only. It falls out of the deferred Monte Carlo
@@ -313,6 +341,10 @@ The layout itself is ImGui and cannot be asserted; the strings and the tick arit
 30. The picker shows a gold HERO tag beside heroes (bundled books and saved lists both).
 31. A tab holding a joined pair reads "Captain + Vanguard Warriors" (shortened per name if long).
 32. Shooting/Melee are large and accent-filled, and the middle column still fits at a small window size.
+33. **Round 6** - no "??" or stray words anywhere in the calculator: the percentage figures read
+    "40.7%" in the headline and "6.8%" in the table, and the captions beside them are not overwritten.
+34. The lobby's terrain and house-rule tooltips still read correctly (they were converted too).
+35. The backgrounds are only a touch lighter than the original build, not the mid-grey of round 5.
 
 ## Outcome
 _Open._

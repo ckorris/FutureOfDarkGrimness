@@ -202,7 +202,7 @@ public class ArmyBuilderScreen : IAppScreen
 
         if (ImGui.BeginPopupModal("ConfirmNew", ImGuiWindowFlags.AlwaysAutoResize))
         {
-            ImGui.Text("Clear current army list and start fresh?");
+            ImGui.TextUnformatted("Clear current army list and start fresh?");
             ImGui.Spacing();
 
             if (ImGui.Button("Yes", new Vector2(100, 0)))
@@ -272,7 +272,7 @@ public class ArmyBuilderScreen : IAppScreen
         if (ImGui.InputInt("Points Limit", ref limit))
             _army.PointsLimit = limit;
 
-        ImGui.Text($"Current total: {_army.TotalPoints} pts");
+        ImGui.TextUnformatted($"Current total: {_army.TotalPoints} pts");
 
         // #003: advisory force-organization warnings — surfaced inline but never blocking. The player
         // can still save and launch an over-cap army; this just flags it.
@@ -371,7 +371,7 @@ public class ArmyBuilderScreen : IAppScreen
         float avail = ImGui.GetContentRegionAvail().X;
         if (avail > ptsWidth)                                     // right-align; never push left into the name
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (avail - ptsWidth));
-        ImGui.TextDisabled(pts);
+        UiText.Disabled(pts);
 
         ImGui.Indent();
         foreach (WeaponFileEntry weapon in unit.Weapons)
@@ -767,7 +767,7 @@ public class ArmyBuilderScreen : IAppScreen
             .ToList();
 
         if (joiners.Count > 0)
-            ImGui.TextColored(HintColor, $"Joined by: {string.Join(", ", joiners)}");
+            UiText.Colored(HintColor, $"Joined by: {string.Join(", ", joiners)}");
     }
 
     private string EnsureId(UnitFileEntry host)
@@ -777,7 +777,7 @@ public class ArmyBuilderScreen : IAppScreen
         return host.Id;
     }
 
-    private static void Warn(string message) => ImGui.TextColored(WarnColor, $"! {message}");
+    private static void Warn(string message) => UiText.Colored(WarnColor, $"! {message}");
 
     // #003: one definition of "is this army-file unit a Hero", shared with ForceOrgValidator.
     private static bool UnitHasHero(UnitFileEntry unit) => ForceOrgValidator.IsHero(unit);
@@ -847,7 +847,7 @@ public class ArmyBuilderScreen : IAppScreen
         if (!ImGui.CollapsingHeader("Spells##armyspells", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
-        ImGui.TextColored(HintColor, "Army-wide spells, castable by any unit with the Caster(X) rule.");
+        UiText.Colored(HintColor, "Army-wide spells, castable by any unit with the Caster(X) rule.");
 
         for (int s = 0; s < _army.Spells.Count; ++s)
         {
@@ -902,7 +902,7 @@ public class ArmyBuilderScreen : IAppScreen
         spell = spell with { Effect = DrawEffectFields(spell.Effect, idx) };
 
         // Live preview of exactly the subtext the cast menu will show.
-        ImGui.TextColored(HintColor, SpellText.Describe(spell));
+        UiText.Colored(HintColor, SpellText.Describe(spell));
         return spell;
     }
 
@@ -953,7 +953,7 @@ public class ArmyBuilderScreen : IAppScreen
                 dh = dh with { ArmorPenetration = Math.Max(0, ap) };
 
             List<string> withRules = dh.WithRules.ToList();
-            ImGui.TextColored(HintColor, "Weapon rules on each hit (e.g. Bane, Blast):");
+            UiText.Colored(HintColor, "Weapon rules on each hit (e.g. Bane, Blast):");
             DrawWithRulesEditor(withRules, idx);
             return dh with { WithRules = withRules };
         }

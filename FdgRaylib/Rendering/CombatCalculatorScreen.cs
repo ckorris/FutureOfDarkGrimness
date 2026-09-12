@@ -154,7 +154,7 @@ public class CombatCalculatorScreen : IAppScreen
         if (UiButton.Back(BackLabel, UiChrome.ButtonSize(BackLabel))) OnBack?.Invoke();
 
         ImGui.SameLine(0f, ImGui.GetFontSize() * 1.5f);
-        ImGui.TextColored(HeadText, Title);
+        UiText.Colored(HeadText, Title);
 
         ImGui.SameLine();
         Vector2 swap = UiChrome.ButtonSize(SwapLabel);
@@ -264,7 +264,7 @@ public class CombatCalculatorScreen : IAppScreen
                 ForgeUnitDetail.DrawReadOnly(saved, side.Glossary);
                 ImGui.Spacing();
             }
-            ImGui.TextColored(DimText, ReadOnlyNote);
+            UiText.Colored(DimText, ReadOnlyNote);
             return;
         }
 
@@ -359,11 +359,11 @@ public class CombatCalculatorScreen : IAppScreen
     private void DrawSideHeader(CalculatorSide side, UnitPicker picker, string label, string id,
         bool isAttacker)
     {
-        ImGui.TextColored(isAttacker ? ImGuiTheme.HeaderAccent : DimText,
+        UiText.Colored(isAttacker ? ImGuiTheme.HeaderAccent : DimText,
             isAttacker ? AttackerBadge : DefenderBadge);
 
         ImGui.SameLine();
-        ImGui.TextColored(DimText, $"UNIT {label}");
+        UiText.Colored(DimText, $"UNIT {label}");
 
         // Points right-aligned, so the two columns' costs line up against the screen edges and can be
         // compared at a glance rather than read out of the middle of a sentence.
@@ -387,7 +387,7 @@ public class CombatCalculatorScreen : IAppScreen
         // Rows() puts the hero first whenever a pair is joined, so row 0 of a joined column IS the hero.
         // Tagged in #227's gold, the same colour the printed army list marks a hero with.
         if (side.Joined is not null && row == 0)
-            ImGui.TextColored(ImGuiTheme.HeroGold, HeroTag);
+            UiText.Colored(ImGuiTheme.HeroGold, HeroTag);
 
         ForgeUnitDetail.DrawHeader(compiled);
         ForgeUnitDetail.DrawGear(compiled, items, side.Glossary);
@@ -429,7 +429,7 @@ public class CombatCalculatorScreen : IAppScreen
 
     private void DrawPicker(CalculatorSide side, UnitPicker picker, string label, string id)
     {
-        ImGui.TextColored(DimText, $"UNIT {label}");
+        UiText.Colored(DimText, $"UNIT {label}");
         ImGui.Separator();
 
         if (picker.Level == UnitPicker.ELevel.Units && picker.Army is { } army)
@@ -478,10 +478,10 @@ public class CombatCalculatorScreen : IAppScreen
 
         if (side.HasUnit && BackButton(CancelLabel, $"cancel-{id}")) picker.Close();
         ImGui.Spacing();
-        ImGui.TextColored(DimText, ArmyPrompt);
+        UiText.Colored(DimText, ArmyPrompt);
 
         if (NavButton(LoadListLabel, $"load-{id}")) LoadArmyFromDisk();
-        if (_loadError is not null) ImGui.TextColored(WarnText, _loadError);
+        if (_loadError is not null) UiText.Colored(WarnText, _loadError);
 
         DrawSystemToggle(picker, id);
         DrawFilter(picker, id);
@@ -677,7 +677,7 @@ public class CombatCalculatorScreen : IAppScreen
     {
         if (_report is not { } report)
         {
-            ImGui.TextColored(DimText, EmptyStateHint(Attacker.HasUnit, Defender.HasUnit));
+            UiText.Colored(DimText, EmptyStateHint(Attacker.HasUnit, Defender.HasUnit));
             return;
         }
 
@@ -685,7 +685,7 @@ public class CombatCalculatorScreen : IAppScreen
 
         DrawHeadline(view);
 
-        foreach (string warning in view.Warnings) ImGui.TextColored(WarnText, "! " + warning);
+        foreach (string warning in view.Warnings) UiText.Colored(WarnText, "! " + warning);
 
         ImGui.Separator();
 
@@ -700,7 +700,7 @@ public class CombatCalculatorScreen : IAppScreen
     /// </summary>
     private void DrawHeadline(CombatReportView view)
     {
-        ImGui.TextColored(HeadText, view.Headline);
+        UiText.Colored(HeadText, view.Headline);
         ImGui.Spacing();
 
         // Two rows of two rather than one row of four: four large numbers and their captions do not fit
@@ -733,15 +733,15 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.Spacing();
         UiChrome.DrawMeter(view.WoundFractionRemaining, ImGui.GetContentRegionAvail().X,
             ImGuiTheme.AccentBlue, ImGuiTheme.DamageAmber);
-        ImGui.TextColored(DimText, view.WoundBarText);
+        UiText.Colored(DimText, view.WoundBarText);
     }
 
     private static void DrawBigNumber(string value, string caption, Vector4? color = null)
     {
         ImGui.PushFont(RaylibRenderer.LargeFont);
-        ImGui.TextColored(color ?? ImGuiTheme.HeaderAccent, value);
+        UiText.Colored(color ?? ImGuiTheme.HeaderAccent, value);
         ImGui.PopFont();
-        ImGui.TextColored(DimText, caption);
+        UiText.Colored(DimText, caption);
     }
 
     /// <summary>
@@ -803,7 +803,7 @@ public class CombatCalculatorScreen : IAppScreen
         // One colour for the name in both states: the disabled alpha above is what dims an out-of-range
         // row, and dimming the colour as WELL left the weapon's own name barely legible - which is not
         // "greyed out", it is "gone".
-        ImGui.TextColored(BrightText, $"{row.CopiesPrefix}{row.Weapon.Name}");
+        UiText.Colored(BrightText, $"{row.CopiesPrefix}{row.Weapon.Name}");
 
         // The stat subline in the in-game shoot panel's own notation, each rule underlined and hoverable
         // (#292). Drawn on the draw list because a table cell gives no wrapping for SameLine runs.
@@ -865,7 +865,7 @@ public class CombatCalculatorScreen : IAppScreen
     private static void Cell(string text, Vector4? color = null)
     {
         ImGui.TableNextColumn();
-        if (color is { } c) ImGui.TextColored(c, text); else ImGui.TextUnformatted(text);
+        if (color is { } c) UiText.Colored(c, text); else ImGui.TextUnformatted(text);
     }
 
     /// <summary>
@@ -886,23 +886,23 @@ public class CombatCalculatorScreen : IAppScreen
 
         if (splitSaves)
             foreach (SaveLineView save in row.SaveLines)
-                ImGui.TextColored(DimText, $"   {save.SaveNeeded}+  {save.Describe()}");
+                UiText.Colored(DimText, $"   {save.SaveNeeded}+  {save.Describe()}");
 
-        foreach (string note in row.Notes) ImGui.TextColored(DimText, note);
+        foreach (string note in row.Notes) UiText.Colored(DimText, note);
 
         ImGui.Unindent();
     }
 
     private static void DrawChipLine(string label, IReadOnlyList<string> chips, string result)
     {
-        ImGui.TextColored(DimText, label);
+        UiText.Colored(DimText, label);
         foreach (string chip in chips)
         {
             ImGui.SameLine();
             UiChrome.DrawChip(chip);
         }
         ImGui.SameLine();
-        ImGui.TextColored(DimText, "->");
+        UiText.Colored(DimText, "->");
         ImGui.SameLine();
         ImGui.TextUnformatted(result);
     }
@@ -910,7 +910,7 @@ public class CombatCalculatorScreen : IAppScreen
 
     private void DrawSituationBar()
     {
-        ImGui.TextColored(DimText, VariablesHeader);
+        UiText.Colored(DimText, VariablesHeader);
 
         if (_situation.Mode == ECombatMode.Shooting) DrawShootingSituation();
         else DrawMeleeSituation();
@@ -994,7 +994,7 @@ public class CombatCalculatorScreen : IAppScreen
         if (ImGui.Button("++##calc-dist-inc2", step)) StepDistance(BigStepInches);
 
         ImGui.SameLine();
-        ImGui.TextColored(DimText, DistanceLabel);
+        UiText.Colored(DimText, DistanceLabel);
     }
 
     private void StepDistance(float step) => SetDistance(Stepped(_situation.DistanceInches, step));

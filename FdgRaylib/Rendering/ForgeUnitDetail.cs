@@ -35,7 +35,7 @@ internal static class ForgeUnitDetail
     {
         ImGui.TextUnformatted($"{unit.Name} [{unit.ModelCount}]");
         ImGui.SameLine();
-        ImGui.TextDisabled($"({unit.PointCost} pts)");
+        UiText.Disabled($"({unit.PointCost} pts)");
 
         UiChrome.DrawPill("Quality", $"{unit.Quality}+", ImGuiTheme.AccentBlue);
         ImGui.SameLine(0f, UiChrome.PillGap);
@@ -112,14 +112,14 @@ internal static class ForgeUnitDetail
             ImGui.TableSetColumnIndex(0);
             ImGui.TextUnformatted(ArmyListLayout.CountedName(weapon.Quantity, weapon.Name));
             ImGui.TableSetColumnIndex(1);
-            ImGui.TextDisabled(ArmyListLayout.RangeText(weapon.RangeInches));
+            UiText.Disabled(ArmyListLayout.RangeText(weapon.RangeInches));
             ImGui.TableSetColumnIndex(2);
-            ImGui.TextDisabled(ArmyListLayout.AttacksText(weapon.Attacks));
+            UiText.Disabled(ArmyListLayout.AttacksText(weapon.Attacks));
             ImGui.TableSetColumnIndex(3);
-            ImGui.TextDisabled(ArmyListLayout.ApText(weapon.ArmorPenetration));
+            UiText.Disabled(ArmyListLayout.ApText(weapon.ArmorPenetration));
 
             ImGui.TableSetColumnIndex(4);
-            if (weapon.SpecialRules.Count == 0) ImGui.TextDisabled("-");
+            if (weapon.SpecialRules.Count == 0) UiText.Disabled("-");
             else RuleTextFlow.Draw(RuleTextFlow.RuleList(weapon.SpecialRules), glossary, ImGuiCol.TextDisabled);
         }
 
@@ -145,7 +145,7 @@ internal static class ForgeUnitDetail
     {
         if (roster.Sections.Count == 0) return;
         ImGui.Spacing();
-        ImGui.TextColored(ImGuiTheme.HeaderAccent, "UPGRADES");
+        UiText.Colored(ImGuiTheme.HeaderAccent, "UPGRADES");
         ImGui.Separator();
 
         foreach (UpgradeSection section in roster.Sections)
@@ -170,12 +170,12 @@ internal static class ForgeUnitDetail
             if (linked)
             {
                 ImGui.SameLine();
-                ImGui.TextColored(CyanText, "[linked]");
+                UiText.Colored(CyanText, "[linked]");
             }
             if (isReplace && switchAvailable == 0)
             {
                 ImGui.SameLine();
-                ImGui.TextDisabled("(none to replace)");
+                UiText.Disabled("(none to replace)");
             }
             ImGui.Indent();
 
