@@ -741,3 +741,4 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > collision was discovered still read `400:` - the history was left alone rather than rewritten, and
 > this entry is the pointer. **402 = lobby Army Source restriction.**
 
+> **2026-09-12 - number 403 filed clean.** `git fetch origin` before filing, from `origin/master` at `f63996a`: detail files max **402** (400/401 upstream, 402 this clone's renumbered item), archive max **401**, index high-water **398**, and no `40x` branch on any remote. **403 = Army Forge import-first UX pass.** No collision.

@@ -25,6 +25,56 @@ public class ArmyForgeScreenTests
         Assert.That(screen.Compile().Units, Is.Empty);
     }
 
+    // ---- #403: the screen leads with the importer --------------------------------------------------
+
+    [Test]
+    public void TheImportPopupIsArmedBeforeTheFirstDraw()
+    {
+        // Arriving at the Forge should present the importer without the player having to find the
+        // button. Draw() cannot run here (no ImGui context), so the armed flag is what is pinned.
+        Assert.That(new ArmyForgeScreen().ImportOpensOnShow, Is.True);
+    }
+
+    [Test]
+    public void EveryEntryIntoTheScreenRearmsIt()
+    {
+        var screen = new ArmyForgeScreen();
+        typeof(ArmyForgeScreen).GetField("_openImportOnShow",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .SetValue(screen, false); // as a draw would leave it
+
+        screen.OnShown();
+
+        Assert.That(screen.ImportOpensOnShow, Is.True,
+            "coming back to the Forge leads with the importer again, not just the first visit");
+    }
+
+    // Game text is ASCII-only: the ImGui font atlas bakes Basic Latin + Latin-1, so a smart quote or an
+    // em dash in this copy would render as '?' in the popup the screen now opens with.
+    [Test]
+    public void TheImportRecommendationIsAscii()
+    {
+        foreach (string text in new[]
+                 {
+                     ArmyForgeScreen.ImportRecommendationHeadline,
+                     ArmyForgeScreen.ImportRecommendationBody,
+                 })
+        {
+            foreach (char c in text)
+                Assert.That(c, Is.LessThanOrEqualTo((char)0xFF), $"non-ASCII in \"{text}\"");
+        }
+    }
+
+    [Test]
+    public void TheRecommendationNamesWhereToBuildTheList()
+    {
+        Assert.That(ArmyForgeScreen.ImportRecommendationHeadline,
+            Does.Contain("army-forge.onepagerules.com"));
+        Assert.That(ArmyForgeScreen.ImportRecommendationBody,
+            Does.Contain("Composing here still works"),
+            "the nudge must not read as a prohibition - building by hand is still supported");
+    }
+
     // ---- #378: the game-system filter over the book dropdown ----------------------------------------
 
     private static List<BookFile> MixedLibrary() => new()

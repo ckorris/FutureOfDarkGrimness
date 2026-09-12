@@ -128,6 +128,15 @@ public static class UiChrome
     public static float PillGap => MathF.Max(2f, ImGui.GetStyle().ItemSpacing.X * 0.5f);
 
     /// <summary>
+    /// #403: a length in EM - multiples of the CURRENT font size. The app bakes its font and runs
+    /// <c>ScaleAllSizes</c> with a display-derived factor at startup (<c>RaylibRenderer.ComputeUiScale</c>),
+    /// so a literal pixel count is only correct on the one monitor it was typed on: a 110px field that
+    /// fits five digits on a 1080p laptop fits none of them once the display scale grows the font and the
+    /// step buttons inside it. Widths, popup sizes and paddings go through here instead.
+    /// </summary>
+    public static float Em(float multiple) => ImGui.GetFontSize() * multiple;
+
+    /// <summary>
     /// #398: the size of a chrome button - Back, Cancel, Swap, Load list. The controls a player aims at
     /// without looking deserve more than ImGui's default hug-the-text button, and the extra room is
     /// expressed in the CURRENT font's terms so it grows with the display's UI scale instead of being a

@@ -127,6 +127,12 @@ public class ArmyForgeScreen : IAppScreen
     private string? _pendingReopenFileName;
     private EditableSessionDrift? _pendingReopenDrift;
 
+    // #403: the importer is how we recommend getting a list in, so it opens with the screen rather than
+    // waiting to be found. Only the INTENT is recorded here - ImGui.OpenPopup has to be called from
+    // inside the window that owns the popup, which is Draw, several frames-worth of setup later. Starts
+    // true so a screen shown without going through NavigateTo still leads with it.
+    private bool _openImportOnShow = true;
+
     // #241 Import-from-share-link modal state. The fetch runs on a worker task (HTTP must not stall the
     // ImGui thread); Draw polls for completion. Only Draw (main thread) reads/writes these fields.
     private string _importInput = string.Empty;
@@ -240,7 +246,7 @@ public class ArmyForgeScreen : IAppScreen
             ? "Switching game systems will clear your current list. Continue?"
             : "Switching books will clear your current list. Continue?");
         ImGui.Spacing();
-        if (ImGui.Button("Switch", new Vector2(120, 0)))
+        if (UiButton.Confirm("Switch", UiChrome.ButtonSize("Switch")))
         {
             if (_pendingBookIndex is int idx) SwitchBook(idx);
             else if (_pendingSystemIndex is int sys) SwitchSystem(sys);
@@ -249,7 +255,7 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.CloseCurrentPopup();
         }
         ImGui.SameLine();
-        if (ImGui.Button("Cancel", new Vector2(120, 0)))
+        if (UiButton.Back("Cancel", UiChrome.ButtonSize("Cancel")))
         {
             _pendingBookIndex = null;
             _pendingSystemIndex = null;
@@ -264,12 +270,12 @@ public class ArmyForgeScreen : IAppScreen
     private void DrawLoadFailedModal()
     {
         bool open = true;
-        ImGui.SetNextWindowSize(new Vector2(560, 0), ImGuiCond.Appearing);
+        ImGui.SetNextWindowSize(new Vector2(UiChrome.Em(31f), 0f), ImGuiCond.Appearing);
         if (!ImGui.BeginPopupModal(LoadFailedTitle, ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
 
         WrappedText(_loadFailureMessage ?? "The army could not be loaded.", RedText, 540f);
         ImGui.Spacing();
-        if (ImGui.Button("OK", ButtonSize("OK", 120f))) ImGui.CloseCurrentPopup();
+        if (UiButton.Back("OK", UiChrome.ButtonSize("OK"))) ImGui.CloseCurrentPopup();
         ImGui.EndPopup();
     }
 
@@ -278,14 +284,14 @@ public class ArmyForgeScreen : IAppScreen
     private void DrawSaveGuardModal()
     {
         bool open = true;
-        ImGui.SetNextWindowSize(new Vector2(560, 0), ImGuiCond.Appearing);
+        ImGui.SetNextWindowSize(new Vector2(UiChrome.Em(31f), 0f), ImGuiCond.Appearing);
         if (!ImGui.BeginPopupModal(SaveGuardTitle, ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
 
         WrappedText(
             SaveGuardMessage(_pendingSaveGuard, Path.GetFileName(_pendingSavePath ?? ""), _book.Name, _list.Units.Count),
             YellowText, 540f);
         ImGui.Spacing();
-        if (ImGui.Button("Save anyway", ButtonSize("Save anyway", 140f)))
+        if (UiButton.Confirm("Save anyway", UiChrome.ButtonSize("Save anyway")))
         {
             if (_pendingSavePath is string path) WriteArmy(path, Compile());
             // Confirming IS the acknowledgement that the screen holds what it holds - do not re-warn about
@@ -295,7 +301,7 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.CloseCurrentPopup();
         }
         ImGui.SameLine();
-        if (ImGui.Button("Cancel", ButtonSize("Cancel", 140f)))
+        if (UiButton.Back("Cancel", UiChrome.ButtonSize("Cancel")))
         {
             SetStatus(EForgeStatusKind.Info, "Save canceled - nothing was written.");
             ClearPendingSave();
@@ -310,20 +316,20 @@ public class ArmyForgeScreen : IAppScreen
     private void DrawReopenDriftModal()
     {
         bool open = true;
-        ImGui.SetNextWindowSize(new Vector2(560, 0), ImGuiCond.Appearing);
+        ImGui.SetNextWindowSize(new Vector2(UiChrome.Em(31f), 0f), ImGuiCond.Appearing);
         if (!ImGui.BeginPopupModal(ReopenDriftTitle, ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
 
         string fileName = _pendingReopenFileName ?? "That army";
         if (_pendingReopenDrift is { } drift) WrappedText(ReopenDriftMessage(fileName, drift), YellowText, 540f);
         ImGui.Spacing();
-        if (ImGui.Button("Open for editing", ButtonSize("Open for editing", 160f)))
+        if (UiButton.Confirm("Open for editing", UiChrome.ButtonSize("Open for editing")))
         {
             if (_pendingReopen is { } file) Adopt(file, fileName);
             ClearPendingReopen();
             ImGui.CloseCurrentPopup();
         }
         ImGui.SameLine();
-        if (ImGui.Button("Cancel", ButtonSize("Cancel", 160f)))
+        if (UiButton.Back("Cancel", UiChrome.ButtonSize("Cancel")))
         {
             DeclineReopen(fileName);
             ClearPendingReopen();
@@ -374,7 +380,7 @@ public class ArmyForgeScreen : IAppScreen
     private void DrawImportModal()
     {
         bool open = true;
-        ImGui.SetNextWindowSize(new Vector2(680, 0), ImGuiCond.Appearing);
+        ImGui.SetNextWindowSize(new Vector2(UiChrome.Em(38f), 0f), ImGuiCond.Appearing);
         if (!ImGui.BeginPopupModal("Import from Army Forge", ref open, ImGuiWindowFlags.AlwaysAutoResize))
             return;
 
@@ -391,25 +397,38 @@ public class ArmyForgeScreen : IAppScreen
         }
         bool busy = _importTask is not null;
 
+        // #403: the recommendation, first thing, because this popup is what the screen now opens with.
+        // Wrapped rather than hand-split into lines: the popup is sized in em, so where the break falls
+        // depends on the display's UI scale and a hard-coded break would be wrong on half of them.
+        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiTheme.HeaderAccent);
+        UiText.Wrapped(ImportRecommendationHeadline);
+        ImGui.PopStyleColor();
+        UiText.Wrapped(ImportRecommendationBody);
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+
         ImGui.TextUnformatted("Paste an Army Forge share link (or list id):");
-        ImGui.SetNextItemWidth(660f);
+        ImGui.SetNextItemWidth(UiChrome.Em(36.5f));
         bool entered = ImGui.InputText("##import-link", ref _importInput, 512, ImGuiInputTextFlags.EnterReturnsTrue);
 
-        ImGui.BeginDisabled(busy || _importInput.Trim().Length == 0);
-        bool fetch = ImGui.Button("Fetch", ButtonSize("Fetch", 120f)) || (entered && !busy && _importInput.Trim().Length > 0);
-        ImGui.EndDisabled();
-        ImGui.SameLine();
-        // The link always arrives via the clipboard (it is copied out of the Army Forge share dialog), and
-        // an ImGui text field has no context menu to paste from - so the paste has to be a button.
+        // #403: Paste before Fetch - that is the order they get pressed. The link always arrives via the
+        // clipboard (it is copied out of the Army Forge share dialog) and an ImGui text field has no
+        // context menu to paste from, so the paste has to be a button, and it is the FIRST thing you do.
         ImGui.BeginDisabled(busy);
-        if (ImGui.Button("Paste", ButtonSize("Paste", 120f)))
+        if (UiButton.Navigate("Paste", UiChrome.ButtonSize("Paste")))
         {
             string clipboard = ImGui.GetClipboardText() ?? string.Empty;
             if (clipboard.Trim().Length > 0) _importInput = clipboard.Trim();
         }
         ImGui.EndDisabled();
         ImGui.SameLine();
-        if (ImGui.Button("Close", ButtonSize("Close", 120f))) ImGui.CloseCurrentPopup();
+        ImGui.BeginDisabled(busy || _importInput.Trim().Length == 0);
+        bool fetch = UiButton.Confirm("Fetch", UiChrome.ButtonSize("Fetch"))
+            || (entered && !busy && _importInput.Trim().Length > 0);
+        ImGui.EndDisabled();
+        ImGui.SameLine();
+        if (UiButton.Back("Close", UiChrome.ButtonSize("Close"))) ImGui.CloseCurrentPopup();
 
         if (fetch)
         {
@@ -452,7 +471,8 @@ public class ArmyForgeScreen : IAppScreen
                         $"Army Forge says {check.TheirTotalPoints} (see #218/#219).");
             }
 
-            ImGui.BeginChild("##import-preview", new Vector2(660, 280), ImGuiChildFlags.Borders);
+            ImGui.BeginChild("##import-preview", new Vector2(UiChrome.Em(36.5f), UiChrome.Em(15.5f)),
+                ImGuiChildFlags.Borders);
             UiText.Disabled("UNITS");
             foreach (UnitFileEntry u in army.Units)
             {
@@ -508,19 +528,19 @@ public class ArmyForgeScreen : IAppScreen
             if (_confirmOpenInForge)
             {
                 UiText.Colored(YellowText, "This will replace your current Forge list. Continue?");
-                if (ImGui.Button("Replace list", ButtonSize("Replace list")))
+                if (UiButton.Confirm("Replace list", UiChrome.ButtonSize("Replace list")))
                 {
                     _confirmOpenInForge = false;
                     AdoptImported(outcome);
                     ImGui.CloseCurrentPopup();
                 }
                 ImGui.SameLine();
-                if (ImGui.Button("Back", ButtonSize("Back"))) _confirmOpenInForge = false;
+                if (UiButton.Back("Back", UiChrome.ButtonSize("Back"))) _confirmOpenInForge = false;
             }
             else
             {
                 ImGui.BeginDisabled(outcome.ForgeSession is null || outcome.BundledBook is null);
-                if (ImGui.Button("Open in Forge", ButtonSize("Open in Forge")))
+                if (UiButton.Confirm("Open in Forge", UiChrome.ButtonSize("Open in Forge")))
                 {
                     if (_list.Units.Count > 0) _confirmOpenInForge = true;
                     else
@@ -531,7 +551,7 @@ public class ArmyForgeScreen : IAppScreen
                 }
                 ImGui.EndDisabled();
                 ImGui.SameLine();
-                if (ImGui.Button("Save As...", ButtonSize("Save As...")) && SaveImported(outcome))
+                if (UiButton.Confirm("Save As...", UiChrome.ButtonSize("Save As...")) && SaveImported(outcome))
                     ImGui.CloseCurrentPopup();
             }
         }
@@ -544,9 +564,6 @@ public class ArmyForgeScreen : IAppScreen
     /// 18px UI font is scaled up ("Open in Forge" overflowed 140px); <paramref name="minWidth"/> keeps a
     /// row of short labels looking uniform rather than each shrinking to its text.
     /// </summary>
-    private static Vector2 ButtonSize(string label, float minWidth = 140f) =>
-        new(MathF.Max(minWidth, ImGui.CalcTextSize(label).X + ImGui.GetStyle().FramePadding.X * 2f), 0f);
-
     // #241 v2: hand the reconstructed session to the normal Forge editing path. Compile gives the same
     // BuiltArmyFile shape a Load would, so AdoptLoaded's book-dropdown sync and per-frame recompile all
     // apply unchanged.
@@ -655,6 +672,9 @@ public class ArmyForgeScreen : IAppScreen
 
     // ── Draw ────────────────────────────────────────────────────────────────────────────────────────────
 
+    /// <summary>#403: every entry into the Forge leads with the importer.</summary>
+    public void OnShown() => _openImportOnShow = true;
+
     public void Draw(int screenW, int screenH)
     {
         EnsureLibrary();
@@ -679,29 +699,37 @@ public class ArmyForgeScreen : IAppScreen
 
     private void DrawToolbar(BuiltArmyFile compiled, IReadOnlyList<ListIssue> issues)
     {
-        if (ImGui.Button("Back")) OnBack?.Invoke();
+        // #403: chrome buttons at the shared size (#398's UiChrome.ButtonSize) - big enough to aim at
+        // without looking, and measured in the current font so they are the same button on a laptop and
+        // on a 4K display. They stand taller than a combo, so everything else on the row is centred
+        // against them rather than left hanging from the top edge.
+        float rowH = UiChrome.ButtonSize("Back").Y;
+
+        if (UiButton.Back("Back", UiChrome.ButtonSize("Back"))) OnBack?.Invoke();
         ImGui.SameLine();
-        if (ImGui.Button("Save")) Save(compiled);
+        if (UiButton.Navigate("Save", UiChrome.ButtonSize("Save"))) Save(compiled);
         ImGui.SameLine();
-        if (ImGui.Button("Load")) Load();
+        if (UiButton.Navigate("Load", UiChrome.ButtonSize("Load"))) Load();
         ImGui.SameLine();
-        if (ImGui.Button("Import Link"))
+        if (UiButton.Navigate("Import Link", UiChrome.ButtonSize("Import Link"))) OpenImportModal();
+
+        // #403: and the same popup on arrival, without a click.
+        if (_openImportOnShow)
         {
-            _importInput = string.Empty;
-            _importTask = null;
-            _importOutcome = null;
-            _importError = null;
-            _confirmOpenInForge = false;
-            ImGui.OpenPopup("Import from Army Forge");
+            _openImportOnShow = false;
+            OpenImportModal();
         }
+
         ImGui.SameLine();
+        CenterOnToolbarRow(rowH, ImGui.GetTextLineHeight());
         ImGui.TextUnformatted("Army Forge  -");
         if (_showSystemCombo)
         {
             // #378: the game-system filter. Switching clears the list like a book switch, so it gets
             // the same confirm when the list is non-empty.
             ImGui.SameLine();
-            ImGui.SetNextItemWidth(160f);
+            CenterOnToolbarRow(rowH, ImGui.GetFrameHeight());
+            ImGui.SetNextItemWidth(UiChrome.Em(9f));
             int si = _systemIndex;
             string[] systemLabels = Systems.Select(s => s.Label).ToArray();
             if (ImGui.Combo("##forge-system", ref si, systemLabels, systemLabels.Length) && si != _systemIndex)
@@ -711,7 +739,8 @@ public class ArmyForgeScreen : IAppScreen
             }
         }
         ImGui.SameLine();
-        ImGui.SetNextItemWidth(220f);
+        CenterOnToolbarRow(rowH, ImGui.GetFrameHeight());
+        ImGui.SetNextItemWidth(UiChrome.Em(12f));
         // The dropdown shows the current system's books only; map the selection back to library indices.
         int visPos = Math.Max(0, Array.IndexOf(_visibleBooks, _bookIndex));
         if (ImGui.Combo("##forge-book", ref visPos, _visibleNames, _visibleNames.Length)
@@ -729,17 +758,17 @@ public class ArmyForgeScreen : IAppScreen
         if (_statusHint is not null)
         {
             ImGui.SameLine();
-            // TextUnformatted, not TextColored/Text: the line can carry a file name or an exception message,
-            // and a stray '%' in either would be eaten as a printf directive.
-            ImGui.PushStyleColor(ImGuiCol.Text, StatusColor(_statusKind));
-            ImGui.TextUnformatted(_statusHint);
-            ImGui.PopStyleColor();
+            CenterOnToolbarRow(rowH, ImGui.GetTextLineHeight());
+            // UiText.Colored, not TextColored: the line can carry a file name or an exception message,
+            // and a stray '%' in either would be eaten as a printf directive (#398).
+            UiText.Colored(StatusColor(_statusKind), _statusHint);
         }
 
         // Legality badge.
         int errors = issues.Count(i => i.Severity == ListIssueSeverity.Error);
         int warnings = issues.Count(i => i.Severity == ListIssueSeverity.Warning);
         ImGui.SameLine();
+        CenterOnToolbarRow(rowH, ImGui.GetTextLineHeight());
         if (errors > 0) UiText.Colored(RedText, $"[{errors} error{(errors == 1 ? "" : "s")}]");
         else if (warnings > 0) UiText.Colored(YellowText, $"[{warnings} warning{(warnings == 1 ? "" : "s")}]");
         else UiText.Colored(GreenText, "[Legal]");
@@ -747,7 +776,14 @@ public class ArmyForgeScreen : IAppScreen
         // Editable points limit (games run 1000-5000; the 1000 default was hard-coded until now).
         // Advisory like everything else here (#003): over-cap only turns the header red.
         ImGui.SameLine();
-        ImGui.SetNextItemWidth(110f);
+        CenterOnToolbarRow(rowH, ImGui.GetFrameHeight());
+        // #403: InputInt puts its two step buttons INSIDE the item width, so the old flat 110px was the
+        // digits plus two buttons - and once the display scale grew the buttons there was nothing left
+        // for the number, which is how the limit came to be cut off. Ask for both explicitly: room for
+        // five digits AND the two buttons, measured in the font that is actually loaded.
+        float stepButtons = (ImGui.GetFrameHeight() + ImGui.GetStyle().ItemInnerSpacing.X) * 2f;
+        ImGui.SetNextItemWidth(
+            stepButtons + ImGui.CalcTextSize("00000").X + (ImGui.GetStyle().FramePadding.X * 2f));
         int limit = _list.PointsLimit;
         if (ImGui.InputInt("pts limit", ref limit, 250) && limit > 0)
             _list.PointsLimit = limit;
@@ -756,7 +792,43 @@ public class ArmyForgeScreen : IAppScreen
         float headerW = ImGui.CalcTextSize(header).X;
         ImGui.SameLine();
         ImGui.SetCursorPosX(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - headerW);
+        CenterOnToolbarRow(rowH, ImGui.GetTextLineHeight());
         UiText.Colored(compiled.TotalPoints > _list.PointsLimit ? RedText : WhiteText, header);
+    }
+
+    /// <summary>
+    /// #403: lifts the next item down so it sits centred against the toolbar's taller chrome buttons.
+    /// <c>SameLine</c> starts every item on a row at the row's TOP, which leaves a combo or a line of
+    /// text hanging above the middle of the button beside it. Safe to call per item: <c>SameLine</c>
+    /// resets the cursor to the row top each time, so these never compound.
+    /// </summary>
+    private static void CenterOnToolbarRow(float rowHeight, float itemHeight) =>
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + MathF.Max(0f, (rowHeight - itemHeight) * 0.5f));
+
+    /// <summary>#403: what the import popup leads with. Held as constants rather than inline so the
+    /// ASCII-only rule (the ImGui atlas bakes Basic Latin + Latin-1; anything else draws as '?') can be
+    /// pinned by a test.</summary>
+    internal const string ImportRecommendationHeadline =
+        "Recommended: build your list on army-forge.onepagerules.com, then paste the share link here.";
+
+    /// <inheritdoc cref="ImportRecommendationHeadline"/>
+    internal const string ImportRecommendationBody =
+        "It is quicker than composing from scratch below, and it uses OPR's own points rather than this "
+        + "build's snapshot of the book. Composing here still works - close this and carry on.";
+
+    /// <summary>#403: whether the next draw will open the import popup by itself. Test seam.</summary>
+    internal bool ImportOpensOnShow => _openImportOnShow;
+
+    /// <summary>Fresh import state plus the popup, for both ways in: the Import Link button and the
+    /// screen opening (#403). Shared so the two cannot drift apart.</summary>
+    private void OpenImportModal()
+    {
+        _importInput = string.Empty;
+        _importTask = null;
+        _importOutcome = null;
+        _importError = null;
+        _confirmOpenInForge = false;
+        ImGui.OpenPopup("Import from Army Forge");
     }
 
     private void DrawPanes(BuiltArmyFile compiled, IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues)
@@ -997,7 +1069,7 @@ public class ArmyForgeScreen : IAppScreen
                 sel = hosts.FindIndex(h => _list.Units[h].Id == bu.JoinsUnitId) + 1; // -1+1 = 0 when stale
 
             ImGui.Spacing();
-            ImGui.SetNextItemWidth(240f);
+            ImGui.SetNextItemWidth(UiChrome.Em(13f));
             if (ImGui.Combo($"Joins unit##join{idx}", ref sel, options, options.Length))
                 bu.JoinsUnitId = sel == 0 ? null : EnsureId(_list.Units[hosts[sel - 1]]);
 

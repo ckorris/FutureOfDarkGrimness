@@ -99,6 +99,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Army Forge
 
+- [~] 403 — Army Forge leads with the importer: the Import popup opens with the screen and carries a recommendation to build on army-forge.onepagerules.com, Paste moved left of Fetch, chrome buttons at #398's shared size, and every fixed pixel width on the screen (the points-limit field above all, which cut its own digits off) re-expressed in the loaded font. Implemented + suites green; awaiting GUI hand-verify. ([WorkItems/403](WorkItems/403-army-forge-import-first-ux.md))
 - [~] 383 — OPR "Any model may replace/take ..." sections imported as pick-one-per-option checkboxes; they are per-model counted steppers (section total = model count), so e.g. 3 Hive Warriors couldn't take 3x Ravager Gun. Importer classifier + `PerModelBudget` + 22 bundled sections re-stamped; fixed + tested, awaiting GUI hand-verify. ([WorkItems/383](WorkItems/383-per-model-any-upgrade-sections.md))
 - [~] 218 — "Replace All" charged per model instead of flat. Convention confirmed from a real share list and fixed 2026-07-19 (Havoc list reconciles 1120 both ways; 200 priced All options were overcharging). Open: `Affects.Any` pricing unverified (1185 options ride on it) + GUI hand-verify. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
 - [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))
