@@ -308,7 +308,7 @@ public class LobbyScreen : IAppScreen
                 ImGui.TextUnformatted(info.PlayerType.ToString());
 
                 ImGui.TableNextColumn();
-                DrawArmyCell(info.ArmyListSummary);
+                DrawArmyCell(info.ArmyListSummary, _viewModel.IsResumeMode);
 
                 ImGui.TableNextColumn();
                 DrawFactionCell(info.ArmyListSummary, _viewModel.AllowedGameSystems);
@@ -547,14 +547,17 @@ public class LobbyScreen : IAppScreen
     // red text plus a tooltip saying what is wrong and that it stops the launch - so all three blockers
     // read the same way on the row and in the greyed LAUNCH button's tooltip.
 
-    /// <summary>The Army cell. Red when the slot carries no army at all.</summary>
-    private static void DrawArmyCell(ArmyListSummary summary)
+    /// <summary>The Army cell. Red when the slot carries no army at all - except on a resume, where
+    /// every slot reports none and the save holds the real ones.</summary>
+    private static void DrawArmyCell(ArmyListSummary summary, bool isResume)
     {
-        if (!summary.IsAssigned) ImGui.PushStyleColor(ImGuiCol.Text, OverPointsColor);
-        ImGui.TextUnformatted(summary.ArmyName);
-        if (!summary.IsAssigned) ImGui.PopStyleColor();
+        bool missing = LobbyArmySource.IsMissingArmy(summary, isResume);
 
-        if (!summary.IsAssigned && ImGui.IsItemHovered())
+        if (missing) ImGui.PushStyleColor(ImGuiCol.Text, OverPointsColor);
+        ImGui.TextUnformatted(summary.ArmyName);
+        if (missing) ImGui.PopStyleColor();
+
+        if (missing && ImGui.IsItemHovered())
             ImGui.SetTooltip(LobbyArmySource.NoArmyTooltip);
     }
 

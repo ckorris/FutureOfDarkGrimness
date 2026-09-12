@@ -25,9 +25,18 @@ public static class LobbyArmySource
         + $"{GameSystems.DisplayName(allowed)} armies only.\n"
         + "Launch is blocked until this row is legal.";
 
+    /// <summary>
+    /// True when this row's empty Army cell is a PROBLEM, i.e. when it should read red. A resume lobby
+    /// is exempt: its slots always report no army because the armies are already in the save and the
+    /// roster's copy is vestigial, so painting all of them red would flag a fault that isn't there and
+    /// tell the player to load something they already have.
+    /// </summary>
+    public static bool IsMissingArmy(ArmyListSummary summary, bool isResumeLobby) =>
+        !isResumeLobby && !summary.IsAssigned;
+
     /// <summary>Why the Army cell reads "N/A" in red: no army on this slot at all. Blocking since #400 -
-    /// the host used to substitute a 100-pt stub, silently putting a player in a game with an army they
-    /// never picked.</summary>
+    /// the host used to substitute a 100-pt "Test Army" stub, silently putting a player in a game with
+    /// an army they never picked.</summary>
     public const string NoArmyTooltip =
         "No army assigned.\nLoad one (or roll Random Army). Launch is blocked until every slot has one.";
 }

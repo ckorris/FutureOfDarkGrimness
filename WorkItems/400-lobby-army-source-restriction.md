@@ -23,6 +23,8 @@ line is gone.
   with a completed game). Commits: engine `572fdcc` (settings + gate split) -> `180ce4d` (lobby UI +
   submodule bump) -> `06f281a` (recursive scan, Random Army filter, folder split) -> engine bot-stub
   fix -> `d9f758f`. Still needs a GUI hand-verify (checklist below).
+- 2026-09-12: **Test Army stub removed outright** (owner request, while hand-verifying). See the
+  decision below. Suites green again: engine 3326, app 2929, smoke exits 0.
 - 2026-09-12: Filed. Numbering checked against `origin/master` after `git fetch` + pull (superproject
   `cd7fd12` -> `cbab372`, engine -> `173cb5a`): index high-water **398**, archive max **399**, detail
   files max **399**, no `400-*` branch on origin. No collision.
@@ -69,6 +71,21 @@ line is gone.
   in `Program.cs`. The pre-existing `IndexedPointsMatchAFullDeserializeOfEveryShippedArmy` caught the
   same class of bug in the test suite itself.
 
+- **2026-09-12 — the Test Army stub is gone entirely (owner).** `GetTempTestArmyFile` /
+  `GetTempTestUnit` and both substitution sites deleted. An army-less slot is now REFUSED at two
+  depths instead of papered over: `ValidateLaunchSettings` names the player and returns a fail reason
+  (so a caller that skips the lobby's gate still cannot launch), and `GameBootstrap.CreateArmy` throws
+  if one gets past that. `PlayerSlot.ArmyListFile` became nullable, which is what a resume always
+  meant in practice - saved slots carry null, `BuildRuleResolver` skips them, and
+  `RestoreArmyRuleData` supplies the definitions from the save.
+
+  Consequence caught while doing it: a resume lobby's rows ALL report no army, so the new red Army
+  cell would have fired on every one of them and told the player to load a list already in the save.
+  `LobbyArmySource.IsMissingArmy` takes an `isResumeLobby` flag and exempts them.
+
+  Untouched on purpose: `FdgRaylib/Cli/ArmyLoader.cs`'s "<Player>'s Test Army" - a different
+  mechanism (the headless EOF fallback documented in CLAUDE.md, which the smoke command relies on).
+
 ## GUI hand-verify checklist
 
 1. Army Source combo appears under Army Points, host-editable, greyed for a client and on a resume.
@@ -78,7 +95,10 @@ line is gone.
    yellow and says it is legal.
 5. A slot with no army reads red "N/A" on the Army cell and blocks.
 6. Random Army in an AoF-only lobby with only GDF armies in the folder: no pick, slot stays empty/red.
-7. Add a bot with `armies/` present: it gets a real list, not "Test Army".
+7. Add a bot with `armies/` present: it gets a real list. "Test Army" no longer exists at all.
+   With `armies/` absent, the bot row stays red "N/A" and LAUNCH stays greyed.
+10. Resume a save: rows read "N/A" in PLAIN text (not red), RESUME is live, and the game resumes with
+    its own armies.
 8. Host + client: the host changing Army Source is reflected on the client's roster colours immediately.
 9. A Forge army with a force-org error still raises "Launch anyway?" (not blocked).
 

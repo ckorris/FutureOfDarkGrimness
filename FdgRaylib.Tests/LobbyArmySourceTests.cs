@@ -48,6 +48,23 @@ public class LobbyArmySourceTests
         Assert.That(LobbyArmySource.IsWrongSystem(Unassigned, EAllowedGameSystems.GrimdarkFuture), Is.False);
     }
 
+    // ── An empty Army cell ──────────────────────────────────────────────────────────────────
+
+    [Test]
+    public void AnEmptySlotIsAProblemInAFreshLobby()
+    {
+        Assert.That(LobbyArmySource.IsMissingArmy(Unassigned, isResumeLobby: false), Is.True);
+        Assert.That(LobbyArmySource.IsMissingArmy(Army(null), isResumeLobby: false), Is.False);
+    }
+
+    // A resume lobby's slots ALL report no army - the real ones are in the save, and the roster's copy
+    // is vestigial - so flagging them would invent a fault and tell the player to load what they have.
+    [Test]
+    public void AResumeLobbyNeverFlagsAnEmptySlot()
+    {
+        Assert.That(LobbyArmySource.IsMissingArmy(Unassigned, isResumeLobby: true), Is.False);
+    }
+
     [Test]
     public void WrongSystemTooltipNamesBothSides()
     {
