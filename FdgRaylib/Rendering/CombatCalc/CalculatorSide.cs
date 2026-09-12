@@ -114,12 +114,27 @@ internal sealed class CalculatorSide
         return copy;
     }
 
-    /// <summary>The unit's name for a tab label, taken off the ROSTER rather than a compile: a tab is
-    /// drawn every frame for every slot, and a compile per tab per frame to read one string back is a
-    /// price with nothing to show for it.</summary>
-    internal string UnitName =>
-        Book is not null ? Roster?.Name ?? string.Empty
-        : _savedRows.Count > 0 ? _savedRows[^1].Name : string.Empty;
+    /// <summary>
+    /// The names this column holds, hero first - one, or two when a hero has joined. Two because a tab
+    /// reading only "Vanguard Warriors" hides the captain standing in it, and the captain is usually why
+    /// the tab exists.
+    ///
+    /// <para>Names come off the ROSTER rather than a compile: a tab is drawn every frame for every slot,
+    /// and compiling a unit to read one string back is a price with nothing to show for it.</para>
+    /// </summary>
+    internal IReadOnlyList<string> UnitNames
+    {
+        get
+        {
+            if (Book is null) return _savedRows.Select(unit => unit.Name).ToList();
+            if (!HasUnit) return Array.Empty<string>();
+
+            return Rows()
+                .Select(unit => RosterOf(unit)?.Name ?? string.Empty)
+                .Where(name => name.Length > 0)
+                .ToList();
+        }
+    }
 
     internal RosterUnit? Roster => Book is not null && HasUnit
         ? Book.Units.FirstOrDefault(unit => unit.Id == List.Units[MainIndex].RosterUnitId)

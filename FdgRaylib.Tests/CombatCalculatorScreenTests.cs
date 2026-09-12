@@ -275,17 +275,32 @@ public class CombatCalculatorScreenTests
     [Test]
     public void ALongUnitNameIsShortenedToFitTheTabAndStaysAscii()
     {
-        string shortened = SideTabs.Shorten("Battle Brothers Veterans");
+        string shortened = SideTabs.Shorten("Battle Brothers Veterans", SideTabs.MaxLabelChars);
 
         Assert.Multiple(() =>
         {
             Assert.That(shortened, Is.EqualTo("Battle Brothers V..."));
             Assert.That(shortened, Has.Length.EqualTo(SideTabs.MaxLabelChars));
             Assert.That(shortened.All(c => c <= 0x7F), Is.True, "three dots, not an ellipsis glyph");
-            Assert.That(SideTabs.Shorten("Heavy Gunners"), Is.EqualTo("Heavy Gunners"),
+            Assert.That(SideTabs.Shorten("Heavy Gunners", SideTabs.MaxLabelChars), Is.EqualTo("Heavy Gunners"),
                 "a name that fits is left alone");
-            Assert.That(SideTabs.Shorten("   "), Is.EqualTo(SideTabs.EmptyLabel));
+            Assert.That(SideTabs.Shorten("   ", SideTabs.MaxLabelChars), Is.EqualTo(SideTabs.EmptyLabel));
         });
+    }
+
+    [Test]
+    public void AJoinedTabNamesBothTheHeroAndTheUnitItJoined()
+    {
+        BookFile force = HeroBook();
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(force, "squad");
+
+        Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Squad"), "one unit, one name");
+
+        tabs.Current.SetJoin("captain");
+
+        Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo($"Captain{SideTabs.JoinSeparator}Squad"),
+            "hero first, the way the column itself is ordered");
     }
 
     // ---- the screen ----------------------------------------------------------------------------
@@ -533,6 +548,27 @@ public class CombatCalculatorScreenTests
             Assert.That(CombatCalculatorScreen.SnapDistance(-4f), Is.EqualTo(0f), "clamped at the near end");
             Assert.That(CombatCalculatorScreen.SnapDistance(500f),
                 Is.EqualTo(CombatCalculatorScreen.MaxDistanceInches), "and at the far end");
+        });
+    }
+
+    [Test]
+    public void TheSteppersLandOnMultiplesRatherThanCarryingAnOffsetAlong()
+    {
+        const float fine = CombatCalculatorScreen.StepInches;      // 3
+        const float coarse = CombatCalculatorScreen.BigStepInches;  // 6
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.Stepped(14f, fine), Is.EqualTo(15f), "up to the next 3");
+            Assert.That(CombatCalculatorScreen.Stepped(15f, fine), Is.EqualTo(18f), "then a full step");
+            Assert.That(CombatCalculatorScreen.Stepped(14f, coarse), Is.EqualTo(18f), "up to the next 6");
+            Assert.That(CombatCalculatorScreen.Stepped(18f, coarse), Is.EqualTo(24f));
+            Assert.That(CombatCalculatorScreen.Stepped(14f, -fine), Is.EqualTo(12f), "down to the last 3");
+            Assert.That(CombatCalculatorScreen.Stepped(12f, -fine), Is.EqualTo(9f));
+            Assert.That(CombatCalculatorScreen.Stepped(14f, -coarse), Is.EqualTo(12f));
+            Assert.That(CombatCalculatorScreen.Stepped(2f, -coarse), Is.EqualTo(0f), "clamped, not negative");
+            Assert.That(CombatCalculatorScreen.Stepped(47f, coarse),
+                Is.EqualTo(CombatCalculatorScreen.MaxDistanceInches), "and clamped at the far end");
         });
     }
 

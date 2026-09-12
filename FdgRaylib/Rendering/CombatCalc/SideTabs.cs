@@ -26,6 +26,13 @@ internal sealed class SideTabs
     /// Warriors" is 17 characters), or every tab reads as an abbreviation.</summary>
     internal const int MaxLabelChars = 20;
 
+    /// <summary>And per name when a tab carries two of them - the hero and the unit it joined. Both
+    /// names have to be recognisable, which at this column width means neither gets the full 20.</summary>
+    internal const int MaxJoinedPartChars = 13;
+
+    /// <summary>Between a joined pair's two names.</summary>
+    internal const string JoinSeparator = " + ";
+
     private readonly List<Slot> _slots = new();
     private int _nextKey;
     private int _active;
@@ -106,15 +113,23 @@ internal sealed class SideTabs
     /// rather than left to ImGui's own tab clipping so the label is the same at every window width and
     /// can be pinned by a test - and so the "..." is ASCII, like every other string in the app.
     /// </summary>
-    internal static string TabLabel(CalculatorSide side) => Shorten(side.UnitName);
+    internal static string TabLabel(CalculatorSide side)
+    {
+        IReadOnlyList<string> names = side.UnitNames;
+
+        return names.Count switch
+        {
+            0 => EmptyLabel,
+            1 => Shorten(names[0], MaxLabelChars),
+            _ => string.Join(JoinSeparator, names.Select(name => Shorten(name, MaxJoinedPartChars))),
+        };
+    }
 
     /// <inheritdoc cref="TabLabel"/>
-    internal static string Shorten(string name)
+    internal static string Shorten(string name, int max)
     {
         if (string.IsNullOrWhiteSpace(name)) return EmptyLabel;
 
-        return name.Length <= MaxLabelChars
-            ? name
-            : name[..(MaxLabelChars - 3)].TrimEnd() + "...";
+        return name.Length <= max ? name : name[..(max - 3)].TrimEnd() + "...";
     }
 }

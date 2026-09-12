@@ -61,7 +61,7 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string FatiguedLabel = "Attacker is fatigued";
 
     private static readonly Vector4 DimText = new(0.62f, 0.62f, 0.62f, 1f);
-    private static readonly Vector4 RuleText = new(0.45f, 0.80f, 0.90f, 1f);
+    private static readonly Vector4 BrightText = new(1f, 1f, 1f, 1f);
     private static readonly Vector4 WarnText = new(0.90f, 0.80f, 0.35f, 1f);
     private static readonly Vector4 HeadText = new(0.85f, 0.85f, 0.90f, 1f);
     private static readonly Vector4 Transparent = Vector4.Zero;
@@ -87,6 +87,10 @@ public class CombatCalculatorScreen : IAppScreen
     private CombatSituation _situation = new(AttackerCharging: true);
     private CombatReport? _report;
     private string _reportKey = string.Empty;
+    // Taken with the report, not per frame: the points must be the DEFENDER'S as the report saw them,
+    // and pricing a list costs a compile, which is not a thing to do sixty times a second for a number
+    // that only moves when the fingerprint does.
+    private int _reportDefenderPoints;
 
     public CombatCalculatorScreen()
     {
@@ -149,8 +153,8 @@ public class CombatCalculatorScreen : IAppScreen
     {
         if (UiButton.Back(BackLabel, UiChrome.ButtonSize(BackLabel))) OnBack?.Invoke();
 
-        ImGui.SameLine();
-        ImGui.TextColored(HeadText, "   " + Title);
+        ImGui.SameLine(0f, ImGui.GetFontSize() * 1.5f);
+        ImGui.TextColored(HeadText, Title);
 
         ImGui.SameLine();
         Vector2 swap = UiChrome.ButtonSize(SwapLabel);
@@ -203,6 +207,7 @@ public class CombatCalculatorScreen : IAppScreen
         _report = Attacker.HasUnit && Defender.HasUnit
             ? CombatCalculator.Run(Attacker.Compile(), Defender.Compile(), _situation)
             : null;
+        _reportDefenderPoints = _report is null ? 0 : Defender.Points;
     }
 
     private void DrawPanes()
@@ -294,9 +299,24 @@ public class CombatCalculatorScreen : IAppScreen
     /// </summary>
     private static void DrawTabStrip(SideTabs tabs, UnitPicker picker, string id)
     {
-        if (!ImGui.BeginTabBar($"##tabs-{id}",
-                ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.NoCloseWithMiddleMouseButton))
+        float em = ImGui.GetFontSize();
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(em * 0.6f, em * 0.3f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, new Vector2(em * 0.5f, em * 0.25f));
+        // The tab in play takes the accent. Selected tabs and buttons used to be the same raised grey,
+        // which left the reader working out from context which of two grey blocks they were looking at.
+        ImGui.PushStyleColor(ImGuiCol.Tab, ImGuiTheme.TabIdle);
+        ImGui.PushStyleColor(ImGuiCol.TabHovered, ImGuiTheme.ButtonGoHovered);
+        ImGui.PushStyleColor(ImGuiCol.TabSelected, ImGuiTheme.AccentBlue);
+
+        bool open_ = ImGui.BeginTabBar($"##tabs-{id}",
+            ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.NoCloseWithMiddleMouseButton);
+
+        if (!open_)
+        {
+            ImGui.PopStyleColor(3);
+            ImGui.PopStyleVar(2);
             return;
+        }
 
         int closing = -1;
         for (int i = 0; i < tabs.Slots.Count; i++)
@@ -324,6 +344,9 @@ public class CombatCalculatorScreen : IAppScreen
             tabs.Duplicate();
 
         ImGui.EndTabBar();
+        ImGui.PopStyleColor(3);
+        ImGui.PopStyleVar(2);
+        ImGui.Spacing();
 
         if (closing >= 0) tabs.Close(closing);
     }
@@ -350,7 +373,9 @@ public class CombatCalculatorScreen : IAppScreen
             - ImGui.GetStyle().ItemSpacing.X);
         ImGui.TextUnformatted(points);
 
+        ImGui.Spacing();
         if (NavButton(ChooseUnitLabel, $"pick-{id}")) picker.Open();
+        ImGui.Spacing();
         ImGui.Separator();
     }
 
@@ -413,15 +438,16 @@ public class CombatCalculatorScreen : IAppScreen
             {
                 // A join stays inside the unit's own army, so there is no army level to step back to.
                 if (BackButton(CancelLabel, $"joincancel-{id}")) picker.Close();
-                ImGui.SameLine();
+                ImGui.SameLine(0f, ImGui.GetFontSize());
                 ImGui.TextUnformatted(side.MainIsHero ? WhichUnitPrompt : WhichHeroPrompt);
             }
             else
             {
                 if (BackButton(BackLabel, $"armies-{id}")) picker.BackToArmies();
-                ImGui.SameLine();
+                ImGui.SameLine(0f, ImGui.GetFontSize());
                 ImGui.TextUnformatted(army.Name);
             }
+            ImGui.Spacing();
             ImGui.Separator();
 
             DrawFilter(picker, id);
@@ -439,11 +465,19 @@ public class CombatCalculatorScreen : IAppScreen
                 dl.AddText(rowMin, ImGui.GetColorU32(ImGuiCol.Text), entry.Name);
                 dl.AddText(rowMin + new Vector2(ImGui.GetTextLineHeight(), ImGui.GetTextLineHeight()),
                     ImGui.GetColorU32(DimText), entry.StatLine);
+
+                // #227's gold, the colour a hero is marked in on the printed list and in the unit
+                // columns - so the tag teaches nothing new, it just applies here too.
+                if (entry.IsHero)
+                    dl.AddText(
+                        rowMin + new Vector2(ImGui.CalcTextSize(entry.Name).X + ImGui.GetFontSize() * 0.6f, 0f),
+                        ImGui.GetColorU32(ImGuiTheme.HeroGold), HeroTag);
             }
             return;
         }
 
         if (side.HasUnit && BackButton(CancelLabel, $"cancel-{id}")) picker.Close();
+        ImGui.Spacing();
         ImGui.TextColored(DimText, ArmyPrompt);
 
         if (NavButton(LoadListLabel, $"load-{id}")) LoadArmyFromDisk();
@@ -542,7 +576,7 @@ public class CombatCalculatorScreen : IAppScreen
     {
         for (int i = 0; i < Systems.Length; i++)
         {
-            if (i > 0) ImGui.SameLine();
+            if (i > 0) ImGui.SameLine(0f, ImGui.GetFontSize() * 0.5f);
             (string label, string slug) = Systems[i];
             bool active = GameSystems.SameSystem(picker.GameSystem, slug);
 
@@ -582,6 +616,37 @@ public class CombatCalculatorScreen : IAppScreen
 
     private void DrawMiddle()
     {
+        DrawModeTabs();
+
+        // The inputs sit directly above the output they change. They used to live in a fixed bottom
+        // third of the column, which put a screen-height of empty space between a checkbox and the
+        // number it moves - the reader had to remember what they had just toggled.
+        DrawSituationBar();
+        ImGui.Separator();
+
+        ImGui.BeginChild("##calc-results", Vector2.Zero);
+        DrawResults();
+        ImGui.EndChild();
+    }
+
+    /// <summary>
+    /// Shooting or Melee - the one control that changes what every other number on the screen means, so
+    /// it is drawn at the size that says so: the large font, real padding, and the accent on the tab in
+    /// play. At body size in the default tab colours it was the quietest thing in the column.
+    /// </summary>
+    private void DrawModeTabs()
+    {
+        // Measured in the BODY font, before the large one is pushed - padding sized in 32px ems would
+        // swallow the column.
+        float em = ImGui.GetFontSize();
+
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(em * 1.1f, em * 0.45f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, new Vector2(em * 0.9f, em * 0.25f));
+        ImGui.PushStyleColor(ImGuiCol.Tab, ImGuiTheme.TabIdle);
+        ImGui.PushStyleColor(ImGuiCol.TabHovered, ImGuiTheme.ButtonGoHovered);
+        ImGui.PushStyleColor(ImGuiCol.TabSelected, ImGuiTheme.AccentBlue);
+        ImGui.PushFont(RaylibRenderer.LargeFont);
+
         if (ImGui.BeginTabBar("##calc-modes"))
         {
             if (ImGui.BeginTabItem("Shooting"))
@@ -597,15 +662,10 @@ public class CombatCalculatorScreen : IAppScreen
             ImGui.EndTabBar();
         }
 
-        // The inputs sit directly above the output they change. They used to live in a fixed bottom
-        // third of the column, which put a screen-height of empty space between a checkbox and the
-        // number it moves - the reader had to remember what they had just toggled.
-        DrawSituationBar();
-        ImGui.Separator();
-
-        ImGui.BeginChild("##calc-results", Vector2.Zero);
-        DrawResults();
-        ImGui.EndChild();
+        ImGui.PopFont();
+        ImGui.PopStyleColor(3);
+        ImGui.PopStyleVar(2);
+        ImGui.Spacing();
     }
 
     private void SetMode(ECombatMode mode)
@@ -621,7 +681,7 @@ public class CombatCalculatorScreen : IAppScreen
             return;
         }
 
-        var view = CombatReportView.From(report);
+        var view = CombatReportView.From(report, _reportDefenderPoints);
 
         DrawHeadline(view);
 
@@ -643,6 +703,9 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.TextColored(HeadText, view.Headline);
         ImGui.Spacing();
 
+        // Two rows of two rather than one row of four: four large numbers and their captions do not fit
+        // across this column at a laptop width, and the pairing is meaningful anyway - what the dice did
+        // on top, what it cost the defender underneath.
         if (ImGui.BeginTable("##calc-headline", 2, ImGuiTableFlags.SizingStretchSame))
         {
             ImGui.TableNextRow();
@@ -655,6 +718,14 @@ public class CombatCalculatorScreen : IAppScreen
             // (dice that landed vs damage that stuck), and the colour ties the wounds figure to the
             // amber slice of the meter below and to the WOUNDS column in the table.
             DrawBigNumber(view.WoundsValue, CombatReportView.WoundsCaption, ImGuiTheme.DamageAmber);
+
+            ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            DrawBigNumber(view.HealthValue, CombatReportView.HealthCaption, ImGuiTheme.DamageAmber);
+
+            ImGui.TableNextColumn();
+            DrawBigNumber(view.PointsValue, CombatReportView.PointsCaption, ImGuiTheme.DamageAmber);
 
             ImGui.EndTable();
         }
@@ -681,7 +752,7 @@ public class CombatCalculatorScreen : IAppScreen
     /// </summary>
     private void DrawVolleyTable(CombatReportView view)
     {
-        if (!ImGui.BeginTable("##calc-volleys", 6,
+        if (!ImGui.BeginTable("##calc-volleys", 8,
             ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp))
             return;
 
@@ -692,6 +763,10 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.TableSetupColumn("HITS", ImGuiTableColumnFlags.WidthFixed, num);
         ImGui.TableSetupColumn("SAVE", ImGuiTableColumnFlags.WidthFixed, num);
         ImGui.TableSetupColumn("WOUNDS", ImGuiTableColumnFlags.WidthFixed, num);
+        // The two derived columns, abbreviated here and spelled out under the headline numbers they
+        // total up to ("Health removed", "Points of damage"), which is where the reader meets them first.
+        ImGui.TableSetupColumn("%HP", ImGuiTableColumnFlags.WidthFixed, num);
+        ImGui.TableSetupColumn("PTS", ImGuiTableColumnFlags.WidthFixed, num);
         ImGui.TableHeadersRow();
 
         // Every row is drawn, and the FIRST hovered rule wins the frame's tooltip. Written out longhand
@@ -713,15 +788,24 @@ public class CombatCalculatorScreen : IAppScreen
     private static string? DrawVolleyRow(VolleyRowView row)
     {
         ImGui.TableNextRow();
-        ImGui.TableNextColumn();
 
-        Vector4 nameColor = row.InRange ? new Vector4(1f, 1f, 1f, 1f) : DimText;
-        ImGui.TextColored(nameColor, $"{row.CopiesPrefix}{row.Weapon.Name}");
+        // A weapon that cannot reach is switched off, and says so three ways at once: a well behind the
+        // row, the disabled alpha over everything in it, and the darker rule blue. Greyed text alone was
+        // too close to the ordinary dim text this pane is full of. The alpha reaches the hand-painted
+        // subline too - GetColorU32 multiplies by style.Alpha - so the whole row recedes together.
+        if (!row.InRange)
+        {
+            ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(ImGuiTheme.DisabledRowBg));
+            ImGui.BeginDisabled();
+        }
+
+        ImGui.TableNextColumn();
+        ImGui.TextColored(row.InRange ? BrightText : DimText, $"{row.CopiesPrefix}{row.Weapon.Name}");
 
         // The stat subline in the in-game shoot panel's own notation, each rule underlined and hoverable
         // (#292). Drawn on the draw list because a table cell gives no wrapping for SameLine runs.
         uint sub = ImGui.GetColorU32(DimText);
-        uint ruleCol = ImGui.GetColorU32(row.InRange ? RuleText : DimText);
+        uint ruleCol = ImGui.GetColorU32(row.InRange ? ImGuiTheme.RuleBlue : ImGuiTheme.RuleBlueDim);
         float indent = ImGui.GetTextLineHeight();
         string? hovered = RuleHoverText.DrawInline(ImGui.GetWindowDrawList(),
             ImGui.GetCursorScreenPos() + new Vector2(indent, 0f),
@@ -730,9 +814,10 @@ public class CombatCalculatorScreen : IAppScreen
 
         if (!row.InRange)
         {
-            ImGui.Indent();
-            ImGui.TextColored(DimText, row.OutOfRangeText);
-            ImGui.Unindent();
+            // The reason goes where the numbers would have been, not on a third line under the weapon:
+            // the stat columns are empty precisely BECAUSE of it, so that is where the reader is looking.
+            DrawSpanningNote(row.OutOfRangeText);
+            ImGui.EndDisabled();
             return hovered;
         }
 
@@ -746,8 +831,30 @@ public class CombatCalculatorScreen : IAppScreen
         Cell(row.Hits);
         Cell(row.Save);
         Cell(row.Wounds, ImGuiTheme.DamageAmber);
+        Cell(row.Health, ImGuiTheme.DamageAmber);
+        Cell(row.Points, ImGuiTheme.DamageAmber);
 
         return hovered;
+    }
+
+    /// <summary>
+    /// One line of text starting in the first stat column and running across the rest of them. A table
+    /// cell clips to its own column, so this paints on the draw list under a clip rect widened to the
+    /// table's right edge - the same trick the stat subline uses to escape its cell.
+    /// </summary>
+    private static void DrawSpanningNote(string text)
+    {
+        ImGui.TableNextColumn();
+
+        Vector2 at = ImGui.GetCursorScreenPos();
+        float right = ImGui.GetWindowPos().X + ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X;
+        ImDrawListPtr dl = ImGui.GetWindowDrawList();
+
+        dl.PushClipRect(at, new Vector2(MathF.Max(right, at.X + 1f), at.Y + ImGui.GetTextLineHeight()), false);
+        dl.AddText(at, ImGui.GetColorU32(DimText), text);
+        dl.PopClipRect();
+
+        ImGui.Dummy(new Vector2(ImGui.GetTextLineHeight(), ImGui.GetTextLineHeight()));
     }
 
     private static void Cell(string text, Vector4? color = null)
@@ -769,8 +876,8 @@ public class CombatCalculatorScreen : IAppScreen
 
         ImGui.Indent();
 
-        if (row.HitChips.Count > 0) DrawChipLine("to hit", row.HitChips, row.Hit);
-        if (row.SaveChips.Count > 0) DrawChipLine("save", row.SaveChips, row.Save);
+        if (row.HitChips.Count > 0) DrawChipLine("To hit", row.HitChips, row.Hit);
+        if (row.SaveChips.Count > 0) DrawChipLine("Save", row.SaveChips, row.Save);
 
         if (splitSaves)
             foreach (SaveLineView save in row.SaveLines)
@@ -865,9 +972,9 @@ public class CombatCalculatorScreen : IAppScreen
     {
         Vector2 step = new(ImGui.GetFrameHeight() * 1.5f, ImGui.GetFrameHeight());
 
-        if (ImGui.Button("--##calc-dist-dec2", step)) SetDistance(_situation.DistanceInches - BigStepInches);
+        if (ImGui.Button("--##calc-dist-dec2", step)) StepDistance(-BigStepInches);
         ImGui.SameLine();
-        if (ImGui.Button("-##calc-dist-dec", step)) SetDistance(_situation.DistanceInches - StepInches);
+        if (ImGui.Button("-##calc-dist-dec", step)) StepDistance(-StepInches);
 
         ImGui.SameLine();
         ImGui.SetNextItemWidth(ImGui.GetFontSize() * 3.2f);
@@ -877,12 +984,32 @@ public class CombatCalculatorScreen : IAppScreen
         if (ImGui.InputFloat("##calc-dist-typed", ref typed, 0f, 0f, "%.0f")) SetDistance(typed);
 
         ImGui.SameLine();
-        if (ImGui.Button("+##calc-dist-inc", step)) SetDistance(_situation.DistanceInches + StepInches);
+        if (ImGui.Button("+##calc-dist-inc", step)) StepDistance(StepInches);
         ImGui.SameLine();
-        if (ImGui.Button("++##calc-dist-inc2", step)) SetDistance(_situation.DistanceInches + BigStepInches);
+        if (ImGui.Button("++##calc-dist-inc2", step)) StepDistance(BigStepInches);
 
         ImGui.SameLine();
         ImGui.TextColored(DimText, DistanceLabel);
+    }
+
+    private void StepDistance(float step) => SetDistance(Stepped(_situation.DistanceInches, step));
+
+    /// <summary>
+    /// The next multiple of the step in the direction pressed, not the current value plus the step: from
+    /// 14in, "+" lands on 15 and then 18 rather than trailing 17, 20, 23 forever. A stepper that keeps
+    /// an arbitrary offset alive is a stepper you have to do arithmetic with - and the multiples of 3 and
+    /// 6 ARE the interesting distances, being the moves a unit makes. Internal so the walk is pinned by
+    /// tests.
+    /// </summary>
+    internal static float Stepped(float current, float step)
+    {
+        float size = MathF.Abs(step);
+        if (size <= 0f) return SnapDistance(current);
+
+        float next = step > 0f
+            ? (MathF.Floor(current / size) + 1f) * size
+            : (MathF.Ceiling(current / size) - 1f) * size;
+        return SnapDistance(next);
     }
 
     private void SetDistance(float inches)

@@ -108,7 +108,10 @@ internal sealed class UnitPicker
         armies.Where(army => Matches(army.Name, filter));
 
     /// <summary>One offerable unit: where it sits in its army, and how to show it.</summary>
-    internal readonly record struct Entry(int Index, string Name, string StatLine);
+    /// <param name="IsHero">#398: drives the gold HERO tag in the list. Heroes are the units a player
+    /// scans for - they are what a join needs and what a one-model column usually means - and the list
+    /// gave no clue which was which until you had picked one.</param>
+    internal readonly record struct Entry(int Index, string Name, string StatLine, bool IsHero);
 
     internal static IEnumerable<Entry> MatchingUnits(ArmySource army, string filter) =>
         MatchingUnits(army, filter, ERoles.Any);
@@ -127,7 +130,12 @@ internal sealed class UnitPicker
             {
                 RosterUnit unit = book.Units[i];
                 if (!Matches(unit.Name, filter) || !AllowsRoster(book, unit, roles)) continue;
-                yield return new Entry(i, unit.Name, ArmyForgeScreen.RosterStatLine(unit));
+                // Hero-ness comes from the same compile the join filter already asks for rather than a
+                // second, cheaper reading of the rules - one place to be wrong, not two. It is a compile
+                // per listed unit per frame while the picker is open; at ~60 units that is well under a
+                // millisecond, and worth memoising only if it ever shows up in a frame time.
+                yield return new Entry(i, unit.Name, ArmyForgeScreen.RosterStatLine(unit),
+                    CalculatorSide.IsHeroRoster(book, unit));
             }
             yield break;
         }
@@ -137,7 +145,8 @@ internal sealed class UnitPicker
         {
             UnitFileEntry unit = saved[i];
             if (!Matches(unit.Name, filter) || !AllowsSaved(unit, roles)) continue;
-            yield return new Entry(i, unit.Name, ArmyBuilderScreen.UnitStatLine(unit));
+            yield return new Entry(i, unit.Name, ArmyBuilderScreen.UnitStatLine(unit),
+                ForceOrgValidator.IsHero(unit));
         }
     }
 

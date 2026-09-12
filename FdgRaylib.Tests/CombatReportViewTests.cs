@@ -45,10 +45,21 @@ public class CombatReportViewTests
         new(ECombatMode.Shooting, "Infantry Squad", "Hive Warriors", 9f, 7.33f,
             volleys.ToList(), 3.33f, 1.67f, new List<string>(), new List<string>());
 
+    // The defender's size and price travel with every row now (health share, points of damage), so the
+    // helpers carry the same 9-wound / 180-point defender the Report above describes.
+    private const int DefenderWounds = 9;
+    private const int DefenderPoints = 180;
+
+    private static VolleyRowView Row(VolleyReport volley) =>
+        VolleyRowView.From(volley, DefenderWounds, DefenderPoints);
+
+    private static CombatReportView View(CombatReport report) =>
+        CombatReportView.From(report, DefenderPoints);
+
     [Test]
     public void EveryNumberCarriesTwoDecimals_SoTheColumnScansAsAColumn()
     {
-        CombatReportView view = CombatReportView.From(Report(Volley(dice: 6f, hits: 6f, wounds: 2.78f)));
+        CombatReportView view = View(Report(Volley(dice: 6f, hits: 6f, wounds: 2.78f)));
 
         Assert.Multiple(() =>
         {
@@ -61,7 +72,7 @@ public class CombatReportViewTests
     [Test]
     public void HeadlineNamesTheDirectionOfTheAttackInWords()
     {
-        CombatReportView view = CombatReportView.From(Report(Volley()));
+        CombatReportView view = View(Report(Volley()));
 
         Assert.That(view.Headline, Is.EqualTo("Infantry Squad attacks Hive Warriors"));
     }
@@ -71,7 +82,7 @@ public class CombatReportViewTests
     {
         // The screenshot's case: Furious adds hits saved at the SAME threshold, and the old pane drew
         // "Save 5+ 1.5 hits" then "Save 5+ 0.5 hits [Ferocious]" for the reader to add up.
-        var view = VolleyRowView.From(Volley(saves: new List<SaveBucket>
+        var view = Row(Volley(saves: new List<SaveBucket>
         {
             new(5, 1.5f, string.Empty),
             new(5, 0.5f, "Ferocious"),
@@ -90,7 +101,7 @@ public class CombatReportViewTests
     public void GenuinelyDifferentThresholdsStayApart()
     {
         // Rending really is a second save. Merging those would be a lie, not a tidy-up.
-        var view = VolleyRowView.From(Volley(saves: new List<SaveBucket>
+        var view = Row(Volley(saves: new List<SaveBucket>
         {
             new(5, 2f, string.Empty),
             new(6, 1f, "Rending"),
@@ -107,7 +118,7 @@ public class CombatReportViewTests
     [Test]
     public void MergedBucketsKeepFirstAppearanceOrderAndDoNotRepeatASource()
     {
-        var view = VolleyRowView.From(Volley(saves: new List<SaveBucket>
+        var view = Row(Volley(saves: new List<SaveBucket>
         {
             new(6, 1f, "Rending"),
             new(4, 2f, string.Empty),
@@ -127,7 +138,7 @@ public class CombatReportViewTests
     public void EmptyTagsProduceNoChipsAtAll()
     {
         // The blank line in the screenshot: the pane drew the tag line whether or not there were tags.
-        var view = VolleyRowView.From(Volley(
+        var view = Row(Volley(
             hitTags: new List<string> { "Quality 4+", "  ", string.Empty },
             saveTags: new List<string>()));
 
@@ -141,15 +152,15 @@ public class CombatReportViewTests
     [Test]
     public void OutOfRangeRowSaysHowFarTheWeaponActuallyReaches()
     {
-        var view = VolleyRowView.From(Volley(inRange: false, effectiveRange: 36f));
+        var view = Row(Volley(inRange: false, effectiveRange: 36f));
 
-        Assert.That(view.OutOfRangeText, Is.EqualTo("out of range - reaches 36in"));
+        Assert.That(view.OutOfRangeText, Is.EqualTo("Out of range - reaches 36in"));
     }
 
     [Test]
     public void WoundBarReportsTheRemainingFractionAndReadsAsWords()
     {
-        CombatReportView view = CombatReportView.From(Report(Volley()));
+        CombatReportView view = View(Report(Volley()));
 
         Assert.Multiple(() =>
         {
@@ -164,7 +175,7 @@ public class CombatReportViewTests
         var report = new CombatReport(ECombatMode.Shooting, "A", "B", 0f, 0f,
             new List<VolleyReport>(), 0f, 0f, new List<string>(), new List<string>());
 
-        Assert.That(CombatReportView.From(report).WoundFractionRemaining, Is.EqualTo(0f));
+        Assert.That(View(report).WoundFractionRemaining, Is.EqualTo(0f));
     }
 
     [Test]
@@ -172,9 +183,60 @@ public class CombatReportViewTests
     {
         Assert.Multiple(() =>
         {
-            Assert.That(VolleyRowView.From(Volley(copies: 10)).CopiesPrefix, Is.EqualTo("10x "));
-            Assert.That(VolleyRowView.From(Volley(copies: 1)).CopiesPrefix, Is.Empty);
+            Assert.That(Row(Volley(copies: 10)).CopiesPrefix, Is.EqualTo("10x "));
+            Assert.That(Row(Volley(copies: 1)).CopiesPrefix, Is.Empty);
         });
+    }
+
+    [Test]
+    public void DamageIsAlsoReportedAsAShareOfTheDefenderAndAsPoints()
+    {
+        // 1.67 wounds off a 9-wound, 180-point unit: 18.6% of it, and 33.4 points' worth.
+        CombatReportView view = View(Report(Volley()));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(view.HealthValue, Is.EqualTo("18.6%"));
+            Assert.That(view.PointsValue, Is.EqualTo("33.4"));
+        });
+    }
+
+    [Test]
+    public void APerWeaponRowCarriesItsOwnShareAndPrice()
+    {
+        VolleyRowView row = Row(Volley(wounds: 4.5f));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(row.Health, Is.EqualTo("50%"), "half of a 9-wound defender");
+            Assert.That(row.Points, Is.EqualTo("90"), "half of its 180 points");
+        });
+    }
+
+    [Test]
+    public void DamageBeyondWhatIsLeftIsStillOnlyAllOfIt()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatReportView.HealthShare(20f, 9f), Is.EqualTo(1f),
+                "overkill is 100%, never 222%");
+            Assert.That(CombatReportView.HealthShare(1f, 0f), Is.EqualTo(0f),
+                "and a defender with no wounds does not divide by zero");
+            Assert.That(CombatReportView.PointsDealt(9f, 9f, 180), Is.EqualTo(180f));
+        });
+    }
+
+    [Test]
+    public void WeaponsAreListedShortestReachFirst()
+    {
+        // The order the distance slider walks past them, and the shortest reach - the one that decides
+        // how close you have to get - read first.
+        CombatReportView view = View(Report(
+            Volley(effectiveRange: 36f, hits: 1f),
+            Volley(effectiveRange: 9f, hits: 2f),
+            Volley(effectiveRange: 24f, hits: 3f)));
+
+        Assert.That(view.Rows.Select(row => row.Hits), Is.EqualTo(new[] { "2.00", "3.00", "1.00" }));
     }
 
     [Test]
