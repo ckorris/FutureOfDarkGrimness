@@ -638,8 +638,16 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.TableSetupColumn("WOUNDS", ImGuiTableColumnFlags.WidthFixed, num);
         ImGui.TableHeadersRow();
 
+        // Every row is drawn, and the FIRST hovered rule wins the frame's tooltip. Written out longhand
+        // because the compact form - `tooltip ??= DrawVolleyRow(row)` - short-circuits: once a rule was
+        // hovered the call itself stopped being evaluated, so hovering a rule on the second of three
+        // weapons made the third weapon vanish for as long as the tooltip was up.
         string? tooltip = null;
-        foreach (VolleyRowView row in view.Rows) tooltip ??= DrawVolleyRow(row);
+        foreach (VolleyRowView row in view.Rows)
+        {
+            string? hovered = DrawVolleyRow(row);
+            tooltip ??= hovered;
+        }
 
         ImGui.EndTable();
         if (tooltip != null) RuleHoverText.ShowTooltip(tooltip);
