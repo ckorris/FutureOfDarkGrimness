@@ -1,0 +1,23 @@
+{
+  "name": "Vinci Tech: the +1 to hit only applies over 9in - two targets, one each side of the line",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "players": [
+    {
+      "army": "armies/VinciGateDemo.fdgarmy",
+      "units": [
+        { "unit": "Aerea Guard", "models": [[30, 16], [32, 16], [34, 16]] }
+      ]
+    },
+    {
+      "army": "armies/VinciGateTargets.fdgarmy",
+      "units": [
+        { "unit": "Target A - INSIDE 9in",
+          "models": [[38, 20], [40, 20], [42, 20], [44, 20], [46, 20]] },
+        { "unit": "Target B - OUTSIDE 9in",
+          "models": [[26, 32], [28, 32], [30, 32], [32, 32], [34, 32]] }
+      ]
+    }
+  ]
+}
