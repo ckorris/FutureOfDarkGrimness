@@ -18,6 +18,16 @@ scenario exists that puts the whole thing on screen in one activation.
 
 ## Notes
 
+- 2026-09-12 (after Chris's GUI pass): two panel requests. (1) Explain why the dialog is in clump
+  mode - `WoundAssignmentText.Explanation` names Deadly(X), mentions Regeneration only when a clump
+  actually shrank ("ignored", per Chris). (2) Show every clump up top - a wrapping strip of chips:
+  placed (green, "1: 1 -> M3, 2 lost"), next (amber with the highlight ring, "2: 1 wound"), pending
+  (grey, "3: 3"), each with a tooltip ("3 rolled, 2 ignored, 1 wound to land"); and each model row
+  previews what the next clump does to it ("takes 1 -> 2/3 left" / "takes 2, 1 lost - dies"). Engine
+  grew `WoundPacket.OriginalWounds` and a per-commit `PacketCommit` log to feed it. CLI prints the
+  same list. Chris also caught the second header line being clipped by the fixed 72px header - the
+  list now starts where the header ends.
+
 - 2026-09-12 (close): Shipped in four slices, each green before commit.
   1. `WoundPacket` + packet-aware `AssignWoundsResults`/`AssignWoundsRequest`, behaviour-neutral
      (the scalar constructors build one unconfined packet). 15 new pins in

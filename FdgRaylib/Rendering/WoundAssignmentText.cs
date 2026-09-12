@@ -50,4 +50,84 @@ public static class WoundAssignmentText
             ? $"Click to land this clump here ({Wounds(next.WeightedWounds)} - what does not fit is lost)"
             : "Click to assign wounds (fills this model)";
     }
+
+    /// <summary>Why the panel is in clump mode, for a queue that has clumps. Names Deadly's X, and
+    /// mentions Regeneration only when some clump actually shrank. Empty for a plain volley.</summary>
+    public static string Explanation(AssignWoundsResults results)
+    {
+        if (!results.HasConfinedPackets) return "";
+        float x = results.Packets.Where(packet => packet.Confined).Max(packet => packet.OriginalWounds);
+        string text = $"Deadly({WoundFormat.Format(x)}): each failed save is a clump of {Wounds(x)} that must all " +
+                      "land on ONE model. What that model cannot absorb is lost - it never carries to the next.";
+        if (results.Packets.Any(packet => packet.Ignored > 0f))
+            text += " Regeneration was rolled per clump: a smaller clump is one that ignored some.";
+        return text;
+    }
+
+    /// <summary>A clump's state in the strip: "1: 1 -> M3, 2 lost" (placed), "2: 1 wound" (next),
+    /// "3: 3" (pending). <paramref name="rowOf"/> maps a committed model to its row number.</summary>
+    public static string ChipLabel(AssignWoundsResults results, int index, Func<PacketCommit, int> rowOf)
+    {
+        WoundPacket packet = results.Packets[index];
+        string number = $"{index + 1}:";
+        if (index < results.PacketsCommitted)
+        {
+            var commits = results.Commits.Where(commit => commit.PacketIndex == index).ToList();
+            float landed = commits.Sum(commit => commit.Landed);
+            float lost = commits.Sum(commit => commit.Lost);
+            string rows = string.Join("+", commits.Select(commit => $"M{rowOf(commit)}").Distinct());
+            string lostNote = lost > AssignWoundsResults.WoundEpsilon ? $", {WoundFormat.Format(lost)} lost" : "";
+            return $"{number} {WoundFormat.Format(landed)} -> {rows}{lostNote}";
+        }
+        if (index == results.PacketsCommitted)
+            return $"{number} {Wounds(packet.Confined ? packet.WeightedWounds : packet.Wounds)}";
+        return packet.Confined
+            ? $"{number} {WoundFormat.Format(packet.WeightedWounds)}"
+            : $"{number} {WoundFormat.Format(packet.Wounds)} plain";
+    }
+
+    /// <summary>The chip's hover text: what was rolled, what Regeneration ignored, and - once placed -
+    /// where it went.</summary>
+    public static string ChipTooltip(AssignWoundsResults results, int index, Func<PacketCommit, int> rowOf)
+    {
+        WoundPacket packet = results.Packets[index];
+        string kind = packet.Confined ? $"Clump {index + 1}" : $"Plain wounds ({index + 1})";
+        string rolled = packet.Ignored > AssignWoundsResults.WoundEpsilon
+            ? $"{WoundFormat.Format(packet.OriginalWounds)} rolled, {WoundFormat.Format(packet.Ignored)} ignored, " +
+              $"{Wounds(packet.Wounds)} to land"
+            : $"{Wounds(packet.Wounds)} to land";
+        if (packet.Weight < 1f) rolled += $" (a {WoundFormat.Format(packet.Weight * 100f)}% chance of a clump)";
+        string text = $"{kind}: {rolled}";
+        if (index < results.PacketsCommitted)
+        {
+            foreach (PacketCommit commit in results.Commits.Where(commit => commit.PacketIndex == index))
+            {
+                text += $"\n-> Model {rowOf(commit)}: {Wounds(commit.Landed)} landed";
+                if (commit.Lost > AssignWoundsResults.WoundEpsilon) text += $", {WoundFormat.Format(commit.Lost)} lost";
+            }
+        }
+        else if (index == results.PacketsCommitted)
+        {
+            text += "\nNext to place - click a model.";
+        }
+        return text;
+    }
+
+    /// <summary>What the next packet would do to this model if clicked: "takes 1 -> 2/3 left", or
+    /// "takes 1, 2 lost - dies". Empty when the model is not a legal target right now.</summary>
+    public static string ModelEffect(AssignWoundsResults results, PendingWounds entry)
+    {
+        WoundPacket? next = results.NextPacket;
+        if (next == null || !results.CanAssignWoundTo(entry)) return "";
+        float landed = results.WoundsNextCommitWouldLand(entry);
+        if (landed <= AssignWoundsResults.WoundEpsilon) return "";
+        float total = entry.Model.GetValue().TotalWounds;
+        float capacity = total - entry.Model.GetValue().WoundsDealt - entry.Wounds;
+        float lost = next.Confined ? next.Weight * MathF.Max(0f, next.Wounds - capacity) : 0f;
+        float left = capacity - landed;
+        string lostNote = lost > AssignWoundsResults.WoundEpsilon ? $", {WoundFormat.Format(lost)} lost" : "";
+        return left <= AssignWoundsResults.WoundEpsilon
+            ? $"takes {WoundFormat.Format(landed)}{lostNote} - dies"
+            : $"takes {WoundFormat.Format(landed)} -> {WoundFormat.Fraction(left, total)} left";
+    }
 }
