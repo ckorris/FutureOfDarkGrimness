@@ -221,7 +221,14 @@ public static class RuleTextFlow
     /// <c>Text</c> call it replaces did and stays click-through (the list pane's full-row selectable, which
     /// sits underneath, keeps receiving its clicks).
     /// </summary>
-    public static void Draw(IReadOnlyList<RuleSegment> segments, RuleGlossary glossary, ImGuiCol color)
+    /// <param name="color">Colour for the PLAIN runs - the weapon name, the brackets, the commas.</param>
+    /// <param name="ruleColor">#398: colour for the rule NAMES, defaulting to the one rule blue
+    /// (<see cref="ImGuiTheme.RuleBlue"/>). A rule used to take the colour of whatever line it happened to
+    /// sit in - white in a weapon table, grey in a rule list, blue in the calculator - so nothing taught
+    /// the reader that an underlined blue word is a thing they can hover. Pass
+    /// <see cref="ImGuiTheme.RuleBlueDim"/> for a rule on something switched off.</param>
+    public static void Draw(IReadOnlyList<RuleSegment> segments, RuleGlossary glossary, ImGuiCol color,
+        Vector4? ruleColor = null)
     {
         float wrapWidth = MathF.Max(1f, ImGui.GetContentRegionAvail().X);
         IReadOnlyList<PlacedChunk> placed = Layout(segments, wrapWidth, MeasureImGui);
@@ -230,6 +237,7 @@ public static class RuleTextFlow
         float lineHeight = ImGui.GetTextLineHeight();
         float lineAdvance = ImGui.GetTextLineHeightWithSpacing();
         uint textColor = ImGui.GetColorU32(color);
+        uint ruleTint = ImGui.GetColorU32(ruleColor ?? ImGuiTheme.RuleBlue);
         int lines = placed.Count == 0 ? 1 : placed[^1].Line + 1;
 
         ImDrawListPtr drawList = ImGui.GetWindowDrawList();
@@ -240,13 +248,13 @@ public static class RuleTextFlow
         foreach (PlacedChunk chunk in placed)
         {
             Vector2 pos = origin + new Vector2(chunk.X, chunk.Line * lineAdvance);
-            drawList.AddText(pos, textColor, chunk.Text);
+            drawList.AddText(pos, chunk.Rule is null ? textColor : ruleTint, chunk.Text);
             if (chunk.Rule is null) continue;
 
             bool known = glossary.Describe(chunk.Rule) is not null;
             // An unimplemented rule underlines faintly: it is still hoverable (the tooltip says it does
             // nothing in play), but it must not advertise itself as documented.
-            uint underline = known ? textColor : Fade(textColor, 0.45f);
+            uint underline = known ? ruleTint : Fade(ruleTint, 0.45f);
             float baseline = pos.Y + lineHeight - 1f;
             drawList.AddLine(new Vector2(pos.X, baseline), new Vector2(pos.X + chunk.Width, baseline), underline);
 

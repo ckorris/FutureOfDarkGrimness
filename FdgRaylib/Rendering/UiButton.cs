@@ -12,57 +12,73 @@ namespace FdgRaylib.Rendering;
 /// navigation, <see cref="Confirm"/> for a positive/forward commit (Launch, Connect, Create), <see
 /// cref="Back"/> for back/cancel. In-game resolver panels are voiced centrally in
 /// <c>ResolverButtons</c> instead.</para>
+///
+/// <para>#398: the class now COLOURS the button as well as voicing it - neutral grey undoes, muted blue
+/// goes somewhere, the accent commits (<c>ImGuiTheme.ButtonBack/Go/Commit</c>). Every call site had
+/// already declared its class here; until now that declaration was inaudible on screen, and a Back sat
+/// beside a Choose unit in the same grey.</para>
 /// </summary>
 internal static class UiButton
 {
-    public static bool Navigate(string label, Vector2 size)
-    {
-        bool clicked = ImGui.Button(label, size);
-        if (clicked) UiSound.Navigate();
-        return clicked;
-    }
+    public static bool Navigate(string label, Vector2 size) => Press(label, size, EClass.Go);
 
-    public static bool Navigate(string label)
-    {
-        bool clicked = ImGui.Button(label);
-        if (clicked) UiSound.Navigate();
-        return clicked;
-    }
+    public static bool Navigate(string label) => Press(label, null, EClass.Go);
 
-    public static bool Confirm(string label, Vector2 size)
-    {
-        bool clicked = ImGui.Button(label, size);
-        if (clicked) UiSound.Confirm();
-        return clicked;
-    }
+    public static bool Confirm(string label, Vector2 size) => Press(label, size, EClass.Commit);
 
-    public static bool Confirm(string label)
-    {
-        bool clicked = ImGui.Button(label);
-        if (clicked) UiSound.Confirm();
-        return clicked;
-    }
+    public static bool Confirm(string label) => Press(label, null, EClass.Commit);
 
-    public static bool Back(string label, Vector2 size)
-    {
-        bool clicked = ImGui.Button(label, size);
-        if (clicked) UiSound.Back();
-        return clicked;
-    }
+    public static bool Back(string label, Vector2 size) => Press(label, size, EClass.Back);
 
-    public static bool Back(string label)
-    {
-        bool clicked = ImGui.Button(label);
-        if (clicked) UiSound.Back();
-        return clicked;
-    }
+    public static bool Back(string label) => Press(label, null, EClass.Back);
 
     /// <summary>SmallButton voiced with the neutral Navigate tone (roster/copy/pick actions).</summary>
     public static bool NavigateSmall(string label)
     {
+        PushClass(EClass.Go);
         bool clicked = ImGui.SmallButton(label);
+        ImGui.PopStyleColor(3);
         if (clicked) UiSound.Navigate();
         return clicked;
+    }
+
+    private enum EClass
+    {
+        Back,
+        Go,
+        Commit,
+    }
+
+    private static bool Press(string label, Vector2? size, EClass cls)
+    {
+        PushClass(cls);
+        bool clicked = size is { } s ? ImGui.Button(label, s) : ImGui.Button(label);
+        ImGui.PopStyleColor(3);
+
+        if (clicked)
+        {
+            switch (cls)
+            {
+                case EClass.Back: UiSound.Back(); break;
+                case EClass.Commit: UiSound.Confirm(); break;
+                default: UiSound.Navigate(); break;
+            }
+        }
+        return clicked;
+    }
+
+    private static void PushClass(EClass cls)
+    {
+        (Vector4 idle, Vector4 hovered) = cls switch
+        {
+            EClass.Back => (ImGuiTheme.ButtonBack, ImGuiTheme.ButtonBackHovered),
+            EClass.Commit => (ImGuiTheme.ButtonCommit, ImGuiTheme.ButtonCommitHover),
+            _ => (ImGuiTheme.ButtonGo, ImGuiTheme.ButtonGoHovered),
+        };
+
+        ImGui.PushStyleColor(ImGuiCol.Button, idle);
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, hovered);
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiTheme.ButtonPressed);
     }
 
     /// <summary>Checkbox that ticks on flip (either direction).</summary>
