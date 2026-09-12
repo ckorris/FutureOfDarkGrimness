@@ -244,26 +244,29 @@ internal static class ForgeUnitDetail
     /// separately by <see cref="RuleTextFlow.Draw"/>, which wraps at the remaining width and hangs
     /// continuation lines under the first.</para>
     ///
-    /// <para>That would have cost the label as a click target - the thing you actually aim at - so an
-    /// invisible button is laid over the text afterwards. It does not interfere with the rule tooltips:
-    /// <c>Draw</c> paints to the draw list and hit-tests the mouse position itself, in the same frame,
-    /// before this button is ever submitted.</para>
+    /// <para>That would have cost the label as a click target - the thing you actually aim at - so the
+    /// footprint is MEASURED first, claimed by an invisible button, and the text is then drawn over it
+    /// from the same cursor position. The obvious order (text, wind the cursor back, button, wind it
+    /// forward again) crashed: the final <c>SetCursorPos</c> left the cursor past the pane's content
+    /// extent with no item after it to justify the extent, which is exactly the state ImGui asserts on
+    /// (<c>ErrorCheckUsingSetCursorPosToExtendParentBoundaries</c>) - and in the Army Forge an upgrade
+    /// section IS the last thing in its pane, so adding any unit with options aborted the app. Measuring
+    /// first means the cursor only ever moves BACKWARDS, and the very next call validates the extent.</para>
+    ///
+    /// <para>It does not interfere with the rule tooltips: <c>Draw</c> paints to the draw list and
+    /// hit-tests the mouse position itself rather than asking ImGui which item is hovered.</para>
     /// </summary>
     private static bool DrawWrappedOptionLabel(UpgradeOption option, RuleGlossary glossary, string id)
     {
-        RuleTextFlow.Draw(RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option)),
-            glossary, ImGuiCol.Text);
+        IReadOnlyList<RuleTextFlow.RuleSegment> label =
+            RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option));
+        float width = MathF.Max(1f, ImGui.GetContentRegionAvail().X);
+        float height = MathF.Max(ImGui.GetTextLineHeight(), RuleTextFlow.MeasureHeight(label, width));
 
-        // The Dummy that Draw reserved IS the text's footprint, so the last item's rect is the region to
-        // cover - no re-measuring, and it stays correct however many lines the text wrapped to.
-        Vector2 min = ImGui.GetItemRectMin();
-        Vector2 size = ImGui.GetItemRectMax() - min;
-        if (size.X <= 0f || size.Y <= 0f) return false;
-
-        Vector2 restore = ImGui.GetCursorPos();
-        ImGui.SetCursorScreenPos(min);
-        bool clicked = ImGui.InvisibleButton($"##label-{id}", size);
-        ImGui.SetCursorPos(restore);
+        Vector2 at = ImGui.GetCursorScreenPos();
+        bool clicked = ImGui.InvisibleButton($"##label-{id}", new Vector2(width, height));
+        ImGui.SetCursorScreenPos(at);
+        RuleTextFlow.Draw(label, glossary, ImGuiCol.Text);
         return clicked;
     }
 

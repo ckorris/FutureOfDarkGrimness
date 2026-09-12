@@ -260,12 +260,24 @@ public static class RuleTextFlow
 
         // Reserve the footprint: N text lines plus the inter-line spacing between them. The layout system
         // adds the usual ItemSpacing.Y after the Dummy, matching a plain Text call's trailing gap.
-        float height = lines * lineHeight + MathF.Max(0, lines - 1) * ImGui.GetStyle().ItemSpacing.Y;
-        ImGui.Dummy(new Vector2(wrapWidth, height));
+        ImGui.Dummy(new Vector2(wrapWidth, FootprintHeight(lines)));
 
         if (tooltip is not null) SetWrappedTooltip(tooltip);
     }
 
+
+    /// <summary>
+    /// The vertical footprint <see cref="Draw"/> will reserve for <paramref name="segments"/> at this wrap
+    /// width. Exposed so a caller that needs a hit target exactly the size of the text can submit that
+    /// target BEFORE the text (#398's upgrade labels do), instead of laying it over the text afterwards and
+    /// winding the cursor back - which is what tripped ImGui's
+    /// <c>ErrorCheckUsingSetCursorPosToExtendParentBoundaries</c> assert. One formula, used by both.
+    /// </summary>
+    public static float MeasureHeight(IReadOnlyList<RuleSegment> segments, float wrapWidth) =>
+        FootprintHeight(MeasureLines(segments, wrapWidth));
+
+    private static float FootprintHeight(int lines) =>
+        lines * ImGui.GetTextLineHeight() + MathF.Max(0, lines - 1) * ImGui.GetStyle().ItemSpacing.Y;
 
     // Rule descriptions are full sentences; without a wrap they render as one very wide tooltip.
     private static void SetWrappedTooltip(string text)
