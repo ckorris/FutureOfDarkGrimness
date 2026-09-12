@@ -9,17 +9,20 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
 {
     public Task<AssignWoundsResults> Resolve(AssignWoundsRequest request)
     {
-        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.TotalWoundsToAssign);
+        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.Packets);
 
         Console.WriteLine();
         Console.WriteLine($"Assign wounds to '{request.UnitReceivingWounds.GetValue().Name}'");
         Console.WriteLine("  Enter a model number to assign wounds to it, or 'a' to auto-assign all remaining.");
+        if (results.HasConfinedPackets)
+            Console.WriteLine("  Deadly: each clump lands on ONE model; what does not fit that model is lost.");
 
         while (!results.IsFinishedAssigning)
         {
             // #287: the shared rounder - the raw floats printed "8.666667", and F0 below hid the fraction.
-            Console.WriteLine("  Wounds: " +
-                $"{WoundFormat.Fraction(results.TotalAssignedWounds, results.TotalWoundsToAssign)} assigned");
+            // #401: a Deadly queue reports landed/lost and what the next pick places, via the shared text.
+            foreach (string line in WoundAssignmentText.Progress(results).Split('\n'))
+                Console.WriteLine($"  {line}");
 
             var models = results.PendingWounds;
             for (int i = 0; i < models.Count; i++)

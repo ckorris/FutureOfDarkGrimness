@@ -63,7 +63,7 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 
 **Half-built**
 - `RangedContext.SetAttackWeapon` and friends — `NotImplementedException` on multiple paths
-- `AssignWoundsResults` — residual polish tracked as #177 (float `==`, misused exception ctor, split exploit window); Tough-priority (#023) and split validation (#024) are done. `AutoFill()` works: it loops `TryAddWounds` and throws if it can't place every wound
+- `AssignWoundsResults` — residual polish tracked as #177 (float `==`, misused exception ctor, split exploit window); Tough-priority (#023) and split validation (#024) are done. #401: it carries an ordered queue of `WoundPacket`s (a plain volley is one unconfined pool; a Deadly clump is a confined packet of X, landed on one model with the excess lost) and `TryAddWounds` commits the next packet. `AutoFill()` never throws any more: what the last living model cannot absorb is reported as `Overkill`, a clump's excess as `ClumpExcessLost`. The stage rolls Regeneration per packet before asking (`AssignWoundsStage`), and `CombatMath` prices the same queue through `WoundAllocation.Packets`/`Simulate`
 
 ## Key Files
 

@@ -59,7 +59,7 @@ public class GuiAssignWoundsResolver
     public Task<AssignWoundsResults> Resolve(AssignWoundsRequest request)
     {
         var tcs     = new TaskCompletionSource<AssignWoundsResults>();
-        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.TotalWoundsToAssign);
+        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.Packets);
         lock (_lock) { _tcs = tcs; _request = request; _results = results; }
         return tcs.Task;
     }
@@ -126,9 +126,8 @@ public class GuiAssignWoundsResolver
         ImGui.TextUnformatted($"Assign Wounds: {unitName}");
         ImGui.Spacing();
         // #287: F0 used to TRUNCATE - a 3.4-wound pool read "3 / 3 wounds assigned", which is not the
-        // number the engine is assigning.
-        ImGui.TextUnformatted($"{WoundFormat.Format(results.TotalAssignedWounds)} / " +
-                              $"{WoundFormat.Format(results.TotalWoundsToAssign)} wounds assigned");
+        // number the engine is assigning. #401: a Deadly queue says what the next click places instead.
+        ImGui.TextUnformatted(WoundAssignmentText.Progress(results));
         ImGui.PopTextWrapPos();
 
         // Model buttons (scrollable if many models)
@@ -312,7 +311,7 @@ public class GuiAssignWoundsResolver
         foreach (string line in WeaponLines(modelData))
             sb.AppendLine($"  {line}");
         if (results.CanAssignWoundTo(pw))
-            sb.Append("Click to assign wounds (fills this model)");
+            sb.Append(WoundAssignmentText.ClickHint(results));
         else if (remaining > 0f)
             sb.Append("(a hero is assigned wounds last - not yet a valid target)");
         else
