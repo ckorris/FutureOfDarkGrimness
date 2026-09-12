@@ -15,6 +15,32 @@ the confinement walking that order, and integration tests pinning the pre-wounde
 
 ## Notes
 
+- 2026-09-12 (later): Chris pasted the OPR Discord thread of 2026-07-22 that prompted the
+  investigation. It **confirms the shipped fix** and **raises the priority of the deferred facet**.
+  - Adam (OPR, Army Forge) on the headline question: "excess wounds are lost"; "if all the models in
+    the unit are killed then yeah there would be nothing for the last 2 hits to do." Pinned as
+    `Deadly_MoreClumpsThanModels_WipesUnitAndWastesTheRest`.
+  - Yorekani's hero case ("2 models left... unless one of those models is an attached hero with
+    Tough(6), then you'd need 3 or more wounds with Deadly(3)") already passes unchanged - our
+    hero-last ordering matches. Pinned as the two `Deadly_ToughSixHero_*` tests.
+  - The thread's real technical content is the part this item deferred. Adam: "you need to resolve
+    them one at a time since you can't partially damage multiple models" / "just do them one at a
+    time and it'll work out fine." Yorekani: "IF a unit of multiple models with Tough(3) fails to
+    block hits with Deadly(X) and the models have Regeneration or similar... you'll have to slow-roll
+    the Regeneration saves. That's because **you can't accurately prevent spillover otherwise**."
+    That is exactly the residual recorded in Decisions.
+  - Two `[Ignore]`-marked tests now assert the rule-correct behaviour and are verified to fail
+    against today's code (checked by removing the attributes and running):
+    `Deadly_Regeneration_RollsOncePerMultipliedWound` - rolls **1** Regeneration die (the
+    capacity-capped total) where the rule wants **3** (the clump's multiplied wounds), so a 1-wound
+    Regeneration model shrugs off a whole Deadly(3) clump 1/3 of the time instead of 1/27; and
+    `Deadly_Regeneration_IgnoredWoundsDoNotSpillToTheNextModel` - the second model is assigned
+    **1.0** wound where it should take **0**.
+  - No new number filed yet: the deferred facet is still this item's Decisions entry, and the two
+    Ignore strings point at #400. When the per-clump work starts it gets its own number (it is
+    genuinely separable - a clump-aware request shape across both resolver sets) and those two
+    strings move with it.
+
 - 2026-09-12: Filed. Number taken from `origin/master` after `git fetch origin --recurse-submodules`
   (index high-water mark **398**, archive max **399**, no `WorkItems/40[01]*` on any remote branch);
   Reconciliations.md read, no collision. Logged in `Reconciliations.md`.
