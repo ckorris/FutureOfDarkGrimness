@@ -720,3 +720,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `470729d` -> `cd7fd12`, engine -> `4bd0f7b`): `origin/master`'s index high-water mark **398**,
 > archive max **396**, and no `WorkItems/399*` on any remote branch. **399 = post-game polish pass**
 > (seven owner-reported defects from one game, filed as one item with a facet ledger). No collision.
+
+> **2026-09-12 - number 400 filed clean.** `git fetch origin --recurse-submodules` before filing:
+> `origin/master`'s index high-water mark **398**, archive max **399**, and no `WorkItems/40[01]*` on
+> any remote branch; local index + archive match. **400 = Deadly clump confinement used the wrong
+> model order.** No collision.
