@@ -37,6 +37,39 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-12 (round 4, the owner's second review pass + a crash it turned up): app **2905/0** (+14),
+  engine 3308/0 (1 skipped), build clean, smoke exits 0.
+  - **Round 3 shipped a crash, and this is what it was.** `DrawWrappedOptionLabel` overlaid its click
+    target by drawing the text, winding the ImGui cursor BACK over it, submitting the invisible button,
+    and winding the cursor forward again. That last `SetCursorPos` leaves the cursor past the pane's
+    content extent with no item after it to justify the extent, and ImGui asserts on exactly that
+    (`ErrorCheckUsingSetCursorPosToExtendParentBoundaries`, imgui.cpp:11010). In the **Army Forge** an
+    upgrade section IS the last thing in the detail pane, so selecting any unit with options aborted the
+    process. In the calculator a join button happened to follow it, which is the only reason round 3
+    looked fine. The footprint is measured up front now (`RuleTextFlow.MeasureHeight`, the same formula
+    `Draw` reserves with), claimed by the button, and the text drawn over it: the cursor only ever moves
+    backwards and the very next call validates the extent.
+  - **`??=` short-circuits.** `foreach (var row in rows) tooltip ??= DrawVolleyRow(row);` stopped
+    CALLING `DrawVolleyRow` once a tooltip was in hand, so hovering a rule on the second of three
+    weapons made the third weapon disappear while the tooltip was open. Written out longhand.
+  - **Tabs per column** (`SideTabs`): one tab per candidate unit, "+" copies the unit in hand into a new
+    tab beside it, "x" closes (hidden while one tab remains). Only the selected tab fights, so flipping
+    tabs re-runs the fight. The copy deep-copies the `BuilderList` and shares the book - editing the
+    variant must not reach back into the original, and a book is half a megabyte of parsed JSON.
+  - **The distance track is three bands**: green where every weapon reaches, yellow where only some do,
+    red where none do, painted before the slider with its frame background pushed transparent. Distances
+    snap to whole inches, with coarse/fine steppers (6in/3in) either side of the number.
+  - **60 FPS.** Raylib samples the mouse once per frame and hands ImGui that sample, so at 30 a click
+    under 33ms could be pressed and released between two samples and never reach ImGui - the owner's
+    "feels like I need to double-click, and then I click a unit I didn't mean to" (the second click
+    landing on what the first one had revealed). Nothing here is expensive to draw.
+  - **Chrome sized from the font**: Back/Cancel/Swap/Load list/join buttons via `UiChrome.ButtonSize`,
+    and the army-list pills' padding, rounding and gaps derived from the style rather than the flat
+    7px/8px literals they were. `ScaleAllSizes` had been scaling everything EXCEPT the hand-written
+    numbers, which is what made small resolutions look wrong.
+  - **"(i) what this does not account for" removed** at the owner's request. The report's `Notes` had no
+    other surface, so they are no longer shown anywhere (Warnings still are) - see Deferred.
+
 - 2026-09-08 (round 3, wrapping + the army-list look): app **2891/0** (+3), engine 3308/0, build clean,
   smoke exits 0.
   - **Wrapping, now authorized.** The control is drawn with NO label and the text laid out by
@@ -137,6 +170,23 @@ _Newest on top._
   the ability to sweep it. Dragging walks the whole table through its thresholds, which is how a
   range-gated rule (the screenshot's unexplained `[Ferocious]`, live only over 9in) shows itself.
 
+- **The tab bar owns which tab is selected.** `SideTabs.Active` mirrors whatever ImGui reports as the
+  open tab each frame rather than driving ImGui from our own index. Two sources of truth for a selection
+  disagree on exactly the frames that matter - the frame a tab is added, and the frame one is closed -
+  and ImGui already resolves both.
+- **A tab's key is not its index.** ImGui identifies a tab by id; keyed by index, inserting a copy in
+  the middle renumbers every tab after it, which ImGui reads as "these tabs' contents changed" rather
+  than "a tab was inserted". Keys come from a per-side counter, are never reused, and are re-issued on
+  arrival after a Swap so a slot cannot bring an id its new column has already spent.
+- **Middle-click does not close a tab.** It is the standard browser gesture, but it is invisible and
+  there is no undo here: a stray middle-click would silently throw away a unit someone spent a minute
+  configuring. The "x" is deliberate, so it needs no confirm dialog either.
+- **Distances land on whole inches.** Every range-gated rule in the corpus is written in whole inches
+  and a tabletop is measured to the inch, so the slider's halves ("13.47in") were never a distinction a
+  player could act on - just a fresh simulation per pixel of drag.
+- **The frame rate is an input-sampling rate.** Raising it was the fix for a latency complaint, not a
+  rendering one; worth remembering before anyone lowers it again to save power.
+
 ## Deferred (recorded, not silently cut)
 
 - ~~Wrapped upgrade labels~~ - **done in round 3** once the owner authorized the Forge change.
@@ -145,6 +195,17 @@ _Newest on top._
   keyboard/focus behaviour a hand-drawn pair of buttons would have to reimplement. Not worth the risk
   for a cosmetic difference; say the word if you want it.
 
+- **The report's `Notes` now have no surface.** The "(i)" line was their only one and the owner asked
+  for it to go. They carry the "not priced in v1" caveats (no terrain, clear line of sight, no spent
+  markers, Unpredictable branch `None`, ...) which are still true and still worth saying somewhere -
+  a collapsing "assumptions" section under the table, or the screen's own help, whenever one exists.
+  Warnings (a hero that could not join, a rule that failed to resolve) are still drawn.
+- **An ImGui frame harness for tests.** Both defects this round were ImGui-layout defects that no test
+  could reach: one asserted inside the native library, the other silently skipped a draw call. A test
+  fixture CAN drive ImGui headlessly (`CreateContext`, `AddFontDefault`, `NewFrame`/`Render`, no GL
+  needed) and would have caught both. Not built yet for one reason: `IM_ASSERT` aborts the process, so a
+  regression would take the whole `dotnet test` run down with it rather than failing one test. Worth
+  doing behind its own test project or an assert redirect.
 - **Expected models killed** stays deferred (it already was, in #397). Under `ProbabilisticDiceRoller`
   wounds are fractional, so a model holding 0.4 wounds is alive and a living-model count would read as
   a false integer. The headline shows the wound bar only. It falls out of the deferred Monte Carlo
@@ -173,8 +234,24 @@ The layout itself is ImGui and cannot be asserted; the strings and the tick arit
     units, and the points stay right-aligned in both.
 11. **Picker** - clicking the STAT LINE of a unit row now selects it, not just the name.
 12. Empty state names the missing side ("Choose the defending unit on the right").
-13. "(i) what this does not account for" shows the assumptions on hover.
-14. Side columns: a long upgrade line is reachable by horizontal scroll rather than being cut off.
+13. Side columns: a long upgrade line WRAPS inside the column, and clicking any line of it still
+    toggles the control beside it.
+14. **The Army Forge still works** - add a unit with upgrade options and select it. This is the crash
+    round 3 shipped; it aborted the process rather than misdrawing, so it cannot half-work.
+15. **Tabs** - both columns open with one "(empty)" tab. Choose a unit, press "+": a second tab appears
+    holding a copy, already selected. Change an upgrade on it and flip back - the first tab is
+    untouched and the numbers change as you flip.
+16. The "x" appears only once a column has two or more tabs, and the last tab cannot be closed.
+    Middle-clicking a tab does NOT close it.
+17. Closing the selected tab leaves the column on its neighbour, not on nothing.
+18. **Swap with unequal stacks** - three tabs on A, one on B, then Swap: B should hold all three (same
+    tab selected as before) and A the single one.
+19. **Distance bands** - two weapons of different reach: green up to the shorter, yellow between them,
+    red past the longer. One reach only = green then red, no yellow. Melee-only units paint no bands.
+20. The slider stops on whole inches; "-"/"+" move 3in and "--"/"++" move 6in, both clamped to 0-48.
+21. **Buttons** - Back, Cancel, Swap and Load list are noticeably bigger, and at a small window size
+    (F11 out of fullscreen) nothing in the middle column overlaps or spills.
+22. Clicking an army in the picker now lists its units on the FIRST click.
 
 ## Outcome
 _Open._
