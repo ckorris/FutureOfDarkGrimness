@@ -209,7 +209,7 @@ public class GuiAssignWoundsResolver
             dl.AddText(new Vector2(tx, ty), mainCol, $"Model {i + 1}{woundText}{assignedNote}");
             // #401: what the next clump would do to this model, right-aligned on the main line - the
             // preview that makes the pick easy. Clump queues only; the plain dialog is unchanged.
-            if (results.HasConfinedPackets)
+            if (WoundAssignmentText.ClumpModeMatters(results))
             {
                 string effect = WoundAssignmentText.ModelEffect(results, pw);
                 if (effect.Length > 0)
@@ -387,7 +387,7 @@ public class GuiAssignWoundsResolver
         sb.AppendLine("Weapons:");
         foreach (string line in WeaponLines(modelData))
             sb.AppendLine($"  {line}");
-        if (results.HasConfinedPackets)
+        if (WoundAssignmentText.ClumpModeMatters(results))
         {
             string effect = WoundAssignmentText.ModelEffect(results, pw);
             if (effect.Length > 0) sb.AppendLine($"Next clump here: {effect}");

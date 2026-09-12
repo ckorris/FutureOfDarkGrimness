@@ -18,6 +18,14 @@ scenario exists that puts the whole thing on screen in one activation.
 
 ## Notes
 
+- 2026-09-12 (second GUI pass): Chris hit the clump dialog on a unit WITHOUT Tough. Against 1-wound
+  models every clump kills exactly one model, so the defender's choice is the plain one and the clump
+  presentation was noise. `WoundAssignmentText.ClumpModeMatters` (some pending model has TotalWounds
+  > 1 - a joined Tough hero keeps it on) now gates the explanation, strip, previews and click hint;
+  the plain header's total comes from the new `AssignWoundsResults.AutoFillTotal()` (four clumps of 3
+  into singles read "0 / 4", not "0 / 12"). Engine semantics untouched - the packets still land 1
+  and lose the rest, and Regeneration still rolls per clump - so the numbers stay rules-correct.
+
 - 2026-09-12 (after Chris's GUI pass): two panel requests. (1) Explain why the dialog is in clump
   mode - `WoundAssignmentText.Explanation` names Deadly(X), mentions Regeneration only when a clump
   actually shrank ("ignored", per Chris). (2) Show every clump up top - a wrapping strip of chips:

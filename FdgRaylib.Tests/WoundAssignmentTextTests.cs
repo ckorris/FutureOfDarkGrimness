@@ -50,6 +50,38 @@ public class WoundAssignmentTextTests
         Assert.That(WoundAssignmentText.Next(results), Is.EqualTo("Next: 2 wounds, spread as needed (2 of 2)"));
     }
 
+    // Chris, second GUI pass: a Deadly volley into a unit WITHOUT Tough showed the clump machinery for
+    // nothing - every clump kills exactly one 1-wound model, so the choice is the plain one. The dialog
+    // falls back to the plain wording, with the total being what will land (2), not the carry (6).
+    [Test]
+    public void ClumpsIntoOneWoundModels_LookLikeAPlainVolley()
+    {
+        var results = new AssignWoundsResults(MakeUnit(5, 1), new[] { WoundPacket.Clump(3f), WoundPacket.Clump(3f) });
+
+        Assert.That(WoundAssignmentText.ClumpModeMatters(results), Is.False);
+        Assert.That(WoundAssignmentText.Progress(results), Is.EqualTo("0 / 2 wounds assigned"));
+        Assert.That(WoundAssignmentText.Explanation(results), Is.Empty);
+        Assert.That(WoundAssignmentText.ClickHint(results), Is.EqualTo("Click to assign wounds (fills this model)"));
+        Assert.That(WoundAssignmentText.ModelEffect(results, results.PendingWounds[0]), Is.Empty);
+
+        results.TryAddWounds(results.PendingWounds[0].Model);
+        Assert.That(WoundAssignmentText.Progress(results), Is.EqualTo("1 / 2 wounds assigned"),
+            "the total holds as clumps are placed - one kill each");
+    }
+
+    // ...but a Tough model anywhere in the unit (a joined hero among 1-wound grunts) keeps it on: the
+    // clumps matter for that model.
+    [Test]
+    public void AToughModelInTheUnit_KeepsClumpMode()
+    {
+        DataBinding<UnitData> unit = MakeUnit(3, 1);
+        unit.GetValue().ModelBindings[2].GetValue().SetMaxWounds(6);
+        var results = new AssignWoundsResults(unit, new[] { WoundPacket.Clump(3f) });
+
+        Assert.That(WoundAssignmentText.ClumpModeMatters(results), Is.True);
+        Assert.That(WoundAssignmentText.Explanation(results), Does.StartWith("Deadly(3):"));
+    }
+
     [Test]
     public void WoundNounAgrees()
     {
