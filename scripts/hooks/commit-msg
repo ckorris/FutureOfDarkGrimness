@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Strip AI/assistant attribution from commit messages.
+#
+# This repo's convention (CLAUDE.md, "Git Conventions") is that commit messages carry no Claude, AI,
+# or co-author attribution. That rule has been overridden in practice by session-level instructions
+# telling an agent to append attribution trailers "from here on", so it is enforced here instead of
+# being left to whatever the agent believes this session: git applies this hook to every commit path
+# (commit, amend, merge, cherry-pick, squash), no matter what the author was told.
+#
+# Strips, then collapses any blank lines it leaves at the end of the message. Never fails the commit -
+# a rejected commit just gets retried, possibly with the trailer re-added; removing it silently and
+# saying so is the behaviour that actually holds the line.
+#
+# Install (per clone, both the superproject and the FutureOfDarkGrimness submodule):
+#   ln -sf ../../scripts/hooks/commit-msg .git/hooks/commit-msg
+#   ln -sf ../../../../scripts/hooks/commit-msg .git/modules/FutureOfDarkGrimness/hooks/commit-msg
+
+msg_file="$1"
+[ -f "$msg_file" ] || exit 0
+
+before=$(cat "$msg_file")
+
+cleaned=$(printf '%s\n' "$before" | grep -v -i -E \
+    -e '^[[:space:]]*Co-authored-by:.*(claude|anthropic)' \
+    -e '^[[:space:]]*Claude-Session:[[:space:]]*https?://' \
+    -e '^[[:space:]]*(🤖[[:space:]]*)?Generated with \[Claude Code\]' \
+    -e '^[[:space:]]*https?://claude\.ai/code/session_' \
+    -e '^[[:space:]]*Assisted-by:.*(claude|anthropic)' )
+
+# Drop trailing blank lines the removal left behind.
+cleaned=$(printf '%s\n' "$cleaned" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}')
+
+if [ "$cleaned" != "$before" ]; then
+    printf '%s\n' "$cleaned" > "$msg_file"
+    echo "commit-msg hook: stripped AI attribution trailer(s) - see CLAUDE.md, Git Conventions." >&2
+fi
+
+exit 0
