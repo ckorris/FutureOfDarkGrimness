@@ -58,10 +58,9 @@ public class LobbyScreen : IAppScreen
 
     private BotArmyPicker? _botArmyPicker;
 
-    // Slots this lobby has already handed a starter army. Keyed by PlayerID, not by "does the slot
-    // have an army", because AddAiPlayer gives every bot a 100-pt "Test Army" stub - there is no
-    // unassigned state to watch for. Also stops a re-roll or a hand-picked Load Army from being
-    // immediately overwritten on the next frame.
+    // Slots this lobby has already handed a starter army. Keyed by PlayerID rather than by "does the
+    // slot have an army" so that a re-roll, or a hand-picked Load Army, is not immediately overwritten
+    // on the next frame - and so a slot whose roll found nothing is asked once, not every frame.
     private readonly HashSet<Guid> _autoArmiedSlots = new();
 
     // Host connection info shown so the host knows what address to share (QF9). The port mirrors
@@ -393,11 +392,11 @@ public class LobbyScreen : IAppScreen
     }
 
     // #372/#388 ---------------------------------------------------------------------------------------
-    // Starter armies. A new slot arrives unplayable either way - a bot carries the hard-coded 100-pt
-    // "Test Army" stub (engine-side, in LobbyViewModel_Host.AddAiPlayer) and a human carries no army at
-    // all (the host silently substituted the same stub at launch) - so the lobby swaps in a real list
-    // from the armies folder as soon as the scan is in. App-side on purpose: the armies FOLDER is an app
-    // concept (ArmyPaths), and the engine has no business reading the user's disk.
+    // Starter armies. Every new slot, bot or human, arrives with no army at all (#400 stopped the engine
+    // from stamping bots with a "Test Army" stub), so the lobby fills one in from the armies folder as
+    // soon as the scan is in. App-side on purpose: the armies FOLDER is an app concept (ArmyPaths), and
+    // the engine has no business reading the user's disk. A slot the roll cannot fill stays visibly
+    // empty and blocks the launch, rather than quietly playing a list nobody picked.
 
     private static bool ArmyCatalogReady => SharedArmyCatalog.Value.IsLoaded;
 
@@ -427,8 +426,9 @@ public class LobbyScreen : IAppScreen
         if (!canModify || alreadyServed) return false;
 
         // A human holding a list keeps it: an army loaded before the folder scan came back, or one that
-        // rode in with the slot. A bot has no such state to read - AddAiPlayer stamps every bot with the
-        // stub, so a bot row is ALWAYS "assigned" and only alreadyServed can tell a fresh one apart.
+        // rode in with the slot. A bot is re-served regardless of what it holds - alreadyServed is what
+        // tells a fresh bot apart, and it is the only gate a bot ever needed even now that a fresh one
+        // arrives unassigned like everyone else (#400).
         return playerType == EPlayerType.AI || !armyAssigned;
     }
 

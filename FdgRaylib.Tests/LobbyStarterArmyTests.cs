@@ -23,10 +23,12 @@ public class LobbyStarterArmyTests
     }
 
     [Test]
-    public void FreshBot_GetsOne_EvenThoughItsStubReadsAsAssigned()
+    public void FreshBot_GetsOne()
     {
+        Assert.That(Needs(EPlayerType.AI), Is.True,
+            "a fresh bot arrives with no army at all since #400, exactly like a human slot");
         Assert.That(Needs(EPlayerType.AI, armyAssigned: true), Is.True,
-            "AddAiPlayer stamps every bot with the 100-pt Test Army stub, so a bot row is never unassigned");
+            "and one that somehow holds a list is still re-served - only alreadyServed stops the roll");
     }
 
     [Test]
