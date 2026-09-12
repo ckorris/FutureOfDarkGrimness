@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #400: the lobby roster's Faction-cell rule (which army is from a system this lobby won't take) and the
+// #402: the lobby roster's Faction-cell rule (which army is from a system this lobby won't take) and the
 // wording of the three blocked-launch explanations.
 [TestFixture]
 public class LobbyArmySourceTests
@@ -94,7 +94,7 @@ public class LobbyArmySourceTests
                 Assert.That(c, Is.LessThanOrEqualTo((char)0xFF), $"non-ASCII in \"{text}\"");
     }
 
-    // ── The Pts cell's tooltips (#400 gave the red state one too) ───────────────────────────
+    // ── The Pts cell's tooltips (#402 gave the red state one too) ───────────────────────────
 
     [Test]
     public void OverPointsTooltipSaysItBlocks()

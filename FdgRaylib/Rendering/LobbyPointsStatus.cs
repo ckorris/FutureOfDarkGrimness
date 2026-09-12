@@ -38,7 +38,7 @@ public static class LobbyPointsStatus
     }
 
     /// <summary>
-    /// What the Pts cell says on hover, or null when there is nothing to explain (#400). Both coloured
+    /// What the Pts cell says on hover, or null when there is nothing to explain (#402). Both coloured
     /// states get a line, and each says what it costs: over the limit BLOCKS the launch, under it is
     /// merely a warning that the player is leaving budget on the table.
     /// </summary>

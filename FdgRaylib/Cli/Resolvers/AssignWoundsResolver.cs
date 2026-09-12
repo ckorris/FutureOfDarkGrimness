@@ -9,17 +9,27 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
 {
     public Task<AssignWoundsResults> Resolve(AssignWoundsRequest request)
     {
-        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.TotalWoundsToAssign);
+        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.Packets);
 
         Console.WriteLine();
         Console.WriteLine($"Assign wounds to '{request.UnitReceivingWounds.GetValue().Name}'");
         Console.WriteLine("  Enter a model number to assign wounds to it, or 'a' to auto-assign all remaining.");
+        if (results.HasConfinedPackets)
+            Console.WriteLine($"  {WoundAssignmentText.Explanation(results)}");
+        int RowOf(PacketCommit commit) => results.PendingWounds.FindIndex(e => e.Model == commit.Model) + 1;
 
         while (!results.IsFinishedAssigning)
         {
             // #287: the shared rounder - the raw floats printed "8.666667", and F0 below hid the fraction.
-            Console.WriteLine("  Wounds: " +
-                $"{WoundFormat.Fraction(results.TotalAssignedWounds, results.TotalWoundsToAssign)} assigned");
+            // #401: a Deadly queue lists every clump (placed / next / pending), then reports landed/lost
+            // and what the next pick places, via the shared text.
+            if (results.HasConfinedPackets)
+            {
+                Console.WriteLine("  Clumps: " + string.Join(" | ", Enumerable.Range(0, results.Packets.Count)
+                    .Select(i => WoundAssignmentText.ChipLabel(results, i, RowOf) + (i == results.PacketsCommitted ? " (next)" : ""))));
+            }
+            foreach (string line in WoundAssignmentText.Progress(results).Split('\n'))
+                Console.WriteLine($"  {line}");
 
             var models = results.PendingWounds;
             for (int i = 0; i < models.Count; i++)
@@ -28,7 +38,9 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
                 float pending   = models[i].Wounds;
                 float remaining = m.TotalWounds - m.WoundsDealt - pending;
                 string assigned = pending > 0 ? $", {WoundFormat.Format(pending)} already assigned" : "";
-                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {WoundFormat.Format(remaining)}{assigned})");
+                string effect = results.HasConfinedPackets ? WoundAssignmentText.ModelEffect(results, models[i]) : "";
+                string preview = effect.Length > 0 ? $" - {effect}" : "";
+                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {WoundFormat.Format(remaining)}{assigned}){preview}");
             }
 
             Console.Write("  Choice: ");

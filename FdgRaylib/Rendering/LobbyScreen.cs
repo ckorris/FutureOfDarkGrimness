@@ -361,7 +361,7 @@ public class LobbyScreen : IAppScreen
                     ImGui.EndDisabled();
                     // AllowWhenDisabled: the greyed-out case is the one that most needs explaining.
                     if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-                        ImGui.SetTooltip(RandomArmyTooltip(canModify, info));
+                        UiText.Tooltip(RandomArmyTooltip(canModify, info));
                 }
             }
 
@@ -392,7 +392,7 @@ public class LobbyScreen : IAppScreen
     }
 
     // #372/#388 ---------------------------------------------------------------------------------------
-    // Starter armies. Every new slot, bot or human, arrives with no army at all (#400 stopped the engine
+    // Starter armies. Every new slot, bot or human, arrives with no army at all (#402 stopped the engine
     // from stamping bots with a "Test Army" stub), so the lobby fills one in from the armies folder as
     // soon as the scan is in. App-side on purpose: the armies FOLDER is an app concept (ArmyPaths), and
     // the engine has no business reading the user's disk. A slot the roll cannot fill stays visibly
@@ -428,7 +428,7 @@ public class LobbyScreen : IAppScreen
         // A human holding a list keeps it: an army loaded before the folder scan came back, or one that
         // rode in with the slot. A bot is re-served regardless of what it holds - alreadyServed is what
         // tells a fresh bot apart, and it is the only gate a bot ever needed even now that a fresh one
-        // arrives unassigned like everyone else (#400).
+        // arrives unassigned like everyone else (#402).
         return playerType == EPlayerType.AI || !armyAssigned;
     }
 
@@ -494,7 +494,7 @@ public class LobbyScreen : IAppScreen
         if (_botArmyPicker.PickNext(playerID.ID, _viewModel.ArmyPoints,
                 _viewModel.AllowedGameSystems, inUseByOthers) is not { } pick)
         {
-            // #400: also the "nothing of an allowed system in the folder" case. Left silent for the same
+            // #402: also the "nothing of an allowed system in the folder" case. Left silent for the same
             // reason as an empty folder - the slot keeps whatever it had, and the roster's red Army cell
             // plus the greyed LAUNCH button already say what is missing.
             return;
@@ -539,11 +539,11 @@ public class LobbyScreen : IAppScreen
         if (ImGui.IsItemHovered()
             && LobbyPointsStatus.Tooltip(status, summary.PointCost, pointsLimit) is string tip)
         {
-            ImGui.SetTooltip(tip);
+            UiText.Tooltip(tip);
         }
     }
 
-    // #400: the two roster cells the army gate's blocking half can light up. Same shape as the Pts cell -
+    // #402: the two roster cells the army gate's blocking half can light up. Same shape as the Pts cell -
     // red text plus a tooltip saying what is wrong and that it stops the launch - so all three blockers
     // read the same way on the row and in the greyed LAUNCH button's tooltip.
 
@@ -558,7 +558,7 @@ public class LobbyScreen : IAppScreen
         if (missing) ImGui.PopStyleColor();
 
         if (missing && ImGui.IsItemHovered())
-            ImGui.SetTooltip(LobbyArmySource.NoArmyTooltip);
+            UiText.Tooltip(LobbyArmySource.NoArmyTooltip);
     }
 
     /// <summary>The Faction cell. Red when the army is from a game system this lobby doesn't take.</summary>
@@ -571,7 +571,7 @@ public class LobbyScreen : IAppScreen
         if (wrongSystem) ImGui.PopStyleColor();
 
         if (wrongSystem && ImGui.IsItemHovered())
-            ImGui.SetTooltip(LobbyArmySource.WrongSystemTooltip(summary, allowed));
+            UiText.Tooltip(LobbyArmySource.WrongSystemTooltip(summary, allowed));
     }
 
     // #221: the colour cell - a swatch of the row's effective colour + a dropdown of the 8 palette options,
@@ -675,7 +675,7 @@ public class LobbyScreen : IAppScreen
         if (isHost && _viewModel.IsResumeMode)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
-            ImGui.TextWrapped("Resuming a save - settings are fixed, except the battlefield.");
+            UiText.Wrapped("Resuming a save - settings are fixed, except the battlefield.");
             ImGui.PopStyleColor();
         }
 
@@ -685,7 +685,7 @@ public class LobbyScreen : IAppScreen
             tooltip: "The point budget each player's army is built to. An army over this limit is\n" +
                      "flagged red on its row and blocks the launch. Higher points means bigger battles.",
             step: 250);
-        // #400: which OPR collections' armies this table takes. All is the default and accepts anything,
+        // #402: which OPR collections' armies this table takes. All is the default and accepts anything,
         // including an army from neither collection (OPR's custom-book tool makes those).
         DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, _viewModel.SetAllowedGameSystems,
             displayName: GameSystems.DisplayName,
@@ -769,7 +769,7 @@ public class LobbyScreen : IAppScreen
         if (UiButton.Checkbox("Cover Proximity Rules", ref coverProximity))
             _viewModel.SetCoverProximityExceptions(coverProximity);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("House rule (default on): cover the shooter's muzzle hugs (< 2in to the exit)\n" +
+            UiText.Tooltip("House rule (default on): cover the shooter's muzzle hugs (< 2in to the exit)\n" +
                              "grants nothing unless the target hugs the same piece, and cover shared by\n" +
                              "shooter and target grants nothing when they are closer than 6in.");
 
@@ -778,7 +778,7 @@ public class LobbyScreen : IAppScreen
         if (UiButton.Checkbox("See-Through Allies", ref seeThroughAllies))
             _viewModel.SetSeeThroughFriendlyUnits(seeThroughAllies);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("House rule (default off): shots see through ALL friendly units.\n" +
+            UiText.Tooltip("House rule (default off): shots see through ALL friendly units.\n" +
                              "Off (official rules): only the shooting unit's own models and the target\n" +
                              "unit are ignored for line of sight - every other unit, friendly or\n" +
                              "enemy, blocks it.");
@@ -788,7 +788,7 @@ public class LobbyScreen : IAppScreen
         if (UiButton.Checkbox("Unlimited Split Fire", ref unlimitedSplitFire))
             _viewModel.SetUnlimitedSplitFire(unlimitedSplitFire);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("House rule (default off): a shooting unit may split its fire between any\n" +
+            UiText.Tooltip("House rule (default off): a shooting unit may split its fire between any\n" +
                              "number of enemy units. Off: at most 2 distinct units per shoot action.");
 
         ImGui.EndDisabled();
@@ -813,7 +813,7 @@ public class LobbyScreen : IAppScreen
         }
 
         ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
-        ImGui.TextWrapped("Connection (share with players)");
+        UiText.Wrapped("Connection (share with players)");
         ImGui.PopStyleColor();
 
         DrawCopyableAddress("LAN:    ", _lanAddresses ?? "unavailable", "lanip");
@@ -880,7 +880,7 @@ public class LobbyScreen : IAppScreen
         bool isHost = _viewModel!.HasHostPrivileges;
         bool resume = _viewModel.IsResumeMode;
 
-        // #400: the gate's BLOCKING half decides whether the button is live at all, so it runs every
+        // #402: the gate's BLOCKING half decides whether the button is live at all, so it runs every
         // frame. That is affordable by construction - LaunchGate.BlockingProblems reads each slot's
         // points and system slug and nothing else; the catalog validation that walks a Forge army's
         // embedded book stays on the click path below. Resume skips both halves: those armies are
@@ -901,11 +901,11 @@ public class LobbyScreen : IAppScreen
         // inside a disabled scope - its own buttons would inherit the grey.
         ImGui.EndDisabled();
 
-        // AllowWhenDisabled: the greyed-out button is precisely the state that needs explaining (#400).
+        // AllowWhenDisabled: the greyed-out button is precisely the state that needs explaining (#402).
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)
             && LaunchTooltip(isHost, blockers) is string tip)
         {
-            ImGui.SetTooltip(tip);
+            UiText.Tooltip(tip);
         }
 
         if (clicked)
@@ -931,12 +931,12 @@ public class LobbyScreen : IAppScreen
         if (_lastLaunchError != null)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.4f, 0.4f, 1f));
-            ImGui.TextWrapped(_lastLaunchError);
+            UiText.Wrapped(_lastLaunchError);
             ImGui.PopStyleColor();
         }
     }
 
-    /// <summary>#400: what a hover over the LAUNCH button says, or null when it is live and needs no
+    /// <summary>#402: what a hover over the LAUNCH button says, or null when it is live and needs no
     /// explaining. ImGui-free so the blocked wording is testable.</summary>
     internal static string? LaunchTooltip(bool isHost, IReadOnlyList<string> blockers)
     {
@@ -977,7 +977,7 @@ public class LobbyScreen : IAppScreen
         ImGui.Spacing();
         ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.4f, 0.4f, 1f));
         foreach (string problem in _launchProblems)
-            ImGui.TextWrapped(problem);
+            UiText.Wrapped(problem);
         ImGui.PopStyleColor();
         ImGui.Spacing();
 
@@ -1006,7 +1006,7 @@ public class LobbyScreen : IAppScreen
         if (ImGui.SliderInt("##TerrainCount", ref v, 0, FDG.Stages.PlaceTerrainStage.MaxAlternatingPieceCount) && v != current)
             setter(v);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("How many terrain pieces the players place, one at a time, alternating.\n" +
+            UiText.Tooltip("How many terrain pieces the players place, one at a time, alternating.\n" +
                              "More pieces means a denser, more cover-heavy board.");
     }
 
@@ -1045,7 +1045,7 @@ public class LobbyScreen : IAppScreen
         if (ImGui.SliderInt("##TerrainPointsTotal", ref t, 0, FDG.Stages.PlaceTerrainStage.MaxPointsTotal) && t != total)
             viewModel.SetTerrainPointsTotal(t);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("The total terrain points the players place between them, dealt out in\n" +
+            UiText.Tooltip("The total terrain points the players place between them, dealt out in\n" +
                              "placing order a turn's worth at a time - whoever wins the roll-off gets\n" +
                              "any remainder. 0 skips terrain placement entirely.");
 
@@ -1057,7 +1057,7 @@ public class LobbyScreen : IAppScreen
         if (ImGui.SliderInt("##TerrainPointsPerTurn", ref p, 1, FDG.Stages.PlaceTerrainStage.MaxPointsPerTurn) && p != perTurn)
             viewModel.SetTerrainPointsPerTurn(p);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("How many terrain points each player spends on their turn - one big piece\n" +
+            UiText.Tooltip("How many terrain points each player spends on their turn - one big piece\n" +
                              "or several small ones. A piece costing more than this can still open a\n" +
                              "turn; the difference comes out of the player's next turn.");
     }
@@ -1077,7 +1077,7 @@ public class LobbyScreen : IAppScreen
             }
         }
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Pick a saved terrain layout file. Its pieces are placed on the board\n" +
+            UiText.Tooltip("Pick a saved terrain layout file. Its pieces are placed on the board\n" +
                              "verbatim - no roll-off, no alternating placement.");
     }
 
@@ -1137,7 +1137,7 @@ public class LobbyScreen : IAppScreen
         if (ImGui.InputInt($"##{label}", ref v, step, step * 4) && v != current)
             setter(Math.Max(0, v));
         if (tooltip != null && ImGui.IsItemHovered())
-            ImGui.SetTooltip(tooltip);
+            UiText.Tooltip(tooltip);
     }
 
     // Draws a labeled enum dropdown. `debugLast` names values that are debug conveniences (e.g. the
@@ -1163,7 +1163,7 @@ public class LobbyScreen : IAppScreen
         if (ImGui.Combo($"##{label}", ref idx, labels, labels.Length))
             setter(values[idx]);
         if (tooltip != null && ImGui.IsItemHovered())
-            ImGui.SetTooltip(tooltip);
+            UiText.Tooltip(tooltip);
     }
 
     private static TEnum[] OrderComboValues<TEnum>(TEnum[]? debugLast, TEnum[]? explicitOrder = null)

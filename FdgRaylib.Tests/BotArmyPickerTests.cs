@@ -224,7 +224,7 @@ public class BotArmyPickerTests
         Assert.That(NewPicker().PickNext(SlotA, 1000, NobodyElse)?.Name, Is.EqualTo("Far"));
     }
 
-    // ── #400: the lobby's Army Source setting ────────────────────────────────────────────────
+    // ── #402: the lobby's Army Source setting ────────────────────────────────────────────────
 
     private static readonly List<ArmyCatalogEntry> MixedCatalog = new()
     {
@@ -295,7 +295,7 @@ public class BotArmyPickerTests
 }
 
 /// <summary>
-/// #400 gave PickNext an Army Source argument. Every case above this shim predates the setting and means
+/// #402 gave PickNext an Army Source argument. Every case above this shim predates the setting and means
 /// an All lobby - where the system filter takes everything and the older rules decide - so they keep
 /// calling the three-argument form and it resolves here.
 /// </summary>

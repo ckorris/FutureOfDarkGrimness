@@ -419,11 +419,11 @@ public class ArmyForgeScreen : IAppScreen
             _importTask = Task.Run(() => ArmyForgeShareService.FetchAndImportAsync(input));
         }
 
-        if (busy) ImGui.TextDisabled("Fetching from army-forge.onepagerules.com ...");
+        if (busy) UiText.Disabled("Fetching from army-forge.onepagerules.com ...");
         if (_importError is not null)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, RedText);
-            ImGui.TextWrapped(_importError);
+            UiText.Wrapped(_importError);
             ImGui.PopStyleColor();
         }
 
@@ -433,73 +433,73 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.Separator();
             ImGui.TextUnformatted($"{army.Name}  -  {army.Faction}");
             ImGui.SameLine();
-            ImGui.TextColored(army.PointsLimit > 0 && army.TotalPoints > army.PointsLimit ? RedText : WhiteText,
+            UiText.Colored(army.PointsLimit > 0 && army.TotalPoints > army.PointsLimit ? RedText : WhiteText,
                 PointsHeader(army.TotalPoints, army.PointsLimit));
 
             // #241 v2: the import doubles as a pricing check of OUR Forge against Army Forge's numbers.
             if (outcome.ForgeSession is { } check)
             {
                 if (check.OurTotalPoints == check.TheirTotalPoints && check.ExcludedUnits.Count == 0)
-                    ImGui.TextColored(GreenText, $"Points check: our Forge matches Army Forge ({check.OurTotalPoints} pts).");
+                    UiText.Colored(GreenText, $"Points check: our Forge matches Army Forge ({check.OurTotalPoints} pts).");
                 else if (check.UnpricedUpgradeCount > 0)
                     // Amber, not red: Army Forge never published a price for these, so our shortfall is
                     // expected and is NOT a defect in our compiler (#219).
-                    ImGui.TextColored(YellowText, $"Points check: our Forge computes {check.OurTotalPoints} pts vs " +
+                    UiText.Colored(YellowText, $"Points check: our Forge computes {check.OurTotalPoints} pts vs " +
                         $"Army Forge's {check.TheirTotalPoints} - {check.UnpricedUpgradeCount} selected " +
                         "upgrade(s) have no published price, so we count them as free (#219).");
                 else if (check.OurTotalPoints != check.TheirTotalPoints)
-                    ImGui.TextColored(RedText, $"Points check: our Forge computes {check.OurTotalPoints} pts, " +
+                    UiText.Colored(RedText, $"Points check: our Forge computes {check.OurTotalPoints} pts, " +
                         $"Army Forge says {check.TheirTotalPoints} (see #218/#219).");
             }
 
             ImGui.BeginChild("##import-preview", new Vector2(660, 280), ImGuiChildFlags.Borders);
-            ImGui.TextDisabled("UNITS");
+            UiText.Disabled("UNITS");
             foreach (UnitFileEntry u in army.Units)
             {
                 ImGui.TextUnformatted($"{u.Name} [{u.ModelCount}] - Qua {u.Quality}+ Def {u.Defense}+  ({u.PointCost} pts)");
                 string gear = string.Join(", ", u.Weapons.Select(w => $"{w.Quantity}x {w.Name}"));
-                if (gear.Length > 0) ImGui.TextDisabled("    " + gear);
+                if (gear.Length > 0) UiText.Disabled("    " + gear);
             }
             if (outcome.Result.ListErrors.Count > 0)
             {
                 ImGui.Spacing();
-                ImGui.TextDisabled("ARMY FORGE LIST ERRORS");
-                foreach (string error in outcome.Result.ListErrors) ImGui.TextColored(RedText, error);
+                UiText.Disabled("ARMY FORGE LIST ERRORS");
+                foreach (string error in outcome.Result.ListErrors) UiText.Colored(RedText, error);
             }
             if (outcome.Result.Warnings.Count > 0)
             {
                 ImGui.Spacing();
-                ImGui.TextDisabled("IMPORT WARNINGS");
+                UiText.Disabled("IMPORT WARNINGS");
                 ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
-                foreach (string warning in outcome.Result.Warnings) ImGui.TextWrapped(warning);
+                foreach (string warning in outcome.Result.Warnings) UiText.Wrapped(warning);
                 ImGui.PopStyleColor();
             }
             if (outcome.InertRules.Count > 0)
             {
                 ImGui.Spacing();
-                ImGui.TextDisabled("RULES NOT ENFORCED BY THE ENGINE (inert in play)");
+                UiText.Disabled("RULES NOT ENFORCED BY THE ENGINE (inert in play)");
                 ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
-                ImGui.TextWrapped(string.Join(", ", outcome.InertRules));
+                UiText.Wrapped(string.Join(", ", outcome.InertRules));
                 ImGui.PopStyleColor();
             }
             if (outcome.ForgeSession is { } session &&
                 (session.ExcludedUnits.Count > 0 || session.UnitPointsDeltas.Count > 0 || session.Warnings.Count > 0))
             {
                 ImGui.Spacing();
-                ImGui.TextDisabled("FORGE RECONCILIATION (Open in Forge uses OUR pricing)");
+                UiText.Disabled("FORGE RECONCILIATION (Open in Forge uses OUR pricing)");
                 foreach ((string name, int pts) in session.ExcludedUnits)
-                    ImGui.TextColored(RedText, $"Excluded (not in bundled book): {name} ({pts} pts)");
+                    UiText.Colored(RedText, $"Excluded (not in bundled book): {name} ({pts} pts)");
                 foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
-                    ImGui.TextColored(YellowText, $"{name}: our Forge {ours} pts, Army Forge {theirs} pts");
+                    UiText.Colored(YellowText, $"{name}: our Forge {ours} pts, Army Forge {theirs} pts");
                 ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
-                foreach (string warning in session.Warnings) ImGui.TextWrapped(warning);
+                foreach (string warning in session.Warnings) UiText.Wrapped(warning);
                 ImGui.PopStyleColor();
             }
             ImGui.EndChild();
 
             // #356: Save As is no longer a dead end - it carries the editable session too, so the same file
             // both plays with Army Forge's numbers and reopens here (with the difference disclosed on reopen).
-            ImGui.TextDisabled(outcome.ForgeSession is not null
+            UiText.Disabled(outcome.ForgeSession is not null
                 ? "Save As: exact Army Forge data, and reopens here for editing.\n" +
                   "Open in Forge: edit it now, against the bundled book, priced by our Forge."
                 : "Save As: exact Army Forge data (plays everywhere, edits in the Army Builder).\n" +
@@ -507,7 +507,7 @@ public class ArmyForgeScreen : IAppScreen
 
             if (_confirmOpenInForge)
             {
-                ImGui.TextColored(YellowText, "This will replace your current Forge list. Continue?");
+                UiText.Colored(YellowText, "This will replace your current Forge list. Continue?");
                 if (ImGui.Button("Replace list", ButtonSize("Replace list")))
                 {
                     _confirmOpenInForge = false;
@@ -695,7 +695,7 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.OpenPopup("Import from Army Forge");
         }
         ImGui.SameLine();
-        ImGui.Text("Army Forge  -");
+        ImGui.TextUnformatted("Army Forge  -");
         if (_showSystemCombo)
         {
             // #378: the game-system filter. Switching clears the list like a book switch, so it gets
@@ -740,9 +740,9 @@ public class ArmyForgeScreen : IAppScreen
         int errors = issues.Count(i => i.Severity == ListIssueSeverity.Error);
         int warnings = issues.Count(i => i.Severity == ListIssueSeverity.Warning);
         ImGui.SameLine();
-        if (errors > 0) ImGui.TextColored(RedText, $"[{errors} error{(errors == 1 ? "" : "s")}]");
-        else if (warnings > 0) ImGui.TextColored(YellowText, $"[{warnings} warning{(warnings == 1 ? "" : "s")}]");
-        else ImGui.TextColored(GreenText, "[Legal]");
+        if (errors > 0) UiText.Colored(RedText, $"[{errors} error{(errors == 1 ? "" : "s")}]");
+        else if (warnings > 0) UiText.Colored(YellowText, $"[{warnings} warning{(warnings == 1 ? "" : "s")}]");
+        else UiText.Colored(GreenText, "[Legal]");
 
         // Editable points limit (games run 1000-5000; the 1000 default was hard-coded until now).
         // Advisory like everything else here (#003): over-cap only turns the header red.
@@ -756,7 +756,7 @@ public class ArmyForgeScreen : IAppScreen
         float headerW = ImGui.CalcTextSize(header).X;
         ImGui.SameLine();
         ImGui.SetCursorPosX(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - headerW);
-        ImGui.TextColored(compiled.TotalPoints > _list.PointsLimit ? RedText : WhiteText, header);
+        UiText.Colored(compiled.TotalPoints > _list.PointsLimit ? RedText : WhiteText, header);
     }
 
     private void DrawPanes(BuiltArmyFile compiled, IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues)
@@ -783,7 +783,7 @@ public class ArmyForgeScreen : IAppScreen
 
     private void DrawRosterPane()
     {
-        ImGui.TextDisabled("ROSTER");
+        UiText.Disabled("ROSTER");
         ImGui.Separator();
         foreach (RosterUnit unit in _book.Units)
         {
@@ -798,9 +798,9 @@ public class ArmyForgeScreen : IAppScreen
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) AddToList(unit.Id);
             }
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize($"{unit.BasePointCost}").X);
-            ImGui.TextDisabled($"{unit.BasePointCost}");
+            UiText.Disabled($"{unit.BasePointCost}");
             ImGui.Indent();
-            ImGui.TextDisabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
+            UiText.Disabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
             ImGui.Unindent();
         }
 
@@ -814,10 +814,10 @@ public class ArmyForgeScreen : IAppScreen
         {
             ImGui.Spacing();
             ImGui.Separator();
-            ImGui.TextDisabled("SPELLS");
+            UiText.Disabled("SPELLS");
             ImGui.PushTextWrapPos(0f);
             foreach (FDG.Rules.Definitions.SpellDefinition spell in _book.Spells)
-                ImGui.TextDisabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
+                UiText.Disabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
             ImGui.PopTextWrapPos();
         }
 
@@ -826,18 +826,18 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.Spacing();
             ImGui.Separator();
             ImGui.PushTextWrapPos(0f);
-            ImGui.TextDisabled($"Data: {_book.Source} ({_book.License})");
+            UiText.Disabled($"Data: {_book.Source} ({_book.License})");
             ImGui.PopTextWrapPos();
         }
     }
 
     private void DrawListPane(IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues, int unitCount)
     {
-        ImGui.TextDisabled($"LIST  [{unitCount} unit{(unitCount == 1 ? "" : "s")}]");
+        UiText.Disabled($"LIST  [{unitCount} unit{(unitCount == 1 ? "" : "s")}]");
         ImGui.Separator();
         if (_list.Units.Count == 0)
         {
-            ImGui.TextWrapped("Your list is empty. Select a unit in the roster and click \"+ Add to list\".");
+            UiText.Wrapped("Your list is empty. Select a unit in the roster and click \"+ Add to list\".");
             return;
         }
 
@@ -855,12 +855,12 @@ public class ArmyForgeScreen : IAppScreen
                 int totalModels = rows[baseIdx].ModelCount + rows[copyIdx].ModelCount;
                 int totalPts = rows[baseIdx].PointCost + rows[copyIdx].PointCost;
 
-                ImGui.TextColored(CyanText, "[Combined]");
+                UiText.Colored(CyanText, "[Combined]");
                 ImGui.SameLine();
                 ImGui.TextUnformatted($"{rows[baseIdx].Name} [{totalModels}]");
                 string gpts = $"{totalPts}";
                 ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize(gpts).X);
-                ImGui.TextDisabled(gpts);
+                UiText.Disabled(gpts);
 
                 ImGui.Indent();
                 DrawListRow(baseIdx, rows, issues, ref removeIndex);
@@ -883,7 +883,7 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.Separator();
             ImGui.PushTextWrapPos(0f);
             foreach (ListIssue issue in issues)
-                ImGui.TextColored(issue.Severity == ListIssueSeverity.Error ? RedText : YellowText, issue.Message);
+                UiText.Colored(issue.Severity == ListIssueSeverity.Error ? RedText : YellowText, issue.Message);
             ImGui.PopTextWrapPos();
         }
     }
@@ -918,19 +918,19 @@ public class ArmyForgeScreen : IAppScreen
 
         if (issues.Any(x => x.UnitIndex == i && x.Severity == ListIssueSeverity.Error))
         {
-            ImGui.TextColored(RedText, "!");
+            UiText.Colored(RedText, "!");
             ImGui.SameLine();
         }
         ImGui.TextUnformatted($"{unit.Name} [{unit.ModelCount}]");
 
         string pts = $"{unit.PointCost}";
         ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize(pts).X - 30f);
-        ImGui.TextDisabled(pts);
+        UiText.Disabled(pts);
         ImGui.SameLine();
         if (ImGui.SmallButton($"x##rm{i}")) removeIndex = i;
 
         ImGui.Indent();
-        ImGui.TextDisabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
+        UiText.Disabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
         foreach (WeaponFileEntry weapon in unit.Weapons)
             RuleTextFlow.Draw(RuleTextFlow.WeaponLine(weapon), _glossary, ImGuiCol.TextDisabled);
         if (unit.SpecialRules.Count > 0)
@@ -952,7 +952,7 @@ public class ArmyForgeScreen : IAppScreen
             DrawRosterPreview(roster);
             return;
         }
-        ImGui.TextDisabled("Select a unit from your list, or add one from the roster.");
+        UiText.Disabled("Select a unit from your list, or add one from the roster.");
     }
 
     private void DrawCompiledUnit(int idx, IReadOnlyList<UnitFileEntry> rows)
@@ -1002,7 +1002,7 @@ public class ArmyForgeScreen : IAppScreen
                 bu.JoinsUnitId = sel == 0 ? null : EnsureId(_list.Units[hosts[sel - 1]]);
 
             if (!string.IsNullOrEmpty(bu.JoinsUnitId) && sel == 0)
-                ImGui.TextColored(YellowText, "! Join target missing or ineligible (see issues) - deploys solo.");
+                UiText.Colored(YellowText, "! Join target missing or ineligible (see issues) - deploys solo.");
         }
         else if (!string.IsNullOrEmpty(bu.Id))
         {
@@ -1012,7 +1012,7 @@ public class ArmyForgeScreen : IAppScreen
                 .Select(h => rows[_list.Units.IndexOf(h)].Name)
                 .ToList();
             if (joiners.Count > 0)
-                ImGui.TextDisabled($"Joined by: {string.Join(", ", joiners)}");
+                UiText.Disabled($"Joined by: {string.Join(", ", joiners)}");
         }
     }
 
@@ -1171,7 +1171,7 @@ public class ArmyForgeScreen : IAppScreen
             RuleTextFlow.Draw(RuleTextFlow.ItemLine(item), _glossary, ImGuiCol.TextDisabled);
         if (unit.Rules.Count > 0)
             RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.Rules), _glossary, ImGuiCol.TextDisabled);
-        ImGui.TextDisabled($"Base: {BaseSummary(unit.Base)}");
+        UiText.Disabled($"Base: {BaseSummary(unit.Base)}");
         ImGui.Unindent();
 
         // Caster units draw from the army-wide spell list; show it here (the roster pane lists it once for the
@@ -1179,17 +1179,17 @@ public class ArmyForgeScreen : IAppScreen
         if (IsCaster(unit) && _book.Spells.Count > 0)
         {
             ImGui.Spacing();
-            ImGui.TextDisabled("SPELLS");
+            UiText.Disabled("SPELLS");
             ImGui.Separator();
             ImGui.PushTextWrapPos(0f);
             foreach (FDG.Rules.Definitions.SpellDefinition spell in _book.Spells)
-                ImGui.TextDisabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
+                UiText.Disabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
             ImGui.PopTextWrapPos();
         }
 
         if (unit.Sections.Count == 0) return;
         ImGui.Spacing();
-        ImGui.TextDisabled("UPGRADES");
+        UiText.Disabled("UPGRADES");
         ImGui.Separator();
         foreach (UpgradeSection section in unit.Sections)
         {

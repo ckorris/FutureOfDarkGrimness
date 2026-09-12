@@ -14,10 +14,10 @@ namespace FdgRaylib.Rendering;
 // hover region. This splits those lines into SEGMENTS - plain text and rule names - and lays them out by
 // hand so each rule name gets its own underline and its own hit rectangle.
 //
-// Two rendering modes, because read-only text and interactive controls need different mechanics:
-//   Draw()                 - full manual layout with word wrapping, for the read-only stat lines.
-//   DecorateControlLabel() - decorates the label ImGui already drew for a radio/checkbox, so the control
-//                            stays clickable exactly as before; no wrapping (nor did those labels wrap).
+// One rendering mode: Draw() - full manual layout with word wrapping. It is click-through (draw list +
+// a Dummy), so a caller that needs the text to also be a hit target lays its own invisible button over
+// the reserved rect; #398's upgrade labels do exactly that, which is what let those labels start
+// wrapping instead of running off the edge of the column.
 public static class RuleTextFlow
 {
     /// <summary>One run of a rule line: literal text, or a rule name (<paramref name="Rule"/> non-null)
@@ -221,7 +221,14 @@ public static class RuleTextFlow
     /// <c>Text</c> call it replaces did and stays click-through (the list pane's full-row selectable, which
     /// sits underneath, keeps receiving its clicks).
     /// </summary>
-    public static void Draw(IReadOnlyList<RuleSegment> segments, RuleGlossary glossary, ImGuiCol color)
+    /// <param name="color">Colour for the PLAIN runs - the weapon name, the brackets, the commas.</param>
+    /// <param name="ruleColor">#398: colour for the rule NAMES, defaulting to the one rule blue
+    /// (<see cref="ImGuiTheme.RuleBlue"/>). A rule used to take the colour of whatever line it happened to
+    /// sit in - white in a weapon table, grey in a rule list, blue in the calculator - so nothing taught
+    /// the reader that an underlined blue word is a thing they can hover. Pass
+    /// <see cref="ImGuiTheme.RuleBlueDim"/> for a rule on something switched off.</param>
+    public static void Draw(IReadOnlyList<RuleSegment> segments, RuleGlossary glossary, ImGuiCol color,
+        Vector4? ruleColor = null)
     {
         float wrapWidth = MathF.Max(1f, ImGui.GetContentRegionAvail().X);
         IReadOnlyList<PlacedChunk> placed = Layout(segments, wrapWidth, MeasureImGui);
@@ -230,6 +237,7 @@ public static class RuleTextFlow
         float lineHeight = ImGui.GetTextLineHeight();
         float lineAdvance = ImGui.GetTextLineHeightWithSpacing();
         uint textColor = ImGui.GetColorU32(color);
+        uint ruleTint = ImGui.GetColorU32(ruleColor ?? ImGuiTheme.RuleBlue);
         int lines = placed.Count == 0 ? 1 : placed[^1].Line + 1;
 
         ImDrawListPtr drawList = ImGui.GetWindowDrawList();
@@ -240,13 +248,13 @@ public static class RuleTextFlow
         foreach (PlacedChunk chunk in placed)
         {
             Vector2 pos = origin + new Vector2(chunk.X, chunk.Line * lineAdvance);
-            drawList.AddText(pos, textColor, chunk.Text);
+            drawList.AddText(pos, chunk.Rule is null ? textColor : ruleTint, chunk.Text);
             if (chunk.Rule is null) continue;
 
             bool known = glossary.Describe(chunk.Rule) is not null;
             // An unimplemented rule underlines faintly: it is still hoverable (the tooltip says it does
             // nothing in play), but it must not advertise itself as documented.
-            uint underline = known ? textColor : Fade(textColor, 0.45f);
+            uint underline = known ? ruleTint : Fade(ruleTint, 0.45f);
             float baseline = pos.Y + lineHeight - 1f;
             drawList.AddLine(new Vector2(pos.X, baseline), new Vector2(pos.X + chunk.Width, baseline), underline);
 
@@ -260,59 +268,24 @@ public static class RuleTextFlow
 
         // Reserve the footprint: N text lines plus the inter-line spacing between them. The layout system
         // adds the usual ItemSpacing.Y after the Dummy, matching a plain Text call's trailing gap.
-        float height = lines * lineHeight + MathF.Max(0, lines - 1) * ImGui.GetStyle().ItemSpacing.Y;
-        ImGui.Dummy(new Vector2(wrapWidth, height));
+        ImGui.Dummy(new Vector2(wrapWidth, FootprintHeight(lines)));
 
         if (tooltip is not null) SetWrappedTooltip(tooltip);
     }
+
 
     /// <summary>
-    /// Underlines + tooltips the rule names inside the label ImGui just drew for a radio button or
-    /// checkbox. Call immediately after the control: it reads the item rectangle and re-walks the same
-    /// segments to find each rule's x span, leaving the control itself untouched (still clickable, still
-    /// keyboard navigable). Single line only - these labels never wrapped.
+    /// The vertical footprint <see cref="Draw"/> will reserve for <paramref name="segments"/> at this wrap
+    /// width. Exposed so a caller that needs a hit target exactly the size of the text can submit that
+    /// target BEFORE the text (#398's upgrade labels do), instead of laying it over the text afterwards and
+    /// winding the cursor back - which is what tripped ImGui's
+    /// <c>ErrorCheckUsingSetCursorPosToExtendParentBoundaries</c> assert. One formula, used by both.
     /// </summary>
-    public static void DecorateControlLabel(IReadOnlyList<RuleSegment> segments, RuleGlossary glossary)
-    {
-        if (!segments.Any(s => s.IsRule)) return;
+    public static float MeasureHeight(IReadOnlyList<RuleSegment> segments, float wrapWidth) =>
+        FootprintHeight(MeasureLines(segments, wrapWidth));
 
-        // Where ImGui puts a radio/checkbox label: past the square, plus the inner spacing, at the frame's
-        // top padding (see ImGui::Checkbox / RadioButton).
-        Vector2 itemMin = ImGui.GetItemRectMin();
-        ImGuiStylePtr style = ImGui.GetStyle();
-        Vector2 origin = itemMin + new Vector2(
-            ImGui.GetFrameHeight() + style.ItemInnerSpacing.X, style.FramePadding.Y);
-
-        ImDrawListPtr drawList = ImGui.GetWindowDrawList();
-        float lineHeight = ImGui.GetTextLineHeight();
-        uint textColor = ImGui.GetColorU32(ImGuiCol.Text);
-        bool windowHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.None);
-        Vector2 mouse = ImGui.GetMousePos();
-        string? tooltip = null;
-
-        float x = 0f;
-        foreach (RuleSegment segment in segments)
-        {
-            float width = MeasureImGui(segment.Text);
-            if (segment.Rule is not null)
-            {
-                bool known = glossary.Describe(segment.Rule) is not null;
-                float baseline = origin.Y + lineHeight - 1f;
-                drawList.AddLine(new Vector2(origin.X + x, baseline), new Vector2(origin.X + x + width, baseline),
-                    known ? textColor : Fade(textColor, 0.45f));
-
-                if (windowHovered &&
-                    mouse.X >= origin.X + x && mouse.X < origin.X + x + width &&
-                    mouse.Y >= origin.Y && mouse.Y < origin.Y + lineHeight)
-                {
-                    tooltip = glossary.Tooltip(segment.Rule);
-                }
-            }
-            x += width;
-        }
-
-        if (tooltip is not null) SetWrappedTooltip(tooltip);
-    }
+    private static float FootprintHeight(int lines) =>
+        lines * ImGui.GetTextLineHeight() + MathF.Max(0, lines - 1) * ImGui.GetStyle().ItemSpacing.Y;
 
     // Rule descriptions are full sentences; without a wrap they render as one very wide tooltip.
     private static void SetWrappedTooltip(string text)

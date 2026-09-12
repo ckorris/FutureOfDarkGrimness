@@ -121,7 +121,7 @@ public class ArmyCatalogTests
     // streaming reader must agree with a full deserialize + ArmyListFile.TotalPoints on every one of
     // them. These carry an embedded book and Forge selections, which is exactly what the reader skips.
     // It also pins the game-system slug: every shipped list must index the system it actually records,
-    // since that is what the lobby's Army Source filter (#400) judges it by.
+    // since that is what the lobby's Army Source filter (#402) judges it by.
     [Test]
     public void IndexedPointsMatchAFullDeserializeOfEveryShippedArmy()
     {
@@ -131,7 +131,7 @@ public class ArmyCatalogTests
         string? folder = FindRepoArmiesFolder();
         if (folder is null) Assert.Ignore("Could not locate the repo's armies folder from the test binary.");
 
-        // Recursive since #400: the shipped lists live in armies/GDF and armies/AoF, so a flat
+        // Recursive since #402: the shipped lists live in armies/GDF and armies/AoF, so a flat
         // GetFiles here finds nothing at all and this test stops covering anything.
         string[] files = Directory.GetFiles(
             folder!, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories);
@@ -153,7 +153,7 @@ public class ArmyCatalogTests
         }
     }
 
-    // ── #400: subfolders and the game-system slug ────────────────────────────────────────────
+    // ── #402: subfolders and the game-system slug ────────────────────────────────────────────
 
     [Test]
     public void ScanRecursesIntoSubfolders()

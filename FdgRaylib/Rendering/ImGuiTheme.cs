@@ -15,15 +15,20 @@ namespace FdgRaylib.Rendering;
 /// </summary>
 public static class ImGuiTheme
 {
-    // Base palette (cool charcoal -> steel).
-    private static readonly Vector4 Ink        = R(15, 17, 20);    // darkest wells (title, scrollbar bg)
-    private static readonly Vector4 Panel       = R(26, 29, 34);   // window body
-    private static readonly Vector4 PanelRaised = R(34, 38, 44);   // buttons, headers
-    private static readonly Vector4 Frame        = R(21, 24, 28);   // input fields
-    private static readonly Vector4 FrameHover   = R(33, 37, 43);
-    private static readonly Vector4 FrameActive  = R(40, 45, 52);
-    private static readonly Vector4 Steel        = R(64, 71, 82);   // borders, grips, separators
-    private static readonly Vector4 SteelDim     = R(44, 49, 57);
+    // Base palette (cool charcoal -> steel). #398: every background tone is exactly 10/255 lighter than
+    // it originally was - enough to stop each panel reading as the same black rectangle, and to leave a
+    // shade BELOW the body tone for showing something switched off, without turning the grimdark grey.
+    // (A first pass lifted them ~3x that far and was too much; the owner asked for 10.) Relative order
+    // is unchanged, so every colour below still means what it meant. Text tones are the originals: the
+    // backgrounds moved a hair, so their contrast did not need buying back.
+    private static readonly Vector4 Ink        = R(25, 27, 30);    // darkest wells (title, scrollbar bg)
+    private static readonly Vector4 Panel       = R(36, 39, 44);   // window body
+    private static readonly Vector4 PanelRaised = R(44, 48, 54);   // buttons, headers
+    private static readonly Vector4 Frame        = R(31, 34, 38);   // input fields
+    private static readonly Vector4 FrameHover   = R(43, 47, 53);
+    private static readonly Vector4 FrameActive  = R(50, 55, 62);
+    private static readonly Vector4 Steel        = R(74, 81, 92);   // borders, grips, separators
+    private static readonly Vector4 SteelDim     = R(54, 59, 67);
     private static readonly Vector4 Text         = R(224, 227, 231);
     private static readonly Vector4 TextDim      = R(126, 132, 142);
 
@@ -45,6 +50,67 @@ public static class ImGuiTheme
 
     // The darkest well tone, for the value half of a two-tone pill (#329).
     public static readonly Vector4 InkWell = Ink;
+
+    // #398: the calculator's three figures, one hue each, because they are three different kinds of
+    // thing - dice that landed, damage that stuck, and what that damage was worth. Each is used for the
+    // headline number AND for its column in the weapon table, so a colour is a reading instruction:
+    // follow the yellow down the table and you are following hits.
+    public static readonly Vector4 HitsYellow = new(0.96f, 0.92f, 0.42f, 1f);
+
+    /// <summary>Damage, wherever it is shown - the wounds figure, the WOUNDS column, and the spent slice
+    /// of the wound meter, which is the same fact drawn as a bar.</summary>
+    public static readonly Vector4 WoundsRed = new(0.94f, 0.40f, 0.38f, 1f);
+
+    /// <summary>What the damage was worth in points.</summary>
+    public static readonly Vector4 PointsBlue = new(0.58f, 0.76f, 1f, 1f);
+
+    // #227's hero gold, shared so a hero reads the same in the printed list and in the calculator.
+    public static readonly Vector4 HeroGold = new(1f, 0.85f, 0.3f, 1f);
+
+    // #292's rule blue, now the ONE colour a special rule's name is drawn in, wherever it appears: the
+    // calculator's weapon sublines, the Forge's weapon table, a unit's rule list, an upgrade label. It
+    // used to be this blue in the middle column, white in the side columns' weapon table and grey in
+    // their rule lists - three colours for one kind of thing, so nothing taught the reader that an
+    // underlined blue word is a rule they can hover.
+    public static readonly Vector4 RuleBlue = new(0.45f, 0.80f, 0.90f, 1f);
+
+    /// <summary>The same blue for a rule on something switched off - an out-of-range weapon. Darkened
+    /// rather than greyed, so it still reads as a rule name.</summary>
+    public static readonly Vector4 RuleBlueDim = new(0.28f, 0.50f, 0.58f, 1f);
+
+    // Button colours by ACTION CLASS, pushed by UiButton so the class a call site picked is visible on
+    // screen: neutral grey undoes (Back, Cancel, Quit), muted blue goes somewhere (Choose unit, Load
+    // list, Swap), full accent commits (LAUNCH, CREATE). Telling them apart was guesswork when all
+    // three were the same grey.
+    public static readonly Vector4 ButtonBack        = R(64, 70, 80);
+    public static readonly Vector4 ButtonBackHovered = R(84, 91, 102);
+    public static readonly Vector4 ButtonGo          = R(44, 64, 96);
+    public static readonly Vector4 ButtonGoHovered   = R(62, 88, 126);
+    public static readonly Vector4 ButtonCommit      = Accent;
+    public static readonly Vector4 ButtonCommitHover = AccentHot;
+    public static readonly Vector4 ButtonPressed     = AccentDim;
+
+    /// <summary>A tab nobody is on: darker than the body it sits above, so the accent-blue selected tab
+    /// is the only lit thing in the strip.</summary>
+    public static readonly Vector4 TabIdle = R(28, 31, 36);
+
+    /// <summary>The brighter accent, for a selected tab or a hovered commit.</summary>
+    public static readonly Vector4 AccentBright = AccentHot;
+
+    /// <summary>
+    /// Behind a table row that is switched off - an out-of-range weapon. A shade DARKER than the body,
+    /// which is what "recessed" has to mean now the body itself is lighter; paired with the disabled
+    /// alpha on its text it is unmistakable at a glance, which greyed text alone was not.
+    /// </summary>
+    public static readonly Vector4 DisabledRowBg = R2(10, 11, 13, 0.45f);
+
+    // #398: the three bands of the calculator's distance track - every weapon reaches this far, only
+    // some do, none do. Traffic-light reading, but darkened well below the text and the slider grab that
+    // sit on top of them: these are a BACKGROUND, and a saturated green would fight the numbers for
+    // attention when the answer is simply "yes, everything can shoot".
+    public static readonly Vector4 RangeAllZone  = R(24, 58, 30);
+    public static readonly Vector4 RangeSomeZone = R(74, 60, 16);
+    public static readonly Vector4 RangeNoneZone = R(78, 26, 26);
 
     // Opaque panel fill for modal dialogs that float above a dimmed backdrop (Host/Client). Matches the
     // lobby's panel tone (the theme window body) so the dialogs read as the same surface, not a blue slab.
@@ -95,12 +161,13 @@ public static class ImGuiTheme
         c[(int)ImGuiCol.CheckMark]             = AccentHot;
         c[(int)ImGuiCol.SliderGrab]            = Accent;
         c[(int)ImGuiCol.SliderGrabActive]      = AccentHot;
-        // Buttons sit clearly above the window body so they read as controls, not flat panels.
-        c[(int)ImGuiCol.Button]                = R(48, 55, 65);
-        c[(int)ImGuiCol.ButtonHovered]         = R(62, 71, 83);
+        // Buttons sit clearly above the window body so they read as controls, not flat panels. This is
+        // the unclassed default; UiButton pushes a role colour over it (see ButtonBack/Go/Commit).
+        c[(int)ImGuiCol.Button]                = R(58, 65, 75);
+        c[(int)ImGuiCol.ButtonHovered]         = R(72, 81, 93);
         c[(int)ImGuiCol.ButtonActive]          = AccentDim;
         c[(int)ImGuiCol.Header]                = SteelDim;
-        c[(int)ImGuiCol.HeaderHovered]         = R(52, 58, 67);
+        c[(int)ImGuiCol.HeaderHovered]         = R(62, 68, 77);
         c[(int)ImGuiCol.HeaderActive]          = AccentDim;
         c[(int)ImGuiCol.Separator]             = A(Steel, 0.50f);
         c[(int)ImGuiCol.SeparatorHovered]      = Accent;
@@ -117,7 +184,7 @@ public static class ImGuiTheme
         c[(int)ImGuiCol.PlotLinesHovered]      = AccentHot;
         c[(int)ImGuiCol.PlotHistogram]         = Accent;
         c[(int)ImGuiCol.PlotHistogramHovered]  = AccentHot;
-        c[(int)ImGuiCol.TableHeaderBg]         = R(35, 43, 57); // subtle blue band -- header text carries the emphasis
+        c[(int)ImGuiCol.TableHeaderBg]         = R(45, 53, 67); // subtle blue band -- header text carries the emphasis
         c[(int)ImGuiCol.TableBorderStrong]     = Steel;
         c[(int)ImGuiCol.TableBorderLight]      = SteelDim;
         c[(int)ImGuiCol.TableRowBg]            = new Vector4(0, 0, 0, 0);

@@ -62,9 +62,8 @@ public sealed class ArmyListOverlay
     // drift apart (#399) - a reservation measured from a different string is how the tag ends up on
     // the name again.
     private const string ActivatedTag = "Activated";
-    private static readonly Vector4 HeroGold      = new(1f, 0.85f, 0.3f, 1f);    // #227 hero tag
+    private static readonly Vector4 HeroGold      = ImGuiTheme.HeroGold;        // #227, shared (#398)
     private static readonly Vector4 WoundedAmber  = new(0.72f, 0.48f, 0.16f, 1f);
-    private static readonly Vector4 PillText      = new(1f, 1f, 1f, 1f);
 
     public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         IReadOnlyList<PlayerID> localPlayerIDs, GuiResolverOverlay? resolverOverlay)
@@ -259,13 +258,13 @@ public sealed class ArmyListOverlay
         }
 
         int standing = units.Count(u => u.Models.Any(m => m.GetIsAlive()));
-        ImGui.TextDisabled(standing == units.Count
+        UiText.Disabled(standing == units.Count
             ? $"{units.Count} unit{(units.Count == 1 ? "" : "s")}"
             : $"{standing}/{units.Count} units standing");
         const string hint = "Hover an underlined rule for its description";
         ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X
             - ImGui.CalcTextSize(hint).X);
-        ImGui.TextDisabled(hint);
+        UiText.Disabled(hint);
 
         // One scroll region per player AND mode (stable IDs), so each tab keeps its own scroll
         // position and switching modes doesn't inherit a stale offset.
@@ -341,11 +340,11 @@ public sealed class ArmyListOverlay
         if (destroyed)
         {
             // Inside the alpha push so it dims with the row; strong red still reads.
-            ImGui.TextColored(new Vector4(0.95f, 0.25f, 0.25f, 1f), "DESTROYED");
+            UiText.Colored(new Vector4(0.95f, 0.25f, 0.25f, 1f), "DESTROYED");
         }
         else if (UnitActivation.HasActivated(_tableState!.Progress, unit))
         {
-            ImGui.TextColored(ActivatedRed, ActivatedTag);
+            UiText.Colored(ActivatedRed, ActivatedTag);
         }
         DrawTokenChips(unit);
 
@@ -353,7 +352,7 @@ public sealed class ArmyListOverlay
         ImGui.TableSetColumnIndex(1);
         ImGui.TextUnformatted($"Qua {unit.Quality}+  Def {unit.Defense}+");
         if (!destroyed && unit.RemainingWounds < unit.MaxWounds)
-            ImGui.TextColored(WoundedAmber,
+            UiText.Colored(WoundedAmber,
                 $"Wounds {WoundFormat.Fraction(unit.RemainingWounds, unit.MaxWounds)}");
 
         // Loadout: one line per distinct weapon, count-prefixed, stats + hoverable rules in parens —
@@ -372,7 +371,7 @@ public sealed class ArmyListOverlay
             segments.Add(new RuleHoverText.Segment(")", null, null));
             DrawWrappedSegments(segments, ImGui.GetContentRegionAvail().X);
         }
-        if (weapons.Count == 0) ImGui.TextDisabled("-");
+        if (weapons.Count == 0) UiText.Disabled("-");
 
         // Special Rules: the unit's hoverable list; a joined hero appends its gold tag + own rules.
         ImGui.TableSetColumnIndex(3);
@@ -380,7 +379,7 @@ public sealed class ArmyListOverlay
         if (rules.Count > 0)
             DrawWrappedSegments(RuleSegmentsFor(rules), ImGui.GetContentRegionAvail().X);
         else if (unit.JoinedHeroModelId == null)
-            ImGui.TextDisabled("-");
+            UiText.Disabled("-");
         DrawHeroSummary(unit);
 
         if (destroyed) ImGui.PopStyleVar();
@@ -402,12 +401,12 @@ public sealed class ArmyListOverlay
         if (centered)
         {
             CenterNextText(line);
-            ImGui.TextColored(HeroGold, line);
+            UiText.Colored(HeroGold, line);
             return;
         }
 
         ImGui.Indent();
-        ImGui.TextColored(HeroGold, line);
+        UiText.Colored(HeroGold, line);
         ImGui.Unindent();
     }
 
@@ -425,7 +424,7 @@ public sealed class ArmyListOverlay
         if (!hero.GetIsAlive()) tag += "  -  dead";
         else if (hero.TotalWounds > 1f)
             tag += $"  Wounds {WoundFormat.Fraction(hero.TotalWounds - hero.WoundsDealt, hero.TotalWounds)}";
-        ImGui.TextColored(HeroGold, tag);
+        UiText.Colored(HeroGold, tag);
 
         var heroRules = PlayerFacingRules(hero.RuleDefinitions);
         if (heroRules.Count > 0)
@@ -504,7 +503,7 @@ public sealed class ArmyListOverlay
         {
             string wounds = $"Wounds {WoundFormat.Fraction(unit.RemainingWounds, unit.MaxWounds)}";
             CenterNextText(wounds);
-            ImGui.TextColored(WithAlpha(WoundedAmber, 1f), wounds);
+            UiText.Colored(WithAlpha(WoundedAmber, 1f), wounds);
         }
 
         DrawRuleLine(unit);
@@ -577,7 +576,7 @@ public sealed class ArmyListOverlay
             float tagX = ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - tagW;
             if (plan.TagOnHeaderLine) ImGui.SameLine(tagX);
             else ImGui.SetCursorPosX(tagX);
-            ImGui.TextColored(ActivatedRed, ActivatedTag);
+            UiText.Colored(ActivatedRed, ActivatedTag);
         }
 
         // After the Activated tag, whose SameLine has to attach to the header itself.
@@ -613,44 +612,24 @@ public sealed class ArmyListOverlay
 
         // Center the row like the printout.
         float totalW = 0f;
-        foreach (var p in pills) totalW += PillWidth(p.label, p.value) + 8f;
-        totalW -= 8f;
+        foreach (var p in pills) totalW += PillWidth(p.label, p.value) + UiChrome.PillGap;
+        totalW -= UiChrome.PillGap;
         ImGui.SetCursorPosX(Math.Max(ImGui.GetCursorPosX(),
             ImGui.GetCursorPosX() + (ImGui.GetContentRegionAvail().X - totalW) * 0.5f));
 
         for (int i = 0; i < pills.Count; i++)
         {
-            if (i > 0) ImGui.SameLine(0f, 8f);
+            if (i > 0) ImGui.SameLine(0f, UiChrome.PillGap);
             DrawPill(pills[i].label, pills[i].value, pills[i].bg);
         }
         ImGui.Spacing();
     }
 
-    private static float PillWidth(string label, string value) =>
-        ImGui.CalcTextSize(label).X + ImGui.CalcTextSize(value).X + 4f * PillPad;
+    // #398: the pill itself now lives in UiChrome, shared with the Combat Calculator's unit columns.
+    private static float PillWidth(string label, string value) => UiChrome.PillWidth(label, value);
 
-    private const float PillPad = 7f;
-
-    // Two-tone pill: label on the accent field, value on a dark well, one rounded outline — the
-    // printed list's stat badge.
-    private static void DrawPill(string label, string value, Vector4 labelBg)
-    {
-        var dl = ImGui.GetWindowDrawList();
-        Vector2 pos = ImGui.GetCursorScreenPos();
-        float h = ImGui.GetTextLineHeight() + 8f;
-        float labelW = ImGui.CalcTextSize(label).X + 2f * PillPad;
-        float valueW = ImGui.CalcTextSize(value).X + 2f * PillPad;
-        const float rounding = 5f;
-
-        dl.AddRectFilled(pos, pos + new Vector2(labelW + valueW, h),
-            ImGui.GetColorU32(ImGuiTheme.InkWell), rounding);
-        dl.AddRectFilled(pos, pos + new Vector2(labelW, h),
-            ImGui.GetColorU32(labelBg), rounding, ImDrawFlags.RoundCornersLeft);
-        dl.AddText(pos + new Vector2(PillPad, 4f), ImGui.GetColorU32(PillText), label);
-        dl.AddText(pos + new Vector2(labelW + PillPad, 4f), ImGui.GetColorU32(PillText), value);
-
-        ImGui.Dummy(new Vector2(labelW + valueW, h));
-    }
+    private static void DrawPill(string label, string value, Vector4 labelBg) =>
+        UiChrome.DrawPill(label, value, labelBg);
 
     // The unit's special rules as one comma-joined line of underlined hover targets, wrapped at rule
     // boundaries — the #292 convention (solid underline = documented, faded = inert in play).
@@ -696,7 +675,7 @@ public sealed class ArmyListOverlay
             var ruleSegments = RuleHoverText.RuleSegments(w);
             if (ruleSegments.Count == 0)
             {
-                ImGui.TextDisabled("-");
+                UiText.Disabled("-");
             }
             else
             {
@@ -750,7 +729,7 @@ public sealed class ArmyListOverlay
             }
             x += w + ImGui.GetStyle().ItemSpacing.X;
 
-            ImGui.TextColored(ImGui.ColorConvertU32ToFloat4(TokenChipRenderer.ColorFor(token)), chip);
+            UiText.Colored(ImGui.ColorConvertU32ToFloat4(TokenChipRenderer.ColorFor(token)), chip);
             if (ImGui.IsItemHovered() && !string.IsNullOrEmpty(token.Description))
                 RuleHoverText.ShowTooltip($"{token.Name}\n{token.Description}");
         }

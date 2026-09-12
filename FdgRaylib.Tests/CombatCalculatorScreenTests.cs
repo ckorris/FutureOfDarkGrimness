@@ -145,6 +145,184 @@ public class CombatCalculatorScreenTests
         });
     }
 
+    // ---- a column's tabs (#398) ---------------------------------------------------------------
+
+    [Test]
+    public void AFreshColumnHasOneEmptyTab()
+    {
+        var tabs = new SideTabs();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots, Has.Count.EqualTo(1));
+            Assert.That(tabs.Current.HasUnit, Is.False);
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo(SideTabs.EmptyLabel),
+                "an unfilled tab says so rather than showing a blank");
+        });
+    }
+
+    [Test]
+    public void PlusCopiesTheUnitInHandAndSelectsTheCopy()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+
+        int landed = tabs.Duplicate();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots, Has.Count.EqualTo(2));
+            Assert.That(landed, Is.EqualTo(1), "the copy lands at the end of the stack");
+            Assert.That(tabs.Active, Is.EqualTo(1), "and is the one you are now editing");
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Vanguard Warriors"));
+            Assert.That(tabs.Slots[0].Key, Is.Not.EqualTo(tabs.Slots[1].Key),
+                "ImGui tells tabs apart by id, so two tabs may never share one");
+        });
+    }
+
+    [Test]
+    public void ACopiedTabIsItsOwnUnit()
+    {
+        // The whole point of the copy: change the variant without disturbing what it was compared to.
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+        tabs.Duplicate();
+
+        tabs.Current.SetCombined(true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots[1].Side.Compile().Units[0].ModelCount, Is.EqualTo(10));
+            Assert.That(tabs.Slots[0].Side.Compile().Units[0].ModelCount, Is.EqualTo(5),
+                "editing the copy must not reach back into the original");
+        });
+    }
+
+    [Test]
+    public void ACopyKeepsTheJoinedHeroAsItsOwn()
+    {
+        BookFile force = HeroBook();
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(force, "squad");
+        tabs.Current.SetJoin("captain");
+        tabs.Duplicate();
+
+        CalculatorSide copy = tabs.Current;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(copy.Joined, Is.Not.Null, "the pairing came along with the copy");
+            Assert.That(copy.Rows(), Has.Count.EqualTo(2));
+            Assert.That(copy.List.Units, Has.None.SameAs(tabs.Slots[0].Side.List.Units[0]),
+                "including its own units, not the original's");
+            Assert.That(copy.Compile().Units.Any(unit => !string.IsNullOrEmpty(unit.JoinsUnitId)), Is.True,
+                "and the join still compiles");
+        });
+    }
+
+    [Test]
+    public void ClosingTheSelectedTabHandsTheSelectionToItsNeighbour()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+        tabs.Duplicate();
+        tabs.Current.SetUnit(Book, "gunners");
+        tabs.Select(0);
+
+        Assert.That(tabs.Close(0), Is.True);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots, Has.Count.EqualTo(1));
+            Assert.That(tabs.Active, Is.EqualTo(0));
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Heavy Gunners"),
+                "the tab that slid into the gap is the one now in hand");
+        });
+    }
+
+    [Test]
+    public void ClosingATabBeforeTheSelectedOneKeepsTheSameUnitInHand()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+        tabs.Duplicate();
+        tabs.Current.SetUnit(Book, "gunners");
+
+        tabs.Close(0);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Active, Is.EqualTo(0), "the index shifts down with it");
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Heavy Gunners"),
+                "but the unit selected is unchanged");
+        });
+    }
+
+    [Test]
+    public void TheLastTabNeverCloses()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Close(0), Is.False, "a column with no tab has nowhere to put a unit");
+            Assert.That(tabs.Close(7), Is.False, "and an index that is not a tab closes nothing");
+            Assert.That(tabs.Slots, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void ALongUnitNameIsShortenedToFitTheTabAndStaysAscii()
+    {
+        string shortened = SideTabs.Shorten("Battle Brothers Veterans", SideTabs.MaxLabelChars);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shortened, Is.EqualTo("Battle Brothers V..."));
+            Assert.That(shortened, Has.Length.EqualTo(SideTabs.MaxLabelChars));
+            Assert.That(shortened.All(c => c <= 0x7F), Is.True, "three dots, not an ellipsis glyph");
+            Assert.That(SideTabs.Shorten("Heavy Gunners", SideTabs.MaxLabelChars), Is.EqualTo("Heavy Gunners"),
+                "a name that fits is left alone");
+            Assert.That(SideTabs.Shorten("   ", SideTabs.MaxLabelChars), Is.EqualTo(SideTabs.EmptyLabel));
+        });
+    }
+
+    [Test]
+    public void ANarrowColumnShortensBothNamesRatherThanDroppingOne()
+    {
+        BookFile force = HeroBook();
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(force, "squad");
+        tabs.Current.SetJoin("captain");
+
+        // The budget is what the strip can spare, measured against the column that exists; both names
+        // have to survive it, because the pairing IS the tab's identity.
+        Assert.Multiple(() =>
+        {
+            Assert.That(SideTabs.TabLabel(tabs.Current, SideTabs.MinLabelChars), Is.EqualTo("Captain + Squad"),
+                "a narrow column never costs one of the two names - it lets the tab bar shrink instead");
+            Assert.That(SideTabs.TabLabel(tabs.Current, SideTabs.MaxLabelChars), Is.EqualTo("Captain + Squad"));
+            Assert.That(SideTabs.Shorten("Vanguard Warriors", SideTabs.MinLabelChars), Is.EqualTo("Vang..."),
+                "and a name that will not fit is cut to the floor, not below it");
+        });
+    }
+
+    [Test]
+    public void AJoinedTabNamesBothTheHeroAndTheUnitItJoined()
+    {
+        BookFile force = HeroBook();
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(force, "squad");
+
+        Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Squad"), "one unit, one name");
+
+        tabs.Current.SetJoin("captain");
+
+        Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo($"Captain{SideTabs.JoinSeparator}Squad"),
+            "hero first, the way the column itself is ordered");
+    }
+
     // ---- the screen ----------------------------------------------------------------------------
 
     [Test]
@@ -176,6 +354,30 @@ public class CombatCalculatorScreenTests
         {
             Assert.That(screen.Attacker.Detail().Unit.Name, Is.EqualTo("Heavy Gunners"));
             Assert.That(screen.Defender.Detail().Unit.Name, Is.EqualTo("Vanguard Warriors"));
+        });
+    }
+
+    [Test]
+    public void SwapCarriesEveryTabAcrossNotJustTheSelectedOne()
+    {
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+        screen.Attacker.SetUnit(Book, "warriors");
+        screen.AttackerTabs.Duplicate();
+        screen.Attacker.SetUnit(Book, "gunners");
+        screen.AttackerTabs.Select(0);
+        screen.Defender.SetUnit(Book, "gunners");
+
+        screen.Swap();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(screen.DefenderTabs.Slots, Has.Count.EqualTo(2), "both of A's tabs are now B's");
+            Assert.That(screen.AttackerTabs.Slots, Has.Count.EqualTo(1));
+            Assert.That(screen.Attacker.Detail().Unit.Name, Is.EqualTo("Heavy Gunners"));
+            Assert.That(screen.Defender.Detail().Unit.Name, Is.EqualTo("Vanguard Warriors"),
+                "and the tab that was selected stays selected");
+            Assert.That(screen.DefenderTabs.Slots.Select(slot => slot.Key).Distinct().Count(),
+                Is.EqualTo(2), "re-keyed on arrival, so no two tabs in a column share an id");
         });
     }
 
@@ -216,6 +418,75 @@ public class CombatCalculatorScreenTests
     }
 
     [Test]
+    public void ArmiesAreFilteredToOneGameSystemAtATime()
+    {
+        var gdf = ArmySource.FromBook(new BookFile { Name = "Human Defense Force", GameSystem = GameSystems.GrimdarkFuture });
+        var aof = ArmySource.FromBook(new BookFile { Name = "High Elves", GameSystem = GameSystems.AgeOfFantasy });
+        var legacy = ArmySource.FromBook(new BookFile { Name = "Old Book" });   // no field at all
+        var all = new[] { gdf, aof, legacy };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UnitPicker.MatchingArmies(all, string.Empty, GameSystems.GrimdarkFuture)
+                    .Select(a => a.Name),
+                Is.EqualTo(new[] { "Human Defense Force", "Old Book" }),
+                "a book with no system field is Grimdark Future");
+            Assert.That(UnitPicker.MatchingArmies(all, string.Empty, GameSystems.AgeOfFantasy)
+                    .Select(a => a.Name),
+                Is.EqualTo(new[] { "High Elves" }));
+        });
+    }
+
+    [Test]
+    public void TheSystemFilterCombinesWithTheSearchBox()
+    {
+        var a = ArmySource.FromBook(new BookFile { Name = "High Elves", GameSystem = GameSystems.AgeOfFantasy });
+        var b = ArmySource.FromBook(new BookFile { Name = "High Elf Fleets", GameSystem = GameSystems.AgeOfFantasy });
+        var c = ArmySource.FromBook(new BookFile { Name = "High Guard", GameSystem = GameSystems.GrimdarkFuture });
+
+        Assert.That(UnitPicker.MatchingArmies(new[] { a, b, c }, "fleet", GameSystems.AgeOfFantasy)
+                .Select(x => x.Name),
+            Is.EqualTo(new[] { "High Elf Fleets" }));
+    }
+
+    [Test]
+    public void GrimdarkFutureIsWhatABothSidesStartOn()
+    {
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(screen.AttackerPicker.GameSystem, Is.EqualTo(GameSystems.GrimdarkFuture));
+            Assert.That(screen.DefenderPicker.GameSystem, Is.EqualTo(GameSystems.GrimdarkFuture));
+        });
+    }
+
+    [Test]
+    public void EachSideRestoresItsOwnRememberedSystem()
+    {
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+
+        screen.RestoreSystems(GameSystems.AgeOfFantasy, GameSystems.GrimdarkFuture);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(screen.AttackerPicker.GameSystem, Is.EqualTo(GameSystems.AgeOfFantasy));
+            Assert.That(screen.DefenderPicker.GameSystem, Is.EqualTo(GameSystems.GrimdarkFuture),
+                "the two sides are remembered separately");
+        });
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("warhammer-40k")]
+    public void AnUnknownRememberedSystemFallsBackToTheDefault(string? slug)
+    {
+        // A hand-edited config, or a system a later build stops shipping, must not strand a side on an
+        // empty army list with no way to tell why.
+        Assert.That(CombatCalculatorScreen.KnownSystem(slug), Is.EqualTo(GameSystems.GrimdarkFuture));
+    }
+
+    [Test]
     public void TheEmptyStateNamesTheSideThatIsStillMissing()
     {
         Assert.Multiple(() =>
@@ -248,6 +519,86 @@ public class CombatCalculatorScreenTests
         new(null!, 1, true, range, 1f, 4, new List<string>(), 0f,
             new List<SaveBucket>(), new List<string>(), 0f, new List<string>());
 
+    private static CombatReport ReportOf(params float[] ranges) =>
+        new(ECombatMode.Shooting, "A", "B", 5f, 5f, ranges.Select(Volley).ToList(),
+            0f, 0f, new List<string>(), new List<string>());
+
+    [Test]
+    public void TheDistanceTrackIsGreenWhereEveryWeaponReachesAndRedWhereNoneDo()
+    {
+        (float all, float some) = CombatCalculatorScreen.RangeZones(ReportOf(24f, 12f, 18f));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(all, Is.EqualTo(12f), "past the shortest weapon, not everything can fire");
+            Assert.That(some, Is.EqualTo(24f), "past the longest, nothing can");
+        });
+    }
+
+    [Test]
+    public void OneRangeLeavesNoPartialBand()
+    {
+        (float all, float some) = CombatCalculatorScreen.RangeZones(ReportOf(24f, 24f));
+
+        Assert.That(all, Is.EqualTo(some), "identical reaches - green then red, no yellow in between");
+    }
+
+    [Test]
+    public void BandsAreClampedIntoTheSlidersSpanAndVanishWhenThereIsNothingToMeasure()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.RangeZones(ReportOf(240f, 96f)),
+                Is.EqualTo((CombatCalculatorScreen.MaxDistanceInches, CombatCalculatorScreen.MaxDistanceInches)),
+                "a weapon that outreaches the track paints to its end, never past it");
+            Assert.That(CombatCalculatorScreen.RangeZones(ReportOf(0f)), Is.EqualTo((0f, 0f)),
+                "melee weapons have no reach to band");
+            Assert.That(CombatCalculatorScreen.RangeZones(null), Is.EqualTo((0f, 0f)),
+                "no report, no bands - not a screen of red");
+        });
+    }
+
+    [Test]
+    public void DistancesLandOnWholeInchesInsideTheTrack()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.SnapDistance(13.47f), Is.EqualTo(13f));
+            Assert.That(CombatCalculatorScreen.SnapDistance(13.5f), Is.EqualTo(14f));
+            Assert.That(CombatCalculatorScreen.SnapDistance(-4f), Is.EqualTo(0f), "clamped at the near end");
+            Assert.That(CombatCalculatorScreen.SnapDistance(500f),
+                Is.EqualTo(CombatCalculatorScreen.MaxDistanceInches), "and at the far end");
+        });
+    }
+
+    [Test]
+    public void TheSteppersLandOnMultiplesRatherThanCarryingAnOffsetAlong()
+    {
+        const float fine = CombatCalculatorScreen.StepInches;      // 3
+        const float coarse = CombatCalculatorScreen.BigStepInches;  // 6
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.Stepped(14f, fine), Is.EqualTo(15f), "up to the next 3");
+            Assert.That(CombatCalculatorScreen.Stepped(15f, fine), Is.EqualTo(18f), "then a full step");
+            Assert.That(CombatCalculatorScreen.Stepped(14f, coarse), Is.EqualTo(18f), "up to the next 6");
+            Assert.That(CombatCalculatorScreen.Stepped(18f, coarse), Is.EqualTo(24f));
+            Assert.That(CombatCalculatorScreen.Stepped(14f, -fine), Is.EqualTo(12f), "down to the last 3");
+            Assert.That(CombatCalculatorScreen.Stepped(12f, -fine), Is.EqualTo(9f));
+            Assert.That(CombatCalculatorScreen.Stepped(14f, -coarse), Is.EqualTo(12f));
+            Assert.That(CombatCalculatorScreen.Stepped(2f, -coarse), Is.EqualTo(0f), "clamped, not negative");
+            Assert.That(CombatCalculatorScreen.Stepped(47f, coarse),
+                Is.EqualTo(CombatCalculatorScreen.MaxDistanceInches), "and clamped at the far end");
+        });
+    }
+
+    [Test]
+    public void TheCoarseStepperIsDoubleTheFineOne()
+    {
+        Assert.That(CombatCalculatorScreen.BigStepInches,
+            Is.EqualTo(CombatCalculatorScreen.StepInches * 2f));
+    }
+
     [Test]
     public void TheScreensTextIsAsciiOnly()
     {
@@ -261,8 +612,14 @@ public class CombatCalculatorScreenTests
             CombatCalculatorScreen.NoUnitsHint,
             CombatCalculatorScreen.ArmyPrompt,
             CombatCalculatorScreen.VariablesHeader,
-            CombatCalculatorScreen.AssumptionsLabel,
+            CombatCalculatorScreen.BackLabel,
+            CombatCalculatorScreen.CancelLabel,
+            CombatCalculatorScreen.ShootingTab,
+            CombatCalculatorScreen.MeleeTab,
+            SideTabs.EmptyLabel,
+            SideTabs.JoinSeparator,
             CombatCalculatorScreen.AttackerBadge,
+            CombatCalculatorScreen.HeroTag,
             CombatCalculatorScreen.DefenderBadge,
             CombatCalculatorScreen.NoAttackerHint,
             CombatCalculatorScreen.NoDefenderHint,

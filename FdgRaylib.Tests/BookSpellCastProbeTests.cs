@@ -211,8 +211,7 @@ public class BookSpellCastProbeTests
                 case SelectionRequest<ModelData> modelPick:
                     return Task.FromResult((TReply)(object)modelPick.ValidOptions[0].Option);
                 case AssignWoundsRequest woundPick:
-                    var wounds = new AssignWoundsResults(woundPick.UnitReceivingWounds,
-                        woundPick.TotalWoundsToAssign);
+                    var wounds = new AssignWoundsResults(woundPick.UnitReceivingWounds, woundPick.Packets);
                     wounds.AutoFill();
                     return Task.FromResult((TReply)(object)wounds);
                 case DefineMovementPathRequest moveRequest:

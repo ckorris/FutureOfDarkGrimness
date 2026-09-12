@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using FDG.ArmyBuilding;
@@ -24,26 +25,105 @@ internal static class ForgeUnitDetail
 {
     private static readonly Vector4 CyanText = new(0.45f, 0.80f, 0.90f, 1f);
 
-    /// <summary>Name, model count, stat line and points.</summary>
+    /// <summary>
+    /// Name and model count, then the stats as the printed army list badges them (#329/#398): Quality
+    /// and Defense always, Tough when the unit carries one. The numbers a player actually reads off a
+    /// unit are the ones worth making findable at a glance, and they were previously buried mid-sentence
+    /// in "Cult Rangers [5] - Qua 4+ Def 4+".
+    /// </summary>
     internal static void DrawHeader(UnitFileEntry unit)
     {
-        ImGui.TextUnformatted(ArmyBuilderScreen.UnitStatLine(unit));
+        ImGui.TextUnformatted($"{unit.Name} [{unit.ModelCount}]");
         ImGui.SameLine();
-        ImGui.TextDisabled($"({unit.PointCost} pts)");
+        UiText.Disabled($"({unit.PointCost} pts)");
+
+        UiChrome.DrawPill("Quality", $"{unit.Quality}+", ImGuiTheme.AccentBlue);
+        ImGui.SameLine(0f, UiChrome.PillGap);
+        UiChrome.DrawPill("Defense", $"{unit.Defense}+", ImGuiTheme.AccentBlue);
+        if (ToughValue(unit) is { } tough)
+        {
+            ImGui.SameLine(0f, UiChrome.PillGap);
+            UiChrome.DrawPill("Tough", tough, ImGuiTheme.AccentBlue);
+        }
         ImGui.Separator();
     }
 
-    /// <summary>Weapons, wargear and special rules, each rule underlined with its hover (#259).</summary>
+    /// <summary>
+    /// The unit's Tough rating for its pill, or null when it has none. A saved unit carries no resolved
+    /// wound count - Tough is a rule on the list - so it is read off the TYPED entry
+    /// (<see cref="SpecialRuleEntry_CoreNumeric"/>) rather than by re-parsing the "Tough(3)" string this
+    /// very code formats: the number is right there, and a parser would be a second place to be wrong.
+    /// An alias ("Ancient Hide (Tough(6))") counts - the unit is Tough however the book names it.
+    /// Internal so the walk is pinned by tests.
+    /// </summary>
+    internal static string? ToughValue(UnitFileEntry unit)
+    {
+        foreach (SpecialRuleEntry rule in unit.SpecialRules)
+            if (ToughOf(rule) is { } value)
+                return value;
+        return null;
+    }
+
+    private static string? ToughOf(SpecialRuleEntry rule) => rule switch
+    {
+        SpecialRuleEntry_CoreNumeric numeric
+            when string.Equals(numeric.Name, "Tough", StringComparison.OrdinalIgnoreCase)
+            => numeric.NumericValue.ToString(CultureInfo.InvariantCulture),
+        SpecialRuleEntry_Alias alias => ToughOf(alias.AliasedRule),
+        _ => null,
+    };
+
+    /// <summary>
+    /// Weapons as the printed list tabulates them - Weapon / RNG / ATK / AP / SPE - then wargear and the
+    /// unit's own rules as text. The weapons were a run of parenthesised sentences whose numbers never
+    /// lined up with each other; as columns two guns can actually be compared, which is the one thing a
+    /// player does with this block. Rules keep their underline and hover (#259).
+    /// </summary>
     internal static void DrawGear(UnitFileEntry unit, IReadOnlyList<ItemEntry> items, RuleGlossary glossary)
     {
+        DrawWeaponTable(unit, glossary);
+
         ImGui.Indent();
-        foreach (WeaponFileEntry weapon in unit.Weapons)
-            RuleTextFlow.Draw(RuleTextFlow.WeaponLine(weapon), glossary, ImGuiCol.TextDisabled);
         foreach (ItemEntry item in items)
             RuleTextFlow.Draw(RuleTextFlow.ItemLine(item), glossary, ImGuiCol.TextDisabled);
         if (unit.SpecialRules.Count > 0)
             RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.SpecialRules), glossary, ImGuiCol.TextDisabled);
         ImGui.Unindent();
+    }
+
+    private static void DrawWeaponTable(UnitFileEntry unit, RuleGlossary glossary)
+    {
+        if (unit.Weapons.Count == 0) return;
+        if (!ImGui.BeginTable("##gear", 5,
+            ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp)) return;
+
+        float em = ImGui.GetFontSize();
+        ImGui.TableSetupColumn("Weapon", ImGuiTableColumnFlags.WidthStretch, 3f);
+        ImGui.TableSetupColumn("RNG", ImGuiTableColumnFlags.WidthFixed, em * 2.6f);
+        ImGui.TableSetupColumn("ATK", ImGuiTableColumnFlags.WidthFixed, em * 2.2f);
+        ImGui.TableSetupColumn("AP", ImGuiTableColumnFlags.WidthFixed, em * 2.2f);
+        ImGui.TableSetupColumn("SPE", ImGuiTableColumnFlags.WidthStretch, 2f);
+        ImGui.TableHeadersRow();
+
+        foreach (WeaponFileEntry weapon in unit.Weapons)
+        {
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextUnformatted(ArmyListLayout.CountedName(weapon.Quantity, weapon.Name));
+            ImGui.TableSetColumnIndex(1);
+            UiText.Disabled(ArmyListLayout.RangeText(weapon.RangeInches));
+            ImGui.TableSetColumnIndex(2);
+            UiText.Disabled(ArmyListLayout.AttacksText(weapon.Attacks));
+            ImGui.TableSetColumnIndex(3);
+            UiText.Disabled(ArmyListLayout.ApText(weapon.ArmorPenetration));
+
+            ImGui.TableSetColumnIndex(4);
+            if (weapon.SpecialRules.Count == 0) UiText.Disabled("-");
+            else RuleTextFlow.Draw(RuleTextFlow.RuleList(weapon.SpecialRules), glossary, ImGuiCol.TextDisabled);
+        }
+
+        ImGui.EndTable();
     }
 
     /// <summary>
@@ -65,7 +145,7 @@ internal static class ForgeUnitDetail
     {
         if (roster.Sections.Count == 0) return;
         ImGui.Spacing();
-        ImGui.TextDisabled("UPGRADES");
+        UiText.Colored(ImGuiTheme.HeaderAccent, "UPGRADES");
         ImGui.Separator();
 
         foreach (UpgradeSection section in roster.Sections)
@@ -90,12 +170,12 @@ internal static class ForgeUnitDetail
             if (linked)
             {
                 ImGui.SameLine();
-                ImGui.TextColored(CyanText, "[linked]");
+                UiText.Colored(CyanText, "[linked]");
             }
             if (isReplace && switchAvailable == 0)
             {
                 ImGui.SameLine();
-                ImGui.TextDisabled("(none to replace)");
+                UiText.Disabled("(none to replace)");
             }
             ImGui.Indent();
 
@@ -123,11 +203,11 @@ internal static class ForgeUnitDetail
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
                     ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
-                    if (ImGui.RadioButton($"{ArmyForgeScreen.OptionSummary(option)}##{section.Id}-{option.Id}", chosen))
-                        BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, 1);
-                    // Inside the disabled scope so the underline picks up the same dimmed text color.
-                    RuleTextFlow.DecorateControlLabel(
-                        RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option)), glossary);
+                    string id = $"{section.Id}-{option.Id}";
+                    bool hit = ImGui.RadioButton($"##{id}", chosen);
+                    ImGui.SameLine();
+                    hit |= DrawWrappedOptionLabel(option, glossary, id);
+                    if (hit) BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, 1);
                     ImGui.EndDisabled();
                 }
             }
@@ -137,15 +217,57 @@ internal static class ForgeUnitDetail
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
                     ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
-                    if (ImGui.Checkbox($"{ArmyForgeScreen.OptionSummary(option)}##{section.Id}-{option.Id}", ref chosen))
-                        BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, chosen ? 1 : 0);
-                    RuleTextFlow.DecorateControlLabel(
-                        RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option)), glossary);
+                    string id = $"{section.Id}-{option.Id}";
+                    bool hit = ImGui.Checkbox($"##{id}", ref chosen);
+                    ImGui.SameLine();
+                    // Clicking the label toggles, so the box's state is what the label reports back.
+                    if (DrawWrappedOptionLabel(option, glossary, id))
+                    {
+                        chosen = !chosen;
+                        hit = true;
+                    }
+                    if (hit) BuilderListEditing.ApplyChoice(bu, mirror, section, option.Id, chosen ? 1 : 0);
                     ImGui.EndDisabled();
                 }
             }
             ImGui.Unindent();
         }
+    }
+
+    /// <summary>
+    /// An upgrade option's label, WRAPPED, with its rule names underlined and hoverable, and the whole
+    /// block clickable so it still toggles the control beside it.
+    ///
+    /// <para>An ImGui checkbox/radio label is one line by construction: a long option
+    /// ("Uranium Rifle (30\", A1, AP(1), Reliable, Shred, Takedown)") ran off the edge of the column and
+    /// the tail was simply lost. So the control is drawn with NO label and the text is laid out
+    /// separately by <see cref="RuleTextFlow.Draw"/>, which wraps at the remaining width and hangs
+    /// continuation lines under the first.</para>
+    ///
+    /// <para>That would have cost the label as a click target - the thing you actually aim at - so the
+    /// footprint is MEASURED first, claimed by an invisible button, and the text is then drawn over it
+    /// from the same cursor position. The obvious order (text, wind the cursor back, button, wind it
+    /// forward again) crashed: the final <c>SetCursorPos</c> left the cursor past the pane's content
+    /// extent with no item after it to justify the extent, which is exactly the state ImGui asserts on
+    /// (<c>ErrorCheckUsingSetCursorPosToExtendParentBoundaries</c>) - and in the Army Forge an upgrade
+    /// section IS the last thing in its pane, so adding any unit with options aborted the app. Measuring
+    /// first means the cursor only ever moves BACKWARDS, and the very next call validates the extent.</para>
+    ///
+    /// <para>It does not interfere with the rule tooltips: <c>Draw</c> paints to the draw list and
+    /// hit-tests the mouse position itself rather than asking ImGui which item is hovered.</para>
+    /// </summary>
+    private static bool DrawWrappedOptionLabel(UpgradeOption option, RuleGlossary glossary, string id)
+    {
+        IReadOnlyList<RuleTextFlow.RuleSegment> label =
+            RuleTextFlow.OptionLabel(option, ArmyForgeScreen.OptionSummary(option));
+        float width = MathF.Max(1f, ImGui.GetContentRegionAvail().X);
+        float height = MathF.Max(ImGui.GetTextLineHeight(), RuleTextFlow.MeasureHeight(label, width));
+
+        Vector2 at = ImGui.GetCursorScreenPos();
+        bool clicked = ImGui.InvisibleButton($"##label-{id}", new Vector2(width, height));
+        ImGui.SetCursorScreenPos(at);
+        RuleTextFlow.Draw(label, glossary, ImGuiCol.Text);
+        return clicked;
     }
 
     // Counted-section control: [-] [count] [+] label. The buttons gray individually at their bound (- at 0,

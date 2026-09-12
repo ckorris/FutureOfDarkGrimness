@@ -13,7 +13,7 @@ namespace FdgRaylib;
 /// <see cref="ArmyListFile.TotalPoints"/>: the units' costs plus <see cref="ArmyListFile.UnattributedPoints"/>.
 /// </param>
 /// <param name="GameSystem">
-/// #400: the army's OPR game-system slug, so Random Army can skip a list the lobby's Army Source setting
+/// #402: the army's OPR game-system slug, so Random Army can skip a list the lobby's Army Source setting
 /// would reject. Null means the file has no such field, which means Grimdark Future
 /// (<see cref="FDG.ArmyBuilding.GameSystems.Normalize"/>) - compare through that, never raw.
 /// </param>
@@ -36,7 +36,7 @@ public readonly record struct ArmyCatalogEntry(
 /// A lightweight index of the <c>armies/</c> folder (<see cref="ArmyPaths"/>) and everything under it,
 /// used to hand bots a starter army in the lobby.
 ///
-/// <para>#400: the scan RECURSES, so the folder can be organized into subfolders - the shipped layout
+/// <para>#402: the scan RECURSES, so the folder can be organized into subfolders - the shipped layout
 /// splits it into <c>GDF/</c> and <c>AoF/</c> - without anything below the top level going invisible.
 /// Nothing reads the folder names; an army's game system comes from the file, never from where it
 /// happens to sit.</para>

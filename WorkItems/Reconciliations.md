@@ -721,4 +721,23 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > archive max **396**, and no `WorkItems/399*` on any remote branch. **399 = post-game polish pass**
 > (seven owner-reported defects from one game, filed as one item with a facet ledger). No collision.
 
-> **2026-09-12 - number 400 filed clean.** `git fetch origin` + pull before filing (superproject `cd7fd12` -> `cbab372`, engine -> `173cb5a`): `origin/master`'s index high-water mark **398**, archive max **399**, detail files max **399**, and no `WorkItems/400*` or `400-*` branch on any remote. **400 = lobby Army Source restriction.** No collision.
+> **2026-09-12 - number 400 filed clean.** `git fetch origin --recurse-submodules` before filing:
+> `origin/master`'s index high-water mark **398**, archive max **399**, and no `WorkItems/40[01]*` on
+> any remote branch; local index + archive match. **400 = Deadly clump confinement used the wrong
+> model order.** No collision.
+
+> **2026-09-12 - number 401 filed clean.** `git fetch origin --recurse-submodules` before filing:
+> `origin/master`'s index high-water mark **398**, archive max **399**, local unpushed max 400, and
+> no `WorkItems/40[12]*` on any remote branch. **401 = Deadly resolves per clump (wound packets).**
+> No collision.
+
+> **2026-09-12 - COLLISION on 400; the lobby Army Source item renumbered to 402.** Two sessions filed
+> **400** the same day from the same `origin/master` state (index high-water 398, archive max 399) -
+> neither was working from a stale index, they simply filed within hours of each other, which is the
+> one case the fetch-first rule cannot prevent. Deadly clump confinement (400) and wound packets (401)
+> were merged to `origin/master` first; the lobby Army Source work was still local and unpushed, so
+> **the unmerged local item yielded**, per the rule. Renumbered **400 -> 402** across the detail file,
+> its filename, the index line, and every source/test/doc reference. Commit subjects written before the
+> collision was discovered still read `400:` - the history was left alone rather than rewritten, and
+> this entry is the pointer. **402 = lobby Army Source restriction.**
+

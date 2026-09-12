@@ -1,4 +1,4 @@
-# 400 — Host setting: which game systems' armies a lobby accepts
+# 402 — Host setting: which game systems' armies a lobby accepts
 
 **Status**: in-progress
 **Related**: #378 (GameSystem field + Forge system filter + the mixed-system warning this replaces),
@@ -25,16 +25,21 @@ line is gone.
   fix -> `d9f758f`. Still needs a GUI hand-verify (checklist below).
 - 2026-09-12: **Test Army stub removed outright** (owner request, while hand-verifying). See the
   decision below. Suites green again: engine 3326, app 2929, smoke exits 0.
-- 2026-09-12: Filed. Numbering checked against `origin/master` after `git fetch` + pull (superproject
-  `cd7fd12` -> `cbab372`, engine -> `173cb5a`): index high-water **398**, archive max **399**, detail
-  files max **399**, no `400-*` branch on origin. No collision.
+- 2026-09-12: **Renumbered 400 -> 402.** Filed as 400 against `origin/master` at `cbab372` (index
+  high-water 398, archive max 399, no `400-*` anywhere) - but another session filed 400 the same day
+  from the same state and merged first, taking 400 (Deadly clump order) and 401 (wound packets). This
+  item was unmerged, so it yielded, per the rule. See `Reconciliations.md`. Commits before the merge
+  still read `400:` in their subjects; the history was not rewritten.
+- 2026-09-12: Merged `origin/master` (#398 Combat Calculator UX, #400/#401 wound packets). Adopted
+  two helpers it introduced: `UiText.Tooltip` (printf-safe - these tooltips carry player and army
+  names, which is exactly the '%' hazard it exists for) and `UiChrome.ButtonSize`.
 
 ## Decisions
 
 - **2026-09-12 — `All`, not `Both` (owner).** The enum's permissive value is `EAllowedGameSystems.All`
   rather than `Both`, because OPR's custom-book tool can produce armies belonging to neither
   collection, and a two-valued name would have to be renamed the day one of those shows up. `All = 0`
-  so a pre-#400 save (field absent from the JSON) resolves to today's behaviour.
+  so a pre-#402 save (field absent from the JSON) resolves to today's behaviour.
 
 - **2026-09-12 — the gate blocks, it does not warn (owner).** Three conditions hard-block a launch:
   wrong game system, over the points limit, and **no army assigned at all** (previously the host

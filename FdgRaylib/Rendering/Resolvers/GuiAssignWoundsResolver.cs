@@ -45,6 +45,14 @@ public class GuiAssignWoundsResolver
     private static readonly uint WeaponTextCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.72f, 0.78f, 0.85f, 1f));
     private static readonly uint InvalidFillCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.10f, 0.10f, 0.12f, 0.62f));
     private static readonly uint InvalidOutlineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.60f, 0.80f));
+    // #401: the clump strip - placed (green), next (amber, ringed in the highlight yellow), pending
+    // (grey) - plus the explanation line and the per-row "takes N" preview.
+    private static readonly uint ChipPlacedCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.18f, 0.40f, 0.24f, 0.95f));
+    private static readonly uint ChipPlacedTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.80f, 0.95f, 0.82f, 1f));
+    private static readonly uint ChipNextCol       = ImGui.ColorConvertFloat4ToU32(new Vector4(0.45f, 0.40f, 0.12f, 0.95f));
+    private static readonly uint ChipPendingCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.28f, 0.28f, 0.34f, 0.95f));
+    private static readonly uint ExplanationCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.80f, 0.60f, 1f));
+    private static readonly uint EffectCol         = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.90f, 0.55f, 1f));
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
@@ -59,7 +67,7 @@ public class GuiAssignWoundsResolver
     public Task<AssignWoundsResults> Resolve(AssignWoundsRequest request)
     {
         var tcs     = new TaskCompletionSource<AssignWoundsResults>();
-        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.TotalWoundsToAssign);
+        var results = new AssignWoundsResults(request.UnitReceivingWounds, request.Packets);
         lock (_lock) { _tcs = tcs; _request = request; _results = results; }
         return tcs.Task;
     }
@@ -85,7 +93,6 @@ public class GuiAssignWoundsResolver
 
         var models  = results.PendingWounds;
         float pad   = 16f;
-        float hdrH  = 72f;
         float footH = 44f;
 
         // Per-model button heights: one main line (model + wounds) plus a small line per weapon group.
@@ -125,14 +132,27 @@ public class GuiAssignWoundsResolver
         ImGui.PushTextWrapPos(dw - pad);
         ImGui.TextUnformatted($"Assign Wounds: {unitName}");
         ImGui.Spacing();
+        // #401: a Deadly queue explains why it is in clump mode, lays every clump out as a chip, and
+        // only then gives the running tally. A plain volley shows none of that.
+        string explanation = WoundAssignmentText.Explanation(results);
+        if (explanation.Length > 0)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, ExplanationCol);
+            ImGui.TextUnformatted(explanation);
+            ImGui.PopStyleColor();
+            ImGui.Spacing();
+            DrawClumpStrip(results, pad, dw - pad * 2, mainLineH);
+            ImGui.Spacing();
+        }
         // #287: F0 used to TRUNCATE - a 3.4-wound pool read "3 / 3 wounds assigned", which is not the
-        // number the engine is assigning.
-        ImGui.TextUnformatted($"{WoundFormat.Format(results.TotalAssignedWounds)} / " +
-                              $"{WoundFormat.Format(results.TotalWoundsToAssign)} wounds assigned");
+        // number the engine is assigning. #401: a Deadly queue says what the next click places instead.
+        ImGui.TextUnformatted(WoundAssignmentText.Progress(results));
         ImGui.PopTextWrapPos();
 
-        // Model buttons (scrollable if many models)
-        float listY = pad + hdrH;
+        // Model buttons (scrollable if many models). The list starts wherever the header text ended -
+        // it used to start at a fixed 72px, which fit exactly one progress line, so #401's second line
+        // (and a long unit name wrapping) was drawn underneath the first button and clipped.
+        float listY = ImGui.GetCursorPosY() + spacingY;
         float listH = dh - listY - pad - footH - pad;
         float btnW  = dw - pad * 2;
         ImGui.SetCursorPos(new Vector2(pad, listY));
@@ -187,6 +207,17 @@ public class GuiAssignWoundsResolver
             float tx = origin.X + 8f;
             float ty = origin.Y + btnPadY;
             dl.AddText(new Vector2(tx, ty), mainCol, $"Model {i + 1}{woundText}{assignedNote}");
+            // #401: what the next clump would do to this model, right-aligned on the main line - the
+            // preview that makes the pick easy. Clump queues only; the plain dialog is unchanged.
+            if (results.HasConfinedPackets)
+            {
+                string effect = WoundAssignmentText.ModelEffect(results, pw);
+                if (effect.Length > 0)
+                {
+                    float effectW = ImGui.CalcTextSize(effect).X;
+                    dl.AddText(new Vector2(origin.X + avail - effectW - 8f, ty), EffectCol, effect);
+                }
+            }
             float wy = ty + mainLineH;
             foreach (string line in weaponLines[i])
             {
@@ -225,6 +256,51 @@ public class GuiAssignWoundsResolver
         // Single-frame handshake: GetHoverLabel sets this before the next Draw if the mouse is still over
         // a model, so clearing here means "no canvas hover" the instant the cursor leaves the table.
         _canvasHoveredModel = null;
+    }
+
+    /// <summary>#401: one chip per packet - placed (green), next (amber with the highlight ring), pending
+    /// (grey) - wrapping into as many rows as the panel width needs, each with a hover tooltip saying what
+    /// was rolled, what Regeneration ignored and where it went. Draw-list chips over invisible buttons, so
+    /// they read as status rather than as something to click.</summary>
+    private static void DrawClumpStrip(AssignWoundsResults results, float pad, float availW, float lineH)
+    {
+        var dl = ImGui.GetWindowDrawList();
+        const float spacing = 6f;
+        float chipH = lineH + 6f;
+        float leftScreen = ImGui.GetWindowPos().X + pad;
+        float rightEdge = leftScreen + availW;
+        int RowOf(PacketCommit commit) => results.PendingWounds.FindIndex(e => e.Model == commit.Model) + 1;
+
+        ImGui.SetCursorPosX(pad);
+        for (int i = 0; i < results.Packets.Count; i++)
+        {
+            string label = WoundAssignmentText.ChipLabel(results, i, RowOf);
+            float chipW = ImGui.CalcTextSize(label).X + 14f;
+            if (i > 0)
+            {
+                if (ImGui.GetItemRectMax().X + spacing + chipW <= rightEdge) ImGui.SameLine(0f, spacing);
+                else ImGui.SetCursorPosX(pad);
+            }
+
+            ImGui.InvisibleButton($"##clump{i}", new Vector2(chipW, chipH));
+            Vector2 min = ImGui.GetItemRectMin();
+            Vector2 max = ImGui.GetItemRectMax();
+            bool placed = i < results.PacketsCommitted;
+            bool next = i == results.PacketsCommitted;
+            dl.AddRectFilled(min, max, placed ? ChipPlacedCol : next ? ChipNextCol : ChipPendingCol, 4f);
+            if (next) dl.AddRect(min, max, HighlightCol, 4f, ImDrawFlags.None, 2f);
+            dl.AddText(new Vector2(min.X + 7f, min.Y + 3f),
+                placed ? ChipPlacedTextCol : ImGui.GetColorU32(ImGuiCol.Text), label);
+
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 28f);
+                ImGui.TextUnformatted(WoundAssignmentText.ChipTooltip(results, i, RowOf));
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
+            }
+        }
     }
 
     /// <summary>Scrolls the model list so a row at <paramref name="rowY"/> (content coordinates) is fully
@@ -311,8 +387,13 @@ public class GuiAssignWoundsResolver
         sb.AppendLine("Weapons:");
         foreach (string line in WeaponLines(modelData))
             sb.AppendLine($"  {line}");
+        if (results.HasConfinedPackets)
+        {
+            string effect = WoundAssignmentText.ModelEffect(results, pw);
+            if (effect.Length > 0) sb.AppendLine($"Next clump here: {effect}");
+        }
         if (results.CanAssignWoundTo(pw))
-            sb.Append("Click to assign wounds (fills this model)");
+            sb.Append(WoundAssignmentText.ClickHint(results));
         else if (remaining > 0f)
             sb.Append("(a hero is assigned wounds last - not yet a valid target)");
         else

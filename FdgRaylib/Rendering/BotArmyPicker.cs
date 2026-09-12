@@ -9,7 +9,7 @@ namespace FdgRaylib.Rendering;
 ///
 /// <para>Six rules, in priority order:</para>
 /// <list type="number">
-///   <item>#400: never hand out an army from a game system the lobby's Army Source setting rejects. Not
+///   <item>#402: never hand out an army from a game system the lobby's Army Source setting rejects. Not
 ///   a preference like the rest - such an army BLOCKS the launch, so it is not a candidate at all, and
 ///   unlike the points rule there is no last-resort fallback to it. A lobby whose folder holds nothing
 ///   of the right system gets no pick, and the empty slot says so.</item>
@@ -69,7 +69,7 @@ public sealed class BotArmyPicker
 
     /// <summary>
     /// The next army for <paramref name="slot"/>, or null when the catalog holds nothing this lobby can
-    /// use - an empty folder, or (since #400) no army at all from an allowed game system.
+    /// use - an empty folder, or (since #402) no army at all from an allowed game system.
     /// </summary>
     /// <param name="allowedSystems">The lobby's Army Source setting. Armies from any other system are
     /// dropped before ranking, so one can never be handed out even as a last resort.</param>

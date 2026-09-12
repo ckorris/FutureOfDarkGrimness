@@ -5,7 +5,7 @@ namespace FdgRaylib;
 /// Army Forge, share-link import) starts in the "armies" folder rather than dumping the user in the
 /// application root, which is full of DLLs and nothing they'd ever pick.
 ///
-/// <para>#400: the folder has subfolders (the shipped layout splits it into <c>GDF/</c> and <c>AoF/</c>),
+/// <para>#402: the folder has subfolders (the shipped layout splits it into <c>GDF/</c> and <c>AoF/</c>),
 /// so this is where the Load/Save dialogs OPEN, not where the armies necessarily are. The lobby's
 /// <see cref="ArmyCatalog"/> scan recurses; nothing reads the folder names.</para>
 ///

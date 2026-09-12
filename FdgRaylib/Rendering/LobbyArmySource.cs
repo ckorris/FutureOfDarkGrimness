@@ -4,7 +4,7 @@ using FDG.Players;
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// How a lobby roster row's army reads against the lobby's Army Source setting (#400) - the game-system
+/// How a lobby roster row's army reads against the lobby's Army Source setting (#402) - the game-system
 /// sibling of <see cref="LobbyPointsStatus"/>, and split out of the drawing code for the same reason:
 /// the rule and its wording are arithmetic over a summary, so they can be unit-tested without ImGui.
 /// </summary>
@@ -34,7 +34,7 @@ public static class LobbyArmySource
     public static bool IsMissingArmy(ArmyListSummary summary, bool isResumeLobby) =>
         !isResumeLobby && !summary.IsAssigned;
 
-    /// <summary>Why the Army cell reads "N/A" in red: no army on this slot at all. Blocking since #400 -
+    /// <summary>Why the Army cell reads "N/A" in red: no army on this slot at all. Blocking since #402 -
     /// the host used to substitute a 100-pt "Test Army" stub, silently putting a player in a game with
     /// an army they never picked.</summary>
     public const string NoArmyTooltip =
