@@ -18,9 +18,20 @@ public static class UnitActivation
     {
         if (progress.RoundCount == null) return false;
         if (progress.ActivatingUnit?.ID.Equals(unit.ID) == true) return false;
+        // #404: a unit held off-table has spent nothing - it cannot act until it arrives. It is absent
+        // from the pool for the OPPOSITE reason an activated unit is (SingleRoundContext's
+        // SetUnactivatedUnits admits only units on the battlefield or embarked), so the pool test alone
+        // read every Ambush reserve as Activated in the army list.
+        if (IsInReserve(unit)) return false;
 
         foreach (var u in progress.UnactivatedUnits)
             if (u.ID.Equals(unit.ID)) return false;
         return true;
     }
+
+    /// <summary>
+    /// #404: the unit is held off-table in reserve (Ambush) and has not arrived yet. A distinct state
+    /// from both "ready" and "activated", and the one the army list labels "In Reserve".
+    /// </summary>
+    public static bool IsInReserve(IUnit unit) => FDG.Rules.Dispatch.ReserveRules.IsInReserve(unit);
 }

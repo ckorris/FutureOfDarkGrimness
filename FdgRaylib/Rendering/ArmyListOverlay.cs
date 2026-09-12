@@ -62,6 +62,12 @@ public sealed class ArmyListOverlay
     // drift apart (#399) - a reservation measured from a different string is how the tag ends up on
     // the name again.
     private const string ActivatedTag = "Activated";
+
+    // #404: held off-table in Ambush reserve. Blue, not red: it is a neutral "not here yet", the
+    // opposite of Activated's "turn spent", and the two used to share the red tag because the pool test
+    // behind it could not tell them apart. Named alongside ActivatedTag for the same reservation reason.
+    private const string ReserveTag = "In Reserve";
+    private static readonly Vector4 ReserveBlue = ImGuiTheme.HeaderAccent;
     private static readonly Vector4 HeroGold      = ImGuiTheme.HeroGold;        // #227, shared (#398)
     private static readonly Vector4 WoundedAmber  = new(0.72f, 0.48f, 0.16f, 1f);
 
@@ -342,9 +348,9 @@ public sealed class ArmyListOverlay
             // Inside the alpha push so it dims with the row; strong red still reads.
             UiText.Colored(new Vector4(0.95f, 0.25f, 0.25f, 1f), "DESTROYED");
         }
-        else if (UnitActivation.HasActivated(_tableState!.Progress, unit))
+        else if (StateTag(unit) is { } tag)
         {
-            UiText.Colored(ActivatedRed, ActivatedTag);
+            UiText.Colored(tag.Color, tag.Text);
         }
         DrawTokenChips(unit);
 
@@ -551,7 +557,7 @@ public sealed class ArmyListOverlay
             ? $"{unit.Name} {count} - {ud.PointCost}pts"
             : $"{unit.Name} {count}";
 
-        bool activated = !destroyed && UnitActivation.HasActivated(_tableState!.Progress, unit);
+        (string Text, Vector4 Color)? stateTag = destroyed ? null : StateTag(unit);
 
         // #399: the tag is right-aligned on the header's own line, which worked only while headers were
         // short - the header is CENTERED, so a long one ("Immortal Guardian Bodyguard [5] - 285pts")
@@ -559,7 +565,7 @@ public sealed class ArmyListOverlay
         // room first: when the header still fits in what is left, centre it there and keep the tag beside
         // it; when it does not, the tag drops to its own right-aligned line under the header, which is
         // what the compact table view has always done.
-        float tagW = activated ? ImGui.CalcTextSize(ActivatedTag).X : 0f;
+        float tagW = stateTag is { } measured ? ImGui.CalcTextSize(measured.Text).X : 0f;
         float availW = ImGui.GetContentRegionAvail().X;
 
         // The header is measured at the scale it is DRAWN at, or a 1.12x header would be judged against
@@ -571,15 +577,15 @@ public sealed class ArmyListOverlay
         ImGui.TextUnformatted(header);
         ImGui.SetWindowFontScale(1f);
 
-        if (activated)
+        if (stateTag is { } tag)
         {
             float tagX = ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - tagW;
             if (plan.TagOnHeaderLine) ImGui.SameLine(tagX);
             else ImGui.SetCursorPosX(tagX);
-            UiText.Colored(ActivatedRed, ActivatedTag);
+            UiText.Colored(tag.Color, tag.Text);
         }
 
-        // After the Activated tag, whose SameLine has to attach to the header itself.
+        // After the state tag, whose SameLine has to attach to the header itself.
         DrawHeroNameLine(unit, centered: true);
     }
 
@@ -708,6 +714,21 @@ public sealed class ArmyListOverlay
     // Status tokens as colored text chips ("[Shaken]"), hover for the engine's description — same
     // resolve + color source as the canvas chips (#151/#328), text form because a card has room to
     // say the name.
+    /// <summary>
+    /// #404: a living unit's state tag, or null when it is simply ready to act. Two states share this
+    /// slot: red "Activated" once the unit has spent its turn, and blue "In Reserve" while it is held
+    /// off-table in Ambush. Reserve used to read as Activated - <see cref="UnitActivation.HasActivated"/>
+    /// asks whether the unit is missing from the round's unactivated pool, and a reserve unit is kept out
+    /// of that pool deliberately because it cannot act yet, which is the opposite meaning.
+    /// (Destroyed is handled by the callers, ahead of this.)
+    /// </summary>
+    private (string Text, Vector4 Color)? StateTag(IUnit unit)
+    {
+        if (UnitActivation.IsInReserve(unit)) return (ReserveTag, ReserveBlue);
+        if (UnitActivation.HasActivated(_tableState!.Progress, unit)) return (ActivatedTag, ActivatedRed);
+        return null;
+    }
+
     private void DrawTokenChips(IUnit unit)
     {
         var tokens = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false,
