@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FDG;
+using FDG.ArmyBuilding;
 using FDG.Network;
 using FDG.Network.Connection.Lobby;
 
@@ -163,6 +164,7 @@ public sealed class UserConfig
 public sealed class HostGameSettings
 {
     public int ArmyPoints { get; set; }
+    public EAllowedGameSystems AllowedGameSystems { get; set; }
     public ETerrainPlacementMode TerrainPlacementMode { get; set; }
     public int TerrainPieceCount { get; set; }
     public int TerrainPointsTotal { get; set; }
@@ -182,6 +184,7 @@ public sealed class HostGameSettings
     public static HostGameSettings From(GameSettings settings) => new()
     {
         ArmyPoints             = settings.ArmyPoints,
+        AllowedGameSystems     = settings.AllowedGameSystems,
         TerrainPlacementMode   = settings.TerrainPlacementMode,
         TerrainPieceCount      = settings.TerrainPieceCount,
         TerrainPointsTotal     = settings.TerrainPointsTotal,
@@ -200,6 +203,7 @@ public sealed class HostGameSettings
     public static HostGameSettings CaptureFrom(ILobbyViewModel viewModel) => new()
     {
         ArmyPoints             = viewModel.ArmyPoints,
+        AllowedGameSystems     = viewModel.AllowedGameSystems,
         TerrainPlacementMode   = viewModel.TerrainPlacementMode,
         TerrainPieceCount      = viewModel.TerrainCount,
         TerrainPointsTotal     = viewModel.TerrainPointsTotal,
@@ -223,6 +227,7 @@ public sealed class HostGameSettings
         if (!viewModel.HasHostPrivileges || viewModel.IsResumeMode) return;
 
         viewModel.SetArmyPoints(ArmyPoints);
+        viewModel.SetAllowedGameSystems(AllowedGameSystems);
         viewModel.SetTerrainPlacementMode(TerrainPlacementMode);
         viewModel.SetTerrainCount(TerrainPieceCount);
         viewModel.SetTerrainPointsTotal(TerrainPointsTotal);

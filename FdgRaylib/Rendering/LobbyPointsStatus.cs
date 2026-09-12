@@ -36,4 +36,20 @@ public static class LobbyPointsStatus
         if (isAssigned && pointCost <= pointsLimit - UnderWarningThreshold) return ELobbyPointsStatus.Under;
         return ELobbyPointsStatus.Ok;
     }
+
+    /// <summary>
+    /// What the Pts cell says on hover, or null when there is nothing to explain (#400). Both coloured
+    /// states get a line, and each says what it costs: over the limit BLOCKS the launch, under it is
+    /// merely a warning that the player is leaving budget on the table.
+    /// </summary>
+    public static string? Tooltip(ELobbyPointsStatus status, int pointCost, int pointsLimit) => status switch
+    {
+        ELobbyPointsStatus.Over =>
+            $"{pointCost - pointsLimit} points OVER the {pointsLimit} limit.\n"
+            + "Launch is blocked until this row is legal.",
+        ELobbyPointsStatus.Under =>
+            $"{pointsLimit - pointCost} points under the {pointsLimit} limit.\n"
+            + "Legal - but that budget is going unspent.",
+        _ => null,
+    };
 }

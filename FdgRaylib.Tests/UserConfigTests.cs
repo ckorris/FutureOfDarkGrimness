@@ -255,6 +255,7 @@ public class UserConfigTests
         {
             HasHostPrivileges = true,
             ArmyPoints = 3000,
+            AllowedGameSystems = EAllowedGameSystems.AgeOfFantasy,
             TurnStyle = ETurnStyle.BoltAction,
             ShootingMode = EShootingMode.DeclareFirst,
             RandomnessType = ERandomnessType.Probabilistic,
@@ -277,6 +278,7 @@ public class UserConfigTests
         Assert.Multiple(() =>
         {
             Assert.That(nextLobby.ArmyPoints, Is.EqualTo(3000));
+            Assert.That(nextLobby.AllowedGameSystems, Is.EqualTo(EAllowedGameSystems.AgeOfFantasy));
             Assert.That(nextLobby.TurnStyle, Is.EqualTo(ETurnStyle.BoltAction));
             Assert.That(nextLobby.ShootingMode, Is.EqualTo(EShootingMode.DeclareFirst));
             Assert.That(nextLobby.RandomnessType, Is.EqualTo(ERandomnessType.Probabilistic));
@@ -302,6 +304,7 @@ public class UserConfigTests
         public bool IsResumeMode { get; set; }
 
         public int ArmyPoints { get; set; } = GameSettings.GetDefault().ArmyPoints;
+        public EAllowedGameSystems AllowedGameSystems { get; set; }
         public int TerrainCount { get; set; }
         public int TerrainPointsTotal { get; set; }
         public int TerrainPointsPerTurn { get; set; }
@@ -317,6 +320,7 @@ public class UserConfigTests
         public ETableBackground TableBackground { get; set; }
 
         public void SetArmyPoints(int armyPoints) => ArmyPoints = armyPoints;
+        public void SetAllowedGameSystems(EAllowedGameSystems allowed) => AllowedGameSystems = allowed;
         public void SetTerrainCount(int terrainCount) => TerrainCount = terrainCount;
         public void SetTerrainPointsTotal(int points) => TerrainPointsTotal = points;
         public void SetTerrainPointsPerTurn(int points) => TerrainPointsPerTurn = points;
@@ -343,6 +347,7 @@ public class UserConfigTests
         public IObservable<LobbyChatMessage> ChatMessagesObservable => throw new NotSupportedException();
         public IObservable<IReadOnlyList<LobbyPlayerInfoSummary>> PlayerInfosObservable => throw new NotSupportedException();
         public IObservable<int> ArmyPointsObservable => throw new NotSupportedException();
+        public IObservable<EAllowedGameSystems> AllowedGameSystemsObservable => throw new NotSupportedException();
         public IObservable<int> TerrainPieceCountObservable => throw new NotSupportedException();
         public IObservable<int> TerrainPointsTotalObservable => throw new NotSupportedException();
         public IObservable<int> TerrainPointsPerTurnObservable => throw new NotSupportedException();
@@ -367,6 +372,7 @@ public class UserConfigTests
         public void SetPlayerColor(PlayerID playerId, int colorIndex) => throw new NotSupportedException();
         public void SetPlayerTeam(PlayerID playerId, ETeamOption teamNumber) => throw new NotSupportedException();
         public bool TryLaunchGame(out string? failReason) => throw new NotSupportedException();
+        public IReadOnlyList<string> BlockingLaunchProblems() => throw new NotSupportedException();
         public IReadOnlyList<string> ValidateArmiesForLaunch() => throw new NotSupportedException();
         public void SetSavedSlotPlayerType(PlayerID slotPlayerID, EPlayerType playerType,
             EAiProfile aiProfile = EAiProfile.SoloRules) => throw new NotSupportedException();

@@ -1,6 +1,7 @@
 using System.Numerics;
 using FDG;
 using FDG.Ai;
+using FDG.ArmyBuilding;
 using FDG.EngineInterface;
 using FDG.Network.Connection.Lobby;
 using FDG.Network.Messages;
@@ -308,10 +309,10 @@ public class LobbyScreen : IAppScreen
                 ImGui.TextUnformatted(info.PlayerType.ToString());
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted(info.ArmyListSummary.ArmyName);
+                DrawArmyCell(info.ArmyListSummary);
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted(info.ArmyListSummary.FactionName);
+                DrawFactionCell(info.ArmyListSummary, _viewModel.AllowedGameSystems);
 
                 ImGui.TableNextColumn();
                 DrawPointsCell(info.ArmyListSummary, _viewModel.ArmyPoints);
@@ -370,11 +371,6 @@ public class LobbyScreen : IAppScreen
 
         ImGui.PopStyleVar(); // CellPadding (taller rows)
 
-        // #378: GDF and AoF armies may meet (owner ruling: warn, never block - points and core rules
-        // are compatible). An army with no GameSystem field is a GDF one (pre-#378 files).
-        if (MixedSystemWarning(players.Select(p => p.ArmyListSummary)) is string mixed)
-            ImGui.TextColored(new Vector4(0.90f, 0.80f, 0.35f, 1f), mixed);
-
         // Slots are fixed when resuming a saved game, so no add/remove there.
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
@@ -395,27 +391,6 @@ public class LobbyScreen : IAppScreen
                 _viewModel.AddAiPlayer(EAiProfile.SoloRules);
         }
     }
-
-    /// <summary>#378: the mixed-system lobby note, or null when every assigned army is from one game
-    /// system. ImGui-free so the wording and the absent-means-GDF rule are testable.</summary>
-    internal static string? MixedSystemWarning(IEnumerable<ArmyListSummary> summaries)
-    {
-        List<string> systems = summaries.Where(s => s.IsAssigned)
-            .Select(s => FDG.ArmyBuilding.GameSystems.Normalize(s.GameSystem))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        if (systems.Count <= 1) return null;
-        return "! Mixed game systems: " + string.Join(" + ", systems.Select(SystemLabel))
-            + ". Points and core rules are compatible - launch if that is the plan.";
-    }
-
-    private static string SystemLabel(string slug) => slug switch
-    {
-        FDG.ArmyBuilding.GameSystems.GrimdarkFuture => "Grimdark Future",
-        FDG.ArmyBuilding.GameSystems.AgeOfFantasy => "Age of Fantasy",
-        _ => slug,
-    };
 
     // #372/#388 ---------------------------------------------------------------------------------------
     // Starter armies. A new slot arrives unplayable either way - a bot carries the hard-coded 100-pt
@@ -555,8 +530,39 @@ public class LobbyScreen : IAppScreen
         ImGui.TextUnformatted(summary.PointCost.ToString());
         if (status != ELobbyPointsStatus.Ok) ImGui.PopStyleColor();
 
-        if (status == ELobbyPointsStatus.Under && ImGui.IsItemHovered())
-            ImGui.SetTooltip($"{pointsLimit - summary.PointCost} points under the {pointsLimit} limit.");
+        if (ImGui.IsItemHovered()
+            && LobbyPointsStatus.Tooltip(status, summary.PointCost, pointsLimit) is string tip)
+        {
+            ImGui.SetTooltip(tip);
+        }
+    }
+
+    // #400: the two roster cells the army gate's blocking half can light up. Same shape as the Pts cell -
+    // red text plus a tooltip saying what is wrong and that it stops the launch - so all three blockers
+    // read the same way on the row and in the greyed LAUNCH button's tooltip.
+
+    /// <summary>The Army cell. Red when the slot carries no army at all.</summary>
+    private static void DrawArmyCell(ArmyListSummary summary)
+    {
+        if (!summary.IsAssigned) ImGui.PushStyleColor(ImGuiCol.Text, OverPointsColor);
+        ImGui.TextUnformatted(summary.ArmyName);
+        if (!summary.IsAssigned) ImGui.PopStyleColor();
+
+        if (!summary.IsAssigned && ImGui.IsItemHovered())
+            ImGui.SetTooltip(LobbyArmySource.NoArmyTooltip);
+    }
+
+    /// <summary>The Faction cell. Red when the army is from a game system this lobby doesn't take.</summary>
+    private static void DrawFactionCell(ArmyListSummary summary, EAllowedGameSystems allowed)
+    {
+        bool wrongSystem = LobbyArmySource.IsWrongSystem(summary, allowed);
+
+        if (wrongSystem) ImGui.PushStyleColor(ImGuiCol.Text, OverPointsColor);
+        ImGui.TextUnformatted(summary.FactionName);
+        if (wrongSystem) ImGui.PopStyleColor();
+
+        if (wrongSystem && ImGui.IsItemHovered())
+            ImGui.SetTooltip(LobbyArmySource.WrongSystemTooltip(summary, allowed));
     }
 
     // #221: the colour cell - a swatch of the row's effective colour + a dropdown of the 8 palette options,
@@ -667,9 +673,18 @@ public class LobbyScreen : IAppScreen
         ImGui.BeginDisabled(locked);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints,
-            tooltip: "The point budget each player's army is built to. Armies over this limit are\n" +
-                     "flagged before launch. Higher points means bigger battles.",
+            tooltip: "The point budget each player's army is built to. An army over this limit is\n" +
+                     "flagged red on its row and blocks the launch. Higher points means bigger battles.",
             step: 250);
+        // #400: which OPR collections' armies this table takes. All is the default and accepts anything,
+        // including an army from neither collection (OPR's custom-book tool makes those).
+        DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, _viewModel.SetAllowedGameSystems,
+            displayName: GameSystems.DisplayName,
+            tooltip: "Which game systems' armies this lobby accepts.\n" +
+                     "All: anything, GDF and AoF at the same table if that is the plan.\n" +
+                     "Grimdark Future / Age of Fantasy: that collection only - an army from\n" +
+                     "the other one is flagged red on its row and blocks the launch.\n" +
+                     "An army list with no recorded system counts as Grimdark Future.");
         DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode,
             debugLast: new[] { ETerrainPlacementMode.AutoFromLayout },
             // #301: explicit order keeps the two Alternating modes adjacent (the enum appends
@@ -853,19 +868,41 @@ public class LobbyScreen : IAppScreen
 
     private void DrawLaunch(float panelW, float panelH)
     {
-        bool canLaunch = _viewModel!.HasHostPrivileges;
-        ImGui.BeginDisabled(!canLaunch);
+        bool isHost = _viewModel!.HasHostPrivileges;
+        bool resume = _viewModel.IsResumeMode;
+
+        // #400: the gate's BLOCKING half decides whether the button is live at all, so it runs every
+        // frame. That is affordable by construction - LaunchGate.BlockingProblems reads each slot's
+        // points and system slug and nothing else; the catalog validation that walks a Forge army's
+        // embedded book stays on the click path below. Resume skips both halves: those armies are
+        // already in play, and a save's slots are not re-crewed with new lists.
+        IReadOnlyList<string> blockers = isHost && !resume
+            ? _viewModel.BlockingLaunchProblems()
+            : Array.Empty<string>();
+        bool canLaunch = isHost && blockers.Count == 0;
 
         Vector2 avail = ImGui.GetContentRegionAvail();
         // Reserve space for the inline error line below the button when present.
         float errorLineH = _lastLaunchError != null ? ImGui.GetTextLineHeightWithSpacing() + 4f : 0f;
         Vector2 buttonSize = new Vector2(avail.X, MathF.Max(0f, avail.Y - errorLineH));
-        bool resume = _viewModel.IsResumeMode;
-        if (UiButton.Confirm(resume ? "RESUME" : "LAUNCH", buttonSize))
+
+        ImGui.BeginDisabled(!canLaunch);
+        bool clicked = UiButton.Confirm(resume ? "RESUME" : "LAUNCH", buttonSize);
+        // Ended here rather than around the whole method so the confirm popup below is never drawn
+        // inside a disabled scope - its own buttons would inherit the grey.
+        ImGui.EndDisabled();
+
+        // AllowWhenDisabled: the greyed-out button is precisely the state that needs explaining (#400).
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)
+            && LaunchTooltip(isHost, blockers) is string tip)
         {
-            // #153 launch gate (decision 9): validation Errors in any loaded army raise a confirm dialog
-            // (warn + host override) instead of launching straight away. Resume skips the gate — the
-            // armies are already in play.
+            ImGui.SetTooltip(tip);
+        }
+
+        if (clicked)
+        {
+            // #153 launch gate (decision 9): catalog validation Errors in a Forge army raise a confirm
+            // dialog (warn + host override) instead of launching straight away. Resume skips it.
             IReadOnlyList<string> problems = resume
                 ? Array.Empty<string>()
                 : _viewModel.ValidateArmiesForLaunch();
@@ -888,8 +925,15 @@ public class LobbyScreen : IAppScreen
             ImGui.TextWrapped(_lastLaunchError);
             ImGui.PopStyleColor();
         }
+    }
 
-        ImGui.EndDisabled();
+    /// <summary>#400: what a hover over the LAUNCH button says, or null when it is live and needs no
+    /// explaining. ImGui-free so the blocked wording is testable.</summary>
+    internal static string? LaunchTooltip(bool isHost, IReadOnlyList<string> blockers)
+    {
+        if (!isHost) return "Only the host can launch.";
+        if (blockers.Count == 0) return null;
+        return "Cannot launch:\n" + string.Join("\n", blockers.Select(p => "  " + p));
     }
 
     private void DoLaunch(bool resume)
