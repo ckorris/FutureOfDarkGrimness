@@ -800,7 +800,10 @@ public class CombatCalculatorScreen : IAppScreen
         }
 
         ImGui.TableNextColumn();
-        ImGui.TextColored(row.InRange ? BrightText : DimText, $"{row.CopiesPrefix}{row.Weapon.Name}");
+        // One colour for the name in both states: the disabled alpha above is what dims an out-of-range
+        // row, and dimming the colour as WELL left the weapon's own name barely legible - which is not
+        // "greyed out", it is "gone".
+        ImGui.TextColored(BrightText, $"{row.CopiesPrefix}{row.Weapon.Name}");
 
         // The stat subline in the in-game shoot panel's own notation, each rule underlined and hoverable
         // (#292). Drawn on the draw list because a table cell gives no wrapping for SameLine runs.
@@ -851,7 +854,9 @@ public class CombatCalculatorScreen : IAppScreen
         ImDrawListPtr dl = ImGui.GetWindowDrawList();
 
         dl.PushClipRect(at, new Vector2(MathF.Max(right, at.X + 1f), at.Y + ImGui.GetTextLineHeight()), false);
-        dl.AddText(at, ImGui.GetColorU32(DimText), text);
+        // Full-strength colour: this note is the row's explanation, and it is already being dimmed by
+        // the disabled alpha its caller pushed.
+        dl.AddText(at, ImGui.GetColorU32(BrightText), text);
         dl.PopClipRect();
 
         ImGui.Dummy(new Vector2(ImGui.GetTextLineHeight(), ImGui.GetTextLineHeight()));
