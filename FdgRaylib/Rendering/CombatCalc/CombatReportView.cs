@@ -25,7 +25,6 @@ internal sealed record CombatReportView(
     string Headline,
     string HitsValue,
     string WoundsValue,
-    string HealthValue,
     string PointsValue,
     string WoundBarText,
     float WoundFractionRemaining,
@@ -35,7 +34,6 @@ internal sealed record CombatReportView(
 {
     internal const string HitsCaption = "Expected hits";
     internal const string WoundsCaption = "Expected wounds";
-    internal const string HealthCaption = "Health removed";
     internal const string PointsCaption = "Points of damage";
     internal const string AttacksVerb = "attacks";
 
@@ -46,22 +44,17 @@ internal sealed record CombatReportView(
     /// </summary>
     internal static string Num(float value) => value.ToString("0.00", CultureInfo.InvariantCulture);
 
-    /// <summary>Inches with no trailing noise: 24in, 7.5in.</summary>
-    internal static string Inches(float value) => value.ToString("0.##", CultureInfo.InvariantCulture) + "in";
-
-    /// <summary>A share of the defender's wounds, as a percentage: "18.6%". One decimal, because a
-    /// single expected wound off a 30-wound monster is 3.3% and "3%" throws away the difference between
-    /// that and half of it.</summary>
-    internal static string Percent(float fraction) =>
-        (fraction * 100f).ToString("0.#", CultureInfo.InvariantCulture) + "%";
+    /// <summary>Inches, in the notation every other range on screen uses: 24", 7.5".</summary>
+    internal static string Inches(float value) =>
+        value.ToString("0.##", CultureInfo.InvariantCulture) + "\"";
 
     /// <summary>Points, trimmed: "30", "24.4".</summary>
     internal static string Points(float points) => points.ToString("0.#", CultureInfo.InvariantCulture);
 
     /// <summary>
-    /// The share of the defender's wounds an attack removes. Damage in wounds does not say whether it
-    /// mattered - two wounds is a squad wiped or a scratch on a monster - and this is the figure that
-    /// does. A pure ratio of two numbers the report already carries.
+    /// The share of the defender's wounds an attack removes. Shown as a percentage until the owner
+    /// found it unhelpful; it stays because it is how the damage is PRICED - see
+    /// <see cref="PointsDealt"/>. A pure ratio of two numbers the report already carries.
     /// </summary>
     internal static float HealthShare(float wounds, float woundsBefore) =>
         woundsBefore <= 0f ? 0f : System.Math.Clamp(wounds / woundsBefore, 0f, 1f);
@@ -86,7 +79,6 @@ internal sealed record CombatReportView(
             Headline: $"{report.AttackerName} {AttacksVerb} {report.DefenderName}",
             HitsValue: Num(report.ExpectedHits),
             WoundsValue: Num(report.ExpectedWounds),
-            HealthValue: Percent(HealthShare(report.ExpectedWounds, before)),
             PointsValue: Points(PointsDealt(report.ExpectedWounds, before, defenderPoints)),
             WoundBarText: $"{Num(after)} of {Num(before)} wounds remain",
             WoundFractionRemaining: before <= 0f ? 0f : System.Math.Clamp(after / before, 0f, 1f),
@@ -116,7 +108,6 @@ internal sealed record VolleyRowView(
     string Hits,
     string Save,
     string Wounds,
-    string Health,
     string Points,
     IReadOnlyList<string> HitChips,
     IReadOnlyList<string> SaveChips,
@@ -138,8 +129,6 @@ internal sealed record VolleyRowView(
             Hits: CombatReportView.Num(volley.ExpectedHits),
             Save: SaveSummary(saves),
             Wounds: CombatReportView.Num(volley.ExpectedWounds),
-            Health: CombatReportView.Percent(
-                CombatReportView.HealthShare(volley.ExpectedWounds, defenderWounds)),
             Points: CombatReportView.Points(
                 CombatReportView.PointsDealt(volley.ExpectedWounds, defenderWounds, defenderPoints)),
             // An empty tag list draws nothing at all. The old pane emitted the line regardless, so a

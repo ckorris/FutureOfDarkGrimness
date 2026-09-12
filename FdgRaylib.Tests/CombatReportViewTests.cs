@@ -154,7 +154,8 @@ public class CombatReportViewTests
     {
         var view = Row(Volley(inRange: false, effectiveRange: 36f));
 
-        Assert.That(view.OutOfRangeText, Is.EqualTo("Out of range - reaches 36in"));
+        // The same notation as every other range on screen - 36", not 36in.
+        Assert.That(view.OutOfRangeText, Is.EqualTo("Out of range - reaches 36\""));
     }
 
     [Test]
@@ -189,28 +190,17 @@ public class CombatReportViewTests
     }
 
     [Test]
-    public void DamageIsAlsoReportedAsAShareOfTheDefenderAndAsPoints()
+    public void DamageIsAlsoReportedInPoints()
     {
-        // 1.67 wounds off a 9-wound, 180-point unit: 18.6% of it, and 33.4 points' worth.
-        CombatReportView view = View(Report(Volley()));
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(view.HealthValue, Is.EqualTo("18.6%"));
-            Assert.That(view.PointsValue, Is.EqualTo("33.4"));
-        });
+        // 1.67 wounds off a 9-wound, 180-point unit is 33.4 points' worth of it.
+        Assert.That(View(Report(Volley())).PointsValue, Is.EqualTo("33.4"));
     }
 
     [Test]
-    public void APerWeaponRowCarriesItsOwnShareAndPrice()
+    public void APerWeaponRowCarriesItsOwnPrice()
     {
-        VolleyRowView row = Row(Volley(wounds: 4.5f));
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(row.Health, Is.EqualTo("50%"), "half of a 9-wound defender");
-            Assert.That(row.Points, Is.EqualTo("90"), "half of its 180 points");
-        });
+        Assert.That(Row(Volley(wounds: 4.5f)).Points, Is.EqualTo("90"),
+            "half a 9-wound defender is half its 180 points");
     }
 
     [Test]
@@ -249,7 +239,7 @@ public class CombatReportViewTests
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
             Assert.That(CombatReportView.Num(2.78f), Is.EqualTo("2.78"));
-            Assert.That(CombatReportView.Inches(7.5f), Is.EqualTo("7.5in"));
+            Assert.That(CombatReportView.Inches(7.5f), Is.EqualTo("7.5\""));
         }
         finally
         {

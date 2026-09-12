@@ -56,6 +56,11 @@ public static class ImGuiTheme
     // pill; this is the same idea given one name, bright enough to carry large text on the charcoal.
     public static readonly Vector4 DamageAmber = new(0.95f, 0.72f, 0.30f, 1f);
 
+    // #398: what damage was WORTH, in points - the calculator's third headline figure and its PTS
+    // column. A third hue rather than more amber: hits, wounds and points are three different kinds of
+    // thing, and two of them sharing a colour said they were the same measurement twice.
+    public static readonly Vector4 PointsGreen = new(0.48f, 0.84f, 0.55f, 1f);
+
     // #227's hero gold, shared so a hero reads the same in the printed list and in the calculator.
     public static readonly Vector4 HeroGold = new(1f, 0.85f, 0.3f, 1f);
 

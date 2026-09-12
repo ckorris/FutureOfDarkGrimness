@@ -703,10 +703,10 @@ public class CombatCalculatorScreen : IAppScreen
         UiText.Colored(HeadText, view.Headline);
         ImGui.Spacing();
 
-        // Two rows of two rather than one row of four: four large numbers and their captions do not fit
-        // across this column at a laptop width, and the pairing is meaningful anyway - what the dice did
-        // on top, what it cost the defender underneath.
-        if (ImGui.BeginTable("##calc-headline", 2, ImGuiTableFlags.SizingStretchSame))
+        // One row of three. Each number is a different KIND of thing and carries its own colour: blue
+        // for dice that landed, amber for damage that stuck (tying the figure to the amber slice of the
+        // meter below and the WOUNDS column), green for what that damage was worth in points.
+        if (ImGui.BeginTable("##calc-headline", 3, ImGuiTableFlags.SizingStretchSame))
         {
             ImGui.TableNextRow();
 
@@ -714,18 +714,10 @@ public class CombatCalculatorScreen : IAppScreen
             DrawBigNumber(view.HitsValue, CombatReportView.HitsCaption);
 
             ImGui.TableNextColumn();
-            // Amber for wounds, blue for hits: the two headline numbers are different KINDS of thing
-            // (dice that landed vs damage that stuck), and the colour ties the wounds figure to the
-            // amber slice of the meter below and to the WOUNDS column in the table.
             DrawBigNumber(view.WoundsValue, CombatReportView.WoundsCaption, ImGuiTheme.DamageAmber);
 
-            ImGui.TableNextRow();
-
             ImGui.TableNextColumn();
-            DrawBigNumber(view.HealthValue, CombatReportView.HealthCaption, ImGuiTheme.DamageAmber);
-
-            ImGui.TableNextColumn();
-            DrawBigNumber(view.PointsValue, CombatReportView.PointsCaption, ImGuiTheme.DamageAmber);
+            DrawBigNumber(view.PointsValue, CombatReportView.PointsCaption, ImGuiTheme.PointsGreen);
 
             ImGui.EndTable();
         }
@@ -752,7 +744,7 @@ public class CombatCalculatorScreen : IAppScreen
     /// </summary>
     private void DrawVolleyTable(CombatReportView view)
     {
-        if (!ImGui.BeginTable("##calc-volleys", 8,
+        if (!ImGui.BeginTable("##calc-volleys", 7,
             ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp))
             return;
 
@@ -763,9 +755,8 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.TableSetupColumn("HITS", ImGuiTableColumnFlags.WidthFixed, num);
         ImGui.TableSetupColumn("SAVE", ImGuiTableColumnFlags.WidthFixed, num);
         ImGui.TableSetupColumn("WOUNDS", ImGuiTableColumnFlags.WidthFixed, num);
-        // The two derived columns, abbreviated here and spelled out under the headline numbers they
-        // total up to ("Health removed", "Points of damage"), which is where the reader meets them first.
-        ImGui.TableSetupColumn("%HP", ImGuiTableColumnFlags.WidthFixed, num);
+        // Abbreviated here, spelled out under the headline number it totals up to ("Points of damage"),
+        // which is where the reader meets it first.
         ImGui.TableSetupColumn("PTS", ImGuiTableColumnFlags.WidthFixed, num);
         ImGui.TableHeadersRow();
 
@@ -834,8 +825,7 @@ public class CombatCalculatorScreen : IAppScreen
         Cell(row.Hits);
         Cell(row.Save);
         Cell(row.Wounds, ImGuiTheme.DamageAmber);
-        Cell(row.Health, ImGuiTheme.DamageAmber);
-        Cell(row.Points, ImGuiTheme.DamageAmber);
+        Cell(row.Points, ImGuiTheme.PointsGreen);
 
         return hovered;
     }

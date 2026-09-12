@@ -53,6 +53,11 @@ _Newest on top._
   - `CalculatorTextSafetyTests` is a source lint over those files: any reintroduced format-API call
     fails with the reason. The bug was invisible to every other kind of test - the VALUES were right,
     and the drawing is ImGui - so a lint is the only guard that could have caught it.
+  - **Health removed is gone** (owner: not helpful), at the headline and as the `%HP` column - it was
+    one statistic in two places, and the abbreviation had no legend once the caption went. The share
+    itself stays in the view as the thing points-of-damage is computed FROM. The headline is one row of
+    three now, each figure its own colour: blue dice, amber damage, green points.
+  - Ranges read `36"` everywhere, including the out-of-range note, which was the one place saying `36in`.
   - **The lightening was too much**: every background tone is now exactly 10/255 above its original
     value (was ~3x that), and the text tones are back to the originals - the backgrounds moved a hair,
     so their contrast did not need buying back.
@@ -333,9 +338,9 @@ The layout itself is ImGui and cannot be asserted; the strings and the tick arit
 24. The panels are lighter, and an out-of-range row is unmistakable: darker band, faded text, dim rules.
 25. **Buttons vs tabs** - Back/Cancel are grey, Choose unit / Load list / Swap / join are blue, LAUNCH
     and CREATE (lobby, host dialog) are the bright accent, and the selected tab is accent-filled.
-26. **Headline** - four numbers: expected hits, expected wounds, Health removed (%), Points of damage.
-    Check the arithmetic once by hand: wounds / defender wounds, times the defender's points.
-27. Per-weapon %HP and PTS columns agree with the headline when there is only one weapon.
+26. **Headline** - three numbers in one row: expected hits (blue), expected wounds (amber), Points of
+    damage (green). Check the arithmetic once by hand: wounds / defender wounds, times its points.
+27. The per-weapon PTS column agrees with the headline when there is only one weapon.
 28. Weapons are listed shortest reach first, and an out-of-range weapon's note sits in the stat columns.
 29. From 14in: "+" -> 15 -> 18, "++" -> 18 -> 24, "-" -> 12 -> 9, "--" -> 12 -> 6.
 30. The picker shows a gold HERO tag beside heroes (bundled books and saved lists both).
