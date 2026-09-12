@@ -11,6 +11,17 @@ namespace FdgRaylib.Rendering;
 /// </summary>
 public static class WoundAssignmentText
 {
+    /// <summary>
+    /// Whether the clump presentation (explanation, chip strip, per-model preview) says anything the
+    /// plain dialog would not. A clump matters only where a model could take more than one wound: against
+    /// a unit of 1-wound models every clump kills exactly one model, so the defender's choice is the
+    /// same as for a plain volley and the dialog should look the same (Chris, after the first GUI pass).
+    /// A joined Tough hero among 1-wound grunts keeps it on - the clumps matter for the hero.
+    /// </summary>
+    public static bool ClumpModeMatters(AssignWoundsResults results) =>
+        results.HasConfinedPackets
+        && results.PendingWounds.Any(entry => entry.Model.GetValue().TotalWounds > 1f);
+
     /// <summary>The header's progress line(s). One line for a plain pool; two for a clump queue.</summary>
     public static string Progress(AssignWoundsResults results)
     {
@@ -18,6 +29,13 @@ public static class WoundAssignmentText
         {
             return $"{WoundFormat.Format(results.TotalAssignedWounds)} / " +
                    $"{WoundFormat.Format(results.TotalWoundsToAssign)} wounds assigned";
+        }
+        if (!ClumpModeMatters(results))
+        {
+            // Clumps into 1-wound models: each one is one kill, so say so plainly - and the total is what
+            // will land (4 clumps of 3 land 4), not the queue's carry (12).
+            return $"{WoundFormat.Format(results.TotalAssignedWounds)} / " +
+                   $"{WoundFormat.Format(results.AutoFillTotal())} wounds assigned";
         }
 
         string tally = $"{WoundFormat.Format(results.TotalAssignedWounds)} landed, " +
@@ -46,16 +64,17 @@ public static class WoundAssignmentText
     public static string ClickHint(AssignWoundsResults results)
     {
         WoundPacket? next = results.NextPacket;
-        return next != null && next.Confined
+        return next != null && next.Confined && ClumpModeMatters(results)
             ? $"Click to land this clump here ({Wounds(next.WeightedWounds)} - what does not fit is lost)"
             : "Click to assign wounds (fills this model)";
     }
 
     /// <summary>Why the panel is in clump mode, for a queue that has clumps. Names Deadly's X, and
-    /// mentions Regeneration only when some clump actually shrank. Empty for a plain volley.</summary>
+    /// mentions Regeneration only when some clump actually shrank. Empty for a plain volley or when
+    /// <see cref="ClumpModeMatters"/> is false.</summary>
     public static string Explanation(AssignWoundsResults results)
     {
-        if (!results.HasConfinedPackets) return "";
+        if (!ClumpModeMatters(results)) return "";
         float x = results.Packets.Where(packet => packet.Confined).Max(packet => packet.OriginalWounds);
         string text = $"Deadly({WoundFormat.Format(x)}): each failed save is a clump of {Wounds(x)} that must all " +
                       "land on ONE model. What that model cannot absorb is lost - it never carries to the next.";
@@ -118,7 +137,7 @@ public static class WoundAssignmentText
     public static string ModelEffect(AssignWoundsResults results, PendingWounds entry)
     {
         WoundPacket? next = results.NextPacket;
-        if (next == null || !results.CanAssignWoundTo(entry)) return "";
+        if (next == null || !ClumpModeMatters(results) || !results.CanAssignWoundTo(entry)) return "";
         float landed = results.WoundsNextCommitWouldLand(entry);
         if (landed <= AssignWoundsResults.WoundEpsilon) return "";
         float total = entry.Model.GetValue().TotalWounds;
