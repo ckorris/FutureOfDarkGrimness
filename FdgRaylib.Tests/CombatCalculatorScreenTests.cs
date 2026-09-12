@@ -289,6 +289,26 @@ public class CombatCalculatorScreenTests
     }
 
     [Test]
+    public void ANarrowColumnShortensBothNamesRatherThanDroppingOne()
+    {
+        BookFile force = HeroBook();
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(force, "squad");
+        tabs.Current.SetJoin("captain");
+
+        // The budget is what the strip can spare, measured against the column that exists; both names
+        // have to survive it, because the pairing IS the tab's identity.
+        Assert.Multiple(() =>
+        {
+            Assert.That(SideTabs.TabLabel(tabs.Current, SideTabs.MinLabelChars), Is.EqualTo("Captain + Squad"),
+                "a narrow column never costs one of the two names - it lets the tab bar shrink instead");
+            Assert.That(SideTabs.TabLabel(tabs.Current, SideTabs.MaxLabelChars), Is.EqualTo("Captain + Squad"));
+            Assert.That(SideTabs.Shorten("Vanguard Warriors", SideTabs.MinLabelChars), Is.EqualTo("Vang..."),
+                "and a name that will not fit is cut to the floor, not below it");
+        });
+    }
+
+    [Test]
     public void AJoinedTabNamesBothTheHeroAndTheUnitItJoined()
     {
         BookFile force = HeroBook();
@@ -594,6 +614,10 @@ public class CombatCalculatorScreenTests
             CombatCalculatorScreen.VariablesHeader,
             CombatCalculatorScreen.BackLabel,
             CombatCalculatorScreen.CancelLabel,
+            CombatCalculatorScreen.ShootingTab,
+            CombatCalculatorScreen.MeleeTab,
+            SideTabs.EmptyLabel,
+            SideTabs.JoinSeparator,
             CombatCalculatorScreen.AttackerBadge,
             CombatCalculatorScreen.HeroTag,
             CombatCalculatorScreen.DefenderBadge,

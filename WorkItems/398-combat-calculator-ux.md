@@ -53,6 +53,17 @@ _Newest on top._
   - `CalculatorTextSafetyTests` is a source lint over those files: any reintroduced format-API call
     fails with the reason. The bug was invisible to every other kind of test - the VALUES were right,
     and the drawing is ImGui - so a lint is the only guard that could have caught it.
+  - **Three figures, three hues** (owner's choice): hits yellow, wounds red, points light blue - and the
+    same colour over each figure's COLUMN in the weapon table, so the headline says which column it
+    totals. The wound meter's spent slice follows the wounds red, being the same fact drawn as a bar.
+    `DamageAmber` and `PointsGreen` are gone with them.
+  - **The tabs are sized as a share of the pane, not in font units.** `ComputeUiScale` bakes the font
+    once at startup from the MONITOR's height and clamps at 1.0, so a fixed multiple of the font is a
+    different share of a 720p window than of a 4K one - the owner saw exactly that. The mode switch now
+    measures its labels at 1x and scales to a target share of the column (clamped so it stays bigger
+    than body text and never becomes a banner), and a unit tab's name is cut to the width the strip
+    actually has rather than to a character count. Everything else on the screen is font-derived, which
+    is still monitor-relative - see Deferred.
   - **Health removed is gone** (owner: not helpful), at the headline and as the `%HP` column - it was
     one statistic in two places, and the abbreviation had no legend once the caption went. The share
     itself stays in the view as the thing points-of-damage is computed FROM. The headline is one row of
@@ -283,6 +294,12 @@ _Newest on top._
   needed) and would have caught both. Not built yet for one reason: `IM_ASSERT` aborts the process, so a
   regression would take the whole `dotnet test` run down with it rather than failing one test. Worth
   doing behind its own test project or an assert redirect.
+- **UI scale does not follow the WINDOW.** `RaylibRenderer.ComputeUiScale` reads the monitor height
+  once at startup (its own TODO says so) and the fonts are baked from it, so shrinking the window does
+  not shrink the interface: every element keeps its pixel size and therefore grows as a share of the
+  screen. The calculator's tabs are now immune (measured against their pane), but the honest fix is
+  app-wide - rebake the atlas and re-run `ScaleAllSizes` on a resize, and replace the pixel literals
+  still sitting in the lobby's layout. A real piece of work, not a tweak; say the word.
 - **The rest of the app's `ImGui.Text*` call sites.** The resolver panels, the tactical overlay and the
   in-game HUD still use the format versions. No bundled book contains a '%' and those surfaces mostly
   print engine-composed text, so the exposure is small - but a player-typed army name reaches some of
@@ -350,6 +367,11 @@ The layout itself is ImGui and cannot be asserted; the strings and the tick arit
     "40.7%" in the headline and "6.8%" in the table, and the captions beside them are not overwritten.
 34. The lobby's terrain and house-rule tooltips still read correctly (they were converted too).
 35. The backgrounds are only a touch lighter than the original build, not the mid-grey of round 5.
+36. **Round 7 - colour** - hits yellow, wounds red, points light blue, at the headline AND down their
+    columns; the meter's spent slice is the same red as the wounds figure.
+37. **Scaling** - F11 between fullscreen and the 1280x720 window: the Shooting/Melee tabs should take
+    about the same share of the middle column either way, and the unit tabs should shorten their names
+    rather than overflow. (The REST of the interface still keeps its pixel size - see Deferred.)
 
 ## Outcome
 _Open._

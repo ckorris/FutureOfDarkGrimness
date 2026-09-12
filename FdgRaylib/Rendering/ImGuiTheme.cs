@@ -51,15 +51,18 @@ public static class ImGuiTheme
     // The darkest well tone, for the value half of a two-tone pill (#329).
     public static readonly Vector4 InkWell = Ink;
 
-    // #398: amber means DAMAGE, wherever damage is shown - the wounds figure, the spent portion of a
-    // wound meter, a wounded unit's pill. The army list already used this family for a wounded Tough
-    // pill; this is the same idea given one name, bright enough to carry large text on the charcoal.
-    public static readonly Vector4 DamageAmber = new(0.95f, 0.72f, 0.30f, 1f);
+    // #398: the calculator's three figures, one hue each, because they are three different kinds of
+    // thing - dice that landed, damage that stuck, and what that damage was worth. Each is used for the
+    // headline number AND for its column in the weapon table, so a colour is a reading instruction:
+    // follow the yellow down the table and you are following hits.
+    public static readonly Vector4 HitsYellow = new(0.96f, 0.92f, 0.42f, 1f);
 
-    // #398: what damage was WORTH, in points - the calculator's third headline figure and its PTS
-    // column. A third hue rather than more amber: hits, wounds and points are three different kinds of
-    // thing, and two of them sharing a colour said they were the same measurement twice.
-    public static readonly Vector4 PointsGreen = new(0.48f, 0.84f, 0.55f, 1f);
+    /// <summary>Damage, wherever it is shown - the wounds figure, the WOUNDS column, and the spent slice
+    /// of the wound meter, which is the same fact drawn as a bar.</summary>
+    public static readonly Vector4 WoundsRed = new(0.94f, 0.40f, 0.38f, 1f);
+
+    /// <summary>What the damage was worth in points.</summary>
+    public static readonly Vector4 PointsBlue = new(0.58f, 0.76f, 1f, 1f);
 
     // #227's hero gold, shared so a hero reads the same in the printed list and in the calculator.
     public static readonly Vector4 HeroGold = new(1f, 0.85f, 0.3f, 1f);

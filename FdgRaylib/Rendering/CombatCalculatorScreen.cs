@@ -52,6 +52,8 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string ReadOnlyNote =
         "This army carries no book, so its units are shown as they were saved and cannot be changed here.";
     internal const string VariablesHeader = "SITUATION";
+    internal const string ShootingTab = "Shooting";
+    internal const string MeleeTab = "Melee";
     internal const string BackLabel = "Back";
     internal const string CancelLabel = "Cancel";
     internal const string DistanceLabel = "Distance (in)";
@@ -300,6 +302,7 @@ public class CombatCalculatorScreen : IAppScreen
     private static void DrawTabStrip(SideTabs tabs, UnitPicker picker, string id)
     {
         float em = ImGui.GetFontSize();
+        int budget = TabLabelBudget(tabs.Slots.Count);
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(em * 0.6f, em * 0.3f));
         ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, new Vector2(em * 0.5f, em * 0.25f));
         // The tab in play takes the accent. Selected tabs and buttons used to be the same raised grey,
@@ -322,7 +325,7 @@ public class CombatCalculatorScreen : IAppScreen
         for (int i = 0; i < tabs.Slots.Count; i++)
         {
             SideTabs.Slot slot = tabs.Slots[i];
-            string label = $"{SideTabs.TabLabel(slot.Side)}##{id}-tab-{slot.Key}";
+            string label = $"{SideTabs.TabLabel(slot.Side, budget)}##{id}-tab-{slot.Key}";
             bool open = true;
 
             bool selected = tabs.Slots.Count > 1
@@ -349,6 +352,20 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.Spacing();
 
         if (closing >= 0) tabs.Close(closing);
+    }
+
+    /// <summary>
+    /// How many characters of a tab's name fit when the strip is shared by <paramref name="tabCount"/>
+    /// tabs plus the "+". Measured against the column that exists rather than cut at a fixed count: the
+    /// font is a fixed pixel size baked from the monitor, so a count that looked right on one display
+    /// overflows on a narrower one and wastes half the strip on a wider one.
+    /// </summary>
+    private static int TabLabelBudget(int tabCount)
+    {
+        float perTab = ImGui.GetContentRegionAvail().X / MathF.Max(1f, tabCount + 1);
+        float charWidth = MathF.Max(1f, ImGui.CalcTextSize("n").X);
+        // Less the close button and the frame padding either side, which are not label.
+        return Math.Clamp((int)(perTab / charWidth) - 4, SideTabs.MinLabelChars, SideTabs.MaxLabelChars);
     }
 
     /// <summary>
@@ -636,25 +653,33 @@ public class CombatCalculatorScreen : IAppScreen
     /// </summary>
     private void DrawModeTabs()
     {
-        // Measured in the BODY font, before the large one is pushed - padding sized in 32px ems would
-        // swallow the column.
-        float em = ImGui.GetFontSize();
+        // Sized as a SHARE OF THE PANE, not as a multiple of the font. The font is baked once at startup
+        // from the MONITOR's height and clamped at the bottom (RaylibRenderer.ComputeUiScale), so a
+        // fixed multiple of it eats about twice as much of a 720p window as of a 4K one - which is what
+        // "the tabs take up different percentages at different resolutions" is. Measured at 1x, then
+        // scaled so the two labels together come to ModeTabShare of the pane, clamped so the switch is
+        // always bigger than body text and never a banner.
+        float avail = MathF.Max(1f, ImGui.GetContentRegionAvail().X);
+        float natural = MathF.Max(1f, ImGui.CalcTextSize(ShootingTab).X + ImGui.CalcTextSize(MeleeTab).X);
+        float scale = Math.Clamp(avail * ModeTabShare / natural, 1.05f, 2.0f);
 
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(em * 1.1f, em * 0.45f));
-        ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, new Vector2(em * 0.9f, em * 0.25f));
+        ImGui.SetWindowFontScale(scale);
+        float em = ImGui.GetFontSize() * scale;
+
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(em * 0.55f, em * 0.3f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, new Vector2(em * 0.45f, em * 0.25f));
         ImGui.PushStyleColor(ImGuiCol.Tab, ImGuiTheme.TabIdle);
         ImGui.PushStyleColor(ImGuiCol.TabHovered, ImGuiTheme.ButtonGoHovered);
         ImGui.PushStyleColor(ImGuiCol.TabSelected, ImGuiTheme.AccentBlue);
-        ImGui.PushFont(RaylibRenderer.LargeFont);
 
         if (ImGui.BeginTabBar("##calc-modes"))
         {
-            if (ImGui.BeginTabItem("Shooting"))
+            if (ImGui.BeginTabItem(ShootingTab))
             {
                 SetMode(ECombatMode.Shooting);
                 ImGui.EndTabItem();
             }
-            if (ImGui.BeginTabItem("Melee"))
+            if (ImGui.BeginTabItem(MeleeTab))
             {
                 SetMode(ECombatMode.Melee);
                 ImGui.EndTabItem();
@@ -662,11 +687,16 @@ public class CombatCalculatorScreen : IAppScreen
             ImGui.EndTabBar();
         }
 
-        ImGui.PopFont();
         ImGui.PopStyleColor(3);
         ImGui.PopStyleVar(2);
+        ImGui.SetWindowFontScale(1f);
         ImGui.Spacing();
     }
+
+    /// <summary>How much of the middle pane's width the two mode labels take between them, before their
+    /// padding. Large enough that the mode is the loudest thing in the column, small enough that the
+    /// tabs never wrap or scroll.</summary>
+    internal const float ModeTabShare = 0.42f;
 
     private void SetMode(ECombatMode mode)
     {
@@ -703,35 +733,36 @@ public class CombatCalculatorScreen : IAppScreen
         UiText.Colored(HeadText, view.Headline);
         ImGui.Spacing();
 
-        // One row of three. Each number is a different KIND of thing and carries its own colour: blue
-        // for dice that landed, amber for damage that stuck (tying the figure to the amber slice of the
-        // meter below and the WOUNDS column), green for what that damage was worth in points.
+        // One row of three. Each number is a different KIND of thing and carries its own colour - yellow
+        // for dice that landed, red for damage that stuck (tying it to the red slice of the meter below),
+        // blue for what that damage was worth - and each colour repeats over that figure's COLUMN in the
+        // table, so the headline says which column it totals.
         if (ImGui.BeginTable("##calc-headline", 3, ImGuiTableFlags.SizingStretchSame))
         {
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            DrawBigNumber(view.HitsValue, CombatReportView.HitsCaption);
+            DrawBigNumber(view.HitsValue, CombatReportView.HitsCaption, ImGuiTheme.HitsYellow);
 
             ImGui.TableNextColumn();
-            DrawBigNumber(view.WoundsValue, CombatReportView.WoundsCaption, ImGuiTheme.DamageAmber);
+            DrawBigNumber(view.WoundsValue, CombatReportView.WoundsCaption, ImGuiTheme.WoundsRed);
 
             ImGui.TableNextColumn();
-            DrawBigNumber(view.PointsValue, CombatReportView.PointsCaption, ImGuiTheme.PointsGreen);
+            DrawBigNumber(view.PointsValue, CombatReportView.PointsCaption, ImGuiTheme.PointsBlue);
 
             ImGui.EndTable();
         }
 
         ImGui.Spacing();
         UiChrome.DrawMeter(view.WoundFractionRemaining, ImGui.GetContentRegionAvail().X,
-            ImGuiTheme.AccentBlue, ImGuiTheme.DamageAmber);
+            ImGuiTheme.AccentBlue, ImGuiTheme.WoundsRed);
         UiText.Colored(DimText, view.WoundBarText);
     }
 
-    private static void DrawBigNumber(string value, string caption, Vector4? color = null)
+    private static void DrawBigNumber(string value, string caption, Vector4 color)
     {
         ImGui.PushFont(RaylibRenderer.LargeFont);
-        UiText.Colored(color ?? ImGuiTheme.HeaderAccent, value);
+        UiText.Colored(color, value);
         ImGui.PopFont();
         UiText.Colored(DimText, caption);
     }
@@ -822,10 +853,10 @@ public class CombatCalculatorScreen : IAppScreen
 
         Cell(row.Dice);
         Cell(row.Hit);
-        Cell(row.Hits);
+        Cell(row.Hits, ImGuiTheme.HitsYellow);
         Cell(row.Save);
-        Cell(row.Wounds, ImGuiTheme.DamageAmber);
-        Cell(row.Points, ImGuiTheme.PointsGreen);
+        Cell(row.Wounds, ImGuiTheme.WoundsRed);
+        Cell(row.Points, ImGuiTheme.PointsBlue);
 
         return hovered;
     }

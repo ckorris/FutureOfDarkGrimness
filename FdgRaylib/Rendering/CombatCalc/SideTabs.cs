@@ -21,14 +21,13 @@ internal sealed class SideTabs
     /// <summary>What a tab with no unit yet is called.</summary>
     internal const string EmptyLabel = "(empty)";
 
-    /// <summary>Longest tab label before it is shortened. Tabs share a 30%-wide column, so a long name
-    /// would push its neighbours out of reach - but the cut has to clear ordinary unit names ("Vanguard
-    /// Warriors" is 17 characters), or every tab reads as an abbreviation.</summary>
+    /// <summary>Longest tab label however wide the column is - past this a longer name stops telling
+    /// you anything a reader needs, and the neighbouring tabs would rather have the room.</summary>
     internal const int MaxLabelChars = 20;
 
-    /// <summary>And per name when a tab carries two of them - the hero and the unit it joined. Both
-    /// names have to be recognisable, which at this column width means neither gets the full 20.</summary>
-    internal const int MaxJoinedPartChars = 13;
+    /// <summary>And the shortest it may be cut to. Below this a name is not a name any more, so a very
+    /// narrow column gets a scrolling tab bar rather than a row of initials.</summary>
+    internal const int MinLabelChars = 7;
 
     /// <summary>Between a joined pair's two names.</summary>
     internal const string JoinSeparator = " + ";
@@ -113,16 +112,18 @@ internal sealed class SideTabs
     /// rather than left to ImGui's own tab clipping so the label is the same at every window width and
     /// can be pinned by a test - and so the "..." is ASCII, like every other string in the app.
     /// </summary>
-    internal static string TabLabel(CalculatorSide side)
+    /// <param name="budget">How many characters the strip can spare for this tab. The caller measures
+    /// it against the column that actually exists; the default is the widest a label ever gets.</param>
+    internal static string TabLabel(CalculatorSide side, int budget = MaxLabelChars)
     {
         IReadOnlyList<string> names = side.UnitNames;
+        if (names.Count == 0) return EmptyLabel;
+        if (names.Count == 1) return Shorten(names[0], budget);
 
-        return names.Count switch
-        {
-            0 => EmptyLabel,
-            1 => Shorten(names[0], MaxLabelChars),
-            _ => string.Join(JoinSeparator, names.Select(name => Shorten(name, MaxJoinedPartChars))),
-        };
+        // A joined pair splits the budget, because both names have to survive: a tab reading only
+        // "Vanguard Warriors" hides the captain standing in it, and the captain is why the tab exists.
+        int each = Math.Max(MinLabelChars, (budget - JoinSeparator.Length) / 2);
+        return string.Join(JoinSeparator, names.Select(name => Shorten(name, each)));
     }
 
     /// <inheritdoc cref="TabLabel"/>
