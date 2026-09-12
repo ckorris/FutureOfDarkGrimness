@@ -836,18 +836,23 @@ public class CombatCalculatorScreen : IAppScreen
     private void DrawDistanceTrack()
     {
         float width = MathF.Max(ImGui.GetFontSize() * 6f, ImGui.GetContentRegionAvail().X);
-        DrawRangeBands(ImGui.GetCursorScreenPos(), new Vector2(width, ImGui.GetFrameHeight()));
+        // No fight yet, no bands - and then the slider keeps its own frame, or the track would simply
+        // not be there.
+        bool banded = DrawRangeBands(ImGui.GetCursorScreenPos(), new Vector2(width, ImGui.GetFrameHeight()));
 
-        ImGui.PushStyleColor(ImGuiCol.FrameBg, Transparent);
-        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, Transparent);
-        ImGui.PushStyleColor(ImGuiCol.FrameBgActive, Transparent);
+        if (banded)
+        {
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, Transparent);
+            ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, Transparent);
+            ImGui.PushStyleColor(ImGuiCol.FrameBgActive, Transparent);
+        }
 
         float distance = _situation.DistanceInches;
         ImGui.SetNextItemWidth(width);
         if (ImGui.SliderFloat("##calc-distance", ref distance, 0f, MaxDistanceInches, string.Empty))
             SetDistance(distance);
 
-        ImGui.PopStyleColor(3);
+        if (banded) ImGui.PopStyleColor(3);
         DrawRangeTicks();
     }
 
@@ -919,10 +924,11 @@ public class CombatCalculatorScreen : IAppScreen
             : (MathF.Min(ranges.Min(), MaxDistanceInches), MathF.Min(ranges.Max(), MaxDistanceInches));
     }
 
-    private void DrawRangeBands(Vector2 at, Vector2 size)
+    /// <summary>Paints the bands, or reports that there was nothing to paint.</summary>
+    private bool DrawRangeBands(Vector2 at, Vector2 size)
     {
         (float all, float some) = RangeZones(_report);
-        if (some <= 0f) return;
+        if (some <= 0f) return false;
 
         ImDrawListPtr dl = ImGui.GetWindowDrawList();
         float rounding = ImGui.GetStyle().FrameRounding;
@@ -933,6 +939,7 @@ public class CombatCalculatorScreen : IAppScreen
         Band(dl, at.X, allX, ImGuiTheme.RangeAllZone, ImDrawFlags.RoundCornersLeft);
         Band(dl, allX, someX, ImGuiTheme.RangeSomeZone, ImDrawFlags.RoundCornersNone);
         Band(dl, someX, endX, ImGuiTheme.RangeNoneZone, ImDrawFlags.RoundCornersRight);
+        return true;
 
         void Band(ImDrawListPtr list, float x0, float x1, Vector4 color, ImDrawFlags corners)
         {
