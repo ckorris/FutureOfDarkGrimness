@@ -90,20 +90,39 @@ internal sealed class CalculatorSide
         _savedRows.Clear();
     }
 
-    /// <summary>Takes over the other side's contents - the two halves of a Swap.</summary>
-    internal void AdoptFrom(CalculatorSide other)
+    /// <summary>
+    /// An independent copy of this column - what the "+" tab hands back (#398). The book, its glossary
+    /// and the source file are SHARED: all three are read-only reference data, and a book is half a
+    /// megabyte of parsed JSON. The <see cref="BuilderList"/> is deep-copied, because that is the one
+    /// thing the upgrade editors mutate - sharing it would make the copy and the original the same unit
+    /// wearing two tabs, and editing either would silently edit both.
+    /// </summary>
+    internal CalculatorSide Clone()
     {
-        Book = other.Book;
-        Glossary = other.Glossary;
-        List = other.List;
-        Joined = other.Joined;
-        _saved = other._saved;
-        _savedRows.Clear();
-        _savedRows.AddRange(other._savedRows);
+        // Joined points INTO the list, so it is recovered by position in the copy rather than copied.
+        int joined = Joined is null ? -1 : List.Units.IndexOf(Joined);
+
+        var copy = new CalculatorSide
+        {
+            Book = Book,
+            Glossary = Glossary,
+            List = CloneList(List),
+            _saved = _saved,
+        };
+        if (joined >= 0) copy.Joined = copy.List.Units[joined];
+        copy._savedRows.AddRange(_savedRows.Select(CloneEntry));
+        return copy;
     }
 
-    internal RosterUnit? Roster => HasUnit
-        ? Book!.Units.FirstOrDefault(unit => unit.Id == List.Units[MainIndex].RosterUnitId)
+    /// <summary>The unit's name for a tab label, taken off the ROSTER rather than a compile: a tab is
+    /// drawn every frame for every slot, and a compile per tab per frame to read one string back is a
+    /// price with nothing to show for it.</summary>
+    internal string UnitName =>
+        Book is not null ? Roster?.Name ?? string.Empty
+        : _savedRows.Count > 0 ? _savedRows[^1].Name : string.Empty;
+
+    internal RosterUnit? Roster => Book is not null && HasUnit
+        ? Book.Units.FirstOrDefault(unit => unit.Id == List.Units[MainIndex].RosterUnitId)
         : null;
 
     /// <summary>The compiled unit plus its final wargear, for display and for upgrade availability.</summary>
@@ -226,6 +245,10 @@ internal sealed class CalculatorSide
     internal string Fingerprint() => Book is not null
         ? $"{Book.Name}|{ArmyForgeScreen.ListFingerprint(List)}"
         : $"saved:{_saved?.Name ?? "-"}|{string.Join(",", _savedRows.Select(unit => unit.Name + unit.ModelCount))}";
+
+    private static BuilderList CloneList(BuilderList list) =>
+        JsonSerializer.Deserialize<BuilderList>(
+            JsonSerializer.Serialize(list, RuleJson.Options), RuleJson.Options)!;
 
     /// <summary>A deep copy that KEEPS the id, so a saved hero-to-host link survives the copy.</summary>
     private static UnitFileEntry CloneEntry(UnitFileEntry unit) =>

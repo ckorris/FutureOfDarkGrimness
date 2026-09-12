@@ -66,8 +66,8 @@ public class CombatCalculatorScreen : IAppScreen
     private static readonly Vector4 HeadText = new(0.85f, 0.85f, 0.90f, 1f);
     private static readonly Vector4 Transparent = Vector4.Zero;
 
-    private readonly CalculatorSide _attacker = new();
-    private readonly CalculatorSide _defender = new();
+    private readonly SideTabs _attackerTabs = new();
+    private readonly SideTabs _defenderTabs = new();
     private readonly UnitPicker _attackerPicker = new();
     private readonly UnitPicker _defenderPicker = new();
 
@@ -118,8 +118,10 @@ public class CombatCalculatorScreen : IAppScreen
     internal IReadOnlyList<ArmySource> LoadedArmies => _loaded;
 
     // Test seams: the ImGui layout is hand-verified, the state underneath is not.
-    internal CalculatorSide Attacker => _attacker;
-    internal CalculatorSide Defender => _defender;
+    internal CalculatorSide Attacker => _attackerTabs.Current;
+    internal CalculatorSide Defender => _defenderTabs.Current;
+    internal SideTabs AttackerTabs => _attackerTabs;
+    internal SideTabs DefenderTabs => _defenderTabs;
     internal UnitPicker AttackerPicker => _attackerPicker;
     internal UnitPicker DefenderPicker => _defenderPicker;
     internal CombatSituation Situation => _situation;
@@ -180,13 +182,11 @@ public class CombatCalculatorScreen : IAppScreen
             _              => NoUnitsHint,
         };
 
-    /// <summary>Exchanges the two columns, pickers included, so a swap keeps each side's browsing state.</summary>
+    /// <summary>Exchanges the two columns - every tab, not just the selected one - pickers included, so
+    /// a swap keeps each side's browsing state.</summary>
     internal void Swap()
     {
-        var carried = new CalculatorSide();
-        carried.AdoptFrom(_attacker);
-        _attacker.AdoptFrom(_defender);
-        _defender.AdoptFrom(carried);
+        _attackerTabs.SwapWith(_defenderTabs);
 
         (bool attackerOpen, bool defenderOpen) = (_attackerPicker.IsOpen, _defenderPicker.IsOpen);
         if (defenderOpen) _attackerPicker.Open(); else _attackerPicker.Close();
@@ -196,12 +196,12 @@ public class CombatCalculatorScreen : IAppScreen
     /// <summary>Re-runs the simulation only when something it depends on has actually changed.</summary>
     private void RefreshReport()
     {
-        string key = $"{_attacker.Fingerprint()}#{_defender.Fingerprint()}#{_situation}";
+        string key = $"{Attacker.Fingerprint()}#{Defender.Fingerprint()}#{_situation}";
         if (key == _reportKey) return;
 
         _reportKey = key;
-        _report = _attacker.HasUnit && _defender.HasUnit
-            ? CombatCalculator.Run(_attacker.Compile(), _defender.Compile(), _situation)
+        _report = Attacker.HasUnit && Defender.HasUnit
+            ? CombatCalculator.Run(Attacker.Compile(), Defender.Compile(), _situation)
             : null;
     }
 
@@ -222,7 +222,7 @@ public class CombatCalculatorScreen : IAppScreen
         // sideways to - and a horizontally scrollable child reports a content width that the wrap would
         // have had to fight.
         ImGui.BeginChild("##calc-a", new Vector2(sideWidth, avail.Y), ImGuiChildFlags.Borders);
-        DrawSide(_attacker, _attackerPicker, "A", "a");
+        DrawSide(_attackerTabs, _attackerPicker, "A", "a", isAttacker: true);
         ImGui.EndChild();
 
         ImGui.SameLine(0, spacing);
@@ -233,21 +233,24 @@ public class CombatCalculatorScreen : IAppScreen
 
         ImGui.SameLine(0, spacing);
         ImGui.BeginChild("##calc-b", new Vector2(0, avail.Y), ImGuiChildFlags.Borders);
-        DrawSide(_defender, _defenderPicker, "B", "b");
+        DrawSide(_defenderTabs, _defenderPicker, "B", "b", isAttacker: false);
         ImGui.EndChild();
     }
 
     // ---- the two unit columns ----------------------------------------------------------------------
 
-    private void DrawSide(CalculatorSide side, UnitPicker picker, string label, string id)
+    private void DrawSide(SideTabs tabs, UnitPicker picker, string label, string id, bool isAttacker)
     {
+        DrawTabStrip(tabs, picker, id);
+        CalculatorSide side = tabs.Current;
+
         if (picker.IsOpen || !side.HasUnit)
         {
             DrawPicker(side, picker, label, id);
             return;
         }
 
-        DrawSideHeader(side, picker, label, id);
+        DrawSideHeader(side, picker, label, id, isAttacker);
 
         if (!side.IsEditable)
         {
@@ -276,13 +279,63 @@ public class CombatCalculatorScreen : IAppScreen
     }
 
     /// <summary>
+    /// The column's tabs: one per candidate unit, plus a "+" that copies the one in hand. Only the
+    /// selected tab fights, so this is the cheapest way to ask "and what if it were this instead".
+    ///
+    /// <para>The tab bar owns the selection - whichever tab ImGui reports as open is the one adopted,
+    /// rather than driving ImGui from our own index and having two sources of truth disagree on the
+    /// frame a tab is added or closed.</para>
+    ///
+    /// <para>Closing: an "x" on the tab, absent while only one tab remains (nothing can live in a
+    /// column with no tabs). Middle-click closing is turned OFF deliberately - it is the standard
+    /// browser gesture, but it is also invisible, and there is no undo here: a stray middle-click would
+    /// silently throw away a unit someone had spent a minute configuring. The "x" is deliberate, so it
+    /// needs no confirm.</para>
+    /// </summary>
+    private static void DrawTabStrip(SideTabs tabs, UnitPicker picker, string id)
+    {
+        if (!ImGui.BeginTabBar($"##tabs-{id}",
+                ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.NoCloseWithMiddleMouseButton))
+            return;
+
+        int closing = -1;
+        for (int i = 0; i < tabs.Slots.Count; i++)
+        {
+            SideTabs.Slot slot = tabs.Slots[i];
+            string label = $"{SideTabs.TabLabel(slot.Side)}##{id}-tab-{slot.Key}";
+            bool open = true;
+
+            bool selected = tabs.Slots.Count > 1
+                ? ImGui.BeginTabItem(label, ref open)
+                : ImGui.BeginTabItem(label);
+
+            if (selected)
+            {
+                // Switching tabs is navigation: a picker left half-open on the way out would otherwise
+                // greet the next unit with a browser it never asked for.
+                if (tabs.Active != i) picker.Close();
+                tabs.Select(i);
+                ImGui.EndTabItem();
+            }
+            if (!open) closing = i;
+        }
+
+        if (ImGui.TabItemButton($"+##{id}-add", ImGuiTabItemFlags.Trailing | ImGuiTabItemFlags.NoTooltip))
+            tabs.Duplicate();
+
+        ImGui.EndTabBar();
+
+        if (closing >= 0) tabs.Close(closing);
+    }
+
+    /// <summary>
     /// The column's identity line: which side of the fight this is, what it is called, what it costs.
     /// The role badge (not just the letter A/B) is what makes Swap legible - after a swap the badge
     /// moves, so there is never a question of which unit is doing the shooting.
     /// </summary>
-    private void DrawSideHeader(CalculatorSide side, UnitPicker picker, string label, string id)
+    private void DrawSideHeader(CalculatorSide side, UnitPicker picker, string label, string id,
+        bool isAttacker)
     {
-        bool isAttacker = ReferenceEquals(side, _attacker);
         ImGui.TextColored(isAttacker ? ImGuiTheme.HeaderAccent : DimText,
             isAttacker ? AttackerBadge : DefenderBadge);
 
@@ -564,7 +617,7 @@ public class CombatCalculatorScreen : IAppScreen
     {
         if (_report is not { } report)
         {
-            ImGui.TextColored(DimText, EmptyStateHint(_attacker.HasUnit, _defender.HasUnit));
+            ImGui.TextColored(DimText, EmptyStateHint(Attacker.HasUnit, Defender.HasUnit));
             return;
         }
 

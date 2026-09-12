@@ -145,6 +145,149 @@ public class CombatCalculatorScreenTests
         });
     }
 
+    // ---- a column's tabs (#398) ---------------------------------------------------------------
+
+    [Test]
+    public void AFreshColumnHasOneEmptyTab()
+    {
+        var tabs = new SideTabs();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots, Has.Count.EqualTo(1));
+            Assert.That(tabs.Current.HasUnit, Is.False);
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo(SideTabs.EmptyLabel),
+                "an unfilled tab says so rather than showing a blank");
+        });
+    }
+
+    [Test]
+    public void PlusCopiesTheUnitInHandAndSelectsTheCopy()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+
+        int landed = tabs.Duplicate();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots, Has.Count.EqualTo(2));
+            Assert.That(landed, Is.EqualTo(1), "the copy lands immediately after its original");
+            Assert.That(tabs.Active, Is.EqualTo(1), "and is the one you are now editing");
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Vanguard Warriors"));
+            Assert.That(tabs.Slots[0].Key, Is.Not.EqualTo(tabs.Slots[1].Key),
+                "ImGui tells tabs apart by id, so two tabs may never share one");
+        });
+    }
+
+    [Test]
+    public void ACopiedTabIsItsOwnUnit()
+    {
+        // The whole point of the copy: change the variant without disturbing what it was compared to.
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+        tabs.Duplicate();
+
+        tabs.Current.SetCombined(true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots[1].Side.Compile().Units[0].ModelCount, Is.EqualTo(10));
+            Assert.That(tabs.Slots[0].Side.Compile().Units[0].ModelCount, Is.EqualTo(5),
+                "editing the copy must not reach back into the original");
+        });
+    }
+
+    [Test]
+    public void ACopyKeepsTheJoinedHeroAsItsOwn()
+    {
+        BookFile force = HeroBook();
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(force, "squad");
+        tabs.Current.SetJoin("captain");
+        tabs.Duplicate();
+
+        CalculatorSide copy = tabs.Current;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(copy.Joined, Is.Not.Null, "the pairing came along with the copy");
+            Assert.That(copy.Rows(), Has.Count.EqualTo(2));
+            Assert.That(copy.List.Units, Has.None.SameAs(tabs.Slots[0].Side.List.Units[0]),
+                "including its own units, not the original's");
+            Assert.That(copy.Compile().Units.Any(unit => !string.IsNullOrEmpty(unit.JoinsUnitId)), Is.True,
+                "and the join still compiles");
+        });
+    }
+
+    [Test]
+    public void ClosingTheSelectedTabHandsTheSelectionToItsNeighbour()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+        tabs.Duplicate();
+        tabs.Current.SetUnit(Book, "gunners");
+        tabs.Select(0);
+
+        Assert.That(tabs.Close(0), Is.True);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Slots, Has.Count.EqualTo(1));
+            Assert.That(tabs.Active, Is.EqualTo(0));
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Heavy Gunners"),
+                "the tab that slid into the gap is the one now in hand");
+        });
+    }
+
+    [Test]
+    public void ClosingATabBeforeTheSelectedOneKeepsTheSameUnitInHand()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+        tabs.Duplicate();
+        tabs.Current.SetUnit(Book, "gunners");
+
+        tabs.Close(0);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Active, Is.EqualTo(0), "the index shifts down with it");
+            Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Heavy Gunners"),
+                "but the unit selected is unchanged");
+        });
+    }
+
+    [Test]
+    public void TheLastTabNeverCloses()
+    {
+        var tabs = new SideTabs();
+        tabs.Current.SetUnit(Book, "warriors");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Close(0), Is.False, "a column with no tab has nowhere to put a unit");
+            Assert.That(tabs.Close(7), Is.False, "and an index that is not a tab closes nothing");
+            Assert.That(tabs.Slots, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void ALongUnitNameIsShortenedToFitTheTabAndStaysAscii()
+    {
+        string shortened = SideTabs.Shorten("Battle Brothers Veterans");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shortened, Is.EqualTo("Battle Brothers V..."));
+            Assert.That(shortened, Has.Length.EqualTo(SideTabs.MaxLabelChars));
+            Assert.That(shortened.All(c => c <= 0x7F), Is.True, "three dots, not an ellipsis glyph");
+            Assert.That(SideTabs.Shorten("Heavy Gunners"), Is.EqualTo("Heavy Gunners"),
+                "a name that fits is left alone");
+            Assert.That(SideTabs.Shorten("   "), Is.EqualTo(SideTabs.EmptyLabel));
+        });
+    }
+
     // ---- the screen ----------------------------------------------------------------------------
 
     [Test]
@@ -176,6 +319,30 @@ public class CombatCalculatorScreenTests
         {
             Assert.That(screen.Attacker.Detail().Unit.Name, Is.EqualTo("Heavy Gunners"));
             Assert.That(screen.Defender.Detail().Unit.Name, Is.EqualTo("Vanguard Warriors"));
+        });
+    }
+
+    [Test]
+    public void SwapCarriesEveryTabAcrossNotJustTheSelectedOne()
+    {
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+        screen.Attacker.SetUnit(Book, "warriors");
+        screen.AttackerTabs.Duplicate();
+        screen.Attacker.SetUnit(Book, "gunners");
+        screen.AttackerTabs.Select(0);
+        screen.Defender.SetUnit(Book, "gunners");
+
+        screen.Swap();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(screen.DefenderTabs.Slots, Has.Count.EqualTo(2), "both of A's tabs are now B's");
+            Assert.That(screen.AttackerTabs.Slots, Has.Count.EqualTo(1));
+            Assert.That(screen.Attacker.Detail().Unit.Name, Is.EqualTo("Heavy Gunners"));
+            Assert.That(screen.Defender.Detail().Unit.Name, Is.EqualTo("Vanguard Warriors"),
+                "and the tab that was selected stays selected");
+            Assert.That(screen.DefenderTabs.Slots.Select(slot => slot.Key).Distinct().Count(),
+                Is.EqualTo(2), "re-keyed on arrival, so no two tabs in a column share an id");
         });
     }
 
