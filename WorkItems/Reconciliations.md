@@ -720,3 +720,5 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `470729d` -> `cd7fd12`, engine -> `4bd0f7b`): `origin/master`'s index high-water mark **398**,
 > archive max **396**, and no `WorkItems/399*` on any remote branch. **399 = post-game polish pass**
 > (seven owner-reported defects from one game, filed as one item with a facet ledger). No collision.
+
+> **2026-09-12 - number 400 filed clean.** `git fetch origin` + pull before filing (superproject `cd7fd12` -> `cbab372`, engine -> `173cb5a`): `origin/master`'s index high-water mark **398**, archive max **399**, detail files max **399**, and no `WorkItems/400*` or `400-*` branch on any remote. **400 = lobby Army Source restriction.** No collision.

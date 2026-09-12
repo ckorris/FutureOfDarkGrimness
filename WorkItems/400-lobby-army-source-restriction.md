@@ -19,6 +19,10 @@ line is gone.
 
 ## Notes
 
+- 2026-09-12: **Built, all four slices, suites green** (engine 3326, app 2927, headless smoke exits 0
+  with a completed game). Commits: engine `572fdcc` (settings + gate split) -> `180ce4d` (lobby UI +
+  submodule bump) -> `06f281a` (recursive scan, Random Army filter, folder split) -> engine bot-stub
+  fix -> `d9f758f`. Still needs a GUI hand-verify (checklist below).
 - 2026-09-12: Filed. Numbering checked against `origin/master` after `git fetch` + pull (superproject
   `cd7fd12` -> `cbab372`, engine -> `173cb5a`): index high-water **398**, archive max **399**, detail
   files max **399**, no `400-*` branch on origin. No collision.
@@ -51,6 +55,33 @@ line is gone.
   ("! Mixed game systems ... launch if that is the plan") is superseded by the setting. Chris hadn't
   known it existed; two overlapping system notices in one panel is worse than one rule.
 
+## Decisions (continued)
+
+- **2026-09-12 — a fresh bot arrives with NO army (found mid-build).** `AddAiPlayer` stamped every new
+  bot with a hard-coded 100-pt "Test Army" stub, which meant the "no army assigned" blocker could never
+  fire on a bot row: a lobby that could not roll a real army (no armies folder - see #395 - or nothing
+  of an allowed system) would have launched a real game with the fake list, silently, which is the exact
+  failure the blocker was asked for. Bots now arrive unassigned like human slots. The launch-time
+  fallback in `Launch()` stays for the paths that never reach the lobby's gate (scenarios, CLI).
+
+- **2026-09-12 — the maintenance CLI tools recurse too.** Splitting `armies/` would otherwise have made
+  `--retrofit-effects armies` and its siblings silently index nothing. Three `Directory.GetFiles` sites
+  in `Program.cs`. The pre-existing `IndexedPointsMatchAFullDeserializeOfEveryShippedArmy` caught the
+  same class of bug in the test suite itself.
+
+## GUI hand-verify checklist
+
+1. Army Source combo appears under Army Points, host-editable, greyed for a client and on a resume.
+2. Set Grimdark Future, load an AoF army: the Faction cell turns red and its tooltip names both sides.
+3. LAUNCH greys out; hovering it lists every blocker. Fix the row -> it goes live again.
+4. Pts cell: an over-limit army is red and its tooltip says the launch is blocked; an underbuilt one is
+   yellow and says it is legal.
+5. A slot with no army reads red "N/A" on the Army cell and blocks.
+6. Random Army in an AoF-only lobby with only GDF armies in the folder: no pick, slot stays empty/red.
+7. Add a bot with `armies/` present: it gets a real list, not "Test Army".
+8. Host + client: the host changing Army Source is reflected on the client's roster colours immediately.
+9. A Forge army with a force-org error still raises "Launch anyway?" (not blocked).
+
 ## Outcome
 
-_(pending)_
+_(pending hand-verify; implementation complete and committed)_
