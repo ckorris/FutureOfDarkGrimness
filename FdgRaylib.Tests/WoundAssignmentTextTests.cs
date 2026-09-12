@@ -46,7 +46,15 @@ public class WoundAssignmentTextTests
             new[] { WoundPacket.Clump(3f), WoundPacket.Unconfined(2f) });
         results.TryAddWounds(results.PendingWounds[0].Model);
 
-        Assert.That(WoundAssignmentText.Next(results), Is.EqualTo("Next: 2 plain wound(s) (2 of 2)"));
+        Assert.That(WoundAssignmentText.Next(results), Is.EqualTo("Next: 2 wounds, spread as needed (2 of 2)"));
+    }
+
+    [Test]
+    public void WoundNounAgrees()
+    {
+        Assert.That(WoundAssignmentText.Wounds(1f), Is.EqualTo("1 wound"));
+        Assert.That(WoundAssignmentText.Wounds(3f), Is.EqualTo("3 wounds"));
+        Assert.That(WoundAssignmentText.Wounds(2f / 3f), Is.EqualTo("0.67 wounds"));
     }
 
     private static DataBinding<UnitData> MakeUnit(int modelCount, int woundsPerModel)

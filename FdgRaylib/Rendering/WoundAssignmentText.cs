@@ -34,16 +34,20 @@ public static class WoundAssignmentText
         int number = results.PacketsCommitted + 1;
         int count = results.Packets.Count;
         return next.Confined
-            ? $"Next: clump {number} of {count} - {WoundFormat.Format(next.WeightedWounds)} wounds to ONE model"
-            : $"Next: {WoundFormat.Format(next.Wounds)} plain wound(s) ({number} of {count})";
+            ? $"Next: clump {number} of {count} - {Wounds(next.WeightedWounds)} to ONE model"
+            : $"Next: {Wounds(next.Wounds)}, spread as needed ({number} of {count})";
     }
+
+    /// <summary>"1 wound", "3 wounds", "0.67 wounds" - the count with its noun agreed.</summary>
+    public static string Wounds(float count) =>
+        $"{WoundFormat.Format(count)} wound{(count == 1f ? "" : "s")}";
 
     /// <summary>The click affordance for a legal target - what landing the next packet here means.</summary>
     public static string ClickHint(AssignWoundsResults results)
     {
         WoundPacket? next = results.NextPacket;
         return next != null && next.Confined
-            ? $"Click to land this clump here ({WoundFormat.Format(next.WeightedWounds)} wounds - what does not fit is lost)"
+            ? $"Click to land this clump here ({Wounds(next.WeightedWounds)} - what does not fit is lost)"
             : "Click to assign wounds (fills this model)";
     }
 }

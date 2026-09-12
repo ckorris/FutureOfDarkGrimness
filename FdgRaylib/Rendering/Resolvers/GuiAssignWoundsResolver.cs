@@ -85,7 +85,6 @@ public class GuiAssignWoundsResolver
 
         var models  = results.PendingWounds;
         float pad   = 16f;
-        float hdrH  = 72f;
         float footH = 44f;
 
         // Per-model button heights: one main line (model + wounds) plus a small line per weapon group.
@@ -130,8 +129,10 @@ public class GuiAssignWoundsResolver
         ImGui.TextUnformatted(WoundAssignmentText.Progress(results));
         ImGui.PopTextWrapPos();
 
-        // Model buttons (scrollable if many models)
-        float listY = pad + hdrH;
+        // Model buttons (scrollable if many models). The list starts wherever the header text ended -
+        // it used to start at a fixed 72px, which fit exactly one progress line, so #401's second line
+        // (and a long unit name wrapping) was drawn underneath the first button and clipped.
+        float listY = ImGui.GetCursorPosY() + spacingY;
         float listH = dh - listY - pad - footH - pad;
         float btnW  = dw - pad * 2;
         ImGui.SetCursorPos(new Vector2(pad, listY));

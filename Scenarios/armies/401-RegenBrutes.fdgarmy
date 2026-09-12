@@ -9,13 +9,20 @@
       "quality": 6,
       "defense": 5,
       "specialRules": [
-        { "kind": "coreNumeric", "name": "Tough", "numericValue": 3 },
-        { "kind": "core", "name": "Regeneration" }
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
       ],
       "weapons": [
         {
           "name": "Club",
-          "quantity": 1,
+          "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
