@@ -440,7 +440,13 @@ public class RaylibRenderer
         // ToggleBorderlessWindowed must be called after InitWindow; it sizes the window to the monitor.
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
-        Raylib.SetTargetFPS(30);
+        // 60, not 30. Raylib samples the mouse once per frame and rlImGui hands ImGui that sample, so
+        // the frame interval is also the input interval: at 30 a click shorter than 33ms could be pressed
+        // and released between two samples and vanish entirely, which read as "I have to click twice"
+        // (#398 owner report - clicking an army in the Combat Calculator seemed to need a double-click,
+        // and the second click landed on whatever the first one had revealed). Nothing here is expensive
+        // to draw; the screens are ImGui panels over a static canvas.
+        Raylib.SetTargetFPS(60);
         if (UserConfig.Current.StartFullscreen)
             Raylib.ToggleBorderlessWindowed();
 
