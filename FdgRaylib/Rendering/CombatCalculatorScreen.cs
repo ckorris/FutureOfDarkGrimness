@@ -308,10 +308,10 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.PushStyleColor(ImGuiCol.TabHovered, ImGuiTheme.ButtonGoHovered);
         ImGui.PushStyleColor(ImGuiCol.TabSelected, ImGuiTheme.AccentBlue);
 
-        bool open_ = ImGui.BeginTabBar($"##tabs-{id}",
+        bool barOpen = ImGui.BeginTabBar($"##tabs-{id}",
             ImGuiTabBarFlags.AutoSelectNewTabs | ImGuiTabBarFlags.NoCloseWithMiddleMouseButton);
 
-        if (!open_)
+        if (!barOpen)
         {
             ImGui.PopStyleColor(3);
             ImGui.PopStyleVar(2);

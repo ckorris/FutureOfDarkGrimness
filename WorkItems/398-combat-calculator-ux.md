@@ -37,6 +37,40 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-12 (round 5, the owner's second review pass): app **2911/0** (+6), engine 3308/0 (1 skipped),
+  build clean, smoke exits 0.
+  - **One rule blue, app-wide.** A rule name was blue in the calculator's middle column, white in the
+    Forge's weapon table and grey in a unit's rule list - three colours for one kind of thing, so
+    nothing taught the reader that an underlined blue word is hoverable. `RuleTextFlow.Draw` now paints
+    rule NAMES in `ImGuiTheme.RuleBlue` and leaves the plain runs to the caller's colour;
+    `RuleBlueDim` for a rule on a weapon that cannot reach. The in-game army list overlay is
+    deliberately untouched - its rules take the printout's own colour and the owner likes that surface
+    as it is.
+  - **The palette is lighter** (about a third of the way to mid-grey, relative order unchanged). This
+    was also what made "switched off" possible: there was no room BELOW the old body tone, which is why
+    an out-of-range weapon could only be greyed text. It now gets a darker well behind the row
+    (`TableSetBgColor`), the disabled alpha over everything in it (which reaches the hand-painted
+    subline too, since `GetColorU32` multiplies by `style.Alpha`), and the dim rule blue.
+  - **Buttons are coloured by action class.** `UiButton` already asked every call site to declare
+    Back / Navigate / Confirm; that declaration was invisible. Now: neutral grey undoes, muted blue goes
+    somewhere, the accent commits. Tabs took the accent for the selected tab, so a tab and a button are
+    no longer two blocks of the same raised grey. This lands app-wide (the main menu's Quit is a Back).
+  - **Health removed / Points of damage**, at the headline and per weapon. Wounds alone do not say
+    whether the damage mattered - two wounds is a squad wiped or a scratch on a monster - and points is
+    the currency the game is costed in. Both are ratios of report fields; the defender's PRICE comes
+    from the screen (points are a list-building fact, not a combat one) and is captured WITH the report,
+    so it always describes the defender that was actually simulated, and costs no per-frame compile.
+  - **Rows are ordered by reach, ascending** - the order the distance slider walks past them, shortest
+    first, since the shortest reach is the one that decides how close you have to get. `OrderBy` is
+    stable, so a melee report (every reach 0) is left exactly as the engine produced it, Impact first.
+  - **The out-of-range note moved into the stat columns**, which are empty precisely because of it.
+    Drawn under a widened clip rect, since a table cell clips to its own column.
+  - **Steppers land on multiples**: from 14in, "+" gives 15 then 18 rather than trailing 17, 20, 23. A
+    stepper that keeps an arbitrary offset alive is one you have to do arithmetic with.
+  - Heroes wear #227's gold HERO tag in the picker (hero-ness from the same compile the join filter
+    already asks for - one place to be wrong), a joined tab names both units, Shooting/Melee are at the
+    large font, and the lowercase captions ("expected hits", "save") are capitalised.
+
 - 2026-09-12 (round 4, the owner's second review pass + a crash it turned up): app **2905/0** (+14),
   engine 3308/0 (1 skipped), build clean, smoke exits 0.
   - **Round 3 shipped a crash, and this is what it was.** `DrawWrappedOptionLabel` overlaid its click
@@ -188,6 +222,15 @@ _Newest on top._
 - **The frame rate is an input-sampling rate.** Raising it was the fix for a latency complaint, not a
   rendering one; worth remembering before anyone lowers it again to save power.
 
+- **Points of damage lives in the view, not the report.** `CombatReport` is what the combat stages did;
+  what a unit COSTS is a list-building fact the screen already holds, and threading it through the
+  engine's report shape would put a points model inside the sandbox for one label's sake. The view's
+  line is unchanged: it renders report fields and takes ratios of them (it already did, for the wound
+  meter) - no probability, threshold or modifier is derived there.
+- **The in-game army list keeps its own rule colour.** "Blue everywhere" was applied to the Forge and
+  the calculator, where a rule name was three different colours; the printed-list overlay draws rules in
+  the line's own colour by design and the owner singled that surface out as one they like.
+
 ## Deferred (recorded, not silently cut)
 
 - ~~Wrapped upgrade labels~~ - **done in round 3** once the owner authorized the Forge change.
@@ -253,6 +296,19 @@ The layout itself is ImGui and cannot be asserted; the strings and the tick arit
 21. **Buttons** - Back, Cancel, Swap and Load list are noticeably bigger, and at a small window size
     (F11 out of fullscreen) nothing in the middle column overlaps or spills.
 22. Clicking an army in the picker now lists its units on the FIRST click.
+23. **Round 5 - colour** - a rule name is the same blue in all three columns and in the Army Forge, and
+    a darker blue on an out-of-range weapon. Nothing anywhere is a white or grey rule name.
+24. The panels are lighter, and an out-of-range row is unmistakable: darker band, faded text, dim rules.
+25. **Buttons vs tabs** - Back/Cancel are grey, Choose unit / Load list / Swap / join are blue, LAUNCH
+    and CREATE (lobby, host dialog) are the bright accent, and the selected tab is accent-filled.
+26. **Headline** - four numbers: expected hits, expected wounds, Health removed (%), Points of damage.
+    Check the arithmetic once by hand: wounds / defender wounds, times the defender's points.
+27. Per-weapon %HP and PTS columns agree with the headline when there is only one weapon.
+28. Weapons are listed shortest reach first, and an out-of-range weapon's note sits in the stat columns.
+29. From 14in: "+" -> 15 -> 18, "++" -> 18 -> 24, "-" -> 12 -> 9, "--" -> 12 -> 6.
+30. The picker shows a gold HERO tag beside heroes (bundled books and saved lists both).
+31. A tab holding a joined pair reads "Captain + Vanguard Warriors" (shortened per name if long).
+32. Shooting/Melee are large and accent-filled, and the middle column still fits at a small window size.
 
 ## Outcome
 _Open._
