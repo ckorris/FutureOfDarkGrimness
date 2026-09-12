@@ -134,8 +134,8 @@ First launch: Windows SmartScreen may show "Windows protected your PC"
 because the app is not code-signed. Click "More info" -> "Run anyway".
 This is expected for an unsigned app and is safe.
 
-Sample army lists are in the "armies" folder - pick one from the lobby's
-"Load Army" button.
+Sample army lists are in the "armies" folder, split into GDF and AoF
+subfolders - pick one from the lobby's "Load Army" button.
 
 Keep the whole folder together - FdgRaylib.exe needs the DLLs and the
 Assets folder next to it.
@@ -174,8 +174,8 @@ Which build is this?
 Use the one matching the Mac. An Intel build also runs on Apple Silicon under
 Rosetta 2, but the arm64 build is native and faster.
 
-Sample army lists are in the "armies" folder - pick one from the lobby's
-"Load Army" button.
+Sample army lists are in the "armies" folder, split into GDF and AoF
+subfolders - pick one from the lobby's "Load Army" button.
 
 Keep the whole folder together - the binary needs its native .dylib libraries
 and the Assets folder next to it.
@@ -203,8 +203,8 @@ Requires a normal desktop with OpenGL + X11/Wayland (present on any
 standard Ubuntu/Fedora install). Built against glibc; Alpine/musl is not
 supported.
 
-Sample army lists are in the "armies" folder - pick one from the lobby's
-"Load Army" button.
+Sample army lists are in the "armies" folder, split into GDF and AoF
+subfolders - pick one from the lobby's "Load Army" button.
 
 Keep the whole folder together - the binary needs its native libraries
 and the Assets folder next to it.

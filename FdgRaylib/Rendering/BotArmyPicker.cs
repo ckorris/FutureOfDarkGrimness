@@ -1,14 +1,20 @@
+using FDG.ArmyBuilding;
+
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// Chooses starter armies for the lobby's bots (#372). Pure: it takes the catalog, the points limit and
-/// what everyone else is already using, and returns an army - no file IO, no ImGui - so the ranking and
-/// the no-repeats rotation are unit-tested directly.
+/// Chooses starter armies for the lobby's bots (#372). Pure: it takes the catalog, the lobby's points
+/// limit and Army Source setting, and what everyone else is already using, and returns an army - no file
+/// IO, no ImGui - so the ranking and the no-repeats rotation are unit-tested directly.
 ///
-/// <para>Five rules, in priority order:</para>
+/// <para>Six rules, in priority order:</para>
 /// <list type="number">
+///   <item>#400: never hand out an army from a game system the lobby's Army Source setting rejects. Not
+///   a preference like the rest - such an army BLOCKS the launch, so it is not a candidate at all, and
+///   unlike the points rule there is no last-resort fallback to it. A lobby whose folder holds nothing
+///   of the right system gets no pick, and the empty slot says so.</item>
 ///   <item>Never hand out an army OVER the points limit while the folder holds a legal one - the #153
-///   launch gate would flag it, so it is not a usable pick at all.</item>
+///   launch gate blocks it, so it is not a usable pick at all.</item>
 ///   <item>Among the legal ones, prefer those CLOSE to the limit, closest first.</item>
 ///   <item>Treat everything inside the band (#388) as equally good and pick one at RANDOM. Closest-first
 ///   alone made the opening pick of every lobby the same file - the bundled folder has five armies at
@@ -36,9 +42,10 @@ public sealed class BotArmyPicker
     // which is what makes the re-roll button a rotation rather than a random walk.
     private readonly Dictionary<Guid, HashSet<string>> _shown = new();
 
-    // The limit every rotation in _shown was built against. Moving it invalidates all of them: both
-    // which armies are legal and which is closest are answers to this number.
+    // The lobby settings every rotation in _shown was built against. Moving either invalidates all of
+    // them: which armies are legal, and which is closest, are answers to these two.
     private int? _pointsLimit;
+    private EAllowedGameSystems? _allowedSystems;
 
     /// <param name="rng">Injected so the band's random pick is reproducible under test; the lobby
     /// leaves it null and gets <see cref="Random.Shared"/>.</param>
@@ -61,21 +68,29 @@ public sealed class BotArmyPicker
             .ToList();
 
     /// <summary>
-    /// The next army for <paramref name="slot"/>, or null when the catalog is empty.
+    /// The next army for <paramref name="slot"/>, or null when the catalog holds nothing this lobby can
+    /// use - an empty folder, or (since #400) no army at all from an allowed game system.
     /// </summary>
+    /// <param name="allowedSystems">The lobby's Army Source setting. Armies from any other system are
+    /// dropped before ranking, so one can never be handed out even as a last resort.</param>
     /// <param name="inUseByOthers"><see cref="ArmyCatalogEntry.Key"/>s held by every OTHER player.</param>
-    public ArmyCatalogEntry? PickNext(Guid slot, int pointsLimit, IReadOnlySet<string> inUseByOthers)
+    public ArmyCatalogEntry? PickNext(Guid slot, int pointsLimit, EAllowedGameSystems allowedSystems,
+        IReadOnlySet<string> inUseByOthers)
     {
-        if (_catalog.Count == 0) return null;
+        List<ArmyCatalogEntry> eligible = _catalog
+            .Where(a => GameSystems.IsAllowed(allowedSystems, a.GameSystem))
+            .ToList();
+        if (eligible.Count == 0) return null;
 
-        // The lobby's limit moved, so every rotation recorded against the old one is stale.
-        if (_pointsLimit != pointsLimit)
+        // A lobby setting moved, so every rotation recorded against the old values is stale.
+        if (_pointsLimit != pointsLimit || _allowedSystems != allowedSystems)
         {
             _pointsLimit = pointsLimit;
+            _allowedSystems = allowedSystems;
             _shown.Clear();
         }
 
-        IReadOnlyList<ArmyCatalogEntry> ranked = Rank(_catalog, pointsLimit);
+        IReadOnlyList<ArmyCatalogEntry> ranked = Rank(eligible, pointsLimit);
 
         // Over-limit armies are a LAST RESORT, not merely a low-ranked option. Ranking alone used to be
         // the whole rule, which held right up until a slot had seen every legal army - at that point the

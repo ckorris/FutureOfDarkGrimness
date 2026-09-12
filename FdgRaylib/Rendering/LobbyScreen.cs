@@ -409,9 +409,9 @@ public class LobbyScreen : IAppScreen
         if (!ArmyCatalogReady)
             return "Reading the armies folder...";
         return "Roll another army from the armies folder, closest to the points limit\n" +
-               "first. Skips armies other players are using, never repeats one until\n" +
-               "this slot has seen them all, and never picks one over the limit unless\n" +
-               "the folder has nothing legal.";
+               "first. Only armies this lobby's Army Source setting accepts. Skips armies\n" +
+               "other players are using, never repeats one until this slot has seen them\n" +
+               "all, and never picks one over the limit unless the folder has nothing legal.";
     }
 
     /// <summary>#388: does this row still need a starter army rolled onto it? Pure, so the rule is
@@ -491,8 +491,14 @@ public class LobbyScreen : IAppScreen
                 p.ArmyListSummary.ArmyName, p.ArmyListSummary.FactionName, p.ArmyListSummary.PointCost))
             .ToHashSet();
 
-        if (_botArmyPicker.PickNext(playerID.ID, _viewModel.ArmyPoints, inUseByOthers) is not { } pick)
+        if (_botArmyPicker.PickNext(playerID.ID, _viewModel.ArmyPoints,
+                _viewModel.AllowedGameSystems, inUseByOthers) is not { } pick)
+        {
+            // #400: also the "nothing of an allowed system in the folder" case. Left silent for the same
+            // reason as an empty folder - the slot keeps whatever it had, and the roster's red Army cell
+            // plus the greyed LAUNCH button already say what is missing.
             return;
+        }
 
         if (LoadArmyFile(pick.Path) is { } army) _viewModel.UpdateArmyListFile(playerID, army);
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FDG.ArmyBuilding;
 using FdgRaylib;
 using FdgRaylib.Rendering;
 using NUnit.Framework;
@@ -222,4 +223,85 @@ public class BotArmyPickerTests
     {
         Assert.That(NewPicker().PickNext(SlotA, 1000, NobodyElse)?.Name, Is.EqualTo("Far"));
     }
+
+    // ── #400: the lobby's Army Source setting ────────────────────────────────────────────────
+
+    private static readonly List<ArmyCatalogEntry> MixedCatalog = new()
+    {
+        Army("GdfNear",  1950) with { GameSystem = null },                        // absent = GDF
+        Army("GdfFar",   1000) with { GameSystem = GameSystems.GrimdarkFuture },
+        Army("AofNearest", 1990) with { GameSystem = GameSystems.AgeOfFantasy },
+    };
+
+    [Test]
+    public void AGdfOnlyLobbyNeverRollsAnAofArmy_EvenWhenItIsTheClosest()
+    {
+        var picker = new BotArmyPicker(MixedCatalog);
+
+        // AofNearest (1990) is nearest the limit and would win outright under All. Roll the whole
+        // rotation: not once may it come up, because it would block the launch.
+        for (int i = 0; i < 6; i++)
+        {
+            ArmyCatalogEntry? pick = picker.PickNext(SlotA, Limit, EAllowedGameSystems.GrimdarkFuture, NobodyElse);
+            Assert.That(pick?.Name, Is.AnyOf("GdfNear", "GdfFar"));
+        }
+    }
+
+    [Test]
+    public void AnAofOnlyLobbyRollsTheAofArmy()
+    {
+        var picker = new BotArmyPicker(MixedCatalog);
+
+        Assert.That(picker.PickNext(SlotA, Limit, EAllowedGameSystems.AgeOfFantasy, NobodyElse)?.Name,
+            Is.EqualTo("AofNearest"));
+    }
+
+    [Test]
+    public void AllTakesEitherSystem()
+    {
+        var picker = new BotArmyPicker(MixedCatalog);
+
+        Assert.That(picker.PickNext(SlotA, Limit, EAllowedGameSystems.All, NobodyElse)?.Name,
+            Is.AnyOf("GdfNear", "AofNearest"), "both are inside the band");
+    }
+
+    // No fallback, unlike the points rule: an illegal army is never better than no army, because the
+    // slot would block the launch either way and the roster says which is missing.
+    [Test]
+    public void NothingOfAnAllowedSystemYieldsNoPick()
+    {
+        var gdfOnly = new BotArmyPicker(new List<ArmyCatalogEntry>
+        {
+            Army("GdfNear", 1950) with { GameSystem = GameSystems.GrimdarkFuture },
+        });
+
+        Assert.That(gdfOnly.PickNext(SlotA, Limit, EAllowedGameSystems.AgeOfFantasy, NobodyElse), Is.Null);
+    }
+
+    [Test]
+    public void ChangingTheAllowedSystemsRestartsTheRotation()
+    {
+        var picker = new BotArmyPicker(MixedCatalog);
+
+        picker.PickNext(SlotA, Limit, EAllowedGameSystems.GrimdarkFuture, NobodyElse);
+        picker.PickNext(SlotA, Limit, EAllowedGameSystems.GrimdarkFuture, NobodyElse); // both GDF seen
+        picker.PickNext(SlotA, Limit, EAllowedGameSystems.AgeOfFantasy, NobodyElse);
+
+        // Back to GDF: the rotation was dropped when the setting moved, so the pool is fresh rather
+        // than "everything already shown".
+        Assert.That(picker.PickNext(SlotA, Limit, EAllowedGameSystems.GrimdarkFuture, NobodyElse)?.Name,
+            Is.EqualTo("GdfNear"), "the nearest legal army opens a fresh rotation");
+    }
+}
+
+/// <summary>
+/// #400 gave PickNext an Army Source argument. Every case above this shim predates the setting and means
+/// an All lobby - where the system filter takes everything and the older rules decide - so they keep
+/// calling the three-argument form and it resolves here.
+/// </summary>
+internal static class BotArmyPickerTestExtensions
+{
+    public static ArmyCatalogEntry? PickNext(this BotArmyPicker picker, Guid slot, int pointsLimit,
+        IReadOnlySet<string> inUseByOthers) =>
+        picker.PickNext(slot, pointsLimit, EAllowedGameSystems.All, inUseByOthers);
 }

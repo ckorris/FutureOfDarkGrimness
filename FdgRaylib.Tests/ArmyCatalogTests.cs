@@ -120,6 +120,8 @@ public class ArmyCatalogTests
     // The equivalence that matters, against the real shipped lists rather than a synthetic file: the
     // streaming reader must agree with a full deserialize + ArmyListFile.TotalPoints on every one of
     // them. These carry an embedded book and Forge selections, which is exactly what the reader skips.
+    // It also pins the game-system slug: every shipped list must index the system it actually records,
+    // since that is what the lobby's Army Source filter (#400) judges it by.
     [Test]
     public void IndexedPointsMatchAFullDeserializeOfEveryShippedArmy()
     {
@@ -129,7 +131,10 @@ public class ArmyCatalogTests
         string? folder = FindRepoArmiesFolder();
         if (folder is null) Assert.Ignore("Could not locate the repo's armies folder from the test binary.");
 
-        string[] files = Directory.GetFiles(folder!, "*" + ArmyListFile.EXTENSION_WITH_PERIOD);
+        // Recursive since #400: the shipped lists live in armies/GDF and armies/AoF, so a flat
+        // GetFiles here finds nothing at all and this test stops covering anything.
+        string[] files = Directory.GetFiles(
+            folder!, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories);
         Assert.That(files, Is.Not.Empty, "the armies folder should not be empty");
 
         foreach (string file in files)
@@ -143,7 +148,60 @@ public class ArmyCatalogTests
                 Assert.That(indexed!.Value.Points, Is.EqualTo(full!.TotalPoints), Path.GetFileName(file));
                 Assert.That(indexed.Value.Name, Is.EqualTo(full.Name), Path.GetFileName(file));
                 Assert.That(indexed.Value.Faction, Is.EqualTo(full.Faction), Path.GetFileName(file));
+                Assert.That(indexed.Value.GameSystem, Is.EqualTo(full.GameSystem), Path.GetFileName(file));
             });
         }
+    }
+
+    // ── #400: subfolders and the game-system slug ────────────────────────────────────────────
+
+    [Test]
+    public void ScanRecursesIntoSubfolders()
+    {
+        // The shipped layout splits armies/ into GDF/ and AoF/; a flat scan would index neither.
+        WriteArmy("top", Army("Top", "F", 100));
+        Directory.CreateDirectory(Path.Combine(_root, "GDF"));
+        Directory.CreateDirectory(Path.Combine(_root, "AoF", "deeper"));
+        WriteArmy(Path.Combine("GDF", "gdf"), Army("In GDF", "F", 200));
+        WriteArmy(Path.Combine("AoF", "deeper", "aof"), Army("Nested", "F", 300));
+
+        string[] names = new ArmyCatalog(_root).Entries.Select(e => e.Name).OrderBy(n => n).ToArray();
+
+        Assert.That(names, Is.EqualTo(new[] { "In GDF", "Nested", "Top" }));
+    }
+
+    [Test]
+    public void ReadsTheGameSystemSlug()
+    {
+        ArmyListFile aof = Army("Elves", "High Elves", 500);
+        aof.GameSystem = FDG.ArmyBuilding.GameSystems.AgeOfFantasy;
+        string path = WriteArmy("aof", aof);
+
+        Assert.That(ArmyCatalog.ReadEntry(path)!.Value.GameSystem,
+            Is.EqualTo(FDG.ArmyBuilding.GameSystems.AgeOfFantasy));
+    }
+
+    // Absent means Grimdark Future (#378), and the field is omitted on save, so every pre-#378 file
+    // reaches the picker as null rather than as an empty string or a guess.
+    [Test]
+    public void AnArmyWithNoGameSystemFieldReadsAsNull()
+    {
+        string path = WriteArmy("plain", Army("Bugs", "Alien Hives", 500));
+
+        Assert.That(ArmyCatalog.ReadEntry(path)!.Value.GameSystem, Is.Null);
+    }
+
+    // The folder an army sits in is decoration: the slug comes from the file, so misfiling a list
+    // cannot smuggle it past the lobby's Army Source filter.
+    [Test]
+    public void FolderNameDoesNotDecideTheSystem()
+    {
+        Directory.CreateDirectory(Path.Combine(_root, "GDF"));
+        ArmyListFile aof = Army("Misfiled", "High Elves", 500);
+        aof.GameSystem = FDG.ArmyBuilding.GameSystems.AgeOfFantasy;
+        WriteArmy(Path.Combine("GDF", "misfiled"), aof);
+
+        Assert.That(new ArmyCatalog(_root).Entries.Single().GameSystem,
+            Is.EqualTo(FDG.ArmyBuilding.GameSystems.AgeOfFantasy));
     }
 }

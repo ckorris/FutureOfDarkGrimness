@@ -12,7 +12,13 @@ namespace FdgRaylib;
 /// <param name="Points">
 /// <see cref="ArmyListFile.TotalPoints"/>: the units' costs plus <see cref="ArmyListFile.UnattributedPoints"/>.
 /// </param>
-public readonly record struct ArmyCatalogEntry(string Path, string Name, string Faction, int Points)
+/// <param name="GameSystem">
+/// #400: the army's OPR game-system slug, so Random Army can skip a list the lobby's Army Source setting
+/// would reject. Null means the file has no such field, which means Grimdark Future
+/// (<see cref="FDG.ArmyBuilding.GameSystems.Normalize"/>) - compare through that, never raw.
+/// </param>
+public readonly record struct ArmyCatalogEntry(
+    string Path, string Name, string Faction, int Points, string? GameSystem = null)
 {
     /// <summary>
     /// Identity used to tell "another player already has this army" without knowing where they loaded it
@@ -27,8 +33,13 @@ public readonly record struct ArmyCatalogEntry(string Path, string Name, string 
 }
 
 /// <summary>
-/// A lightweight index of the <c>armies/</c> folder (<see cref="ArmyPaths"/>), used to hand bots a
-/// starter army in the lobby.
+/// A lightweight index of the <c>armies/</c> folder (<see cref="ArmyPaths"/>) and everything under it,
+/// used to hand bots a starter army in the lobby.
+///
+/// <para>#400: the scan RECURSES, so the folder can be organized into subfolders - the shipped layout
+/// splits it into <c>GDF/</c> and <c>AoF/</c> - without anything below the top level going invisible.
+/// Nothing reads the folder names; an army's game system comes from the file, never from where it
+/// happens to sit.</para>
 ///
 /// <para>Scanning matters here: the bundled lists are Forge-built, so each one carries a full snapshot of
 /// its source book and runs 300-600 KB - about 12 MB across the folder. Deserializing them properly, even
@@ -61,7 +72,8 @@ public sealed class ArmyCatalog
         if (folder is null || !Directory.Exists(folder)) return Array.Empty<ArmyCatalogEntry>();
 
         var entries = new List<ArmyCatalogEntry>();
-        foreach (string path in Directory.EnumerateFiles(folder, "*" + ArmyListFile.EXTENSION_WITH_PERIOD))
+        foreach (string path in Directory.EnumerateFiles(
+            folder, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories))
         {
             if (ReadEntry(path) is { } entry) entries.Add(entry);
         }
@@ -88,6 +100,7 @@ public sealed class ArmyCatalog
             if (!reader.Read() || reader.TokenType != JsonTokenType.StartObject) return null;
 
             string name = "", faction = "";
+            string? gameSystem = null;
             int points = 0;
             int unitCount = 0;
 
@@ -102,6 +115,7 @@ public sealed class ArmyCatalog
                 {
                     case "name":                 name    = reader.GetString() ?? ""; break;
                     case "faction":              faction = reader.GetString() ?? ""; break;
+                    case "gameSystem":           gameSystem = reader.GetString();    break;
                     case "unattributedPoints":   points += reader.GetInt32();        break;
                     case "units":                points += SumUnitPoints(ref reader, out unitCount); break;
                     default:                     reader.Skip();                      break;
@@ -109,7 +123,7 @@ public sealed class ArmyCatalog
             }
 
             if (unitCount == 0) return null;
-            return new ArmyCatalogEntry(path, name, faction, points);
+            return new ArmyCatalogEntry(path, name, faction, points, gameSystem);
         }
         catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException)
         {

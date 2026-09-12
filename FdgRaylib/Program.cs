@@ -414,7 +414,8 @@ if (editableIdx >= 0 && editableIdx + 1 < args.Length)
     bool dryRun = args.Contains("--dry-run");
     List<string> targets = args.Skip(editableIdx + 1).TakeWhile(a => !a.StartsWith("--"))
         .SelectMany(t => Directory.Exists(t)
-            ? Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            ? Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories)
+                .OrderBy(p => p).ToArray()
             : new[] { t })
         .ToList();
 
@@ -508,8 +509,8 @@ if (retrofitIdx >= 0 && retrofitIdx + 1 < args.Length)
 {
     List<string> retrofitTargets = args.Skip(retrofitIdx + 1).TakeWhile(a => !a.StartsWith("--"))
         .SelectMany(t => Directory.Exists(t)
-            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD)
-                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD))
+            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories)
+                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories))
             : new[] { t })
         .ToList();
     int retrofitPatched = 0;
@@ -549,8 +550,8 @@ if (retrofitBasesIdx >= 0 && retrofitBasesIdx + 1 < args.Length)
 {
     List<string> targets = args.Skip(retrofitBasesIdx + 1).TakeWhile(a => !a.StartsWith("--"))
         .SelectMany(t => Directory.Exists(t)
-            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD)
-                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD))
+            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories)
+                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories))
             : new[] { t })
         .ToList();
     int patched = 0;

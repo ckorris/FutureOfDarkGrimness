@@ -5,6 +5,10 @@ namespace FdgRaylib;
 /// Army Forge, share-link import) starts in the "armies" folder rather than dumping the user in the
 /// application root, which is full of DLLs and nothing they'd ever pick.
 ///
+/// <para>#400: the folder has subfolders (the shipped layout splits it into <c>GDF/</c> and <c>AoF/</c>),
+/// so this is where the Load/Save dialogs OPEN, not where the armies necessarily are. The lobby's
+/// <see cref="ArmyCatalog"/> scan recurses; nothing reads the folder names.</para>
+///
 /// <para>Two candidates, in order: beside the executable (the shipped layout - <c>scripts/build-dist.sh</c>
 /// copies the repo's <c>armies/</c> next to the binary) and under the working directory (a
 /// <c>dotnet run</c> from the repo root, where the output folder is several levels down from

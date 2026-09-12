@@ -1,0 +1,4 @@
+# Age of Fantasy army lists (.fdgarmy) go here.
+#
+# The folder name is for humans only - the lobby reads each army file's own gameSystem
+# field, so an army is never AoF because of where it sits. See WorkItems/400.
