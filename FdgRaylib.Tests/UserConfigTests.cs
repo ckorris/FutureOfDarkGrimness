@@ -372,4 +372,39 @@ public class UserConfigTests
             EAiProfile aiProfile = EAiProfile.SoloRules) => throw new NotSupportedException();
         public bool TryResumeGame(out string? failReason) => throw new NotSupportedException();
     }
+    [Test]
+    public void TheCalculatorsPerSideGameSystemSurvivesDisk()
+    {
+        string path = PathFor("calc.json");
+
+        UserConfig.WriteTo(path, new UserConfig
+        {
+            CalculatorSystemA = GameSystems.AgeOfFantasy,
+            CalculatorSystemB = GameSystems.GrimdarkFuture,
+        });
+        UserConfig read = UserConfig.LoadFrom(path);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.CalculatorSystemA, Is.EqualTo(GameSystems.AgeOfFantasy));
+            Assert.That(read.CalculatorSystemB, Is.EqualTo(GameSystems.GrimdarkFuture),
+                "the two sides are stored independently");
+        });
+    }
+
+    [Test]
+    public void AConfigWrittenBeforeTheCalculatorExistedDefaultsToGrimdarkFuture()
+    {
+        string path = PathFor("old.json");
+        File.WriteAllText(path, "{ \"PlayerName\": \"Gary\" }");
+
+        UserConfig read = UserConfig.LoadFrom(path);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.CalculatorSystemA, Is.EqualTo(GameSystems.GrimdarkFuture));
+            Assert.That(read.CalculatorSystemB, Is.EqualTo(GameSystems.GrimdarkFuture));
+        });
+    }
+
 }

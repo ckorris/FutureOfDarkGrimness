@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FDG;
+using FDG.ArmyBuilding;
 using FDG.Network;
 using FDG.Network.Connection.Lobby;
 
@@ -39,6 +40,15 @@ public sealed class UserConfig
     /// <summary>Display: start in borderless-windowed fullscreen. F11 toggles it at runtime and writes the
     /// new choice back here, so it is remembered next launch. On by default on a fresh install.</summary>
     public bool StartFullscreen { get; set; } = true;
+
+    /// <summary>#398: the Combat Calculator's per-side game-system choice (Grimdark Future / Age of
+    /// Fantasy), remembered between runs because a player mostly works in one system. Slugs, not an
+    /// enum, so the file stays readable and an unknown value degrades to the default rather than
+    /// throwing. Side A and B are stored separately - a cross-system what-if is a legitimate question
+    /// to ask a calculator.</summary>
+    public string CalculatorSystemA { get; set; } = GameSystems.GrimdarkFuture;
+
+    public string CalculatorSystemB { get; set; } = GameSystems.GrimdarkFuture;
 
     /// <summary>The lobby settings panel, as the last hosted (non-resume) game left it.</summary>
     public HostGameSettings HostSettings { get; set; } = HostGameSettings.FromDefaults();
