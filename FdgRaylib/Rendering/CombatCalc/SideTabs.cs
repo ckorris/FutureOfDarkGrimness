@@ -45,14 +45,18 @@ internal sealed class SideTabs
     }
 
     /// <summary>
-    /// The "+" tab: a copy of the unit in hand, landing immediately after it and selected. A copy rather
-    /// than a blank slot because the question being asked is almost always a variation on the unit
-    /// already configured - and a blank tab is one click away anyway, via Choose unit.
+    /// The "+" tab: a copy of the unit in hand, added at the END of the stack and selected. A copy
+    /// rather than a blank slot because the question being asked is almost always a variation on the
+    /// unit already configured - and a blank tab is one click away anyway, via Choose unit.
+    ///
+    /// <para>At the end rather than next to its original because that is where the "+" itself sits, and
+    /// because ImGui keeps its own tab order: appending is the one position where the bar's order and
+    /// this list's order cannot drift apart.</para>
     /// </summary>
     internal int Duplicate()
     {
-        _slots.Insert(_active + 1, new Slot(_nextKey++, Current.Clone()));
-        return ++_active;
+        _slots.Add(new Slot(_nextKey++, Current.Clone()));
+        return _active = _slots.Count - 1;
     }
 
     /// <summary>

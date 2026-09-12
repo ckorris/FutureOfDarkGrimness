@@ -53,7 +53,8 @@ _Newest on top._
     CALLING `DrawVolleyRow` once a tooltip was in hand, so hovering a rule on the second of three
     weapons made the third weapon disappear while the tooltip was open. Written out longhand.
   - **Tabs per column** (`SideTabs`): one tab per candidate unit, "+" copies the unit in hand into a new
-    tab beside it, "x" closes (hidden while one tab remains). Only the selected tab fights, so flipping
+    tab at the end of the stack (where the "+" itself sits, and the one position where ImGui's own tab
+    order cannot drift from ours), "x" closes (hidden while one tab remains). Only the selected tab fights, so flipping
     tabs re-runs the fight. The copy deep-copies the `BuilderList` and shares the book - editing the
     variant must not reach back into the original, and a book is half a megabyte of parsed JSON.
   - **The distance track is three bands**: green where every weapon reaches, yellow where only some do,

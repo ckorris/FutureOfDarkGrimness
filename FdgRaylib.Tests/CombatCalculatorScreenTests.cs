@@ -172,7 +172,7 @@ public class CombatCalculatorScreenTests
         Assert.Multiple(() =>
         {
             Assert.That(tabs.Slots, Has.Count.EqualTo(2));
-            Assert.That(landed, Is.EqualTo(1), "the copy lands immediately after its original");
+            Assert.That(landed, Is.EqualTo(1), "the copy lands at the end of the stack");
             Assert.That(tabs.Active, Is.EqualTo(1), "and is the one you are now editing");
             Assert.That(SideTabs.TabLabel(tabs.Current), Is.EqualTo("Vanguard Warriors"));
             Assert.That(tabs.Slots[0].Key, Is.Not.EqualTo(tabs.Slots[1].Key),
