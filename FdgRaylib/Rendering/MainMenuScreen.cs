@@ -48,13 +48,15 @@ public class MainMenuScreen : IAppScreen
         float centerX = (screenW - btnW) * 0.5f;
         float startY  = screenH * 0.28f;
 
-        // Navigation buttons click with the neutral Navigate tone; Quit recedes with the Back tone.
+        // Navigation buttons click with the neutral Navigate tone; Quit recedes with the Back tone - but
+        // every entry keeps the SAME colour: these are seven peers in a list, not an action beside its
+        // cancel, so #398's action-class tint is asked to sit this one out.
         void DrawButton(string label, Action? action, int order, bool back = false)
         {
             ImGui.SetCursorPos(new Vector2(centerX, startY + order * (btnH + gapY)));
             ImGui.SetWindowFontScale(btnFontScale);
             bool clicked = back
-                ? UiButton.Back(label, new Vector2(btnW, btnH))
+                ? UiButton.BackInList(label, new Vector2(btnW, btnH))
                 : UiButton.Navigate(label, new Vector2(btnW, btnH));
             if (clicked) action?.Invoke();
             ImGui.SetWindowFontScale(1.0f);

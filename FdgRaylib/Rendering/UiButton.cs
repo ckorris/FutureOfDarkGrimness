@@ -32,6 +32,15 @@ internal static class UiButton
 
     public static bool Back(string label) => Press(label, null, EClass.Back);
 
+    /// <summary>
+    /// A Back that is drawn as a neutral menu entry: the back tone on click, the navigation colour on
+    /// screen. For a Back that sits in a list of PEERS rather than beside the thing it cancels - the
+    /// main menu's Quit is one of seven identical entries, and tinting that one alone read as a bug
+    /// rather than as meaning.
+    /// </summary>
+    public static bool BackInList(string label, Vector2 size) =>
+        Press(label, size, EClass.Back, EClass.Go);
+
     /// <summary>SmallButton voiced with the neutral Navigate tone (roster/copy/pick actions).</summary>
     public static bool NavigateSmall(string label)
     {
@@ -49,15 +58,18 @@ internal static class UiButton
         Commit,
     }
 
-    private static bool Press(string label, Vector2? size, EClass cls)
+    /// <param name="sound">Which cue the click voices.</param>
+    /// <param name="tint">Which class's colour to wear, when that differs from the sound (see
+    /// <see cref="BackInList"/>). Null means "the same class", which is the normal case.</param>
+    private static bool Press(string label, Vector2? size, EClass sound, EClass? tint = null)
     {
-        PushClass(cls);
+        PushClass(tint ?? sound);
         bool clicked = size is { } s ? ImGui.Button(label, s) : ImGui.Button(label);
         ImGui.PopStyleColor(3);
 
         if (clicked)
         {
-            switch (cls)
+            switch (sound)
             {
                 case EClass.Back: UiSound.Back(); break;
                 case EClass.Commit: UiSound.Confirm(); break;

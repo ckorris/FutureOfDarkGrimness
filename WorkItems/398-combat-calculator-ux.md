@@ -54,7 +54,11 @@ _Newest on top._
   - **Buttons are coloured by action class.** `UiButton` already asked every call site to declare
     Back / Navigate / Confirm; that declaration was invisible. Now: neutral grey undoes, muted blue goes
     somewhere, the accent commits. Tabs took the accent for the selected tab, so a tab and a button are
-    no longer two blocks of the same raised grey. This lands app-wide (the main menu's Quit is a Back).
+    no longer two blocks of the same raised grey. This lands app-wide, which caught one case where the
+    tint is wrong: the main menu's Quit is a Back, but it is also one of seven identical entries in a
+    list, and tinting one of them alone read as a bug rather than as meaning (owner spotted it).
+    `UiButton.BackInList` keeps the back TONE and takes the neutral colour - the tint belongs beside the
+    thing being cancelled, not in a list of peers.
   - **Health removed / Points of damage**, at the headline and per weapon. Wounds alone do not say
     whether the damage mattered - two wounds is a squad wiped or a scratch on a monster - and points is
     the currency the game is costed in. Both are ratios of report fields; the defender's PRICE comes
