@@ -88,6 +88,8 @@ public class LobbyArmySourceTests
         strings.Add(LobbyPointsStatus.Tooltip(ELobbyPointsStatus.Under, 1000, 2000)!);
         strings.Add(LobbyScreen.LaunchTooltip(isHost: false, Array.Empty<string>())!);
         strings.Add(LobbyScreen.LaunchTooltip(isHost: true, new[] { "Bob: no army assigned." })!);
+        // #405: the add-player / add-bot button tooltips.
+        strings.AddRange(LobbyScreen.AddPlayerTooltips);
 
         foreach (string text in strings)
             foreach (char c in text)

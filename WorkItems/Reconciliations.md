@@ -744,3 +744,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-09-12 - number 403 filed clean.** `git fetch origin` before filing, from `origin/master` at `f63996a`: detail files max **402** (400/401 upstream, 402 this clone's renumbered item), archive max **401**, index high-water **398**, and no `40x` branch on any remote. **403 = Army Forge import-first UX pass.** No collision.
 
 > **2026-09-12 - number 404 filed clean.** `git fetch origin` before filing, from `origin/master` at `f63996a`: detail files max **403**, archive max **401**, and no `40x` branch on any remote. **404 = Ambush reserve reads as Activated in the army list.** No collision.
+
+> **2026-09-12 - number 405 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `8b6f598`: detail files max **404**, archive max **401**, index high-water **398**, and no `40x`
+> branch on either remote. **405 = lobby Remove player/bot + add-button tooltips.** No collision.
+

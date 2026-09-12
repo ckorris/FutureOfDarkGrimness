@@ -367,6 +367,8 @@ public class UserConfigTests
         public bool CheckCanModifyPlayerIDInfo(PlayerID playerID) => throw new NotSupportedException();
         public void AddLocalPlayer() => throw new NotSupportedException();
         public void AddAiPlayer(EAiProfile profile) => throw new NotSupportedException();
+        public bool CheckCanRemovePlayer(PlayerID playerID) => false; // #405
+        public void RemovePlayer(PlayerID playerID) => throw new NotSupportedException();
         public void SendMessage(string message) => throw new NotSupportedException();
         public void UpdateArmyListFile(PlayerID playerId, ArmyListFile armyListFile) => throw new NotSupportedException();
         public void SetPlayerColor(PlayerID playerId, int colorIndex) => throw new NotSupportedException();

@@ -291,7 +291,9 @@ public class LobbyScreen : IAppScreen
             ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.12f);
             // #372: every row now carries Load Army AND Random Army, so Actions takes the width back
             // from Army/Faction (both of which wrap gracefully; a clipped button does not).
-            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.22f);
+            // #405: Remove makes it three buttons on most rows, hence the extra width. The weights are
+            // normalized by SizingStretchProp, so raising this one narrows the rest proportionally.
+            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.26f);
             ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
             ImGui.TableHeadersRow();
             ImGui.PopStyleColor();
@@ -362,6 +364,24 @@ public class LobbyScreen : IAppScreen
                     // AllowWhenDisabled: the greyed-out case is the one that most needs explaining.
                     if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
                         UiText.Tooltip(RandomArmyTooltip(canModify, info));
+
+                    // #405: drop the slot entirely. Shown only where it is actually allowed rather than
+                    // greyed out - unlike Random Army, an absent Remove needs no explaining, and a
+                    // disabled one on the host's OWN row would read as a bug. The engine owns the policy
+                    // (CheckCanRemovePlayer): not the host's own row, not a connected client, never in a
+                    // resumed or launched lobby, and never on a client's screen.
+                    //
+                    // Removing mid-loop is safe: RemovePlayer publishes a NEW list, so `players` - the
+                    // snapshot this frame is iterating - is unaffected, and the row simply vanishes next
+                    // frame.
+                    if (_viewModel.CheckCanRemovePlayer(info.PlayerID))
+                    {
+                        ImGui.SameLine();
+                        if (UiButton.NavigateSmall($"Remove##{i}"))
+                            _viewModel.RemovePlayer(info.PlayerID);
+                        if (ImGui.IsItemHovered())
+                            UiText.Tooltip($"Remove {info.PlayerName} from the lobby.");
+                    }
                 }
             }
 
@@ -376,18 +396,29 @@ public class LobbyScreen : IAppScreen
             ImGui.Spacing();
             if (UiButton.Navigate("Add Local Player"))
                 _viewModel.AddLocalPlayer();
+            // #405: what each of these four actually gets you. The bot rungs in particular were
+            // indistinguishable from their names alone - "Tactician" and "Strategist" say nothing about
+            // which is harder, or that one of them thinks for a while before it moves.
+            if (ImGui.IsItemHovered())
+                UiText.Tooltip(LocalPlayerTooltip);
             ImGui.SameLine();
             // #191 A6/B5: three bot flavors, one per ladder rung - the Strategist (searches ahead),
             // the Tactician (challenge AI, one ply), and the legacy solo-rules bot, rechristened
             // DerpBot (Chris's naming). Every rung stays selectable forever (plan G4).
             if (UiButton.Navigate("Add Strategist Bot"))
                 _viewModel.AddAiPlayer(EAiProfile.Strategist);
+            if (ImGui.IsItemHovered())
+                UiText.Tooltip(StrategistBotTooltip);
             ImGui.SameLine();
             if (UiButton.Navigate("Add Tactician Bot"))
                 _viewModel.AddAiPlayer(EAiProfile.Tactician);
+            if (ImGui.IsItemHovered())
+                UiText.Tooltip(TacticianBotTooltip);
             ImGui.SameLine();
             if (UiButton.Navigate("Add DerpBot"))
                 _viewModel.AddAiPlayer(EAiProfile.SoloRules);
+            if (ImGui.IsItemHovered())
+                UiText.Tooltip(DerpBotTooltip);
         }
     }
 
@@ -399,6 +430,31 @@ public class LobbyScreen : IAppScreen
     // empty and blocks the launch, rather than quietly playing a list nobody picked.
 
     private static bool ArmyCatalogReady => SharedArmyCatalog.Value.IsLoaded;
+
+    // #405 (Chris's wording). UiText.Tooltip does not wrap, so these are hard-wrapped, same as
+    // RandomArmyTooltip below. ASCII only - the ImGui atlas bakes no glyph past U+00FF.
+    internal const string LocalPlayerTooltip =
+        "Adds a human that's playing on the same computer as you. Trade seats\n" +
+        "when the game says it's their turn.";
+
+    internal const string StrategistBotTooltip =
+        "Very smart bot. Can think many moves ahead and picks moves that give\n" +
+        "it a long-term advantage. Takes a little time to make each move,\n" +
+        "depending on your CPU speed.";
+
+    internal const string TacticianBotTooltip =
+        "Somewhat challenging bot. Considers the state of the board and runs\n" +
+        "lots of simulations to decide how to move, but can't plan ahead.";
+
+    internal const string DerpBotTooltip =
+        "Based off the solo play rules from OnePageRules. Very dumb. Can\n" +
+        "occasionally beat a human through dumb luck.";
+
+    /// <summary>#405: the four add-button tooltips, so the ASCII guard can sweep them all.</summary>
+    internal static IReadOnlyList<string> AddPlayerTooltips { get; } = new[]
+    {
+        LocalPlayerTooltip, StrategistBotTooltip, TacticianBotTooltip, DerpBotTooltip,
+    };
 
     /// <summary>Why the Random Army button is or isn't available on a given row.</summary>
     private static string RandomArmyTooltip(bool canModify, LobbyPlayerInfoSummary info)

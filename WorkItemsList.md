@@ -155,6 +155,10 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
+- [~] 405 - Lobby could add local players and bots but never drop one, and the four add buttons
+  said nothing about what each gets you. Per-row Remove (engine owns the policy; host's own row,
+  connected clients, resumed/launched lobbies excluded) + tooltips. Implemented + tested;
+  **awaiting GUI hand-verify**. ([WorkItems/405](WorkItems/405-lobby-remove-player-and-button-tooltips.md))
 - [~] 397 - Combat Calculator: new main-menu screen pitting unit A against unit B (Shooting/Melee tabs), each side built Forge-style (upgrades, combined squads, joined hero) from a bundled book or a loaded .fdgarmy. Expected hits/wounds come from running the REAL stage chain in a throwaway sandbox, never a mirror; every bundled unit probed. Bell curve + strike-back explicitly deferred. Implemented + tested; **awaiting GUI hand-verify**. ([WorkItems/397](WorkItems/397-combat-calculator.md))
 - [ ] 398 - Combat Calculator visual/usability pass: headline block in LargeFont, one pipeline row per weapon with shared chips and the #292 rule underline, situation bar beside the results, wrapped upgrade lines, per-column unit tabs, banded distance track, font-derived chrome. Also fixed the Forge abort its round-3 wrapping introduced. ([WorkItems/398](WorkItems/398-combat-calculator-ux.md))
 - [~] 393 - Large 3-point terrain pieces: the heavy tier was seven pieces, so games placed one of each. Ten palette-only templates added (9-11.5" long side, all four filter types), auto layout untouched. Implemented + tested; **awaiting GUI hand-verify**. ([WorkItems/393](WorkItems/393-large-terrain-pieces.md))
