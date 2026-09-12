@@ -54,6 +54,14 @@ public static class ImGuiTheme
     // #227's hero gold, shared so a hero reads the same in the printed list and in the calculator.
     public static readonly Vector4 HeroGold = new(1f, 0.85f, 0.3f, 1f);
 
+    // #398: the three bands of the calculator's distance track - every weapon reaches this far, only
+    // some do, none do. Traffic-light reading, but darkened well below the text and the slider grab that
+    // sit on top of them: these are a BACKGROUND, and a saturated green would fight the numbers for
+    // attention when the answer is simply "yes, everything can shoot".
+    public static readonly Vector4 RangeAllZone  = R(24, 58, 30);
+    public static readonly Vector4 RangeSomeZone = R(74, 60, 16);
+    public static readonly Vector4 RangeNoneZone = R(78, 26, 26);
+
     // Opaque panel fill for modal dialogs that float above a dimmed backdrop (Host/Client). Matches the
     // lobby's panel tone (the theme window body) so the dialogs read as the same surface, not a blue slab.
     public static readonly Vector4 DialogPanelBg = Panel;

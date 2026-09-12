@@ -38,11 +38,11 @@ internal static class ForgeUnitDetail
         ImGui.TextDisabled($"({unit.PointCost} pts)");
 
         UiChrome.DrawPill("Quality", $"{unit.Quality}+", ImGuiTheme.AccentBlue);
-        ImGui.SameLine(0f, 8f);
+        ImGui.SameLine(0f, UiChrome.PillGap);
         UiChrome.DrawPill("Defense", $"{unit.Defense}+", ImGuiTheme.AccentBlue);
         if (ToughValue(unit) is { } tough)
         {
-            ImGui.SameLine(0f, 8f);
+            ImGui.SameLine(0f, UiChrome.PillGap);
             UiChrome.DrawPill("Tough", tough, ImGuiTheme.AccentBlue);
         }
         ImGui.Separator();

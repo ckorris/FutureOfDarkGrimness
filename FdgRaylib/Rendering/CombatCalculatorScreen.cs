@@ -52,7 +52,8 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string ReadOnlyNote =
         "This army carries no book, so its units are shown as they were saved and cannot be changed here.";
     internal const string VariablesHeader = "SITUATION";
-    internal const string AssumptionsLabel = "(i) what this does not account for";
+    internal const string BackLabel = "Back";
+    internal const string CancelLabel = "Cancel";
     internal const string DistanceLabel = "Distance (in)";
     internal const string CoverLabel = "Defender is in cover";
     internal const string MovedLabel = "Attacker moved this activation";
@@ -63,6 +64,7 @@ public class CombatCalculatorScreen : IAppScreen
     private static readonly Vector4 RuleText = new(0.45f, 0.80f, 0.90f, 1f);
     private static readonly Vector4 WarnText = new(0.90f, 0.80f, 0.35f, 1f);
     private static readonly Vector4 HeadText = new(0.85f, 0.85f, 0.90f, 1f);
+    private static readonly Vector4 Transparent = Vector4.Zero;
 
     private readonly CalculatorSide _attacker = new();
     private readonly CalculatorSide _defender = new();
@@ -143,16 +145,26 @@ public class CombatCalculatorScreen : IAppScreen
 
     private void DrawToolbar()
     {
-        if (UiButton.Back("Back")) OnBack?.Invoke();
+        if (UiButton.Back(BackLabel, UiChrome.ButtonSize(BackLabel))) OnBack?.Invoke();
 
         ImGui.SameLine();
         ImGui.TextColored(HeadText, "   " + Title);
 
         ImGui.SameLine();
-        float swapWidth = ImGui.CalcTextSize(SwapLabel).X + ImGui.GetStyle().FramePadding.X * 4f;
-        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - swapWidth - ImGui.GetStyle().WindowPadding.X);
-        if (UiButton.NavigateSmall(SwapLabel)) Swap();
+        Vector2 swap = UiChrome.ButtonSize(SwapLabel);
+        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - swap.X - ImGui.GetStyle().WindowPadding.X);
+        if (UiButton.Navigate(SwapLabel, swap)) Swap();
     }
+
+    /// <summary>A back/cancel button at the shared chrome size - big enough to aim at without looking,
+    /// and sized from the font so it is the same button on a laptop and on a 4K display. The label is
+    /// measured, the "##id" suffix is not.</summary>
+    private static bool BackButton(string label, string id) =>
+        UiButton.Back($"{label}##{id}", UiChrome.ButtonSize(label));
+
+    /// <inheritdoc cref="BackButton"/>
+    private static bool NavButton(string label, string id) =>
+        UiButton.Navigate($"{label}##{id}", UiChrome.ButtonSize(label));
 
     /// <summary>
     /// Which side is still missing, in words. "Choose a unit on both sides" is unhelpful once one side
@@ -285,7 +297,7 @@ public class CombatCalculatorScreen : IAppScreen
             - ImGui.GetStyle().ItemSpacing.X);
         ImGui.TextUnformatted(points);
 
-        if (UiButton.NavigateSmall($"{ChooseUnitLabel}##pick-{id}")) picker.Open();
+        if (NavButton(ChooseUnitLabel, $"pick-{id}")) picker.Open();
         ImGui.Separator();
     }
 
@@ -325,12 +337,12 @@ public class CombatCalculatorScreen : IAppScreen
 
         if (side.Joined is not null)
         {
-            if (UiButton.Back($"{RemoveJoinLabel}##unjoin-{id}")) side.RemoveJoin();
+            if (BackButton(RemoveJoinLabel, $"unjoin-{id}")) side.RemoveJoin();
             return;
         }
 
         bool mainIsHero = side.MainIsHero;
-        if (UiButton.NavigateSmall($"{(mainIsHero ? JoinUnitLabel : JoinHeroLabel)}##join-{id}"))
+        if (NavButton(mainIsHero ? JoinUnitLabel : JoinHeroLabel, $"join-{id}"))
         {
             picker.OpenForJoin(ArmySource.FromBook(side.Book!),
                 mainIsHero ? UnitPicker.ERoles.HostsOnly : UnitPicker.ERoles.HeroesOnly);
@@ -347,13 +359,13 @@ public class CombatCalculatorScreen : IAppScreen
             if (picker.JoinMode)
             {
                 // A join stays inside the unit's own army, so there is no army level to step back to.
-                if (UiButton.Back($"Cancel##joincancel-{id}")) picker.Close();
+                if (BackButton(CancelLabel, $"joincancel-{id}")) picker.Close();
                 ImGui.SameLine();
                 ImGui.TextUnformatted(side.MainIsHero ? WhichUnitPrompt : WhichHeroPrompt);
             }
             else
             {
-                if (UiButton.Back($"Back##armies-{id}")) picker.BackToArmies();
+                if (BackButton(BackLabel, $"armies-{id}")) picker.BackToArmies();
                 ImGui.SameLine();
                 ImGui.TextUnformatted(army.Name);
             }
@@ -378,10 +390,10 @@ public class CombatCalculatorScreen : IAppScreen
             return;
         }
 
-        if (side.HasUnit && UiButton.Back($"Cancel##cancel-{id}")) picker.Close();
+        if (side.HasUnit && BackButton(CancelLabel, $"cancel-{id}")) picker.Close();
         ImGui.TextColored(DimText, ArmyPrompt);
 
-        if (UiButton.NavigateSmall($"{LoadListLabel}##load-{id}")) LoadArmyFromDisk();
+        if (NavButton(LoadListLabel, $"load-{id}")) LoadArmyFromDisk();
         if (_loadError is not null) ImGui.TextColored(WarnText, _loadError);
 
         DrawSystemToggle(picker, id);
@@ -565,15 +577,6 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.Separator();
 
         DrawVolleyTable(view);
-
-        if (view.Notes.Count > 0)
-        {
-            ImGui.Spacing();
-            ImGui.Separator();
-            ImGui.TextColored(DimText, AssumptionsLabel);
-            if (ImGui.IsItemHovered())
-                RuleHoverText.ShowTooltip(string.Join("\n", view.Notes));
-        }
     }
 
     /// <summary>
@@ -750,33 +753,140 @@ public class CombatCalculatorScreen : IAppScreen
 
     private void DrawShootingSituation()
     {
-        float distance = _situation.DistanceInches;
+        DrawDistanceTrack();
+        DrawDistanceSteppers();
 
-        // The slider is the point: dragging it walks the whole table through its thresholds at once, so
-        // a range-gated rule (Stealth at 9in, a weapon running out of reach) shows itself instead of
-        // waiting to be guessed. Ticks mark where this fight's weapons stop reaching.
-        // The slider carries no number of its own: the field beside it is the number, and printing it
-        // twice (once inside the track, once in the box) read as two different controls.
-        float sliderWidth = MathF.Max(120f, ImGui.GetContentRegionAvail().X * 0.40f);
-        ImGui.SetNextItemWidth(sliderWidth);
-        if (ImGui.SliderFloat("##calc-distance", ref distance, 0f, MaxDistanceInches, string.Empty))
-            _situation = _situation with { DistanceInches = Math.Clamp(distance, 0f, MaxDistanceInches) };
-        DrawRangeTicks();
-
-        ImGui.SameLine();
-        ImGui.SetNextItemWidth(ImGui.CalcTextSize("00.0").X * 4.5f);
-        float typed = _situation.DistanceInches;
-        if (ImGui.InputFloat(DistanceLabel, ref typed, 0.5f, 1f, "%.1f"))
-            _situation = _situation with { DistanceInches = Math.Clamp(typed, 0f, MaxDistanceInches) };
-
-        // Second line. The three shooting inputs did not fit across one row at this column width and the
-        // last checkbox was being cut off by the column edge.
+        // Third line. The shooting inputs did not fit across one row at this column width and the last
+        // checkbox was being cut off by the column edge.
         bool cover = _situation.DefenderInCover;
         if (ImGui.Checkbox(CoverLabel, ref cover)) _situation = _situation with { DefenderInCover = cover };
 
         ImGui.SameLine(0f, ImGui.GetTextLineHeight());
         bool moved = _situation.AttackerMoved;
         if (ImGui.Checkbox(MovedLabel, ref moved)) _situation = _situation with { AttackerMoved = moved };
+    }
+
+    /// <summary>
+    /// The distance slider, full width, painted over three bands: green where every weapon in the fight
+    /// reaches, yellow where only some do, red where none do. Dragging it walks the whole table through
+    /// its thresholds at once, and the bands say in advance where the next row is going to drop out -
+    /// which is the question a range slider is asked, and which the ticks alone answered only if you
+    /// already knew what they meant.
+    ///
+    /// <para>The bands are painted BEFORE the slider, at the rect the slider is about to occupy, and the
+    /// slider's own frame background is pushed transparent so the bands show through. The grab still
+    /// draws on top, so the reader keeps a normal slider - the track behind it is what changed.</para>
+    ///
+    /// <para>The slider carries no number of its own: the field below it is the number, and printing it
+    /// twice (once inside the track, once in the box) read as two different controls.</para>
+    /// </summary>
+    private void DrawDistanceTrack()
+    {
+        float width = MathF.Max(ImGui.GetFontSize() * 6f, ImGui.GetContentRegionAvail().X);
+        DrawRangeBands(ImGui.GetCursorScreenPos(), new Vector2(width, ImGui.GetFrameHeight()));
+
+        ImGui.PushStyleColor(ImGuiCol.FrameBg, Transparent);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, Transparent);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgActive, Transparent);
+
+        float distance = _situation.DistanceInches;
+        ImGui.SetNextItemWidth(width);
+        if (ImGui.SliderFloat("##calc-distance", ref distance, 0f, MaxDistanceInches, string.Empty))
+            SetDistance(distance);
+
+        ImGui.PopStyleColor(3);
+        DrawRangeTicks();
+    }
+
+    /// <summary>
+    /// The exact number, with a coarse and a fine pair of steppers either side of it: 3in is a typical
+    /// short move, 6in an advance, which makes "what if I close the gap" one click rather than a drag
+    /// aimed at a 12px target. Sizes come from the frame height, so the row grows with the UI scale.
+    /// </summary>
+    private void DrawDistanceSteppers()
+    {
+        Vector2 step = new(ImGui.GetFrameHeight() * 1.5f, ImGui.GetFrameHeight());
+
+        if (ImGui.Button("--##calc-dist-dec2", step)) SetDistance(_situation.DistanceInches - BigStepInches);
+        ImGui.SameLine();
+        if (ImGui.Button("-##calc-dist-dec", step)) SetDistance(_situation.DistanceInches - StepInches);
+
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(ImGui.GetFontSize() * 3.2f);
+        float typed = _situation.DistanceInches;
+        // Step 0 removes InputFloat's own arrows: two sets of steppers are enough, and a third pair
+        // sitting between them with a different increment would be a puzzle rather than a control.
+        if (ImGui.InputFloat("##calc-dist-typed", ref typed, 0f, 0f, "%.0f")) SetDistance(typed);
+
+        ImGui.SameLine();
+        if (ImGui.Button("+##calc-dist-inc", step)) SetDistance(_situation.DistanceInches + StepInches);
+        ImGui.SameLine();
+        if (ImGui.Button("++##calc-dist-inc2", step)) SetDistance(_situation.DistanceInches + BigStepInches);
+
+        ImGui.SameLine();
+        ImGui.TextColored(DimText, DistanceLabel);
+    }
+
+    private void SetDistance(float inches)
+    {
+        float snapped = SnapDistance(inches);
+        if (snapped != _situation.DistanceInches) _situation = _situation with { DistanceInches = snapped };
+    }
+
+    /// <summary>
+    /// Distances land on whole inches. A tabletop is measured with a tape to the inch and every
+    /// range-gated rule in the corpus is written in whole inches, so the halves the slider used to
+    /// produce ("13.47in") were noise in the report key - each one a fresh simulation - and never a
+    /// distinction a player could act on. Internal so the rounding is pinned without a window.
+    /// </summary>
+    internal static float SnapDistance(float inches) =>
+        Math.Clamp(MathF.Round(inches), 0f, MaxDistanceInches);
+
+    /// <summary>How far a click of the fine and coarse steppers moves the distance.</summary>
+    internal const float StepInches = 3f;
+    internal const float BigStepInches = 6f;
+
+    /// <summary>
+    /// Where the distance track changes colour: every weapon in the fight reaches <c>All</c>, at least
+    /// one reaches <c>Some</c>, nothing reaches past it. Both clamped into the slider's span, and (0, 0)
+    /// when there is nothing to measure - no report, or a melee-only unit - which paints no bands at all
+    /// rather than a screen of red. Internal so the arithmetic is tested without a window.
+    /// </summary>
+    internal static (float All, float Some) RangeZones(CombatReport? report)
+    {
+        if (report is null) return (0f, 0f);
+
+        List<float> ranges = report.Volleys
+            .Select(volley => volley.EffectiveRangeInches)
+            .Where(range => range > 0f)
+            .ToList();
+
+        return ranges.Count == 0
+            ? (0f, 0f)
+            : (MathF.Min(ranges.Min(), MaxDistanceInches), MathF.Min(ranges.Max(), MaxDistanceInches));
+    }
+
+    private void DrawRangeBands(Vector2 at, Vector2 size)
+    {
+        (float all, float some) = RangeZones(_report);
+        if (some <= 0f) return;
+
+        ImDrawListPtr dl = ImGui.GetWindowDrawList();
+        float rounding = ImGui.GetStyle().FrameRounding;
+        float allX = at.X + (all / MaxDistanceInches * size.X);
+        float someX = at.X + (some / MaxDistanceInches * size.X);
+        float endX = at.X + size.X;
+
+        Band(dl, at.X, allX, ImGuiTheme.RangeAllZone, ImDrawFlags.RoundCornersLeft);
+        Band(dl, allX, someX, ImGuiTheme.RangeSomeZone, ImDrawFlags.RoundCornersNone);
+        Band(dl, someX, endX, ImGuiTheme.RangeNoneZone, ImDrawFlags.RoundCornersRight);
+
+        void Band(ImDrawListPtr list, float x0, float x1, Vector4 color, ImDrawFlags corners)
+        {
+            if (x1 - x0 <= 0.5f) return;
+            list.AddRectFilled(new Vector2(x0, at.Y), new Vector2(x1, at.Y + size.Y),
+                ImGui.GetColorU32(color), rounding, corners);
+        }
     }
 
     private void DrawMeleeSituation()

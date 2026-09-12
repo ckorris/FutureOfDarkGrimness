@@ -317,6 +317,65 @@ public class CombatCalculatorScreenTests
         new(null!, 1, true, range, 1f, 4, new List<string>(), 0f,
             new List<SaveBucket>(), new List<string>(), 0f, new List<string>());
 
+    private static CombatReport ReportOf(params float[] ranges) =>
+        new(ECombatMode.Shooting, "A", "B", 5f, 5f, ranges.Select(Volley).ToList(),
+            0f, 0f, new List<string>(), new List<string>());
+
+    [Test]
+    public void TheDistanceTrackIsGreenWhereEveryWeaponReachesAndRedWhereNoneDo()
+    {
+        (float all, float some) = CombatCalculatorScreen.RangeZones(ReportOf(24f, 12f, 18f));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(all, Is.EqualTo(12f), "past the shortest weapon, not everything can fire");
+            Assert.That(some, Is.EqualTo(24f), "past the longest, nothing can");
+        });
+    }
+
+    [Test]
+    public void OneRangeLeavesNoPartialBand()
+    {
+        (float all, float some) = CombatCalculatorScreen.RangeZones(ReportOf(24f, 24f));
+
+        Assert.That(all, Is.EqualTo(some), "identical reaches - green then red, no yellow in between");
+    }
+
+    [Test]
+    public void BandsAreClampedIntoTheSlidersSpanAndVanishWhenThereIsNothingToMeasure()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.RangeZones(ReportOf(240f, 96f)),
+                Is.EqualTo((CombatCalculatorScreen.MaxDistanceInches, CombatCalculatorScreen.MaxDistanceInches)),
+                "a weapon that outreaches the track paints to its end, never past it");
+            Assert.That(CombatCalculatorScreen.RangeZones(ReportOf(0f)), Is.EqualTo((0f, 0f)),
+                "melee weapons have no reach to band");
+            Assert.That(CombatCalculatorScreen.RangeZones(null), Is.EqualTo((0f, 0f)),
+                "no report, no bands - not a screen of red");
+        });
+    }
+
+    [Test]
+    public void DistancesLandOnWholeInchesInsideTheTrack()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.SnapDistance(13.47f), Is.EqualTo(13f));
+            Assert.That(CombatCalculatorScreen.SnapDistance(13.5f), Is.EqualTo(14f));
+            Assert.That(CombatCalculatorScreen.SnapDistance(-4f), Is.EqualTo(0f), "clamped at the near end");
+            Assert.That(CombatCalculatorScreen.SnapDistance(500f),
+                Is.EqualTo(CombatCalculatorScreen.MaxDistanceInches), "and at the far end");
+        });
+    }
+
+    [Test]
+    public void TheCoarseStepperIsDoubleTheFineOne()
+    {
+        Assert.That(CombatCalculatorScreen.BigStepInches,
+            Is.EqualTo(CombatCalculatorScreen.StepInches * 2f));
+    }
+
     [Test]
     public void TheScreensTextIsAsciiOnly()
     {
@@ -330,7 +389,8 @@ public class CombatCalculatorScreenTests
             CombatCalculatorScreen.NoUnitsHint,
             CombatCalculatorScreen.ArmyPrompt,
             CombatCalculatorScreen.VariablesHeader,
-            CombatCalculatorScreen.AssumptionsLabel,
+            CombatCalculatorScreen.BackLabel,
+            CombatCalculatorScreen.CancelLabel,
             CombatCalculatorScreen.AttackerBadge,
             CombatCalculatorScreen.HeroTag,
             CombatCalculatorScreen.DefenderBadge,

@@ -98,26 +98,45 @@ public static class UiChrome
     {
         ImDrawListPtr dl = ImGui.GetWindowDrawList();
         Vector2 pos = ImGui.GetCursorScreenPos();
-        float h = ImGui.GetTextLineHeight() + 8f;
-        float labelW = ImGui.CalcTextSize(label).X + 2f * PillPad;
-        float valueW = ImGui.CalcTextSize(value).X + 2f * PillPad;
-        const float rounding = 5f;
+        float pad = PillPad;
+        float inset = MathF.Max(1f, ImGui.GetStyle().FramePadding.Y * 0.5f);
+        float h = ImGui.GetTextLineHeight() + (inset * 2f);
+        float labelW = ImGui.CalcTextSize(label).X + (2f * pad);
+        float valueW = ImGui.CalcTextSize(value).X + (2f * pad);
+        float rounding = h * 0.25f;
 
         dl.AddRectFilled(pos, pos + new Vector2(labelW + valueW, h),
             ImGui.GetColorU32(ImGuiTheme.InkWell), rounding);
         dl.AddRectFilled(pos, pos + new Vector2(labelW, h),
             ImGui.GetColorU32(labelBg), rounding, ImDrawFlags.RoundCornersLeft);
-        dl.AddText(pos + new Vector2(PillPad, 4f), ImGui.GetColorU32(PillText), label);
-        dl.AddText(pos + new Vector2(labelW + PillPad, 4f), ImGui.GetColorU32(PillText), value);
+        dl.AddText(pos + new Vector2(pad, inset), ImGui.GetColorU32(PillText), label);
+        dl.AddText(pos + new Vector2(labelW + pad, inset), ImGui.GetColorU32(PillText), value);
 
         ImGui.Dummy(new Vector2(labelW + valueW, h));
     }
 
     /// <summary>The width <see cref="DrawPill"/> will occupy, for callers that centre a row of them.</summary>
     public static float PillWidth(string label, string value) =>
-        ImGui.CalcTextSize(label).X + ImGui.CalcTextSize(value).X + 4f * PillPad;
+        ImGui.CalcTextSize(label).X + ImGui.CalcTextSize(value).X + (4f * PillPad);
 
-    public const float PillPad = 7f;
+    /// <summary>The gap between a pill's edge and its text, and between two pills side by side. Both were
+    /// flat pixel counts (7 and 8), which is a hairline on the 4K display the app scales its style for;
+    /// derived from the style they now track whatever <c>ScaleAllSizes</c> did at startup.</summary>
+    public static float PillPad => MathF.Max(3f, ImGui.GetStyle().FramePadding.X * 1.2f);
+
+    /// <inheritdoc cref="PillPad"/>
+    public static float PillGap => MathF.Max(2f, ImGui.GetStyle().ItemSpacing.X * 0.5f);
+
+    /// <summary>
+    /// #398: the size of a chrome button - Back, Cancel, Swap, Load list. The controls a player aims at
+    /// without looking deserve more than ImGui's default hug-the-text button, and the extra room is
+    /// expressed in the CURRENT font's terms so it grows with the display's UI scale instead of being a
+    /// pixel count tuned for one monitor. Text after "##" is an ImGui id, not a label, so it is not
+    /// measured.
+    /// </summary>
+    public static Vector2 ButtonSize(string label) =>
+        new(ImGui.CalcTextSize(label, true).X + (ImGui.GetStyle().FramePadding.X * 4f),
+            ImGui.GetFrameHeight() * 1.35f);
 
     private static readonly Vector4 PillText = new(1f, 1f, 1f, 1f);
 }

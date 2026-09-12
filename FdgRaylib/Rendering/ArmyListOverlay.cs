@@ -591,14 +591,14 @@ public sealed class ArmyListOverlay
 
         // Center the row like the printout.
         float totalW = 0f;
-        foreach (var p in pills) totalW += PillWidth(p.label, p.value) + 8f;
-        totalW -= 8f;
+        foreach (var p in pills) totalW += PillWidth(p.label, p.value) + UiChrome.PillGap;
+        totalW -= UiChrome.PillGap;
         ImGui.SetCursorPosX(Math.Max(ImGui.GetCursorPosX(),
             ImGui.GetCursorPosX() + (ImGui.GetContentRegionAvail().X - totalW) * 0.5f));
 
         for (int i = 0; i < pills.Count; i++)
         {
-            if (i > 0) ImGui.SameLine(0f, 8f);
+            if (i > 0) ImGui.SameLine(0f, UiChrome.PillGap);
             DrawPill(pills[i].label, pills[i].value, pills[i].bg);
         }
         ImGui.Spacing();
