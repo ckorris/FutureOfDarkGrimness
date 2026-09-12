@@ -20,6 +20,14 @@ Owner-reported polish on the Army Forge screen, 2026-09-12:
 - 2026-09-12: Filed. Numbering taken from `origin/master` at `f63996a` after `git fetch`: detail files
   max **402** (400/401 upstream, 402 local), archive max **401**, no `40x` branch on any remote.
 
+## Notes (continued)
+
+- 2026-09-12, round 2 (owner): recommendation copy replaced with the owner's own wording (two lines,
+  the second saying the Forge's editor "exists for convenience but is not the intended way to make a
+  list"); roster rows made hoverable across the whole block, not just the title; the indent before a
+  roster unit's stat line removed; spell NAMES in the SPELLS lists turned white against grey
+  descriptions.
+
 ## Decisions
 
 - **2026-09-12 — the popup opens on EVERY entry, not just the first.** `OnShown` re-arms it, so coming
@@ -44,15 +52,29 @@ Owner-reported polish on the Army Forge screen, 2026-09-12:
   rest of the app's chrome clicks. Both were fixed together; the private helper is gone. Not requested -
   easy to revert if the extra click cues are unwanted.
 
+- **2026-09-12 (round 2) — the roster row uses `DrawListRow`'s hit-target shape.** The Selectable
+  carried the unit NAME as its label, so it was exactly one line tall: the "Qua X+ Def Y+" line beneath
+  looked part of the row and was dead space. It is now an empty-label Selectable spanning both lines,
+  drawn first with `SetNextItemAllowOverlap`, with the name, points and stats painted back over it -
+  the same idiom the list pane already used, so the two panes now behave alike.
+
+- **2026-09-12 (round 2) — one spell-list renderer.** The book's spells were drawn by two identical
+  loops (roster pane, and again per caster unit in the config pane). Rather than colour both, they
+  became `DrawSpellList`, so the white-name/grey-description split cannot drift between them.
+
 ## GUI hand-verify checklist
 
 1. Enter the Forge: the Import popup is already open. Close it, go Back, enter again: open again.
-2. The popup leads with the blue recommendation naming army-forge.onepagerules.com, wrapped, no '?'.
+2. The popup leads with the blue recommendation naming army-forge.onepagerules.com, wrapped, no '?',
+   with the "not the intended way to make a list" line under it.
 3. Paste sits to the LEFT of Fetch. Paste a link, then Fetch, and the import still previews.
 4. Back / Save / Load / Import Link are visibly bigger and click with a sound.
 5. The pts-limit field shows a five-digit number in full, with both step buttons.
 6. The toolbar's combos, status line, badge and points header sit centred against the buttons.
-7. Repeat 4-6 at another resolution (F11 windowed, or a different monitor) - proportions hold.
+7. Roster pane: hovering anywhere over a unit's two lines highlights the whole block, clicking
+   anywhere in it selects, and double-click still adds. The stat line sits flush under the name.
+8. SPELLS (roster pane, and on a caster unit in the config pane): names white, descriptions grey.
+9. Repeat 4-6 at another resolution (F11 windowed, or a different monitor) - proportions hold.
 
 ## Outcome
 

@@ -805,16 +805,33 @@ public class ArmyForgeScreen : IAppScreen
     private static void CenterOnToolbarRow(float rowHeight, float itemHeight) =>
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + MathF.Max(0f, (rowHeight - itemHeight) * 0.5f));
 
+    /// <summary>
+    /// The book's army-wide spell list (#403). The spell's NAME and threshold are white and its
+    /// description stays grey, so the list reads as entries rather than as one grey paragraph - the
+    /// same title/body split the rest of the panes use. Drawn in two places (once for the book in the
+    /// roster pane, once per caster unit in the config pane), so it lives here rather than twice.
+    /// </summary>
+    private void DrawSpellList()
+    {
+        ImGui.PushTextWrapPos(0f);
+        foreach (FDG.Rules.Definitions.SpellDefinition spell in _book.Spells)
+        {
+            UiText.Colored(WhiteText, $"{spell.Name} ({spell.Threshold}):");
+            ImGui.SameLine();
+            UiText.Disabled(FDG.Stages.SpellText.Describe(spell));
+        }
+        ImGui.PopTextWrapPos();
+    }
+
     /// <summary>#403: what the import popup leads with. Held as constants rather than inline so the
     /// ASCII-only rule (the ImGui atlas bakes Basic Latin + Latin-1; anything else draws as '?') can be
     /// pinned by a test.</summary>
     internal const string ImportRecommendationHeadline =
-        "Recommended: build your list on army-forge.onepagerules.com, then paste the share link here.";
+        "Recommended: Build your list on army-forge.onepagerules.com, then paste to share the link here.";
 
     /// <inheritdoc cref="ImportRecommendationHeadline"/>
     internal const string ImportRecommendationBody =
-        "It is quicker than composing from scratch below, and it uses OPR's own points rather than this "
-        + "build's snapshot of the book. Composing here still works - close this and carry on.";
+        "Editing lists here exists for convenience but is not the intended way to make a list.";
 
     /// <summary>#403: whether the next draw will open the import popup by itself. Test seam.</summary>
     internal bool ImportOpensOnShow => _openImportOnShow;
@@ -860,7 +877,16 @@ public class ArmyForgeScreen : IAppScreen
         foreach (RosterUnit unit in _book.Units)
         {
             bool selected = unit.Id == _selectedRosterId;
-            if (ImGui.Selectable($"{unit.Name}##roster-{unit.Id}", selected, ImGuiSelectableFlags.AllowDoubleClick))
+
+            // #403: full-block hit target, the same shape DrawListRow uses. The Selectable used to carry
+            // the NAME as its label, so it was one line tall and the stat line underneath was dead space
+            // that looked part of the row and did not select it. It is now an empty-label Selectable
+            // spanning both lines, drawn first with AllowOverlap, with the text painted back over it.
+            float lineH = ImGui.GetTextLineHeightWithSpacing();
+            Vector2 rowStart = ImGui.GetCursorPos();
+            ImGui.SetNextItemAllowOverlap();
+            if (ImGui.Selectable($"##roster-{unit.Id}", selected, ImGuiSelectableFlags.AllowDoubleClick,
+                    new Vector2(0f, lineH * 2f)))
             {
                 // Selecting a roster ("available") unit shows its read-only preview in the config pane; clear
                 // any list selection so the preview isn't masked by a still-selected list unit (list takes
@@ -869,11 +895,13 @@ public class ArmyForgeScreen : IAppScreen
                 _selectedListIndex = null;
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) AddToList(unit.Id);
             }
+            ImGui.SetCursorPos(rowStart);
+
+            ImGui.TextUnformatted(unit.Name);
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize($"{unit.BasePointCost}").X);
             UiText.Disabled($"{unit.BasePointCost}");
-            ImGui.Indent();
+            // #403: no indent - the stats line up under the name they belong to.
             UiText.Disabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
-            ImGui.Unindent();
         }
 
         ImGui.Separator();
@@ -887,10 +915,7 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.Spacing();
             ImGui.Separator();
             UiText.Disabled("SPELLS");
-            ImGui.PushTextWrapPos(0f);
-            foreach (FDG.Rules.Definitions.SpellDefinition spell in _book.Spells)
-                UiText.Disabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
-            ImGui.PopTextWrapPos();
+            DrawSpellList();
         }
 
         if (!string.IsNullOrEmpty(_book.Source))
@@ -1253,10 +1278,7 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.Spacing();
             UiText.Disabled("SPELLS");
             ImGui.Separator();
-            ImGui.PushTextWrapPos(0f);
-            foreach (FDG.Rules.Definitions.SpellDefinition spell in _book.Spells)
-                UiText.Disabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
-            ImGui.PopTextWrapPos();
+            DrawSpellList();
         }
 
         if (unit.Sections.Count == 0) return;

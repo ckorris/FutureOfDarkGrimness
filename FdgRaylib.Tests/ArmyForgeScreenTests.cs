@@ -71,8 +71,8 @@ public class ArmyForgeScreenTests
         Assert.That(ArmyForgeScreen.ImportRecommendationHeadline,
             Does.Contain("army-forge.onepagerules.com"));
         Assert.That(ArmyForgeScreen.ImportRecommendationBody,
-            Does.Contain("Composing here still works"),
-            "the nudge must not read as a prohibition - building by hand is still supported");
+            Does.Contain("not the intended way to make a list"),
+            "the second line is the owner's wording and says what the Forge's editor is for");
     }
 
     // ---- #378: the game-system filter over the book dropdown ----------------------------------------
