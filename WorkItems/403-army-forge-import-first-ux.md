@@ -1,6 +1,6 @@
 # 403 — Army Forge: lead with the importer, and size the toolbar from the font
 
-**Status**: awaiting GUI hand-verify
+**Status**: done
 **Related**: #241 (the share-link importer this promotes), #398 (`UiChrome.ButtonSize` / `UiText`,
 whose font-relative sizing this adopts), #156 (the Forge itself)
 
@@ -78,4 +78,20 @@ Owner-reported polish on the Army Forge screen, 2026-09-12:
 
 ## Outcome
 
-_(pending hand-verify; implementation complete and committed)_
+**Closed 2026-09-12, hand-verified by the owner.** The Army Forge opens with the import popup on every
+entry, led by the owner's recommendation to build on army-forge.onepagerules.com and paste the share
+link, with the second line saying plainly that editing here "exists for convenience but is not the
+intended way to make a list". Paste moved left of Fetch.
+
+Every fixed pixel size on the screen is now expressed in the loaded font through a new `UiChrome.Em`,
+and every button uses #398's shared `UiChrome.ButtonSize` + `UiButton` (the private
+`ButtonSize(label, minWidthPx)` helper, whose pixel floor was the half that never scaled, is gone). The
+reported points-limit cut-off had a specific cause: `InputInt` draws its two step buttons INSIDE the
+item width, so a flat 110px was digits-plus-buttons and the digits lost once the display scale grew the
+buttons; it now asks for five digits and both buttons explicitly. The toolbar centres its combos,
+status line, badge and points header against the taller buttons.
+
+Second round, same day: roster rows take `DrawListRow`'s full-block hit target (the Selectable carried
+the unit NAME as its label, so it was one line tall and the stat line beneath was dead space), the stat
+line lost its indent, and the book's two identical spell loops became one `DrawSpellList` with names in
+white against grey descriptions.

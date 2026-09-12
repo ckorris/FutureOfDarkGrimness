@@ -1,6 +1,6 @@
 # 404 — Ambush reserve reads as "Activated" in the in-game army list
 
-**Status**: awaiting GUI hand-verify
+**Status**: done
 **Related**: #329 (`UnitActivation`, the shared definition), #399 (`UnitCardHeaderLayout`, which
 reserves the tag's room), #202 (Ambush reserve is unit state, not an origin position)
 
@@ -42,6 +42,9 @@ in reserve instead, in its own colour.
 
 ## Outcome
 
-Fixed in `UnitActivation.HasActivated` (reserve is never "activated") plus a new `IsInReserve`, with the
-army list's two tag sites sharing one `StateTag`. 6 unit tests pin the pool/reserve/arrival readings.
-Awaiting the GUI checks above.
+**Closed 2026-09-12, hand-verified by the owner.** Fixed in `UnitActivation.HasActivated` (a unit in
+reserve is never "activated") rather than at the draw sites, so the canvas labels and tooltips that
+share the #329 definition cannot disagree with the army list; `IsInReserve` added alongside. The army
+list's two tag sites share one `StateTag` and show a blue "In Reserve" in the slot "Activated" uses -
+a neutral "not here yet", and not a token chip, since `InReserve` is deliberately invisible. 6 unit
+tests pin the pool / reserve / arrival readings.

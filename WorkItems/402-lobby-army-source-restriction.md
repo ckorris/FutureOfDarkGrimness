@@ -1,6 +1,6 @@
 # 402 — Host setting: which game systems' armies a lobby accepts
 
-**Status**: in-progress
+**Status**: done
 **Related**: #378 (GameSystem field + Forge system filter + the mixed-system warning this replaces),
 #153 (launch gate), #372/#388 (Random Army + BotArmyPicker), #395 (armies folder discovery)
 
@@ -109,4 +109,22 @@ line is gone.
 
 ## Outcome
 
-_(pending hand-verify; implementation complete and committed)_
+**Closed 2026-09-12, hand-verified by the owner.** The lobby gained an **Army Source** setting (All /
+Grimdark Future / Age of Fantasy), host-owned, synced, remembered between sessions, and live-editable
+like Army Points. Three conditions now BLOCK a launch rather than warning: an army from a disallowed
+system, an army over the points limit, and a slot with no army at all - each with a red roster cell that
+explains itself, and the problem list on the greyed LAUNCH button's tooltip. Being underbuilt stays
+legal and says so in yellow. Forge catalog errors keep their #153 "launch anyway?" override, which is
+why `LaunchGate` split into a cheap `BlockingProblems` (polled per frame) and `OverridableProblems`.
+
+Random Army only rolls armies of an allowed system with no last-resort fallback, the armies folder scan
+recurses, and the 28 bundled lists moved to `armies/GDF/` with an empty `armies/AoF/` beside them -
+folder names are decoration, the slug in the file decides. #378's mixed-system advisory line is gone.
+
+Found and fixed en route: a fresh bot was stamped with a hard-coded 100-pt "Test Army", so the
+no-army blocker could never fire on a bot row; the whole stub mechanism was then removed at the owner's
+request, and an army-less slot is refused by `ValidateLaunchSettings` and throws in
+`GameBootstrap.CreateArmy` rather than being papered over. Resume lobbies are exempt from the empty-army
+flag (their slots legitimately carry none).
+
+Renumbered from 400 mid-flight - see `Reconciliations.md`; commits before the merge read `400:`.
