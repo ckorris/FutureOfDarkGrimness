@@ -13,6 +13,10 @@ client, resumed or launched lobby, client's screen).
 
 ## Notes
 
+- 2026-09-12: Shrunk text now vertically centred on the line it would have filled (it rode the top
+  of the row). Type cell reads "Bot" for AI. **And the fit formula was wrong**: it treated the
+  measured width as unscaled, so almost any overflow dropped straight to the floor - which is what
+  made the mis-centring so visible. App 2995/2995, engine 3361/3361, smoke exit 0.
 - 2026-09-12: Tweaks off Chris's first look. DerpBot tooltip "dumb luck" -> "sheer luck". Name /
   Army / Faction now shrink text to fit instead of clipping (`FitFontScale`, floor 0.65 of the row's
   scale) - "Human Defense Force" was cut off at his resolution. Pts 0.06 -> 0.051 and Team 0.10 ->
@@ -58,6 +62,18 @@ client, resumed or launched lobby, client's screen).
   width must be the raw `CalcTextSize` - it ignores `SetWindowFontScale`, which is what makes the
   quotient a scale rather than a ratio of like quantities (the same gotcha the Back button measures
   around).
+
+- **`CalcTextSize` DOES honour `SetWindowFontScale` - this file's comments saying otherwise are wrong.**
+  Measured 2026-09-12 with a throwaway ImGui context: at window scale 1 "Human Defense Force" reports
+  133px and `GetFontSize` 13; at scale 2, 267px and 26. They both read the same context font size, so
+  they cannot disagree. The first fit formula trusted the old comment, treated the measured width as
+  unscaled, and so computed an absolute scale where it needed a factor - shrinking almost every
+  overflowing name straight to the floor. `ASlightOverflowShrinksOnlySlightly` pins the corrected
+  behaviour and is red under the old formula.
+  **Latent bug not fixed here** (separate slice): `Draw` measures the Back button as
+  `(CalcTextSize("Back").X + 36f) * ws` on the same false premise, double-applying `ws`. Invisible at
+  fullscreen, where `ws == 1` and the lobby's scales were tuned; the button grows quadratically as the
+  window shrinks. Same premise at the chat-row comment.
 
 - **Removing mid-loop is safe.** `RemovePlayer` publishes a *new* list, so the `players` snapshot the
   frame is iterating is unaffected; the row vanishes next frame.

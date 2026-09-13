@@ -307,7 +307,7 @@ public class LobbyScreen : IAppScreen
                 TextFitted(info.PlayerName, panelScale);
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted(info.PlayerType.ToString());
+                ImGui.TextUnformatted(PlayerTypeLabel(info.PlayerType));
 
                 ImGui.TableNextColumn();
                 DrawArmyCell(info.ArmyListSummary, _viewModel.IsResumeMode, panelScale);
@@ -612,42 +612,67 @@ public class LobbyScreen : IAppScreen
     // name grow every row), the text shrinks just enough to fit and stops at a floor, below which it
     // would be unreadable and clipping is the lesser evil.
 
+    /// <summary>#405: the Type cell's label. <see cref="EPlayerType.AI"/> reads as "Bot" - the enum name
+    /// is an engine-side detail, and "Bot" is what the button that adds one calls it.</summary>
+    internal static string PlayerTypeLabel(EPlayerType type) => type switch
+    {
+        EPlayerType.AI => "Bot",
+        _ => type.ToString(),
+    };
+
     /// <summary>How far text may shrink before clipping is preferable, as a fraction of the row's
     /// normal size.</summary>
     private const float MinFitScale = 0.65f;
 
     /// <summary>
-    /// #405: the font scale that fits <paramref name="unscaledTextWidth"/> into
+    /// #405: the font scale that fits <paramref name="renderedTextWidth"/> into
     /// <paramref name="availableWidth"/>. Never above <paramref name="baseScale"/> (text that already
     /// fits is never enlarged) and never below <see cref="MinFitScale"/> of it.
     ///
-    /// <para>The width passed in must be the RAW <c>CalcTextSize</c> result: CalcTextSize ignores
-    /// SetWindowFontScale (the same gotcha the Back button measures around above), so it reports text at
-    /// scale 1 while the space it has to fit into is real screen pixels. That is exactly what makes the
-    /// ratio here a scale rather than a ratio of like quantities.</para>
+    /// <para>Both widths are REAL SCREEN PIXELS. <c>CalcTextSize</c> honours
+    /// <c>SetWindowFontScale</c> - it and <c>GetFontSize</c> both read the same context font size, so
+    /// they cannot disagree - which makes its result the width the text actually renders at, and the
+    /// quotient below a factor to apply TO the current scale rather than a scale in itself. (The
+    /// "CalcTextSize ignores SetWindowFontScale" comments elsewhere in this file are wrong; measured
+    /// 2026-09-12, a doubled window scale doubles the reported width exactly.)</para>
     /// </summary>
-    internal static float FitFontScale(float unscaledTextWidth, float availableWidth, float baseScale)
+    internal static float FitFontScale(float renderedTextWidth, float availableWidth, float baseScale)
     {
         // Nothing to measure against: leave the row alone rather than divide by zero.
-        if (unscaledTextWidth <= 0f || availableWidth <= 0f || baseScale <= 0f)
+        if (renderedTextWidth <= 0f || availableWidth <= 0f || baseScale <= 0f)
             return baseScale;
 
-        float needed = availableWidth / unscaledTextWidth;
-        if (needed >= baseScale)
+        if (renderedTextWidth <= availableWidth)
             return baseScale; // already fits at full size
 
-        return MathF.Max(needed, baseScale * MinFitScale);
+        float fitted = baseScale * (availableWidth / renderedTextWidth);
+        return MathF.Max(fitted, baseScale * MinFitScale);
     }
 
-    /// <summary>Draws one line of text, shrunk to fit the remaining cell width when it would clip.
+    /// <summary>Draws one line of text, shrunk to fit the remaining cell width when it would clip, and
+    /// kept vertically centred on the line it would have occupied at full size - a shrunk line is
+    /// shorter than the row, so left alone it rides the top of the cell and reads as misaligned.
     /// Leaves the item on the stack as TextUnformatted would, so callers keep their hover tooltips.</summary>
     private static void TextFitted(string text, float baseScale)
     {
         float scale = FitFontScale(ImGui.CalcTextSize(text).X, ImGui.GetContentRegionAvail().X, baseScale);
 
-        if (scale != baseScale) ImGui.SetWindowFontScale(scale);
+        if (scale == baseScale)
+        {
+            ImGui.TextUnformatted(text);
+            return;
+        }
+
+        float fullLineH = ImGui.GetTextLineHeight();   // the height this row is sized for
+        ImGui.SetWindowFontScale(scale);
+        float shrunkLineH = ImGui.GetTextLineHeight(); // GetTextLineHeight tracks the scale, as above
+
+        // Half the slack above, half below. The total (offset + shrunk line) stays under the full line
+        // height, so centring never grows the row.
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + (fullLineH - shrunkLineH) * 0.5f);
         ImGui.TextUnformatted(text);
-        if (scale != baseScale) ImGui.SetWindowFontScale(baseScale);
+
+        ImGui.SetWindowFontScale(baseScale);
     }
 
     private static void DrawArmyCell(ArmyListSummary summary, bool isResume, float baseScale)

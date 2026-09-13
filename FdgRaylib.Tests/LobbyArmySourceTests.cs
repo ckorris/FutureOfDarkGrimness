@@ -142,53 +142,85 @@ public class LobbyArmySourceTests
 
     // ── #405: squishing roster text to fit its column ───────────────────────────────────────
     //
-    // The widths below are RAW CalcTextSize results (CalcTextSize ignores SetWindowFontScale), measured
-    // against real pixels of cell - so the quotient is a font scale, not a ratio of like quantities.
+    // Both widths are REAL SCREEN PIXELS: CalcTextSize honours SetWindowFontScale (measured 2026-09-12 -
+    // doubling the window scale doubles the reported width), so what it returns is what the text
+    // actually renders at, and the quotient is a factor applied TO the current scale.
 
     [Test]
     public void TextThatAlreadyFitsIsNeverResized()
     {
-        // 60px of text at scale 1.5 renders 90px wide, and the cell has 200px.
-        Assert.That(LobbyScreen.FitFontScale(60f, 200f, 1.5f), Is.EqualTo(1.5f));
+        Assert.That(LobbyScreen.FitFontScale(90f, 200f, 1.5f), Is.EqualTo(1.5f));
     }
 
     [Test]
     public void TextThatFitsExactlyIsNotShrunk()
     {
-        // 100px of text at scale 1.5 is exactly the 150px available - the boundary must not shrink.
-        Assert.That(LobbyScreen.FitFontScale(100f, 150f, 1.5f), Is.EqualTo(1.5f));
+        // Exactly filling the cell is a fit - the boundary must not shrink.
+        Assert.That(LobbyScreen.FitFontScale(150f, 150f, 1.5f), Is.EqualTo(1.5f));
     }
 
     [Test]
     public void OverlongTextShrinksJustEnoughToFit()
     {
-        // 120px of text at scale 1.5 wants 180px but has 150px: 1.25 makes it exactly fit, and that is
+        // 180px of rendered text into 150px of cell needs 150/180 of the current size: 1.5 -> 1.25,
         // comfortably above the 0.975 floor (1.5 * 0.65), so the shrink is exact rather than clamped.
-        float scale = LobbyScreen.FitFontScale(120f, 150f, 1.5f);
+        float scale = LobbyScreen.FitFontScale(180f, 150f, 1.5f);
 
         Assert.That(scale, Is.EqualTo(1.25f).Within(0.0001f));
-        Assert.That(120f * scale, Is.EqualTo(150f).Within(0.01f), "the whole point is that it now fits");
+        Assert.That(180f * (scale / 1.5f), Is.EqualTo(150f).Within(0.01f),
+            "the whole point is that it now fits");
         Assert.That(scale, Is.LessThan(1.5f), "and it is genuinely smaller than the row's normal size");
+    }
+
+    /// <summary>Guards the bug this formula was rewritten to fix: treating the measured width as if it
+    /// were unscaled shrank text to the floor almost every time it did not fit.</summary>
+    [Test]
+    public void ASlightOverflowShrinksOnlySlightly()
+    {
+        float scale = LobbyScreen.FitFontScale(155f, 150f, 1.5f);
+
+        Assert.That(scale, Is.EqualTo(1.5f * (150f / 155f)).Within(0.0001f));
+        Assert.That(scale, Is.GreaterThan(1.4f),
+            "5px of overflow must cost a hair of size, not a drop to the floor");
     }
 
     [Test]
     public void VeryLongTextStopsAtTheFloorRatherThanBecomingUnreadable()
     {
-        // 2000px into 150px would need 0.075 - far past the 0.65-of-base floor (1.5 * 0.65 = 0.975).
+        // 2000px into 150px wants 0.075 of the current size - far past the 0.65 floor.
         float scale = LobbyScreen.FitFontScale(2000f, 150f, 1.5f);
 
         Assert.That(scale, Is.EqualTo(1.5f * 0.65f).Within(0.0001f));
-        Assert.That(scale * 2000f, Is.GreaterThan(150f),
+        Assert.That(2000f * (scale / 1.5f), Is.GreaterThan(150f),
             "at the floor the text genuinely still clips - that is the accepted trade, not a fit");
     }
 
     [TestCase(0f, 150f)]
     [TestCase(-5f, 150f)]
-    [TestCase(100f, 0f)]
-    [TestCase(100f, -5f)]
+    [TestCase(200f, 0f)]
+    [TestCase(200f, -5f)]
     public void DegenerateMeasurementsLeaveTheRowAlone(float textWidth, float available)
     {
         // A cell can measure zero on the frame a table is first laid out; never divide by it.
         Assert.That(LobbyScreen.FitFontScale(textWidth, available, 1.5f), Is.EqualTo(1.5f));
+    }
+
+    // ── #405: the Type cell's label ─────────────────────────────────────────────────────────
+
+    [Test]
+    public void BotsReadAsBotNotAI() =>
+        Assert.That(LobbyScreen.PlayerTypeLabel(EPlayerType.AI), Is.EqualTo("Bot"));
+
+    [TestCase(EPlayerType.Local, "Local")]
+    [TestCase(EPlayerType.Network, "Network")]
+    public void OtherPlayerTypesKeepTheirName(EPlayerType type, string expected) =>
+        Assert.That(LobbyScreen.PlayerTypeLabel(type), Is.EqualTo(expected));
+
+    [Test]
+    public void EveryPlayerTypeLabelIsAscii()
+    {
+        foreach (EPlayerType type in Enum.GetValues<EPlayerType>())
+            foreach (char c in LobbyScreen.PlayerTypeLabel(type))
+                Assert.That(c, Is.LessThanOrEqualTo((char)0xFF));
     }
 }
