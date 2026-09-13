@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Melee Shrouding",
+    "passive": [
+      {
+        "hookID": "Movement_OnChargeDeclared",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": -3,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies get -3 inches of movement when charging this unit."
+  }
+]

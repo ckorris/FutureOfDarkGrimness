@@ -1,0 +1,27 @@
+{
+  "name": "Executioners (Vengeance probe)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Executioners",
+      "modelCount": 5,
+      "quality": 2,
+      "defense": 2,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Heavy Rifle",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

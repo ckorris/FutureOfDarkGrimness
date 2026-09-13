@@ -1,0 +1,29 @@
+{
+  "name": "Example - terrain: unit walled off from the midline objectives (#264 repro shape)",
+  "round": 1,
+  "activePlayer": 1,
+  "settings": { "randomness": "Probabilistic" },
+  "objectives": [[24, 24], [48, 24]],
+  "terrain": [
+    { "type": "Blocking|Impassible", "shape": "Rectangle", "center": [24, 11], "size": [20, 2], "heightInches": 4 },
+    { "type": "Cover, Difficult", "shape": "Circle", "center": [48, 24], "diameter": 8 }
+  ],
+  "players": [
+    {
+      "army": "armies/Marksmen.fdgarmy",
+      "units": [
+        { "unit": "Marksmen", "models": [[20, 42], [22, 42], [24, 42], [26, 42], [28, 42]] }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [[22, 7], [23.2, 7], [24.4, 7], [25.6, 7], [26.8, 7]],
+          "facing": [0, 1]
+        }
+      ]
+    }
+  ]
+}

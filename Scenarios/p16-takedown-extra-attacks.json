@@ -1,0 +1,72 @@
+{
+  "name": "P16 - Takedown Shot then Takedown Strike, both into a Tough target inside a squad",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "players": [
+    {
+      "army": "armies/P16Assassins.fdgarmy",
+      "units": [
+        {
+          "unit": "Sniper Assassin",
+          "models": [
+            [
+              24,
+              14
+            ]
+          ]
+        },
+        {
+          "unit": "Blade Assassin",
+          "models": [
+            [
+              30,
+              30
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [
+            [
+              24,
+              32
+            ],
+            [
+              26,
+              32
+            ],
+            [
+              28,
+              32
+            ],
+            [
+              30,
+              32
+            ],
+            [
+              32,
+              32
+            ]
+          ]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [
+            [
+              40,
+              32
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

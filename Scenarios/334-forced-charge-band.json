@@ -1,0 +1,24 @@
+{
+  "name": "#334 - the 1 inch forced-charge band: circle base, rotated rectangle base, and one enemy out of reach",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic", "diceSeed": 334, "background": "Barren" },
+  "players": [
+    {
+      "army": "armies/334-BandProbe.fdgarmy",
+      "units": [
+        { "unit": "Blade Squad", "models": [[28, 14], [30, 14], [32, 14]], "facing": [0, 1] },
+        { "unit": "Gun Squad",   "models": [[40, 14], [42, 14], [44, 14]], "facing": [0, 1] },
+        { "unit": "Slab Rider",  "models": [[36, 12]], "facing": [0, 1] }
+      ]
+    },
+    {
+      "army": "armies/334-BandTargets.fdgarmy",
+      "units": [
+        { "unit": "Round Sentinel", "models": [[30, 20]], "facing": [0, -1] },
+        { "unit": "Slab Walker",    "models": [[42, 20]], "facing": [0.7071, -0.7071] },
+        { "unit": "Distant Watchers", "models": [[8, 42], [10, 42], [12, 42]], "facing": [0, -1] }
+      ]
+    }
+  ]
+}

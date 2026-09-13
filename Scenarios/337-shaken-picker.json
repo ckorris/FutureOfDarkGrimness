@@ -1,0 +1,29 @@
+{
+  "name": "#337 - Shaken badge in the activation picker, on a unit standing inside the 1 inch forced-charge band",
+  "round": 2,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic", "diceSeed": 337, "background": "Barren" },
+  "players": [
+    {
+      "army": "armies/334-BandProbe.fdgarmy",
+      "units": [
+        {
+          "unit": "Blade Squad",
+          "models": [[28.3, 14], [30, 14], [31.7, 14]],
+          "facing": [0, 1],
+          "tokens": [ { "type": "Shaken", "count": 1, "clearTrigger": "ManualOnly" } ]
+        },
+        { "unit": "Gun Squad", "models": [[40, 14], [42, 14], [44, 14]], "facing": [0, 1] },
+        { "unit": "Slab Rider", "models": [[36, 12]], "facing": [0, 1] }
+      ]
+    },
+    {
+      "army": "armies/334-BandTargets.fdgarmy",
+      "units": [
+        { "unit": "Round Sentinel", "models": [[30, 15.85]], "facing": [0, -1] },
+        { "unit": "Slab Walker", "models": [[42, 20]], "facing": [0.7071, -0.7071] },
+        { "unit": "Distant Watchers", "models": [[8, 42], [10, 42], [12, 42]], "facing": [0, -1] }
+      ]
+    }
+  ]
+}

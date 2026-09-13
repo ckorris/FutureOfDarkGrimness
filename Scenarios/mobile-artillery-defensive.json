@@ -1,0 +1,20 @@
+{
+  "name": "#197 Mobile Artillery - defensive arm: shot from over 9in by a unit that has not moved this round",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "players": [
+    {
+      "army": "armies/Marksmen.fdgarmy",
+      "units": [
+        { "unit": "Marksmen", "models": [[10, 12], [12, 12], [14, 12], [16, 12], [18, 12]] }
+      ]
+    },
+    {
+      "army": "armies/MobileArtillery.fdgarmy",
+      "units": [
+        { "unit": "Gun Battery", "models": [[10, 34], [12, 34], [14, 34]] }
+      ]
+    }
+  ]
+}

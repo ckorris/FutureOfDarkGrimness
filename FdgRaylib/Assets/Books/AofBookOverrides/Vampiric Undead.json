@@ -1,0 +1,39 @@
+[
+  {
+    "name": "Mind Control",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "moraleTestThen",
+          "onFailure": {
+            "kind": "triggeredMove",
+            "maxInches": 6,
+            "isOptional": true
+          }
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\", which must take a morale test. If failed you may move it by up to 6\" in a straight line in any direction."
+  }
+]

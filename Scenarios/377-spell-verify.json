@@ -1,0 +1,36 @@
+{
+  "name": "377 - hand-verify the spell fixes (statModifier, marks, range grant)",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "players": [
+    {
+      "army": "armies/377-Verifiers.fdgarmy",
+      "units": [
+        {
+          "unit": "Coven Magus",
+          "models": [[26, 26]],
+          "tokens": [{ "type": "SpellTokens", "count": 15 }]
+        },
+        { "unit": "Verifier Rifles", "models": [[18, 16], [20, 16], [22, 16], [24, 16], [26, 16]] },
+        { "unit": "Verifier Scouts", "models": [[36, 12], [38, 12], [40, 12]] }
+      ]
+    },
+    {
+      "army": "armies/377-Hostiles.fdgarmy",
+      "units": [
+        {
+          "unit": "Hostile Adept",
+          "models": [[14, 34]],
+          "tokens": [{ "type": "SpellTokens", "count": 10 }]
+        },
+        { "unit": "Hostile Blob", "models": [[14, 30], [16, 30], [18, 30], [20, 30], [22, 30]] },
+        {
+          "unit": "Distant Lurkers",
+          "models": [[36, 40], [38, 40], [40, 40]],
+          "activated": true
+        }
+      ]
+    }
+  ]
+}

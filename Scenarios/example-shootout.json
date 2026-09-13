@@ -1,0 +1,30 @@
+{
+  "name": "Example - Rending shoot vs D5, dummies already Shaken",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "players": [
+    {
+      "army": "armies/Marksmen.fdgarmy",
+      "units": [
+        { "unit": "Rending Squad", "models": [[30, 16], [32, 16], [34, 16], [36, 16], [38, 16]] },
+        { "unit": "Marksmen", "models": [[10, 12], [12, 12], [14, 12], [16, 12], [18, 12]] }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [[30, 34], [32, 34], [34, 34], [36, 34], [38, 34]],
+          "tokens": [{ "type": "Shaken", "count": 1 }]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [[44, 34]],
+          "woundsDealt": [2]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,808 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using FDG;
+using FDG.Players;
+using FDG.Rules.Dispatch;
+using FDG.Rules.Tokens;
+using FdgRaylib.Rendering.Resolvers;
+using ImGuiNET;
+using Raylib_cs;
+
+namespace FdgRaylib.Rendering;
+
+/// <summary>
+/// #329 — the in-game army list: press L to bring up every player's list the way the printed Army
+/// Forge sheet reads (name [count] header, blue Quality/Defense/Tough pills, underlined hoverable
+/// special rules, RNG/ATK/AP/SPE weapon table), but live — model counts, wounds, weapon counts,
+/// destroyed units, activation state and status tokens all track the current game state.
+///
+/// <para>An overlay window covering the TABLE AREA only (user feedback on v1's fullscreen modal):
+/// the right column — resolver panel, log, chat — stays visible and clickable beside it, and the
+/// 85%-alpha background lets the board ghost through (each card body sits darker and near-solid
+/// on it, like the printed cards). Board input is still muted via
+/// <see cref="EscapeRouter.MenuOpen"/> (the renderer ORs this overlay's open state into
+/// <c>BeginFrame</c>), so a covered resolver's Esc-cancel or canvas hotkey can never fire
+/// underneath; Escape or L closes. Deliberately NOT a pause — the engine keeps running; if a
+/// decision arrives for the local player while reading, a pulsing "Action needed" chip appears in
+/// the header and clicking it returns to the game.</para>
+///
+/// <para>Read-only: draws from live <see cref="ITableState"/> on the render thread, the same
+/// convention as <see cref="TableTooltipOverlay"/> (token reads snapshot per #328). ASCII only
+/// (CLAUDE.md).</para>
+/// </summary>
+public sealed class ArmyListOverlay
+{
+    private const float MinCardWidth = 420f;   // roughly the printed card's proportions
+    private const int   MaxColumns   = 4;
+
+    // Slice 3: the printed list's second mode — one row per unit. A display preference like the
+    // ViewSettings toggles, so it persists across opens (and games) within the session.
+    private static bool _tableMode;
+
+    public bool IsOpen { get; private set; }
+
+    private ITableState? _tableState;
+    private Func<PlayerID, Color> _colorForPlayer = _ => Color.White;
+    private IReadOnlyList<PlayerID> _localPlayerIDs = Array.Empty<PlayerID>();
+    private GuiResolverOverlay? _resolverOverlay;
+
+    // Same core-catalog resolver the tooltip overlay holds, for resolving token display info.
+    private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
+
+    // Measured card heights from the previous frame, keyed by unit — masonry packing needs heights
+    // BEFORE drawing, so cards pack on last frame's measurements (self-correcting after one frame;
+    // new units start on a line-count estimate).
+    private readonly Dictionary<UnitID, float> _cardHeights = new();
+
+    private static readonly Vector4 ActivatedRed  = new(1f, 0.30f, 0.30f, 1f);   // tooltip's red
+
+    // Named once so the width the card header reserves for the tag and the text it draws can never
+    // drift apart (#399) - a reservation measured from a different string is how the tag ends up on
+    // the name again.
+    private const string ActivatedTag = "Activated";
+
+    // #404: held off-table in Ambush reserve. Blue, not red: it is a neutral "not here yet", the
+    // opposite of Activated's "turn spent", and the two used to share the red tag because the pool test
+    // behind it could not tell them apart. Named alongside ActivatedTag for the same reservation reason.
+    private const string ReserveTag = "In Reserve";
+    private static readonly Vector4 ReserveBlue = ImGuiTheme.HeaderAccent;
+    private static readonly Vector4 HeroGold      = ImGuiTheme.HeroGold;        // #227, shared (#398)
+    private static readonly Vector4 WoundedAmber  = new(0.72f, 0.48f, 0.16f, 1f);
+
+    public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
+        IReadOnlyList<PlayerID> localPlayerIDs, GuiResolverOverlay? resolverOverlay)
+    {
+        _tableState      = tableState;
+        _colorForPlayer  = colorForPlayer;
+        _localPlayerIDs  = localPlayerIDs;
+        _resolverOverlay = resolverOverlay;
+        _cardHeights.Clear();
+    }
+
+    public void Open()   => IsOpen = true;
+    public void Close()  => IsOpen = false;
+    public void Toggle() => IsOpen = !IsOpen;
+
+    /// <param name="areaW">The table area's width in pixels (screen width minus the right column) —
+    /// the overlay covers this region only, leaving the resolver/log column visible beside it.</param>
+    /// <param name="escapeMenuOpen">True while the Esc menu owns input — the L toggle is muted so the
+    /// two overlays never fight over a keypress.</param>
+    /// <param name="gameOver">True once the game-over card is up; the overlay closes and stays closed
+    /// so the card is reachable.</param>
+    public void Draw(int areaW, int screenH, bool escapeMenuOpen, bool gameOver)
+    {
+        if (_tableState == null) return;
+        if (gameOver) { Close(); return; }
+
+        var io = ImGui.GetIO();
+        bool lPressed = !io.WantTextInput && !escapeMenuOpen
+            && ImGui.IsKeyPressed(ImGuiKey.L, repeat: false);
+
+        bool openedThisFrame = false;
+        if (!IsOpen)
+        {
+            // Opening keeps the other view toggles' gate (a focused window or text field holds the
+            // key); closing below only needs the text-input gate, since our own modal is what holds
+            // keyboard capture while open.
+            if (lPressed && !io.WantCaptureKeyboard)
+            {
+                Open();
+                openedThisFrame = true;
+            }
+            if (!IsOpen) return;
+        }
+
+        // Same-press guard as the Esc menu: the press that opened is still "pressed" this frame.
+        if (!openedThisFrame && (lPressed || ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false)))
+            Close();
+
+        if (!IsOpen) return;   // closed by a key above — nothing to draw this frame
+
+        // Sized to the table area, not the screen, so the right column (resolver panel, log, chat)
+        // stays readable and clickable beside it. The margins keep the game's own chrome visible
+        // around the panel (user feedback): the status strip and top toast band above, the
+        // bottom-left Menu / Army Lists buttons below, and a sliver of board on both sides.
+        // Recomputed every frame from the live sizes, so they hold through resizes and UI scales.
+        // On top of the chrome clearance, 5% of the viewport's width/height of breathing room on
+        // every side (user feedback v3) - the board reads as the surface the panel floats over.
+        float breatheX = areaW * 0.05f;
+        float breatheY = screenH * 0.05f;
+        float side = 16f + breatheX;
+        // Status strip (12 + 24px text, plus "waiting on" lines) and the toast band (anchored at
+        // y=48, one row ~44px) live above; proportional with clamps so small windows don't drown.
+        float top = Math.Clamp(screenH * 0.095f, 96f, 140f) + breatheY;
+        // The Menu / Army Lists buttons are pinned 8px off the bottom in an auto-sized window;
+        // GetFrameHeight tracks the live font scale, so this clears them at any UI scale.
+        float bottom = 8f + ImGui.GetFrameHeight() + ImGui.GetStyle().WindowPadding.Y * 2f + 10f + breatheY;
+
+        ImGui.SetNextWindowPos(new Vector2(side, top), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(areaW - side * 2f, screenH - top - bottom), ImGuiCond.Always);
+        ImGui.SetNextWindowBgAlpha(0.85f);
+
+        if (ImGui.Begin("##armylists",
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
+            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings))
+        {
+            DrawContent();
+        }
+        ImGui.End();
+    }
+
+    // ── Modal content ───────────────────────────────────────────────────────────────────────────────
+
+    private void DrawContent()
+    {
+        DrawHeaderBar();
+        ImGui.Separator();
+
+        var slots = _tableState!.Players.Objects.Where(p => p.IsFilled).ToList();
+        var ordered = ArmyListLayout.OrderTabs(slots, s => _localPlayerIDs.Contains(s.PlayerID));
+
+        // Larger tabs (user feedback v5): scaled-up labels + fatter frame padding make the player
+        // tabs the obvious click targets they are. The scale drops back to 1 for the tab CONTENT
+        // (drawn inside the selected item) and is restored for the next tab's label.
+        const float tabScale = 1.3f;
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(16f, 8f));
+        ImGui.SetWindowFontScale(tabScale);
+        if (ImGui.BeginTabBar("##armytabs"))
+        {
+            foreach (IPlayerSlotInfo slot in ordered)
+            {
+                Color c = _colorForPlayer(slot.PlayerID);
+                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, 1f));
+                bool selected = ImGui.BeginTabItem($"{slot.Name}##slot{slot.SlotID}");
+                ImGui.PopStyleColor();
+
+                if (selected)
+                {
+                    ImGui.SetWindowFontScale(1f);
+                    DrawPlayerTab(slot);
+                    ImGui.EndTabItem();
+                    ImGui.SetWindowFontScale(tabScale);
+                }
+            }
+            ImGui.EndTabBar();
+        }
+        ImGui.SetWindowFontScale(1f);
+        ImGui.PopStyleVar();
+    }
+
+    // Title + view-mode pair on the left; "Action needed" pulse + Close on the right.
+    private void DrawHeaderBar()
+    {
+        float lineTop = ImGui.GetCursorPosY();
+
+        ImGui.PushFont(RaylibRenderer.LargeFont);
+        float titleHeight = ImGui.GetTextLineHeight();
+        ImGui.TextUnformatted("Army Lists");
+        ImGui.PopFont();
+
+        // The title line is LargeFont-tall; body-font widgets sharing it sit top-aligned unless
+        // pinned to its vertical center (user feedback v5). Pinned ABSOLUTELY per widget: a nudge
+        // before the first radio does NOT survive the next SameLine (the Table radio drifted back
+        // up), so every widget on this line sets the same Y itself.
+        float rowY = lineTop + MathF.Max(0f, (titleHeight - ImGui.GetFrameHeight()) * 0.5f);
+
+        // The printed list's two modes, one click apart (radio pair, not a cycling button, so the
+        // current mode is always visible).
+        ImGui.SameLine();
+        ImGui.SetCursorPosY(rowY);
+        if (ImGui.RadioButton("Cards", !_tableMode)) _tableMode = false;
+        ImGui.SameLine();
+        ImGui.SetCursorPosY(rowY);
+        if (ImGui.RadioButton("Table", _tableMode)) _tableMode = true;
+
+        // One close button (user feedback v4: not a separate chip). Normally a quiet
+        // "Return to Game (L)"; while the engine waits on YOU (it never pauses), it grows the
+        // "Action Needed" prefix and flashes orange so it reads over a wall of cards.
+        bool pending = _resolverOverlay?.HasAnyPending ?? false;
+        string label = pending ? "Action Needed - Return to Game (L)" : "Return to Game (L)";
+        float buttonW = ImGui.CalcTextSize(label).X + 2f * ImGui.GetStyle().FramePadding.X;
+        ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - buttonW);
+        ImGui.SetCursorPosY(rowY);   // same absolute center-pin as the radios
+
+        if (pending)
+        {
+            float pulse = 0.5f + 0.5f * MathF.Sin((float)ImGui.GetTime() * 5f);
+            var hot = new Vector4(0.95f, 0.65f, 0.15f, 1f);
+            var dim = new Vector4(0.62f, 0.42f, 0.10f, 1f);
+            Vector4 flash = Vector4.Lerp(dim, hot, pulse);
+            // All three button states, so hovering doesn't snap back to the theme gray mid-flash.
+            ImGui.PushStyleColor(ImGuiCol.Button, flash);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, hot);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, hot);
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.05f, 0.05f, 0.05f, 1f));
+        }
+        if (ImGui.Button(label)) Close();
+        if (pending) ImGui.PopStyleColor(4);
+    }
+
+    private void DrawPlayerTab(IPlayerSlotInfo slot)
+    {
+        var (army, units) = ArmyFor(slot.PlayerID);
+
+        // #329 slice 2: the army's file identity + points, carried on ArmyData/UnitData by the
+        // engine. A pre-slice-2 save has neither (empty name, zero costs) — the line simply thins.
+        string identity = army == null ? ""
+            : string.Join(" - ", new[] { army.ArmyName, army.Faction }.Where(s => !string.IsNullOrWhiteSpace(s)));
+        int totalPoints = units.Sum(u => u is UnitData ud ? ud.PointCost : 0);
+        string points = totalPoints <= 0 ? ""
+            : army is { PointsLimit: > 0 } ? $"{totalPoints} / {army.PointsLimit} pts"
+            : $"{totalPoints} pts";
+
+        if (identity.Length > 0 || points.Length > 0)
+        {
+            ImGui.TextUnformatted(identity.Length > 0 ? identity : " ");
+            if (points.Length > 0)
+            {
+                ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X
+                    - ImGui.CalcTextSize(points).X);
+                ImGui.TextUnformatted(points);
+            }
+        }
+
+        int standing = units.Count(u => u.Models.Any(m => m.GetIsAlive()));
+        UiText.Disabled(standing == units.Count
+            ? $"{units.Count} unit{(units.Count == 1 ? "" : "s")}"
+            : $"{standing}/{units.Count} units standing");
+        const string hint = "Hover an underlined rule for its description";
+        ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X
+            - ImGui.CalcTextSize(hint).X);
+        UiText.Disabled(hint);
+
+        // One scroll region per player AND mode (stable IDs), so each tab keeps its own scroll
+        // position and switching modes doesn't inherit a stale offset.
+        ImGui.BeginChild($"##list{slot.SlotID}{(_tableMode ? "t" : "c")}");
+
+        if (_tableMode)
+        {
+            DrawUnitTable(units);
+        }
+        else
+        {
+            int columns = ArmyListLayout.ColumnCount(ImGui.GetContentRegionAvail().X, MinCardWidth, MaxColumns);
+            float estimate = ImGui.GetTextLineHeightWithSpacing();
+            var heights = units
+                .Select(u => _cardHeights.TryGetValue(u.ID, out float h) ? h : estimate * 10f)
+                .ToList();
+            int[] columnOf = ArmyListLayout.PackColumns(heights, columns);
+
+            if (ImGui.BeginTable("##cards", columns, ImGuiTableFlags.SizingStretchSame))
+            {
+                ImGui.TableNextRow();
+                for (int c = 0; c < columns; c++)
+                {
+                    ImGui.TableSetColumnIndex(c);
+                    for (int i = 0; i < units.Count; i++)
+                        if (columnOf[i] == c)
+                            DrawCard(units[i]);
+                }
+                ImGui.EndTable();
+            }
+        }
+
+        ImGui.EndChild();
+    }
+
+    // ── Table mode (slice 3): the printed list's condensed one-row-per-unit form ────────────────────
+
+    private void DrawUnitTable(IReadOnlyList<IUnit> units)
+    {
+        if (!ImGui.BeginTable("##units", 4,
+            ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingStretchProp))
+            return;
+
+        ImGui.TableSetupColumn("Unit", ImGuiTableColumnFlags.WidthStretch, 2.2f);
+        ImGui.TableSetupColumn("Stats", ImGuiTableColumnFlags.WidthStretch, 1f);
+        ImGui.TableSetupColumn("Loadout", ImGuiTableColumnFlags.WidthStretch, 3f);
+        ImGui.TableSetupColumn("Special Rules", ImGuiTableColumnFlags.WidthStretch, 2.5f);
+        DrawStaticHeaderRow("Unit", "Stats", "Loadout", "Special Rules");
+
+        foreach (IUnit unit in units)
+            DrawUnitRow(unit);
+
+        ImGui.EndTable();
+    }
+
+    private void DrawUnitRow(IUnit unit)
+    {
+        int live  = unit.Models.Count(m => m.GetIsAlive());
+        int total = unit.Models.Count;
+        bool destroyed = live == 0;
+
+        ImGui.PushID(unit.ID.GetHashCode());
+        ImGui.TableNextRow();
+        if (destroyed) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.45f);
+
+        // Unit: name [count] - pts, then the state tag and token chips under it.
+        ImGui.TableSetColumnIndex(0);
+        string count = live == total ? $"[{total}]" : $"[{live}/{total}]";
+        ImGui.TextUnformatted(unit is UnitData { PointCost: > 0 } ud
+            ? $"{unit.Name} {count} - {ud.PointCost}pts"
+            : $"{unit.Name} {count}");
+        DrawHeroNameLine(unit, centered: false);
+        if (destroyed)
+        {
+            // Inside the alpha push so it dims with the row; strong red still reads.
+            UiText.Colored(new Vector4(0.95f, 0.25f, 0.25f, 1f), "DESTROYED");
+        }
+        else if (StateTag(unit) is { } tag)
+        {
+            UiText.Colored(tag.Color, tag.Text);
+        }
+        DrawTokenChips(unit);
+
+        // Stats: Qua/Def, wounds fraction when wounded.
+        ImGui.TableSetColumnIndex(1);
+        ImGui.TextUnformatted($"Qua {unit.Quality}+  Def {unit.Defense}+");
+        if (!destroyed && unit.RemainingWounds < unit.MaxWounds)
+            UiText.Colored(WoundedAmber,
+                $"Wounds {WoundFormat.Fraction(unit.RemainingWounds, unit.MaxWounds)}");
+
+        // Loadout: one line per distinct weapon, count-prefixed, stats + hoverable rules in parens —
+        // the #292 weapon vocabulary ("18\", A1 AP1, Rending") rather than the printout's, so the
+        // stat spelling matches the shoot panel the player already reads.
+        ImGui.TableSetColumnIndex(2);
+        var weapons = unit.AllWeapons();
+        foreach (var group in weapons.GroupBy(w => w.Name))
+        {
+            IWeapon w = group.First();
+            var segments = new List<RuleHoverText.Segment>
+            {
+                new($"{group.Count()}x {w.Name} (", null, null),
+            };
+            segments.AddRange(RuleHoverText.WeaponStatLine(w));
+            segments.Add(new RuleHoverText.Segment(")", null, null));
+            DrawWrappedSegments(segments, ImGui.GetContentRegionAvail().X);
+        }
+        if (weapons.Count == 0) UiText.Disabled("-");
+
+        // Special Rules: the unit's hoverable list; a joined hero appends its gold tag + own rules.
+        ImGui.TableSetColumnIndex(3);
+        var rules = PlayerFacingRules(unit.RuleDefinitions);
+        if (rules.Count > 0)
+            DrawWrappedSegments(RuleSegmentsFor(rules), ImGui.GetContentRegionAvail().X);
+        else if (unit.JoinedHeroModelId == null)
+            UiText.Disabled("-");
+        DrawHeroSummary(unit);
+
+        if (destroyed) ImGui.PopStyleVar();
+        ImGui.PopID();
+    }
+
+    /// <summary>
+    /// #342: the joined hero named directly under the host's name line, so scanning the list shows WHERE
+    /// each hero is without hovering anything. Before this the hero was anonymous once merged — the host's
+    /// name was the only name the game had. On its own line (long hero names would blow out the table
+    /// row's width) and gold, matching the hero tag lower in the entry: centred under the card's centred
+    /// header, indented under the table row's left-aligned one.
+    /// </summary>
+    private static void DrawHeroNameLine(IUnit unit, bool centered)
+    {
+        if (unit is not UnitData { HeroAttachment: { } ha }) return;
+
+        string line = HeroMarkerRenderer.FormatHeroNameLine(ha.Name, ha.PointCost);
+        if (centered)
+        {
+            CenterNextText(line);
+            UiText.Colored(HeroGold, line);
+            return;
+        }
+
+        ImGui.Indent();
+        UiText.Colored(HeroGold, line);
+        ImGui.Unindent();
+    }
+
+    // The hero tag + hero-own-rules pair, shared between the card's sub-block and the table row's
+    // Special Rules cell.
+    private void DrawHeroSummary(IUnit unit)
+    {
+        if (unit.JoinedHeroModelId is not { } heroId) return;
+        IModel? hero = unit.Models.FirstOrDefault(m => m.ID.Equals(heroId));
+        if (hero == null) return;
+
+        string tag = unit is UnitData { HeroAttachment: { } ha }
+            ? HeroMarkerRenderer.FormatHeroTag(ha.Name, ha.Quality, ha.Defense)
+            : "Hero";
+        if (!hero.GetIsAlive()) tag += "  -  dead";
+        else if (hero.TotalWounds > 1f)
+            tag += $"  Wounds {WoundFormat.Fraction(hero.TotalWounds - hero.WoundsDealt, hero.TotalWounds)}";
+        UiText.Colored(HeroGold, tag);
+
+        var heroRules = PlayerFacingRules(hero.RuleDefinitions);
+        if (heroRules.Count > 0)
+            DrawWrappedSegments(RuleSegmentsFor(heroRules), ImGui.GetContentRegionAvail().X);
+    }
+
+    // Header row WITHOUT TableHeadersRow's interactive header widgets: these columns don't sort or
+    // hide, so the hover highlight advertised a click that does nothing (user feedback v4). The
+    // Headers row flag keeps the header-band background; plain text draws on it.
+    private static void DrawStaticHeaderRow(params string[] labels)
+    {
+        ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
+        for (int i = 0; i < labels.Length; i++)
+        {
+            ImGui.TableSetColumnIndex(i);
+            ImGui.TextUnformatted(labels[i]);
+        }
+    }
+
+    /// <summary>The comma-joined hoverable segment list for a set of resolved rules.</summary>
+    private static List<RuleHoverText.Segment> RuleSegmentsFor(IReadOnlyList<ResolvedRule> rules)
+    {
+        var segments = new List<RuleHoverText.Segment>();
+        foreach (ResolvedRule rule in rules)
+        {
+            if (segments.Count > 0) segments.Add(new RuleHoverText.Segment(", ", null, null));
+            segments.Add(new RuleHoverText.Segment(rule.RequestedName, rule.RequestedName,
+                rule.Definition.Description));
+        }
+        return segments;
+    }
+
+    // A player's army + units in army order (the Armies store preserves the list file's order, dead
+    // included); armies are synced to every client, but fall back to the flat unit store just in
+    // case an IArmy was never registered for this player. The concrete ArmyData carries the #329
+    // display identity (name/faction/points limit) — same pattern-match as UnitData.HeroAttachment.
+    private (ArmyData? Army, List<IUnit> Units) ArmyFor(PlayerID playerID)
+    {
+        var armies = _tableState!.Armies.Objects.Where(a => a.PlayerID.Equals(playerID)).ToList();
+        var fromArmies = armies.SelectMany(a => a.Units).ToList();
+        if (fromArmies.Count > 0)
+            return (armies.OfType<ArmyData>().FirstOrDefault(), fromArmies);
+
+        return (null, _tableState.Units.Objects.Where(u => u.PlayerID.Equals(playerID)).ToList());
+    }
+
+    // ── One unit card ───────────────────────────────────────────────────────────────────────────────
+
+    private void DrawCard(IUnit unit)
+    {
+        int live  = unit.Models.Count(m => m.GetIsAlive());
+        int total = unit.Models.Count;
+        bool destroyed = live == 0;
+
+        ImGui.PushID(unit.ID.GetHashCode());
+
+        // A destroyed unit stays on the list — "what is left of their army" is half the point — but
+        // reads as spent: everything dims, then a full-strength DESTROYED stamp goes over the card.
+        if (destroyed)
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.45f);
+
+        // Each card body is DARKER than the panel (the ink well the printed cards use) and reads
+        // ~95% opaque IN TOTAL (user feedback v5/v6). The card composites OVER the window's 85%
+        // background, and alpha does not add linearly: total = 0.85 + A * (1 - 0.85), so A = 2/3
+        // lands the card region at exactly 95% coverage. (The first cut naively used A = 0.95,
+        // which stacks to ~99% - fully opaque.)
+        Vector4 cardBg = ImGuiTheme.InkWell with { W = 2f / 3f };
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, cardBg);
+        ImGui.BeginChild("card", new Vector2(0f, 0f),
+            ImGuiChildFlags.Borders | ImGuiChildFlags.AutoResizeY | ImGuiChildFlags.AlwaysUseWindowPadding);
+
+        DrawCardHeader(unit, live, total, destroyed);
+        DrawPillRow(unit, live, destroyed);
+
+        if (!destroyed && live > 0 && unit.RemainingWounds < unit.MaxWounds)
+        {
+            string wounds = $"Wounds {WoundFormat.Fraction(unit.RemainingWounds, unit.MaxWounds)}";
+            CenterNextText(wounds);
+            UiText.Colored(WithAlpha(WoundedAmber, 1f), wounds);
+        }
+
+        DrawRuleLine(unit);
+        DrawWeaponTable(unit);
+        DrawHeroBlock(unit);
+        DrawTokenChips(unit);
+
+        ImGui.EndChild();
+        ImGui.PopStyleColor();   // ChildBg
+
+        if (destroyed) ImGui.PopStyleVar();
+
+        // Cache the drawn height (plus spacing) for next frame's masonry packing.
+        Vector2 cardMin = ImGui.GetItemRectMin();
+        Vector2 cardMax = ImGui.GetItemRectMax();
+        _cardHeights[unit.ID] = (cardMax.Y - cardMin.Y) + ImGui.GetStyle().ItemSpacing.Y;
+
+        if (destroyed)
+        {
+            // Stamped over the dimmed card at full alpha, centered.
+            const string stamp = "DESTROYED";
+            var dl = ImGui.GetWindowDrawList();
+            float stampSize = 24f;
+            Vector2 textSize = RaylibRenderer.LargeFont.CalcTextSizeA(stampSize, float.MaxValue, 0f, stamp);
+            var pos = new Vector2(
+                cardMin.X + (cardMax.X - cardMin.X - textSize.X) * 0.5f,
+                cardMin.Y + (cardMax.Y - cardMin.Y - textSize.Y) * 0.5f);
+            dl.AddText(RaylibRenderer.LargeFont, stampSize, pos + new Vector2(1f, 1f),
+                ImGui.GetColorU32(new Vector4(0f, 0f, 0f, 0.8f)), stamp);
+            dl.AddText(RaylibRenderer.LargeFont, stampSize, pos,
+                ImGui.GetColorU32(new Vector4(0.95f, 0.25f, 0.25f, 0.95f)), stamp);
+        }
+
+        ImGui.PopID();
+        ImGui.Spacing();
+    }
+
+    private void DrawCardHeader(IUnit unit, int live, int total, bool destroyed)
+    {
+        // A pristine unit reads exactly like the printout ("Hive Lord [1] - 435pts"); casualties
+        // turn the count into the live fraction ("[12/20]"). Points only when the engine carried
+        // them (#329 slice 2) — a pre-slice-2 save shows none rather than "0pts".
+        string count = live == total ? $"[{total}]" : $"[{live}/{total}]";
+        string header = unit is UnitData { PointCost: > 0 } ud
+            ? $"{unit.Name} {count} - {ud.PointCost}pts"
+            : $"{unit.Name} {count}";
+
+        (string Text, Vector4 Color)? stateTag = destroyed ? null : StateTag(unit);
+
+        // #399: the tag is right-aligned on the header's own line, which worked only while headers were
+        // short - the header is CENTERED, so a long one ("Immortal Guardian Bodyguard [5] - 285pts")
+        // grows past the width the tag needs and the red text lands on top of the name. Reserve the tag's
+        // room first: when the header still fits in what is left, centre it there and keep the tag beside
+        // it; when it does not, the tag drops to its own right-aligned line under the header, which is
+        // what the compact table view has always done.
+        float tagW = stateTag is { } measured ? ImGui.CalcTextSize(measured.Text).X : 0f;
+        float availW = ImGui.GetContentRegionAvail().X;
+
+        // The header is measured at the scale it is DRAWN at, or a 1.12x header would be judged against
+        // 1x widths and the tag would go back on top of it for names just inside the boundary.
+        ImGui.SetWindowFontScale(1.12f);
+        float headerW = ImGui.CalcTextSize(header).X;
+        var plan = UnitCardHeaderLayout.Decide(headerW, tagW, ImGui.GetStyle().ItemSpacing.X, availW);
+        CenterNextText(header, plan.CenterHeaderWithin);
+        ImGui.TextUnformatted(header);
+        ImGui.SetWindowFontScale(1f);
+
+        if (stateTag is { } tag)
+        {
+            float tagX = ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - tagW;
+            if (plan.TagOnHeaderLine) ImGui.SameLine(tagX);
+            else ImGui.SetCursorPosX(tagX);
+            UiText.Colored(tag.Color, tag.Text);
+        }
+
+        // After the state tag, whose SameLine has to attach to the header itself.
+        DrawHeroNameLine(unit, centered: true);
+    }
+
+    // The blue stat pills: Quality / Defense always, Tough when the unit's models carry more than
+    // one wound each. A wounded single-model Tough unit shows "remaining/max" in amber — the pill
+    // itself is the wound counter, never color alone (the fraction text carries the fact).
+    private void DrawPillRow(IUnit unit, int live, bool destroyed)
+    {
+        var pills = new List<(string label, string value, Vector4 bg)>
+        {
+            ("Quality", $"{unit.Quality}+", ImGuiTheme.AccentBlue),
+            ("Defense", $"{unit.Defense}+", ImGuiTheme.AccentBlue),
+        };
+
+        // Representative per-model wounds: prefer a living rank-and-file model, fall back to any.
+        IModel? tough = unit.Models
+            .Where(m => m.TotalWounds > 1f)
+            .OrderByDescending(m => m.GetIsAlive())
+            .FirstOrDefault();
+        if (tough != null)
+        {
+            bool single = unit.Models.Count == 1;
+            float remaining = tough.TotalWounds - tough.WoundsDealt;
+            bool wounded = single && remaining < tough.TotalWounds && !destroyed;
+            string value = wounded
+                ? WoundFormat.Fraction(remaining, tough.TotalWounds)
+                : WoundFormat.Format(tough.TotalWounds);
+            pills.Add(("Tough", value, wounded ? WoundedAmber : ImGuiTheme.AccentBlue));
+        }
+
+        // Center the row like the printout.
+        float totalW = 0f;
+        foreach (var p in pills) totalW += PillWidth(p.label, p.value) + UiChrome.PillGap;
+        totalW -= UiChrome.PillGap;
+        ImGui.SetCursorPosX(Math.Max(ImGui.GetCursorPosX(),
+            ImGui.GetCursorPosX() + (ImGui.GetContentRegionAvail().X - totalW) * 0.5f));
+
+        for (int i = 0; i < pills.Count; i++)
+        {
+            if (i > 0) ImGui.SameLine(0f, UiChrome.PillGap);
+            DrawPill(pills[i].label, pills[i].value, pills[i].bg);
+        }
+        ImGui.Spacing();
+    }
+
+    // #398: the pill itself now lives in UiChrome, shared with the Combat Calculator's unit columns.
+    private static float PillWidth(string label, string value) => UiChrome.PillWidth(label, value);
+
+    private static void DrawPill(string label, string value, Vector4 labelBg) =>
+        UiChrome.DrawPill(label, value, labelBg);
+
+    // The unit's special rules as one comma-joined line of underlined hover targets, wrapped at rule
+    // boundaries — the #292 convention (solid underline = documented, faded = inert in play).
+    private void DrawRuleLine(IUnit unit)
+    {
+        var rules = PlayerFacingRules(unit.RuleDefinitions);
+        if (rules.Count == 0) return;
+
+        DrawWrappedSegments(RuleSegmentsFor(rules), ImGui.GetContentRegionAvail().X);
+        ImGui.Spacing();
+    }
+
+    private void DrawWeaponTable(IUnit unit)
+    {
+        var weapons = unit.AllWeapons();   // living models only — counts shrink with casualties
+        if (weapons.Count == 0) return;
+
+        if (!ImGui.BeginTable("weapons", 5,
+            ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp)) return;
+
+        ImGui.TableSetupColumn("Weapon", ImGuiTableColumnFlags.WidthStretch, 3f);
+        ImGui.TableSetupColumn("RNG", ImGuiTableColumnFlags.WidthFixed, 46f);
+        ImGui.TableSetupColumn("ATK", ImGuiTableColumnFlags.WidthFixed, 40f);
+        ImGui.TableSetupColumn("AP", ImGuiTableColumnFlags.WidthFixed, 32f);
+        ImGui.TableSetupColumn("SPE", ImGuiTableColumnFlags.WidthStretch, 2f);
+        DrawStaticHeaderRow("Weapon", "RNG", "ATK", "AP", "SPE");
+
+        foreach (var group in weapons.GroupBy(w => w.Name))
+        {
+            IWeapon w = group.First();
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextUnformatted(ArmyListLayout.CountedName(group.Count(), w.Name));
+            ImGui.TableSetColumnIndex(1);
+            ImGui.TextUnformatted(ArmyListLayout.RangeText(w.RangeInches));
+            ImGui.TableSetColumnIndex(2);
+            ImGui.TextUnformatted(ArmyListLayout.AttacksText(w.Attacks));
+            ImGui.TableSetColumnIndex(3);
+            ImGui.TextUnformatted(ArmyListLayout.ApText(w.ArmorPenetration));
+
+            ImGui.TableSetColumnIndex(4);
+            var ruleSegments = RuleHoverText.RuleSegments(w);
+            if (ruleSegments.Count == 0)
+            {
+                UiText.Disabled("-");
+            }
+            else
+            {
+                // RuleSegments is one segment PER RULE with no separators (its shoot-panel caller
+                // interleaves its own) - without these a two-rule weapon printed "Deadly(3)Limited".
+                var separated = new List<RuleHoverText.Segment>();
+                foreach (RuleHoverText.Segment segment in ruleSegments)
+                {
+                    if (separated.Count > 0) separated.Add(new RuleHoverText.Segment(", ", null, null));
+                    separated.Add(segment);
+                }
+                DrawWrappedSegments(separated, ImGui.GetContentRegionAvail().X);
+            }
+        }
+
+        ImGui.EndTable();
+    }
+
+    // Joined hero (#227/#006): a sub-block inside the host unit's card — the in-game truth after the
+    // merge, unlike the printout's separate pre-merge entry. The hero's own Qua/Def (they diverge
+    // from the host's), its wound counter when Tough, and its OWN rules (a joined hero does not
+    // share the unit's).
+    private void DrawHeroBlock(IUnit unit)
+    {
+        if (unit.JoinedHeroModelId == null) return;
+        ImGui.Separator();
+        DrawHeroSummary(unit);
+    }
+
+    // Status tokens as colored text chips ("[Shaken]"), hover for the engine's description — same
+    // resolve + color source as the canvas chips (#151/#328), text form because a card has room to
+    // say the name.
+    /// <summary>
+    /// #404: a living unit's state tag, or null when it is simply ready to act. Two states share this
+    /// slot: red "Activated" once the unit has spent its turn, and blue "In Reserve" while it is held
+    /// off-table in Ambush. Reserve used to read as Activated - <see cref="UnitActivation.HasActivated"/>
+    /// asks whether the unit is missing from the round's unactivated pool, and a reserve unit is kept out
+    /// of that pool deliberately because it cannot act yet, which is the opposite meaning.
+    /// (Destroyed is handled by the callers, ahead of this.)
+    /// </summary>
+    private (string Text, Vector4 Color)? StateTag(IUnit unit)
+    {
+        if (UnitActivation.IsInReserve(unit)) return (ReserveTag, ReserveBlue);
+        if (UnitActivation.HasActivated(_tableState!.Progress, unit)) return (ActivatedTag, ActivatedRed);
+        return null;
+    }
+
+    private void DrawTokenChips(IUnit unit)
+    {
+        var tokens = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false,
+            ViewSettings.ShowAllTokens, unit);
+        if (tokens.Count == 0) return;
+
+        ImGui.Spacing();
+        float avail = ImGui.GetContentRegionAvail().X;
+        float x = 0f;
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            TokenDisplayInfo token = tokens[i];
+            string chip = token.Count > 1 ? $"[{token.Name} x{token.Count}]" : $"[{token.Name}]";
+            float w = ImGui.CalcTextSize(chip).X;
+            if (i > 0)
+            {
+                if (x + w > avail) x = 0f;         // wrap
+                else ImGui.SameLine();
+            }
+            x += w + ImGui.GetStyle().ItemSpacing.X;
+
+            UiText.Colored(ImGui.ColorConvertU32ToFloat4(TokenChipRenderer.ColorFor(token)), chip);
+            if (ImGui.IsItemHovered() && !string.IsNullOrEmpty(token.Description))
+                RuleHoverText.ShowTooltip($"{token.Name}\n{token.Description}");
+        }
+    }
+
+    // ── Shared bits ─────────────────────────────────────────────────────────────────────────────────
+
+    /// <summary>Rules minus the engine-internal Disembark/Embark abilities attached to every unit —
+    /// the same filter as the canvas tooltip and deploy panel.</summary>
+    private static List<ResolvedRule> PlayerFacingRules(IReadOnlyList<ResolvedRule> rules) =>
+        rules.Where(r => r.Definition.Name != CoreRuleCatalog.DisembarkRuleName
+                      && r.Definition.Name != CoreRuleCatalog.EmbarkRuleName)
+             .ToList();
+
+    // Wraps at segment boundaries (ArmyListLayout.WrapSegments), draws each line via
+    // RuleHoverText.DrawInline on the window draw list, and raises the hovered rule's tooltip.
+    private static void DrawWrappedSegments(IReadOnlyList<RuleHoverText.Segment> segments, float width)
+    {
+        var lines = ArmyListLayout.WrapSegments(segments, s => ImGui.CalcTextSize(s).X, width);
+        var dl = ImGui.GetWindowDrawList();
+        uint textColor = ImGui.GetColorU32(ImGuiCol.Text);
+        float lineHeight = ImGui.GetTextLineHeightWithSpacing();
+        bool hoverEnabled = ImGui.IsWindowHovered(ImGuiHoveredFlags.RootAndChildWindows);
+
+        string? tooltip = null;
+        foreach (var line in lines)
+        {
+            Vector2 origin = ImGui.GetCursorScreenPos();
+            // Unconditionally, then coalesce: DrawInline draws as well as reporting the hover, and `??=`
+            // would skip the call - and so the line - once a tooltip had been found (#336).
+            string? hovered = RuleHoverText.DrawInline(dl, origin, line, textColor, textColor, hoverEnabled);
+            tooltip ??= hovered;
+            ImGui.Dummy(new Vector2(width, lineHeight));
+        }
+
+        if (tooltip != null) RuleHoverText.ShowTooltip(tooltip);
+    }
+
+    private static void CenterNextText(string text)
+        => CenterNextText(text, ImGui.GetContentRegionAvail().X);
+
+    /// <summary>
+    /// Centres the next text within <paramref name="withinWidth"/> rather than the whole content
+    /// region (#399) - so a header sharing its line with a right-aligned tag centres in the space the
+    /// tag left it, instead of centring across the tag and running underneath it.
+    /// </summary>
+    private static void CenterNextText(string text, float withinWidth)
+    {
+        float indent = (withinWidth - ImGui.CalcTextSize(text).X) * 0.5f;
+        if (indent > 0f) ImGui.SetCursorPosX(ImGui.GetCursorPosX() + indent);
+    }
+
+    private static Vector4 WithAlpha(Vector4 color, float alpha) =>
+        new(color.X, color.Y, color.Z, alpha);
+}

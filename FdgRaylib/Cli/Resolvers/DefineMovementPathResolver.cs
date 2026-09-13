@@ -1,12 +1,15 @@
 using FDG;
+using FDG.Ai.Tactician;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
+using FDG.Utilities;
+using FdgRaylib.Placement;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-public class DefineMovementPathResolver : IStageResolver<DefineMovementPathRequest, List<ModelMoveEntry>>
+public class DefineMovementPathResolver : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>
 {
     private readonly ITableState? _tableState;
 
@@ -15,7 +18,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         _tableState = tableState;
     }
 
-    public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
+    public Task<CancellableResult<List<ModelMoveEntry>>> Resolve(DefineMovementPathRequest request)
     {
         var unit = request.UnitDataBinding.GetValue();
         var models = unit.ModelBindings;
@@ -24,18 +27,28 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         {
             Console.WriteLine();
             Console.WriteLine($"--- Move: {unit.Name} ({models.Count} model{(models.Count != 1 ? "s" : "")}) ---");
-            Console.WriteLine($"  Advance (≤ {request.MaxAdvanceDistance:F1}\"): move freely, can still shoot afterward");
-            Console.WriteLine($"  Rush    (≤ {request.MaxChargeDistance:F1}\"): move farther, but cannot shoot this turn");
+            Console.WriteLine($"  Advance (<= {request.MaxAdvanceDistance:F1}\"): move freely, can still shoot afterward");
+            Console.WriteLine($"  Rush    (<= {request.MaxDistanceInches:F1}\"): move farther, but cannot shoot this turn");
             if (models.Count > 1)
             {
                 Console.WriteLine($"  Cohesion: each model must end within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES:F0}\" (base-to-base) of at least one teammate");
                 Console.WriteLine($"            and within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES:F0}\" of every other model");
             }
+            // #334: state the standoff band up front, the way the cohesion limits are stated. Ending inside it
+            // is legal (#206) but costs the unit its Pass, and a CLI player has no ghost to warn them.
+            if (EnemyPoses(request).Count > 0)
+            {
+                Console.WriteLine($"  Standoff: ending within {GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES:F0}\" (base-to-base) of an enemy is allowed,");
+                Console.WriteLine("            but the unit then cannot Pass - it must Charge.");
+            }
             Console.WriteLine("  Enter destination as 'x z' (inches, e.g. '24 18'), or press Enter to leave in place.");
+            if (request.AllowCancel)
+                Console.WriteLine("  Type 'back' to cancel the move and choose a different action.");
             Console.WriteLine();
 
             var entries = new List<ModelMoveEntry>();
             bool eof = false;
+            bool cancelled = false;
 
             for (int i = 0; i < models.Count; i++)
             {
@@ -50,6 +63,12 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                     break;
                 }
 
+                if (request.AllowCancel && input.Equals("back", StringComparison.OrdinalIgnoreCase))
+                {
+                    cancelled = true;
+                    break;
+                }
+
                 if (string.IsNullOrEmpty(input))
                 {
                     entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
@@ -61,76 +80,277 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                     entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { new Position(x, z) }));
                 else
                 {
-                    Console.WriteLine("    Could not parse — leaving in place.");
+                    Console.WriteLine("    Could not parse - leaving in place.");
                     entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
                 }
             }
 
-            if (eof)
-                return Task.FromResult(AutoAdvance(request));
+            if (cancelled)
+                return Task.FromResult<CancellableResult<List<ModelMoveEntry>>>(new Cancelled<List<ModelMoveEntry>>());
 
-            if (MovementUtilities.ValidatePaths(entries, request.MaxChargeDistance, out var errors))
-                return Task.FromResult(entries);
+            // EOF keeps the piped-stdin default: advance rather than cancel, so an automated run still plays.
+            if (eof)
+                return Selected(WarnIfForcedCharge(request, AutoAdvance(request)));
+
+            // #159: lenientCoherency mirrors DefinePathStage - a unit already broken by a casualty may hold
+            // (or pull together) rather than being rejected for a coherency it can't restore while boxed in.
+            if (MovementUtilities.ValidatePaths(entries, BudgetFor(request),
+                    GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
+                    request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors,
+                    GetFriendlyFootprints(request), lenientCoherency: true))
+            {
+                // #333: the GUI's Done confirmation, in this front end's vocabulary. Declining re-runs the
+                // whole prompt, exactly as an invalid path does below.
+                if (!ConfirmUnmovedModels(entries)) continue;
+                // #334: the standoff warning comes AFTER that confirmation, so a move the player backs out
+                // of never announces a forced charge it isn't going to cause.
+                return Selected(WarnIfForcedCharge(request, entries));
+            }
 
             Console.WriteLine();
-            Console.WriteLine("  Movement is invalid — please re-enter all models:");
+            Console.WriteLine("  Movement is invalid - please re-enter all models:");
             foreach (var err in errors)
                 Console.WriteLine($"    ! {MovementUtilities.ErrorReasonToString(err.ErrorReasonType)}");
         }
     }
 
-    // Automatically advance the unit toward the nearest enemy, keeping formation intact.
+    /// <summary>
+    /// #333: names the models that never left the start line before the move commits, so "Enter through
+    /// every model" cannot silently spend a unit's Move action. Two shapes, like the GUI popup: leaving
+    /// SOME behind costs them the activation, leaving them ALL behind spends the action on nothing (and,
+    /// engine-side, no longer counts as having moved this round).
+    ///
+    /// <para>EOF answers yes, per #319's rule - a piped script that entered blank lines meant them, and
+    /// re-prompting forever is the one wrong answer here. Bare Enter agrees too: this is a confirmation,
+    /// not a decision, and the player has already typed every model's destination once.</para>
+    /// </summary>
+    private static bool ConfirmUnmovedModels(List<ModelMoveEntry> entries)
+    {
+        var unmoved = new List<int>();
+        for (int i = 0; i < entries.Count; i++)
+            if (MovementUtilities.GetTotalMoveDistance(entries[i]) <= UnmovedEpsilonInches)
+                unmoved.Add(i + 1);
+
+        if (unmoved.Count == 0) return true;
+
+        Console.WriteLine();
+        if (unmoved.Count == entries.Count)
+        {
+            Console.WriteLine("  No model moved. Finishing spends the unit's Move action and leaves it in place");
+            Console.WriteLine("  (the unit will not count as having moved this round).");
+            if (entries.Count > 0)
+                Console.WriteLine("  Type 'back' at the first model instead to keep the Move action.");
+        }
+        else
+        {
+            Console.WriteLine($"  {unmoved.Count} of {entries.Count} models did not move: "
+                + string.Join(", ", unmoved.Select(o => $"Model {o}")));
+            Console.WriteLine("  They stay where they are for the rest of this activation.");
+        }
+
+        Console.Write("  Finish the move? [Y/n]: ");
+        string? answer = Console.ReadLine()?.Trim();
+        if (string.IsNullOrEmpty(answer)) return true;
+        return !(answer.Equals("n", StringComparison.OrdinalIgnoreCase)
+                 || answer.Equals("no", StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>Float epsilon for "this model did not move" - mirrors the GUI roster's
+    /// <c>ModelRoster.DistanceEpsilon</c>, which greys the same rows.</summary>
+    private const float UnmovedEpsilonInches = 0.0001f;
+
+    private static Task<CancellableResult<List<ModelMoveEntry>>> Selected(List<ModelMoveEntry> entries) =>
+        Task.FromResult<CancellableResult<List<ModelMoveEntry>>>(new Selected<List<ModelMoveEntry>>(entries));
+
+    // Automatically advance the unit toward the nearest enemy, re-forming the living models into a
+    // cohesive grid at the destination. A rigid translate would preserve any hole a casualty left in the
+    // formation and be rejected for breaking cohesion (which would crash DefinePathStage), so we re-pack.
     private List<ModelMoveEntry> AutoAdvance(DefineMovementPathRequest request)
     {
         var unit = request.UnitDataBinding.GetValue();
-        var models = unit.ModelBindings;
-
-        // Find live enemy model positions via ITableState.
-        List<Position> enemyPositions = new();
-        if (_tableState != null)
-        {
-            foreach (var u in _tableState.Units.Objects)
-            {
-                if (u.PlayerID == request.TargetPlayerID) continue;
-                foreach (var m in u.Models)
-                    if (m.GetIsAlive()) enemyPositions.Add(m.Position);
-            }
-        }
-
-        if (enemyPositions.Count == 0)
+        var living = unit.ModelBindings.Where(mb => mb.GetValue().GetIsAlive()).ToList();
+        if (living.Count == 0)
             return StayInPlace(request);
 
-        // Compute unit center.
-        float cx = models.Average(mb => mb.GetValue().Position.x);
-        float cz = models.Average(mb => mb.GetValue().Position.z);
+        // Live enemy footprints (centre + radius) via ITableState.
+        var footprints = GetEnemyFootprints(request);
+        // #205: friendly footprints the auto-advance must not end stacked on (else DefinePathStage throws).
+        var friendlies = GetFriendlyFootprints(request);
 
-        // Find nearest enemy.
-        Position nearest = enemyPositions
-            .OrderBy(p => (p.x - cx) * (p.x - cx) + (p.z - cz) * (p.z - cz))
+        // Compute the living models' centre.
+        float cx = living.Average(mb => mb.GetValue().Position.x);
+        float cz = living.Average(mb => mb.GetValue().Position.z);
+
+        // No enemy to advance on — re-form in place (closes any casualty hole so the move is legal).
+        if (footprints.Count == 0)
+            return CohesiveFormation.PackGrid(living, cx, cz);
+
+        EnemyModelFootprint nearest = footprints
+            .OrderBy(f => (f.Center.x - cx) * (f.Center.x - cx) + (f.Center.z - cz) * (f.Center.z - cz))
             .First();
 
-        float dx = nearest.x - cx;
-        float dz = nearest.z - cz;
+        float dx = nearest.Center.x - cx;
+        float dz = nearest.Center.z - cz;
         float dist = MathF.Sqrt(dx * dx + dz * dz);
 
         if (dist < 0.01f)
-            return StayInPlace(request);
+            return CohesiveFormation.PackGrid(living, cx, cz);
 
-        // Advance up to MaxAdvanceDistance (with a tiny margin so float rounding never pushes
-        // the computed distance over the limit and disqualify the unit from shooting).
-        float step = Math.Min(request.MaxAdvanceDistance - 0.001f, Math.Max(0f, dist - 1f));
-        float ndx = dx / dist * step;
-        float ndz = dz / dist * step;
+        // Auto-advance is a non-charge move: close toward the enemy but hold at the 1" standoff (base-to-base),
+        // not on top of it — "1" short of centre" is actually base overlap. Tiny advance margin so float
+        // rounding can't disqualify a follow-up shot; clamped so the re-pack keeps every model in budget.
+        float leadRadius = living.Max(mb => mb.GetValue().BaseRadiusInches);
+        float targetGap = GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES + 0.05f;
+        float step = Math.Min(request.MaxAdvanceDistance - 0.001f,
+            Math.Max(0f, dist - (leadRadius + nearest.BaseRadiusInches) - targetGap));
+        step = CohesiveFormation.ClampRepackStep(living, cx, cz, step, request.MaxDistanceInches);
+        float ndx = dx / dist;
+        float ndz = dz / dist;
 
-        Console.WriteLine($"  [auto] advancing {step:F1}\" toward nearest enemy");
+        // The move-through / standoff validator (#011) can still reject an advance that ends too near an
+        // enemy (e.g. packing offset), and DefinePathStage throws (no retry). Back the step off until the
+        // engine accepts the candidate — reforming in place as a last resort — so EOF auto-play never crashes.
+        var terrain = _tableState?.Terrain.Objects;
 
-        return models.Select(mb =>
+        var candidate = CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
+        bool valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies, lenientCoherency: true);
+        int attempts = 0;
+        while (!valid && attempts < 6)
         {
-            var m = mb.GetValue();
-            var newPos = new Position(m.Position.x + ndx, m.Position.z + ndz);
-            return new ModelMoveEntry(mb, new List<Position> { newPos });
-        }).ToList();
+            step *= 0.5f;
+            candidate = step < 0.05f
+                ? CohesiveFormation.PackGrid(living, cx, cz)
+                : CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
+            valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies, lenientCoherency: true);
+            attempts++;
+        }
+        if (!valid)
+        {
+            // Reform in place to close casualty gaps...
+            candidate = CohesiveFormation.PackGrid(living, cx, cz);
+            valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies, lenientCoherency: true);
+
+            // ...but a unit intermingled with enemies can't re-pack without a model crossing an enemy base;
+            // hold exact positions then (zero-length paths can't move through anything).
+            if (!valid)
+                candidate = living
+                    .Select(mb => new ModelMoveEntry(mb, new List<Position> { mb.GetValue().Position }))
+                    .ToList();
+        }
+
+        Console.WriteLine("  [auto] advancing toward nearest enemy");
+        return candidate;
     }
+
+    // #093: cap each model against its OWN budget (a joined hero's Fast/Slow) so the CLI's validation agrees
+    // with the authoritative per-model stage check. A unit with no per-model rules gets the unit scalars.
+    private static Func<ModelMoveEntry, ModelMoveBudget> BudgetFor(DefineMovementPathRequest request)
+        => entry =>
+        {
+            var (_, rush, maxDist) = request.BudgetFor(entry.Model.GetValue().ID);
+            return new ModelMoveBudget(rush, maxDist);
+        };
+
+    // Living enemy model footprints (centre + radius), tagged with a per-unit key, for the move-through /
+    // standoff validator. Empty when there's no table state (the resolver can run detached in tests).
+    private List<EnemyModelFootprint> GetEnemyFootprints(DefineMovementPathRequest request)
+    {
+        var footprints = new List<EnemyModelFootprint>();
+        if (_tableState == null) return footprints;
+
+        int unitKey = 0;
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (!TeamAwareness.IsEnemyUnit(_tableState, request.TargetPlayerID, u)) continue;
+            bool uncontactable = FDG.Rules.Dispatch.AircraftRules.IsAircraft(u); // #029
+            bool anyLiving = false;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive())
+                {
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable, m.BaseShape, m.Facing));
+                    anyLiving = true;
+                }
+            if (anyLiving) unitKey++;
+        }
+        return footprints;
+    }
+
+    // #334: living enemy model poses, tagged with their unit, for the forced-charge standoff band. Separate
+    // from GetEnemyFootprints because that one exists for the move-through validator and carries #029's
+    // uncontactable flag; this one mirrors the ChooseActionStage gate, which screens on GetIsOnBattlefield
+    // instead (#263 - a reserve unit sits at the origin and must not force anything).
+    private List<(IUnit unit, ForcedChargeUtilities.StandoffPose pose)> EnemyPoses(DefineMovementPathRequest request)
+    {
+        var poses = new List<(IUnit, ForcedChargeUtilities.StandoffPose)>();
+        if (_tableState == null) return poses;
+
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (!TeamAwareness.IsEnemyUnit(_tableState, request.TargetPlayerID, u) || !u.GetIsOnBattlefield())
+                continue;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive())
+                    poses.Add((u, new ForcedChargeUtilities.StandoffPose(m.Position, m.BaseShape, m.Facing)));
+        }
+        return poses;
+    }
+
+    /// <summary>
+    /// Reports, on the accepted move, that it ends inside the standoff band - the CLI's half of #334. Returns
+    /// the entries unchanged: the move is legal and is NOT re-prompted, exactly as the GUI leaves Done live.
+    ///
+    /// A CLI entry carries no facings, so the executor leaves each model's facing alone - which is why the
+    /// measurement uses the model's CURRENT facing rather than a direction of travel.
+    /// </summary>
+    private List<ModelMoveEntry> WarnIfForcedCharge(DefineMovementPathRequest request, List<ModelMoveEntry> entries)
+    {
+        var enemies = EnemyPoses(request);
+        if (enemies.Count == 0) return entries;
+
+        var movers = new List<ForcedChargeUtilities.StandoffPose>();
+        foreach (var entry in entries)
+        {
+            var model = entry.Model.GetValue();
+            if (!model.GetIsAlive() || entry.Positions.Count == 0) continue;
+            movers.Add(new ForcedChargeUtilities.StandoffPose(
+                entry.Positions[^1], model.BaseShape, model.Facing));
+        }
+
+        var contacts = ForcedChargeUtilities.FindContacts(movers,
+            enemies.Select(e => e.pose).ToList());
+        if (contacts.Count == 0) return entries;
+
+        var movingModels = new HashSet<int>(contacts.Select(c => c.MoverIndex));
+        var names = new List<string>();
+        foreach (var c in contacts)
+        {
+            string name = enemies[c.EnemyIndex].unit.Name;
+            if (!names.Contains(name)) names.Add(name);
+        }
+
+        Console.WriteLine();
+        Console.WriteLine($"  ! FORCED CHARGE: {movingModels.Count} model{(movingModels.Count != 1 ? "s" : "")} "
+            + $"end{(movingModels.Count == 1 ? "s" : "")} within {GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES:F0}\" "
+            + $"of {string.Join(", ", names)}.");
+        // Charge needs a melee weapon; Pass is gated by proximity alone. A rifle-only unit inside the band can
+        // do neither and lands on the engine's zero-options fallback, so promising a Charge would be a lie.
+        Console.WriteLine(request.UnitDataBinding.GetValue().GetMeleeWeapons().Count > 0
+            ? "    This unit cannot Pass - it must Charge."
+            : "    This unit cannot Pass, and has no melee weapon to Charge with.");
+        return entries;
+    }
+
+    // #205: friendly model footprints (same team, excluding the moving unit) the move may not end stacked on.
+    // Empty when detached (no table state). Reuses the engine's team-based gatherer so it matches the
+    // authoritative DefinePathStage check exactly.
+    private List<EnemyModelFootprint> GetFriendlyFootprints(DefineMovementPathRequest request)
+        => _tableState == null
+            ? new List<EnemyModelFootprint>()
+            : MovementPlanner.LiveFriendlyFootprints(_tableState, request.TargetPlayerID,
+                request.UnitDataBinding.GetValue().ID);
 
     private static List<ModelMoveEntry> StayInPlace(DefineMovementPathRequest request)
     {

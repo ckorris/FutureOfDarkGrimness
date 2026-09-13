@@ -1,0 +1,40 @@
+{
+  "name": "#336 showcase - melee weapon rules beside shooting weapon rules, every display state on screen at once",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Realistic", "diceSeed": 42 },
+  "objectives": [[8, 8], [40, 40]],
+  "terrain": [],
+  "players": [
+    {
+      "army": "armies/RuleShowcase.fdgarmy",
+      "units": [
+        {
+          "unit": "Blademasters",
+          "models": [[22, 23], [23.2, 23], [24.4, 23]],
+          "facing": [0, 1]
+        },
+        {
+          "unit": "Marksmen",
+          "models": [[34, 20], [35.2, 20], [36.4, 20]],
+          "facing": [0, 1]
+        }
+      ]
+    },
+    {
+      "army": "armies/RuleShowcase.fdgarmy",
+      "units": [
+        {
+          "unit": "Melee Dummies",
+          "models": [[22, 24.2], [23.2, 24.2], [24.4, 24.2]],
+          "facing": [0, -1]
+        },
+        {
+          "unit": "Target Dummies",
+          "models": [[34, 32], [35.2, 32], [36.4, 32]],
+          "facing": [0, -1]
+        }
+      ]
+    }
+  ]
+}
