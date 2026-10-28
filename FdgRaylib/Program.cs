@@ -1,3 +1,4 @@
+using FdgRaylib.Analytics;
 using System.Text.Json;
 using FdgRaylib.Cli;
 using FdgRaylib.Config;
@@ -636,6 +637,12 @@ if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
     Console.SetIn(new StringReader($"1\n{armyPath}\n1\n{armyPath}\n"));
 }
 
+// #406: anonymous usage analytics. Headless and --scenario runs (automation, the developer's own
+// testing) never send, nor do -dev builds; FDG_ANALYTICS=1 overrides that for testing the pipeline.
+// Nothing is sent from any run until the player has clicked through the first-launch notice.
+UsageAnalytics.Initialize(
+    headless ? "headless" : scenarioPath != null ? "scenario" : null);
+
 var app = new CliApp(headless, slowDelayMs, diceSeed, aiProfile);
 
 if (headless)
@@ -657,26 +664,40 @@ if (headless)
 
     app.Prepare();
     await app.RunAsync();
+    UsageAnalytics.Shutdown();
 }
 else
 {
     var renderer = new RaylibRenderer();
 
     // ── Main Menu ──────────────────────────────────────────────────────────────
+    // #406: each main-menu destination records one feature_open (a no-op when analytics is off).
     renderer.MainMenu.OnHostClicked = () =>
+    {
+        UsageAnalytics.FeatureOpened(AnalyticsFeatures.Host);
         renderer.NavigateTo(renderer.HostModal);
+    };
 
     renderer.MainMenu.OnArmyBuilderClicked = () =>
         renderer.NavigateTo(renderer.ArmyBuilder);
 
     renderer.MainMenu.OnArmyForgeClicked = () =>
+    {
+        UsageAnalytics.FeatureOpened(AnalyticsFeatures.ArmyForge);
         renderer.NavigateTo(renderer.ArmyForge);
+    };
 
     renderer.MainMenu.OnCombatCalculatorClicked = () =>
+    {
+        UsageAnalytics.FeatureOpened(AnalyticsFeatures.CombatCalculator);
         renderer.NavigateTo(renderer.CombatCalculator);
+    };
 
     renderer.MainMenu.OnClientClicked = () =>
+    {
+        UsageAnalytics.FeatureOpened(AnalyticsFeatures.Join);
         renderer.NavigateTo(renderer.ClientModal);
+    };
 
     // The public-listing heartbeat (#271), when the host ticked "List publicly". Stopped on every
     // lobby/game exit path below; a missed path only means the entry lingers until the registry's
@@ -756,7 +777,11 @@ else
         renderer.NavigateTo(renderer.LobbyScreen);
     }
 
-    renderer.MainMenu.OnLoadGameClicked = LoadGameFlow;
+    renderer.MainMenu.OnLoadGameClicked = () =>
+    {
+        UsageAnalytics.FeatureOpened(AnalyticsFeatures.LoadGame);
+        LoadGameFlow();
+    };
     renderer.OnLoadGameRequested        = LoadGameFlow;
 
     renderer.MainMenu.OnQuitClicked = renderer.RequestClose;
@@ -908,5 +933,8 @@ else
         // the router to drop the port mapping - the process is about to end, so a background removal
         // would die with it.
         StopListing(blocking: true);
+        // #406: mark the session as cleanly ended, then one bounded (2s) attempt to send what's queued;
+        // anything unsent is spooled for the next launch.
+        UsageAnalytics.Shutdown();
     }
 }

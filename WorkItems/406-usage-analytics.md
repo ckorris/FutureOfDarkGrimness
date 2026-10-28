@@ -252,6 +252,17 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Slice 2 (client core) done.** `FdgRaylib/Analytics/`: `AnalyticsConfig`, `AnalyticsEvent`
+  (+ event/feature name constants), `AnalyticsClient` (gates, queue, 20-event batches, single-flight,
+  429/5xx/network -> spool capped at 200, other 4xx dropped, opt-out wipes queue/spool/ID),
+  `SessionTracker`, static facade `UsageAnalytics` (renamed from `Analytics` - a class named like its
+  namespace breaks call sites). `UserConfig` gained the three fields. Program.cs: initialize before
+  `CliApp` (headless/scenario excluded), `feature_open` on Host/Client/Army Forge/Combat Calculator/
+  Load Game, `Shutdown()` on both exit paths. `AnalyticsTests` 23 tests incl. a contract test that
+  every client event/feature name appears in the Worker's `SCHEMA`; two mutations (notice gate, 429
+  retry) each caught. Engine 3361 green, app 3018 green, headless smoke exit 0 with
+  `analytics: disabled (headless)`. Forced e2e (`FDG_ANALYTICS=1`, isolated `FDG_CONFIG_DIR`) against
+  wrangler dev: the built binary's `app_launch` arrived and `fetch-stats.sh` counted 1 install.
 - 2026-10-28: **Slice 1 (Worker) done, not deployed.** `src/analytics.ts` (new `Analytics` DO, SQLite
   tables `events`/`installs`/`rate`), shared helpers moved to `src/util.ts`, migration `v3`,
   `fetch-stats.sh`, smoke sections 15-19, list-server README. Typecheck clean; `smoke.sh` against
@@ -264,6 +275,11 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Decisions
 
+- The session marker (`last-session.json`) is written only on non-excluded runs and holds timestamps
+  and the version, no identifier. It is written even when the player opted out, since it never leaves
+  the machine on its own; the README paragraph should mention it.
+- `FDG_ANALYTICS=1` forces past run exclusions only; it never overrides the player's opt-out or the
+  notice gate (tested).
 - Slice 1 deviations from the plan above (the schema in `src/analytics.ts` is now the contract):
   - `game_start` also carries `systems` (game-system slug per slot) alongside `factions`, so a
     `mixed` game says which slot played what.

@@ -50,6 +50,22 @@ public sealed class UserConfig
 
     public string CalculatorSystemB { get; set; } = GameSystems.GrimdarkFuture;
 
+    /// <summary>#406: send anonymous usage statistics. On by default, but nothing is sent until
+    /// <see cref="AnalyticsNoticeAcknowledged"/> - the player has seen the first-launch notice, which
+    /// carries this same toggle. Changeable later from the main menu's Privacy button and the in-game
+    /// Options panel.</summary>
+    public bool AnalyticsEnabled { get; set; } = true;
+
+    /// <summary>#406: the random, resettable install ID usage events carry so unique players can be
+    /// counted without identifying anyone. Null until analytics is first enabled after the notice;
+    /// cleared on opt-out (re-enabling generates a fresh one). Lives here, in the per-user config
+    /// directory, so it survives downloading a new build into a new folder.</summary>
+    public string? AnalyticsInstallId { get; set; }
+
+    /// <summary>#406: the player has clicked through the analytics notice. False on a fresh install
+    /// and on the first launch of the version that introduced analytics.</summary>
+    public bool AnalyticsNoticeAcknowledged { get; set; }
+
     /// <summary>The lobby settings panel, as the last hosted (non-resume) game left it.</summary>
     public HostGameSettings HostSettings { get; set; } = HostGameSettings.FromDefaults();
 
