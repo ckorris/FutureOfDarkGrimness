@@ -1,3 +1,4 @@
+using FdgRaylib.Analytics;
 using System.Numerics;
 using FDG;
 using FDG.Ai;
@@ -36,6 +37,10 @@ public class LobbyScreen : IAppScreen
 
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
+
+    /// <summary>#406: this host lobby is on the public server list (Program.cs sets it when the host
+    /// dialog created a listing). Reported on the host's anonymous game_start; reset by SetViewModel.</summary>
+    public bool ListedPublicly { get; set; }
 
     private IFDGGame? _pendingGame;
 
@@ -80,6 +85,7 @@ public class LobbyScreen : IAppScreen
         _viewModel = viewModel;
         _chatInput = "";
         _pendingGame = null;
+        ListedPublicly = false;
 
         // #372: start the armies scan as soon as a lobby exists (it runs on a background task) and give
         // this lobby its own rotation, so re-opening one starts the army cycle over.
@@ -88,10 +94,19 @@ public class LobbyScreen : IAppScreen
         _ = SharedArmyCatalog.Value;
         viewModel.OnLaunched += game => _pendingGame = game;
         // Fires on the engine thread; the renderer just records it and reacts on the main thread.
-        viewModel.OnGameEnded += result => OnGameEnded?.Invoke(result);
+        viewModel.OnGameEnded += result =>
+        {
+            // #406: a client's only end signal - no game_end from a client, but no abandon may follow.
+            GameAnalyticsSession.Current?.EndedRemotely();
+            OnGameEnded?.Invoke(result);
+        };
         // Also the engine thread, and deliberately handled synchronously there: the recovery save must be
         // taken before anything reacts to the game ending (#187).
-        viewModel.OnGameCompleted += result => OnGameCompleted?.Invoke(result);
+        viewModel.OnGameCompleted += result =>
+        {
+            GameAnalyticsSession.Current?.Completed(result); // #406 host game_end; never throws
+            OnGameCompleted?.Invoke(result);
+        };
 
         // #310: a fresh host lobby opens on the settings the last hosted game used (saved config), not
         // on the engine defaults. No-op for a client or a resume - ApplyTo gates on both, since a
@@ -1233,6 +1248,9 @@ public class LobbyScreen : IAppScreen
     {
         var infos = _viewModel?.PlayerInfos ?? [];
         var players = infos.Select(info => (info.PlayerID, info.PlayerName)).ToList();
+
+        // #406: the host's game_start / a client's game_join (no-ops when analytics is off).
+        if (_viewModel != null) GameAnalyticsSession.Launched(_viewModel, game.LocalPlayerIDs, ListedPublicly);
 
         // Host-only save hook (work item #054 will add client-initiated saving).
         Func<string?>? saveGame = _viewModel != null && _viewModel.CanSaveGame ? _viewModel.SaveGameToJson : null;

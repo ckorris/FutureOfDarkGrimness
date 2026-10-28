@@ -320,6 +320,10 @@ public class RaylibRenderer
 
     public void RequestClose() => _closeRequested = true;
 
+    /// <summary>True when the app is closing because something asked it to (escape-menu Quit to Desktop,
+    /// main-menu Quit) rather than the window being closed. #406 tells "quit" from "close" with it.</summary>
+    public bool CloseRequested => _closeRequested;
+
     /// <summary>
     /// Records that the game has finished so the next frame can draw the game-over overlay. Called from
     /// the engine thread (via the lobby's <c>OnGameEnded</c>), so it only stores the result — the actual

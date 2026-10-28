@@ -252,6 +252,21 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Slice 4 (game events) done; done before slice 3** because slice 3 waits on Chris's popup
+  text and nothing here depends on it. Engine `e3ebc67` (local, not pushed): `LaunchGameMessage.GameId`
+  (optional on the wire both ways, no protocol bump - verified by hand-built frames with and without the
+  field), `ILobbyViewModel.LaunchedGameId` + `GetAiProfile` (default-null interface members, so fakes
+  compile unchanged), host mints the ID at both launch sites before `OnLaunched`; 5 engine tests.
+  App: `GameAnalyticsSession` (pure prop builders + per-game ended flag), hooked from
+  `LobbyScreen.HandleLaunch` (host game_start / client game_join via `IFDGGame.LocalPlayerIDs`),
+  the lobby's `OnGameCompleted` (game_end), `OnGameEnded` (client: mark ended), Program's
+  `OnGameExited` (abandon "menu") and the exit `finally` (abandon "quit"/"close" via the new
+  `RaylibRenderer.CloseRequested`), escape-menu Send Report (`bug_report_sent`), and
+  `LobbyScreen.ListedPublicly` set from the host dialog's listing. 9 tests incl. a contract test that
+  every prop key is in the Worker SCHEMA block for its event; abandon-guard mutation caught.
+  Engine 3366 green, app 3027 green, headless smoke exit 0. **Not exercised live**: these events only
+  fire through the GUI lobby, and driving the GUI needs Chris's say-so - two-instance hand-check is in
+  the verify list.
 - 2026-10-28: **Slice 2 (client core) done.** `FdgRaylib/Analytics/`: `AnalyticsConfig`, `AnalyticsEvent`
   (+ event/feature name constants), `AnalyticsClient` (gates, queue, 20-event batches, single-flight,
   429/5xx/network -> spool capped at 200, other 4xx dropped, opt-out wipes queue/spool/ID),
@@ -275,6 +290,10 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Decisions
 
+- `server_browser` stays in the Worker enum but the client never sends it: the Client dialog is
+  browser-first whenever a list server is configured, so it would always equal `join`.
+- A winning team with any human on it reports `winner: human` (the question is "do people beat the
+  bots"). Unknown game-system slugs report as `other` per slot and make the game `mixed`.
 - The session marker (`last-session.json`) is written only on non-excluded runs and holds timestamps
   and the version, no identifier. It is written even when the player opted out, since it never leaves
   the machine on its own; the README paragraph should mention it.

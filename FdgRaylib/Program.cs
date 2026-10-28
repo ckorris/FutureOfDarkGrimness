@@ -809,6 +809,7 @@ else
         activeListing = listing;
         activeMapper = mapper;
         renderer.LobbyScreen.SetViewModel(lobby);
+        renderer.LobbyScreen.ListedPublicly = listing != null; // #406, after SetViewModel resets it
         renderer.NavigateTo(renderer.LobbyScreen);
     };
 
@@ -834,7 +835,12 @@ else
     };
 
     // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271, #279).
-    renderer.OnGameExited = TeardownLobby;
+    renderer.OnGameExited = () =>
+    {
+        // #406: leaving a game that hadn't finished is an abandon (suppressed after a game_end).
+        GameAnalyticsSession.Current?.Abandoned("menu");
+        TeardownLobby();
+    };
 
     renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI) =>
         renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI);
@@ -933,8 +939,10 @@ else
         // the router to drop the port mapping - the process is about to end, so a background removal
         // would die with it.
         StopListing(blocking: true);
-        // #406: mark the session as cleanly ended, then one bounded (2s) attempt to send what's queued;
+        // #406: a game still running at exit was abandoned - by Quit to Desktop or by closing the window.
+        // Then mark the session as cleanly ended and make one bounded (2s) attempt to send what's queued;
         // anything unsent is spooled for the next launch.
+        GameAnalyticsSession.Current?.Abandoned(renderer.CloseRequested ? "quit" : "close");
         UsageAnalytics.Shutdown();
     }
 }
