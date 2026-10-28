@@ -613,6 +613,16 @@ public sealed class ArmyListOverlay
             string value = wounded
                 ? WoundFormat.Fraction(remaining, tough.TotalWounds)
                 : WoundFormat.Format(tough.TotalWounds);
+
+            // #407: only some rank-and-file models are Tough (a one-model Weapon Team) - say how many.
+            ModelID? heroId = unit.JoinedHeroModelId;
+            if (heroId == null || !tough.ID.Equals(heroId.Value))
+            {
+                List<IModel> rankAndFile = unit.Models.Where(m => heroId == null || !m.ID.Equals(heroId.Value)).ToList();
+                int toughCount = rankAndFile.Count(m => m.TotalWounds == tough.TotalWounds);
+                if (toughCount < rankAndFile.Count)
+                    value += $" ({toughCount} {(toughCount == 1 ? "model" : "models")})";
+            }
             pills.Add(("Tough", value, wounded ? WoundedAmber : ImGuiTheme.AccentBlue));
         }
 

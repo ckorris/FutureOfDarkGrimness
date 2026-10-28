@@ -101,7 +101,8 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Army Forge
 
-- [ ] 407 — A one-model Weapon Team upgrade's Tough(3) lands on every model (HDF Infantry Squad: 30 wounds instead of 12). Item rules from per-model upgrades must stay on the bought model. Discord report, filed 2026-10-28. ([WorkItems/407](WorkItems/407-weapon-team-tough-applied-to-whole-unit.md))
+- [~] 407 — A one-model Weapon Team's Tough(3) landed on every model (HDF squad: 30 wounds, not 12). Now carried as a per-model grant in the army file; implemented + tested, awaiting GUI hand-verify. ([WorkItems/407](WorkItems/407-weapon-team-tough-applied-to-whole-unit.md))
+- [ ] 410 — Decide which other one-model item rules (Shielded, Caster, Fear, Vengeance...) belong to the model; route those through #407's grants. ([WorkItems/410](WorkItems/410-per-model-item-rules.md))
 - [~] 383 — OPR "Any model may replace/take ..." sections imported as pick-one-per-option checkboxes; they are per-model counted steppers (section total = model count), so e.g. 3 Hive Warriors couldn't take 3x Ravager Gun. Importer classifier + `PerModelBudget` + 22 bundled sections re-stamped; fixed + tested, awaiting GUI hand-verify. ([WorkItems/383](WorkItems/383-per-model-any-upgrade-sections.md))
 - [~] 218 — "Replace All" charged per model instead of flat. Convention confirmed from a real share list and fixed 2026-07-19 (Havoc list reconciles 1120 both ways; 200 priced All options were overcharging). Open: `Affects.Any` pricing unverified (1185 options ride on it) + GUI hand-verify. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
 - [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))

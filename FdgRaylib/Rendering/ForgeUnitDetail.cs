@@ -61,6 +61,13 @@ internal static class ForgeUnitDetail
         foreach (SpecialRuleEntry rule in unit.SpecialRules)
             if (ToughOf(rule) is { } value)
                 return value;
+
+        // #407: Tough only some models have (a one-model Weapon Team) - say how many, so a 10-model squad
+        // doesn't read as ten Tough(3) models.
+        foreach (ModelGrantEntry grant in unit.ModelGrants ?? new List<ModelGrantEntry>())
+            foreach (SpecialRuleEntry rule in grant.Rules)
+                if (ToughOf(rule) is { } value)
+                    return $"{value} ({grant.Count} {(grant.Count == 1 ? "model" : "models")})";
         return null;
     }
 

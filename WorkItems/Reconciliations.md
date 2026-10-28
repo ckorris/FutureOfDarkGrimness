@@ -759,3 +759,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `0174787` (unchanged since 406-408 were filed): index + archive max **405**, this clone's unpushed
 > 406-408, no `40x` branch on either remote. **409 = cavalry can't turn as a group (in-game report).**
 > No collision.
+
+> **2026-10-28 - number 410 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `2ee3458`: index + archive max **409**, no `41x` branch on either remote. **410 = decide which other
+> one-model item rules are model-carried (#407 follow-up).** No collision.
