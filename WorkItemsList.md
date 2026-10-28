@@ -66,6 +66,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [ ] 408 — Activation-start choices (Versatile Attack et al.) can't be backed out of and force an action. Survey + three-option design fork in the detail file; needs sign-off. Discord report, filed 2026-10-28. ([WorkItems/408](WorkItems/408-activation-start-choice-traps-activation.md))
 - [~] 391 — Harassing family fixes (found by #381's survey): the CHARGER now gets the post-melee move too (text is role-neutral; was charged-unit-only, charger first when both offer), and a Shaken unit is refused at the PostCombatMoveGate chokepoint (no Active Special Rules while Shaken). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/391](WorkItems/391-harassing-charger-and-shaken.md))
 - [~] 382 — A joined hero's creation-time aura never fired (the join relocates it onto the hero model, which `UnitCreationRules` never walked), leaving all "X Aura" grants inert on combined units — the reported Robot Legions Reanimation failure. Fixed + tested; awaiting GUI hand-verify. ([WorkItems/382](WorkItems/382-joined-hero-aura-inert.md))
 - [~] 370 — Ability actions in the Choose Action menu were listed as a bare rule name ("Courage Buff") with no descriptor text, so a bonus action never explained itself. `AbilityOffer` now carries its `SpecialRuleDefinition` and the menu passes each offer's `Description` through as `OptionDescriptions`, which both front ends already render. Implemented + tested + CLI-verified on the Blessed Sisters Procession Altar; awaiting GUI hand-verify. ([WorkItems/370](WorkItems/370-ability-action-descriptions.md))
@@ -99,6 +100,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Army Forge
 
+- [ ] 407 — A one-model Weapon Team upgrade's Tough(3) lands on every model (HDF Infantry Squad: 30 wounds instead of 12). Item rules from per-model upgrades must stay on the bought model. Discord report, filed 2026-10-28. ([WorkItems/407](WorkItems/407-weapon-team-tough-applied-to-whole-unit.md))
 - [~] 383 — OPR "Any model may replace/take ..." sections imported as pick-one-per-option checkboxes; they are per-model counted steppers (section total = model count), so e.g. 3 Hive Warriors couldn't take 3x Ravager Gun. Importer classifier + `PerModelBudget` + 22 bundled sections re-stamped; fixed + tested, awaiting GUI hand-verify. ([WorkItems/383](WorkItems/383-per-model-any-upgrade-sections.md))
 - [~] 218 — "Replace All" charged per model instead of flat. Convention confirmed from a real share list and fixed 2026-07-19 (Havoc list reconciles 1120 both ways; 200 priced All options were overcharging). Open: `Affects.Any` pricing unverified (1185 options ride on it) + GUI hand-verify. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
 - [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))
@@ -118,6 +120,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Transport
 
+- [ ] 406 — Deploy a unit inside a friendly transport that is in Ambush or not yet deployed (today only on-table transports are offered); cargo travels with the transport. Discord report, filed 2026-10-28. ([WorkItems/406](WorkItems/406-embark-into-reserve-or-undeployed-transport.md))
 - [~] 335 — Deploying into a transport was reachable only by pressing Back: `SelectionRequest.CancelLabel` lets the stage name its exit, so the button reads "Deploy Normally" (and the CLI, which had no cancel path at all, lists it as `[0]`). The AI now never embarks at all (owner's call - no drop-off plan), at both the deploy prompt and the action menu. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/335](WorkItems/335-deploy-normally-button.md))
 
 - [~] 315 — Duplicate-named units in transports were indistinguishable in the activation picker: engine label suffix "Warriors (in Rhino)" + GUI hover rings the transport (distinct style) + canvas-hover on a transport emphasises its occupants' rows (#286 two-way rule). ([WorkItems/315](WorkItems/315-embarked-activation-disambiguation.md))

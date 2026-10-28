@@ -749,3 +749,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `8b6f598`: detail files max **404**, archive max **401**, index high-water **398**, and no `40x`
 > branch on either remote. **405 = lobby Remove player/bot + add-button tooltips.** No collision.
 
+
+> **2026-10-28 - numbers 406, 407, 408 filed clean.** `git fetch origin` before filing, from
+> `origin/master` at `0174787`: detail files max **405**, archive max **404**, and no `40x` branch on
+> either remote. **406 = deploy into a reserve/undeployed transport; 407 = Weapon Team Tough(3) applied
+> unit-wide; 408 = activation-start choices block back-out.** No collision.
