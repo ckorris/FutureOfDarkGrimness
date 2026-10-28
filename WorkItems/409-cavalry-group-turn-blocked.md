@@ -26,6 +26,7 @@ In-game bug report (#226), fetched 2026-10-28 from the list-server drop box:
 
 ## Notes
 
+- 2026-10-28: Design fork settled with the owner: option 3 (re-form), option 2 folded in. Ready to build.
 - 2026-10-28: Filed. Number 409 taken from `origin/master` at `0174787` after `git fetch`:
   index + archive max **405**, plus this clone's unpushed 406-408. No collision.
 - 2026-10-28: The log records outcomes, not input, so it can't show the failed attempts. It
@@ -76,8 +77,32 @@ group turns, or opening the ranks first.
 3. **Auto-reform.** When a turn would stack, offer the nearest legal formation (#277 cycling)
    instead of just refusing. Least change to the mechanics, but more of a hint than a fix.
 
-Recommendation: option 1, possibly with 3 as the fallback when the wheel itself is blocked.
+**Owner chose option 3 on 2026-10-28, with option 2 folded into it.** See Decisions.
 
 ## Decisions
+
+- **2026-10-28 - option 3: re-form, with option 2 folded in (owner sign-off).** Wheeling
+  (option 1) was rejected because it charges the outer models for the arc they travel. vic's
+  front rank of six spans about 7.4", so a 90-degree wheel about its centre costs the end riders
+  about 5.8", and about one end costs the far rider about 11.6", more than a Fast move. The
+  engine checks each model's distance against its own allowance, so the outer models run out
+  first and hold back the unit. OPR has no wheeling rule either: each model moves up to its
+  allowance and may end facing any way. Re-forming pays the same per-model cost, but the
+  arrangement is ours to choose, so the cost can be optimised:
+  - **Slot assignment** that minimises the worst single model's distance (bottleneck
+    assignment).
+  - **Placement** of the formation, shifted where that lowers the worst distance.
+  - **Formation choice**: for a 90-degree turn, two ranks of six can become a narrow column,
+    far cheaper than keeping a wide rank.
+  Option 2 (keep the shape, push centres apart along the new width axis) is the special case
+  "same formation, nearest legal spacing". For a full 90-degree turn it moves the end riders
+  about 2" outward, so it is a candidate the optimiser weighs, not a separate mode.
+- **Constraints carried into the build.**
+  - The re-form is part of the move, not a step before it, so no model pays for the turn twice.
+  - Assignments stay predictable: keep the models' relative order unless a swap clearly cuts
+    the worst-case distance, so riders don't shuffle at random on the table.
+  - A joined hero gets a sensible slot (centre of the front rank by default).
+  - Every candidate still passes the existing gates: per-model budget, the #366 / #399
+    self-overlap rule, swept terrain (#341), enemy standoff, coherency.
 
 ## Outcome
