@@ -1,6 +1,6 @@
 # 406 — Deploy a unit inside a transport that is in Ambush or not yet deployed
 
-**Status**: todo
+**Status**: implemented + tested; awaiting GUI hand-verify
 **Related**: #035 (Transport core, slice B deploy-time embark), #335 (Deploy Normally button), #202 (Ambush reserve is unit state), #404 (reserve units in the army list)
 
 ## Goal
@@ -14,6 +14,25 @@ covered by an integration test mirroring the nearest `*RuleIntegrationTests`.
 
 ## Notes
 
+- 2026-10-28: **Implemented.** `ChooseDeployActionStage.GetEligibleTransports` no longer requires the
+  transport to be on the table. It skips only the unit itself, dead transports and transports that are
+  themselves embarked, and leaves the rest to `CanUnitEmbark`. Off-table options are labelled
+  "Embark into Rhino (in reserve)" / "(not yet deployed)".
+  - **Cargo travels for free.** Occupancy is the `EmbarkedIn` token, so nothing has to move: the transport
+    deploying normally, holding in Ambush, or arriving from Ambush all leave the token in place.
+  - **Gap closed along the way.** The round's activation pool admitted every embarked unit, so cargo of a
+    transport waiting in Ambush would have been offered an activation (and a disembark) while the
+    transport sat at origin. That was already reachable mid-game through Ambush Re-Deployment.
+    The pool now admits cargo only via the new `TransportUtilities.IsAboardTransportOnTable`, and the
+    activation list explains the gap as "Aboard a transport in reserve." `GetEffectivePosition` returns
+    null for cargo of an off-table transport instead of the origin.
+  - Tests: `TransportDeploymentChoiceTests` (the old `UndeployedTransport_NotOffered` pin inverted;
+    Ambush offered; off-table capacity counted; no self-ride; cargo joins the activation pool only once
+    the transport arrives) and `TransportUtilitiesTests` (reserve transport -> no position, not aboard on
+    table). Engine 3367 (1 skipped) green, app build clean, headless smoke exit 0.
+  - **Not built, by choice:** a transport that never arrives takes its cargo out of the game with it.
+    Nothing new is needed for that; it is how an Ambush unit that never arrives already behaves. The AI
+    needed no change: it already embarks at deployment (#191 A5-10) and now simply sees more options.
 - 2026-10-28: Filed from a Discord report: "If you ambush a transport, there is no way to deploy a unit
   inside that transport. You should always have the ability to deploy to a transport regardless of
   whether the transport is deployed on the field, deployed to ambush or something equivalent, or
@@ -42,3 +61,7 @@ covered by an integration test mirroring the nearest `*RuleIntegrationTests`.
 ## Decisions
 
 ## Outcome
+
+Pending GUI hand-verify. Load a unit into (a) an undeployed transport, then deploy the transport; (b) a
+transport held in Ambush, then let it arrive in round 2. The cargo should be absent from the activation list
+until the transport lands, then disembark normally.

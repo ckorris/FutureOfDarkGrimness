@@ -121,7 +121,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Transport
 
-- [ ] 406 — Deploy a unit inside a friendly transport that is in Ambush or not yet deployed (today only on-table transports are offered); cargo travels with the transport. Discord report, filed 2026-10-28. ([WorkItems/406](WorkItems/406-embark-into-reserve-or-undeployed-transport.md))
+- [~] 406 — Deploy a unit inside a friendly transport that is in Ambush or not yet deployed; cargo travels with it and stays out of play until the transport arrives. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/406](WorkItems/406-embark-into-reserve-or-undeployed-transport.md))
 - [~] 335 — Deploying into a transport was reachable only by pressing Back: `SelectionRequest.CancelLabel` lets the stage name its exit, so the button reads "Deploy Normally" (and the CLI, which had no cancel path at all, lists it as `[0]`). The AI now never embarks at all (owner's call - no drop-off plan), at both the deploy prompt and the action menu. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/335](WorkItems/335-deploy-normally-button.md))
 
 - [~] 315 — Duplicate-named units in transports were indistinguishable in the activation picker: engine label suffix "Warriors (in Rhino)" + GUI hover rings the transport (distinct style) + canvas-hover on a transport emphasises its occupants' rows (#286 two-way rule). ([WorkItems/315](WorkItems/315-embarked-activation-disambiguation.md))
