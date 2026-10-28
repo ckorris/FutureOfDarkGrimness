@@ -754,3 +754,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `origin/master` at `0174787`: detail files max **405**, archive max **404**, and no `40x` branch on
 > either remote. **406 = deploy into a reserve/undeployed transport; 407 = Weapon Team Tough(3) applied
 > unit-wide; 408 = activation-start choices block back-out.** No collision.
+
+> **2026-10-28 - number 409 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `0174787` (unchanged since 406-408 were filed): index + archive max **405**, this clone's unpushed
+> 406-408, no `40x` branch on either remote. **409 = cavalry can't turn as a group (in-game report).**
+> No collision.
