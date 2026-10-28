@@ -18,6 +18,12 @@ class_name = "Registry"
 name = "REPORTS"
 class_name = "Reports"
 
+# Usage analytics (#406) - a third DO, SQLite-backed with real tables (events, installs, rate)
+# rather than the KV API, so the summary can GROUP BY. Reading needs the same ADMIN_TOKEN.
+[[durable_objects.bindings]]
+name = "ANALYTICS"
+class_name = "Analytics"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Registry"]
@@ -25,3 +31,7 @@ new_sqlite_classes = ["Registry"]
 [[migrations]]
 tag = "v2"
 new_sqlite_classes = ["Reports"]
+
+[[migrations]]
+tag = "v3"
+new_sqlite_classes = ["Analytics"]

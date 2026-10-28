@@ -12,6 +12,11 @@
 //   GET    /reports/:id    download one report, decompressed (X-Admin-Token)
 //   DELETE /reports/:id    remove a fetched report          (X-Admin-Token)
 //
+// Usage-analytics endpoints (#406, see src/analytics.ts for the schema and posture):
+//   POST   /events         a batch of 1-20 anonymous usage events (no auth; allowlisted + capped)
+//   GET    /stats          canned JSON summary                 (X-Admin-Token)
+//   GET    /stats/export   raw events, paged, CSV or JSON      (X-Admin-Token)
+//
 // Security posture (see WorkItems/271-server-browser.md):
 //   - The advertised host address is ALWAYS the observed source IP of the registrant
 //     (CF-Connecting-IP). A client never gets to claim an address, so the list can't be
@@ -33,9 +38,13 @@
 //   - Report bodies are stored as opaque gzip and only ever echoed back to the admin — nothing
 //     in a report influences server behavior or other players.
 
+import { asciiFold, clientIp, json, requireAdmin } from "./util";
+export { Analytics } from "./analytics";
+
 export interface Env {
   REGISTRY: DurableObjectNamespace;
   REPORTS: DurableObjectNamespace;
+  ANALYTICS: DurableObjectNamespace;
   /** Wrangler secret (`npx wrangler secret put ADMIN_TOKEN`; `.dev.vars` under wrangler dev).
    *  Absent = report reading disabled. */
   ADMIN_TOKEN?: string;
@@ -73,6 +82,13 @@ export default {
       // total-storage cap strong consistency (two racing uploads can't both squeeze past it).
       const id = env.REPORTS.idFromName("global");
       return env.REPORTS.get(id).fetch(request);
+    }
+
+    if (url.pathname === "/events" || url.pathname === "/stats" || url.pathname.startsWith("/stats/")) {
+      // Same single-instance pattern again (#406): one SQLite-backed DO holds every event, so the
+      // row cap and the per-install table stay strongly consistent.
+      const id = env.ANALYTICS.idFromName("global");
+      return env.ANALYTICS.get(id).fetch(request);
     }
 
     return new Response("not found\n", { status: 404 });
@@ -363,17 +379,8 @@ export class Reports {
     }
   }
 
-  /** Null when the caller is the admin; the error response otherwise. No ADMIN_TOKEN secret
-   *  configured means closed (503), never open. */
   private requireAdmin(request: Request): Response | null {
-    const configured = this.env.ADMIN_TOKEN;
-    if (configured === undefined || configured.length === 0) {
-      return json({ error: "admin token not configured" }, 503);
-    }
-    if (request.headers.get("X-Admin-Token") !== configured) {
-      return json({ error: "forbidden" }, 403);
-    }
-    return null;
+    return requireAdmin(request, this.env.ADMIN_TOKEN);
   }
 
   // ---- POST /reports -----------------------------------------------------------------
@@ -591,16 +598,6 @@ function parseRegistration(body: unknown): ParsedRegistration | string {
   };
 }
 
-/** Mirrors the game's ASCII-only convention: anything outside printable ASCII becomes '?'. */
-function asciiFold(text: string): string {
-  let out = "";
-  for (const ch of text) {
-    const code = ch.codePointAt(0) ?? 0;
-    out += code >= 0x20 && code <= 0x7e ? ch : "?";
-  }
-  return out;
-}
-
 // ---- Reachability probe -------------------------------------------------------------------
 
 /** TCP-dials ip:port (the OBSERVED ip only — never anything client-supplied) and reports
@@ -646,12 +643,6 @@ function isPrivateOrLocal(ip: string): boolean {
 
 // ---- Small helpers ------------------------------------------------------------------------
 
-function clientIp(request: Request): string | null {
-  // CF-Connecting-IP is set by Cloudflare's edge and can't be forged by the caller.
-  // wrangler dev doesn't always set it; fall back to loopback there so local smoke works.
-  return request.headers.get("CF-Connecting-IP") ?? "127.0.0.1";
-}
-
 function randomToken(): string {
   const bytes = new Uint8Array(24);
   crypto.getRandomValues(bytes);
@@ -668,9 +659,3 @@ function registrationReply(entry: ServerEntry): object {
   };
 }
 
-function json(payload: object, status: number): Response {
-  return new Response(JSON.stringify(payload) + "\n", {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}

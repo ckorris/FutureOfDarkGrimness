@@ -4,7 +4,8 @@
 # The admin token defaults to the .dev.vars dev value; pass the real secret when smoking
 # a deployed Worker.
 # Exercises: health, register, list, heartbeat, token auth, delete, validation rejects,
-# report upload/list/fetch/delete, report auth + rate limit + bad-body rejects.
+# report upload/list/fetch/delete, report auth + rate limit + bad-body rejects,
+# analytics (#406) ingest, allowlist rejects, rate limit, stats auth, summary and export.
 set -eu
 
 BASE="${1:-http://localhost:8787}"
@@ -125,6 +126,52 @@ check "DELETE /reports/id is 200" 200 "$(req DELETE "/reports/$REPORT_ID" "" "X-
 # contains no report id either, so grepping it blind reports a delete that never happened.
 check "post-delete listing is 200" 200 "$(req GET /reports "" "X-Admin-Token: $ADMIN_TOKEN")"
 grep -q "$REPORT_ID" /tmp/fdg_smoke_body && { echo "  FAIL: still listed after delete"; FAILED=1; } || echo "  ok: gone from listing"
+
+echo "15. analytics ingest"
+INST="0b1c2d3e-4f50-4a6b-8c7d-9e0f1a2b3c4d"
+SESS="1a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d"
+GAME="2b3c4d5e-6f70-4b1c-8d2e-4f5a6b7c8d9e"
+NOW=$(date +%s)
+common() { printf '"t":%s,"install":"%s","session":"%s","ver":"smoke-1","os":"linux","arch":"x64"' "$NOW" "$INST" "$SESS"; }
+EV_LAUNCH="{\"name\":\"app_launch\",$(common),\"props\":{\"first_launch\":true,\"prev_session_seconds\":null,\"prev_session_clean\":null}}"
+EV_START="{\"name\":\"game_start\",$(common),\"game\":\"$GAME\",\"props\":{\"points\":1000,\"system\":\"grimdark-future\",\"players\":2,\"humans\":1,\"ais\":1,\"remote\":0,\"teams\":2,\"ai_profiles\":[\"Strategist\"],\"factions\":[\"SMOKEFACTION\",\"Battle Brothers\"],\"systems\":[\"grimdark-future\",\"grimdark-future\"],\"slot_points\":[995,1000],\"listed\":false,\"resume\":false,\"terrain_mode\":\"Alternating\",\"terrain_count\":12,\"objective_mode\":\"Random\",\"randomness\":\"Dice\",\"turn_style\":\"Alternating\",\"shooting_mode\":\"Standard\",\"cover_exceptions\":true,\"see_through_friendlies\":false,\"unlimited_split_fire\":false}}"
+EV_END="{\"name\":\"game_end\",$(common),\"game\":\"$GAME\",\"props\":{\"outcome\":\"Win\",\"rounds\":4,\"seconds\":1800,\"winner\":\"human\"}}"
+check "valid batch is 202" 202 "$(req POST /events "[$EV_LAUNCH,$EV_START,$EV_END]")"
+grep -q '"accepted":3' /tmp/fdg_smoke_body && echo "  ok: 3 accepted" || { echo "  FAIL: accepted count"; FAILED=1; }
+
+echo "16. analytics rate limit and allowlist rejects"
+check "immediate re-POST /events is 429" 429 "$(req POST /events "[$EV_LAUNCH]")"
+sleep 3
+check "unknown event name is 400" 400 "$(req POST /events "[{\"name\":\"keylogger\",$(common),\"props\":{}}]")"
+sleep 3
+check "unknown prop is 400" 400 "$(req POST /events "[{\"name\":\"app_launch\",$(common),\"props\":{\"player_name\":\"bob\"}}]")"
+sleep 3
+check "bad prop type is 400" 400 "$(req POST /events "[{\"name\":\"game_end\",$(common),\"props\":{\"rounds\":\"four\"}}]")"
+sleep 3
+check "bad enum is 400" 400 "$(req POST /events "[{\"name\":\"game_end\",$(common),\"props\":{\"outcome\":\"Victory\"}}]")"
+sleep 3
+check "non-UUID install is 400" 400 "$(req POST /events "[{\"name\":\"app_launch\",\"t\":$NOW,\"install\":\"not-a-uuid\",\"session\":\"$SESS\",\"ver\":\"x\",\"os\":\"linux\",\"arch\":\"x64\",\"props\":{}}]")"
+sleep 3
+BIG="$EV_LAUNCH"; i=1; while [ $i -lt 21 ]; do BIG="$BIG,$EV_LAUNCH"; i=$((i+1)); done
+check "21-event batch is rejected (413)" 413 "$(req POST /events "[$BIG]")"
+
+echo "17. analytics reads are admin-only"
+check "GET /stats without token is 403" 403 "$(req GET /stats)"
+check "GET /stats/export without token is 403" 403 "$(req GET /stats/export)"
+
+echo "18. analytics summary and export"
+check "GET /stats is 200" 200 "$(req GET /stats "" "X-Admin-Token: $ADMIN_TOKEN")"
+grep -q '"lifetime":[1-9]' /tmp/fdg_smoke_body && echo "  ok: lifetime uniques >= 1" || { echo "  FAIL: lifetime uniques"; FAILED=1; }
+grep -q 'SMOKEFACTION' /tmp/fdg_smoke_body && echo "  ok: faction histogram" || { echo "  FAIL: faction histogram"; FAILED=1; }
+check "GET /stats/export is 200" 200 "$(req GET "/stats/export?format=csv&newest=1&limit=50" "" "X-Admin-Token: $ADMIN_TOKEN")"
+grep -q "$GAME" /tmp/fdg_smoke_body && echo "  ok: export has the game rows" || { echo "  FAIL: export missing rows"; FAILED=1; }
+grep -q '127.0.0.1' /tmp/fdg_smoke_body && { echo "  FAIL: an IP leaked into the export"; FAILED=1; } || echo "  ok: no IP in export"
+
+echo "19. analytics smoke cleanup (keeps a deployed Worker's real numbers clean)"
+check "DELETE /stats/smoke without token is 403" 403 "$(req DELETE /stats/smoke)"
+check "DELETE /stats/smoke is 200" 200 "$(req DELETE /stats/smoke "" "X-Admin-Token: $ADMIN_TOKEN")"
+req GET "/stats/export?format=csv&newest=1&limit=50" "" "X-Admin-Token: $ADMIN_TOKEN" > /dev/null
+grep -q "$INST" /tmp/fdg_smoke_body && { echo "  FAIL: smoke rows survived cleanup"; FAILED=1; } || echo "  ok: smoke rows gone"
 
 echo ""
 if [ "$FAILED" = "0" ]; then echo "SMOKE PASSED"; else echo "SMOKE FAILED"; exit 1; fi

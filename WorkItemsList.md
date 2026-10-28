@@ -157,6 +157,9 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
+- [ ] 406 - Anonymous usage analytics: opt-out (first-launch notice + main-menu Privacy + Options toggle),
+  random resettable install ID, host game_start/end/abandon + client game_join + feature_open, stored in a
+  third SQLite Durable Object on the #271 Worker, read via `fetch-stats.sh`. Plan signed off, todo. ([WorkItems/406](WorkItems/406-usage-analytics.md))
 - [~] 405 - Lobby could add local players and bots but never drop one, and the four add buttons
   said nothing about what each gets you. Per-row Remove (engine owns the policy; host's own row,
   connected clients, resumed/launched lobbies excluded) + tooltips. Implemented + tested;

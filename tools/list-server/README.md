@@ -1,4 +1,4 @@
-# FDG list server (#271) + bug-report drop box (#226)
+# FDG list server (#271) + bug-report drop box (#226) + usage analytics (#406)
 
 The master-server registry behind the in-game server browser, plus the in-game bug
 reporter's drop box on the same free Worker. Two Durable Objects: hosts heartbeat
@@ -21,6 +21,10 @@ Design, API table, and security posture: `WorkItems/271-server-browser.md` and
 | `GET` | `/reports` | `X-Admin-Token` header | List report metadata, newest first |
 | `GET` | `/reports/{id}` | `X-Admin-Token` header | Download one report, decompressed |
 | `DELETE` | `/reports/{id}` | `X-Admin-Token` header | Remove a fetched report |
+| `POST` | `/events` | none (allowlisted + capped + rate-limited) | Upload 1-20 anonymous usage events (202) |
+| `GET` | `/stats[?days=N]` | `X-Admin-Token` header | JSON usage summary over the last N days (default 30) |
+| `GET` | `/stats/export[?after=ID&limit=N&format=csv\|json&newest=1]` | `X-Admin-Token` header | Raw events, paged by id |
+| `DELETE` | `/stats/smoke` | `X-Admin-Token` header | Remove `smoke.sh`'s own rows (fixed install id) only |
 
 The advertised address is always the **observed** source IP of the registrant — the
 payload has no address field, so listings can't point at third parties. The reachability
@@ -38,6 +42,29 @@ cd tools/list-server
 ADMIN_TOKEN=<secret> ./fetch-reports.sh https://fdg-list-server.<account>.workers.dev            # download to ./reports/
 ADMIN_TOKEN=<secret> ./fetch-reports.sh https://fdg-list-server.<account>.workers.dev --delete   # ... and clear the server
 ```
+
+## Fetching usage stats (#406)
+
+```bash
+cd tools/list-server
+ADMIN_TOKEN=<secret> ./fetch-stats.sh https://fdg-list-server.<account>.workers.dev              # 30-day summary
+ADMIN_TOKEN=<secret> ./fetch-stats.sh https://fdg-list-server.<account>.workers.dev --days 7
+ADMIN_TOKEN=<secret> ./fetch-stats.sh https://fdg-list-server.<account>.workers.dev --export stats/all.csv
+```
+
+The summary covers launches and unique installs per day, 1/7/30-day and lifetime uniques,
+previous-session length and unclean-exit counts, games started/joined/finished/abandoned,
+and histograms of points, game system, factions, AI profiles, lobby settings, features
+opened, app versions and OS. The export is every stored event with its props as a JSON
+column. Exports land wherever you point them; `stats/` is gitignored for that purpose.
+
+Event schema and privacy posture: `src/analytics.ts` (the `SCHEMA` allowlist is the
+contract with the game client) and `WorkItems/406-usage-analytics.md`. The Worker never
+writes an IP next to an event: the per-IP rate limit lives in its own table, pruned after
+five minutes. Free-plan note: SQLite-backed Durable Objects bill rows written (each event
+is about two, an `app_launch` about three), which leaves room for thousands of daily
+players before the free allowance matters; past it, uploads fail and clients keep their
+events in a small local spool until the next day.
 
 ## Local dev
 
