@@ -252,6 +252,10 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Worker deployed** (wrangler re-login needed; the old OAuth token had expired in August).
+  Prod `smoke.sh` all 19 sections green, including the registry and report sections; smoke cleanup
+  left prod stats empty (lifetime 0). README Privacy section committed in Chris's wording. Remaining:
+  engine push then superproject push, and the GUI verify list.
 - 2026-10-28: **Slice 3 committed** with Chris's notice text (apostrophes checked straight, one trailing
   space stripped). Remaining: README sign-off, Worker deploy + prod smoke, pushes, GUI verify list.
 - 2026-10-28: **Slice 3 built, uncommitted (stop point: popup text).** `FdgRaylib/Rendering/PrivacyDialog.cs`

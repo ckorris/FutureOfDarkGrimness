@@ -164,13 +164,23 @@ Discord post [here](https://discord.com/channels/610199287346888743/152302302061
 
 ## Privacy
 
-The app collects no telemetry or analytics, and nothing is transferred over the network except as a result of these user-initiated actions:
+The app sends anonymous usage statistics, described below, which you can turn off. Apart from those, nothing is transferred over the network except as a result of these user-initiated actions:
 
 - **Hosting a game** opens a listening TCP port (default 6389), asks your router on your local network (via UPnP/NAT-PMP) to forward that port, and fetches your public IP address from api.ipify.org so the lobby can show you the address other players should connect to.
 - **Hosting with "List publicly" checked** registers the game with the project's public server list (a small service run by the maintainer) and refreshes the entry every 30 seconds: the server name you typed, port, player count, game state, protocol/compatibility version, and whether a password is set (never the password itself). The list service records your public IP so other players can connect to you; the entry is visible to anyone browsing the server list and expires about 90 seconds after you stop hosting. Browsing the server list downloads that list and sends nothing about you beyond the request itself.
 - **Joining a game** connects directly to the host address you enter or pick from the list.
 - **Importing an Army Forge share link** fetches that list and its army books from OnePageRules' Army Forge API.
 - **Report Bug** (in the escape menu) saves a report locally and uploads it to the maintainer: your description, build version, OS, in-game player name, the game log (including the game's chat), the tail of a crash log if one exists, and - when you are the host - a save of the current game, which includes every player's army list. All of this is disclosed on the report screen before you send, and the other players in the game are notified that a report was sent.
+
+### Analytics
+
+The joy of making a game like this is knowing that people are playing and enjoying it. To help me understand that, I added some anonymous analytics. You'll get a popup on first launch offering to opt out (or you can do it in Options), but if not, I'll get stats on:
+
+- How many people have played, with unique players tracked by a random ID that can't be traced to you.
+- How long your previous session lasted, and whether it closed normally.
+- What game version, operating system, and CPU type people are using.
+- If people are actually using the Combat Calculator.
+- Game points, game system (GDF vs. AoF), each army's faction, how many human, AI and online players, which AI types, teams, the lobby settings, and how and when the game ended.
 
 
 
