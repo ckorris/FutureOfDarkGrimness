@@ -26,6 +26,19 @@ In-game bug report (#226), fetched 2026-10-28 from the list-server drop box:
 
 ## Notes
 
+- 2026-10-28: **Hand-test feedback: the re-form flickered.** Owner: correct but visually displeasing. The
+  formation changed rapidly as the mouse moved, worst near the unit's centre and when dragging past max
+  range. Three causes, three fixes:
+  - **Heading spin near the centre.** The heading is the centre-to-cursor direction. Within 2"
+    (`ReformSteadyRadius`) the last steady direction is held, and the wheel still turns it.
+  - **Cursor-dependent assignment.** Slots are now assigned for the turn alone, in `Prepare` (cached
+    per heading), so a moving cursor only slides the block. The previous heading's assignment is kept
+    while it is within 0.5" of the new optimum.
+  - **Near-tie formations.** Dragging out along the heading alternated 3-3-3-2 and 4-4-3 three times in
+    20". Last frame's shape is now kept unless another reaches 1" further or cuts the worst travel by
+    1".
+  - **Tests.** `DraggingOut_TheShapeDoesNotFlicker` and `MovingTheCursor_NeverReshufflesWhoStandsWhere`.
+    App 3012 green.
 - 2026-10-28: **Implemented (re-form, respace folded in).**
   - **Cause, confirmed from the code and the save.** The hypothesis holds and there is a second half.
     The riders already stood about 20 degrees off their ranks' normal, so their 0.1" gaps were used up:

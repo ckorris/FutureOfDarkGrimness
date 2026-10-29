@@ -145,6 +145,49 @@ public class GroupReformTests
     }
 
     [Test]
+    public void DraggingOut_TheShapeDoesNotFlicker()
+    {
+        // Owner's hand-test: dragging out along the new heading, the best shape alternated between 3-3-3-2
+        // and 4-4-3 every inch or two - near ties, each correct and together unpleasant. Fed last frame's
+        // shape back, as the resolver does, the sweep settles once and stays.
+        var (shapes, at) = ReportedUnit();
+        Float2 heading = Rotate(SaveFacing, 90f);
+        Position c0 = GroupFormationUtilities.Centroid(at);
+        var budgets = Enumerable.Repeat(FastAdvance, at.Count).ToList();
+
+        string? shown = null;
+        int changes = 0;
+        for (float d = 0f; d <= 20f; d += 0.25f)
+        {
+            var target = new Position(c0.x + d * heading.X + 3f, c0.z + d * heading.Y);
+            string? name = GroupReform.Solve(shapes, at, budgets, heading, target, HeroIndex, preferred: shown)?.Name;
+            if (shown != null && name != shown) changes++;
+            shown = name;
+        }
+
+        Assert.That(changes, Is.LessThanOrEqualTo(1));
+    }
+
+    [Test]
+    public void MovingTheCursor_NeverReshufflesWhoStandsWhere()
+    {
+        // Slots are assigned for the turn alone, so two cursor positions on the same heading give the same
+        // shape with the same models in the same places - only the whole block slides.
+        var (shapes, at) = ReportedUnit();
+        Float2 heading = Rotate(SaveFacing, 90f);
+        Position c0 = GroupFormationUtilities.Centroid(at);
+        var budgets = Enumerable.Repeat(FastAdvance, at.Count).ToList();
+        var prepared = GroupReform.Prepare(shapes, at, heading, HeroIndex)!;
+
+        var near = prepared.Solve(budgets, new Position(c0.x + 2f * heading.X, c0.z + 2f * heading.Y), "4-4-3");
+        var far = prepared.Solve(budgets, new Position(c0.x + 15f * heading.X - 4f, c0.z + 15f * heading.Y), "4-4-3");
+
+        Assert.That(near?.Name, Is.EqualTo("4-4-3"));
+        Assert.That(far?.Name, Is.EqualTo("4-4-3"));
+        Assert.That(far!.Value.Slots, Is.EqualTo(near!.Value.Slots));
+    }
+
+    [Test]
     public void Assignment_KeepsRelativeOrder_WhenNothingIsGainedBySwapping()
     {
         // Three models sliding one slot along: crossing paths would cost the same worst case, so the

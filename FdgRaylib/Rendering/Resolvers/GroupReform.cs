@@ -42,8 +42,16 @@ internal static class GroupReform
     private const float CohesionMargin = 0.02f;
     // A hero keeps the front-centre slot unless that raises the worst model's travel by more than this.
     private const float HeroSlack = 1f;
-    // Candidates whose reach toward the cursor differs by less than this are treated as equally far.
-    private const float ScaleTie = 0.01f;
+    // Candidates whose reach toward the cursor (inches) differs by less than this are treated as equally far.
+    private const float ReachTie = 0.25f;
+    // Hysteresis: the shape shown last frame is kept unless another reaches this much further, or (at equal
+    // reach) cuts the worst model's travel by this much. Without it near-equal candidates traded places
+    // frame to frame as the cursor moved - correct, and unpleasant to watch.
+    private const float StickReach = 1f;
+    private const float StickWorst = 1f;
+    // ...and the same for who stands where: the previous heading's assignment is kept while its worst
+    // model's travel is within this of the new optimum, so a sweeping cursor doesn't swap models around.
+    private const float StickAssignment = 0.5f;
 
     /// <summary>
     /// The best legal re-form facing <paramref name="heading"/>, moving toward <paramref name="target"/>
@@ -52,15 +60,22 @@ internal static class GroupReform
     /// </summary>
     /// <param name="heroIndex">Index of a joined hero in the inputs, or -1.</param>
     public static Result? Solve(IReadOnlyList<IBaseShape> shapes, IReadOnlyList<Position> origins,
-        IReadOnlyList<float> budgets, Float2 heading, Position? target, int heroIndex)
-        => Prepare(shapes, origins, heading)?.Solve(budgets, target, heroIndex);
+        IReadOnlyList<float> budgets, Float2 heading, Position? target, int heroIndex, string? preferred = null)
+        => Prepare(shapes, origins, heading, heroIndex)?.Solve(budgets, target, preferred);
 
     /// <summary>
-    /// The candidate shapes for one heading - the costly part (the opened-up shapes are found by bisecting
-    /// on exact footprint gaps), and the only part that does not depend on the cursor or the budgets, so
-    /// the resolver keeps one across frames for as long as the heading and the unit's positions hold.
+    /// The candidate shapes for one heading, each with its models already assigned to slots - everything
+    /// but the scoring, which is the only part that depends on the cursor or the budgets. The resolver keeps
+    /// one across frames for as long as the heading and the unit's positions hold.
+    ///
+    /// <para>Slots are assigned for the TURN alone (each model's distance to its slot around the current
+    /// centroid), not for the turn plus the move toward the cursor. The translation is the same for every
+    /// model, so this changes little in cost, and it means a moving cursor never reshuffles who stands
+    /// where.</para>
     /// </summary>
-    public static Prepared? Prepare(IReadOnlyList<IBaseShape> shapes, IReadOnlyList<Position> origins, Float2 heading)
+    /// <param name="previous">The last heading's candidates, whose assignments are kept where still good.</param>
+    public static Prepared? Prepare(IReadOnlyList<IBaseShape> shapes, IReadOnlyList<Position> origins,
+        Float2 heading, int heroIndex, Prepared? previous = null)
     {
         int n = shapes.Count;
         if (n < 2) return null;
@@ -86,7 +101,7 @@ internal static class GroupReform
             localX[i] = dx * right.X + dz * right.Y;
             localZ[i] = dx * fwd.X + dz * fwd.Y;
         }
-        foreach (var (sx, sz) in new[] { (1f, 0f), (0f, 1f), (1f, 1f) })
+        foreach (var (sx, sz, how) in new[] { (1f, 0f, "widened"), (0f, 1f, "deepened"), (1f, 1f, "opened") })
         {
             Position[] Opened(float k)
             {
@@ -108,7 +123,7 @@ internal static class GroupReform
                 }
             Position[] shape = Opened(hi);
             if (IsCoherent(shapes, shape, fwd))
-                opened.Add((hi == 1f ? "current shape" : "current shape, opened", shape));
+                opened.Add((hi == 1f ? "current shape" : $"current shape, {how}", shape));
             if (hi == 1f) break; // already clear as it stands - nothing to open up
         }
 
@@ -119,106 +134,104 @@ internal static class GroupReform
         for (int i = 0; i < n; i++)
             (halfXs[i], halfZs[i]) = BaseShapeGeometry.FootprintHalfExtents(shapes[i], new Float2(0f, 1f));
 
-        return new Prepared(shapes, origins.ToArray(), fwd, c0, ToWorld, opened, halfXs, halfZs);
+        var candidates = new List<(string name, Position[] slots)>(opened);
+        var assignments = new Dictionary<string, int[]>();
+        foreach (int[] rows in FormationLibrary.RowPartitions(n))
+        {
+            // Provisional slots (input-order extents) decide who goes where; the final layout re-spaces with
+            // the assigned models' own extents, as FormationLibrary.PlanFormationOffsets does.
+            var provisional = FormationLibrary.LayoutOffsets(halfXs, halfZs, rows, Gap);
+            var cost = new float[n, n];
+            for (int m = 0; m < n; m++)
+                for (int k = 0; k < n; k++)
+                    cost[m, k] = Position.GetDistance2D(origins[m], ToWorld(provisional[k].dx, provisional[k].dz));
+
+            string name = FormationLibrary.Describe(rows);
+            int[] slotOf = Assign(cost, heroIndex, heroSlot: rows[0] / 2);
+            if (previous?.AssignmentFor(name) is { } prior
+                && WorstCost(cost, prior) <= WorstCost(cost, slotOf) + StickAssignment)
+                slotOf = prior;
+            assignments[name] = slotOf;
+
+            var modelForSlot = new int[n];
+            for (int m = 0; m < n; m++) modelForSlot[slotOf[m]] = m;
+            var permX = new float[n];
+            var permZ = new float[n];
+            for (int k = 0; k < n; k++) { permX[k] = halfXs[modelForSlot[k]]; permZ[k] = halfZs[modelForSlot[k]]; }
+            var offsets = FormationLibrary.LayoutOffsets(permX, permZ, rows, Gap);
+
+            var slots = new Position[n];
+            for (int m = 0; m < n; m++) slots[m] = ToWorld(offsets[slotOf[m]].dx, offsets[slotOf[m]].dz);
+            if (IsCoherent(shapes, slots, fwd)) candidates.Add((name, slots));
+        }
+
+        return new Prepared(origins.ToArray(), fwd, c0, candidates, assignments);
     }
 
     /// <summary>The candidates for one heading (<see cref="Prepare"/>), ready to be scored per frame.</summary>
     internal sealed class Prepared
     {
-        private readonly IReadOnlyList<IBaseShape> _shapes;
         private readonly Position[] _origins;
         private readonly Float2 _fwd;
         private readonly Position _c0;
-        private readonly Func<float, float, Position> _toWorld;
-        private readonly List<(string name, Position[] slots)> _opened;
-        private readonly float[] _halfXs, _halfZs;
-        private readonly bool _uniformBases;
-        private readonly List<(int[] rows, (float dx, float dz)[] provisional, bool coherent)> _library = new();
+        private readonly List<(string name, Position[] slots)> _candidates;
+        private readonly Dictionary<string, int[]> _assignments;
 
-        internal Prepared(IReadOnlyList<IBaseShape> shapes, Position[] origins, Float2 fwd, Position c0,
-            Func<float, float, Position> toWorld, List<(string, Position[])> opened, float[] halfXs, float[] halfZs)
+        internal Prepared(Position[] origins, Float2 fwd, Position c0, List<(string, Position[])> candidates,
+            Dictionary<string, int[]> assignments)
         {
-            _shapes = shapes;
             _origins = origins;
             _fwd = fwd;
             _c0 = c0;
-            _toWorld = toWorld;
-            _opened = opened;
-            _halfXs = halfXs;
-            _halfZs = halfZs;
-            _uniformBases = shapes.All(s => s.GetType() == shapes[0].GetType())
-                && halfXs.All(x => x == halfXs[0]) && halfZs.All(z => z == halfZs[0]);
-
-            foreach (int[] rows in FormationLibrary.RowPartitions(origins.Length))
-            {
-                // Provisional slots (input-order extents) decide who goes where; the final layout re-spaces
-                // with the assigned models' own extents, as FormationLibrary.PlanFormationOffsets does. With
-                // identical bases the assignment cannot change the layout, so its cohesion is settled here.
-                var provisional = FormationLibrary.LayoutOffsets(halfXs, halfZs, rows, Gap);
-                bool coherent = !_uniformBases
-                    || IsCoherent(shapes, provisional.Select(o => toWorld(o.dx, o.dz)).ToArray(), fwd);
-                _library.Add((rows, provisional, coherent));
-            }
+            _candidates = candidates;
+            _assignments = assignments;
         }
+
+        /// <summary>The slot per model this heading gave the named formation, if it built one.</summary>
+        internal int[]? AssignmentFor(string name) => _assignments.TryGetValue(name, out var a) ? a : null;
 
         /// <summary>The unit's facing for every candidate.</summary>
         public Float2 Heading => _fwd;
 
-        /// <summary>Scores every candidate against the budgets and the cursor; see <see cref="GroupReform"/>.</summary>
-        public Result? Solve(IReadOnlyList<float> budgets, Position? target, int heroIndex)
+        /// <summary>
+        /// Scores every candidate against the budgets and the cursor (see <see cref="GroupReform"/>), keeping
+        /// <paramref name="preferred"/> - the shape chosen last frame - unless another is clearly better.
+        /// </summary>
+        public Result? Solve(IReadOnlyList<float> budgets, Position? target, string? preferred = null)
         {
             int n = _origins.Length;
             float tx = target is { } t ? t.x - _c0.x : 0f;
             float tz = target is { } t2 ? t2.z - _c0.z : 0f;
+            float wanted = MathF.Sqrt(tx * tx + tz * tz);
 
-            var candidates = new List<(string name, Position[] slots)>(_opened);
-            foreach (var (rows, provisional, coherent) in _library)
-            {
-                if (!coherent) continue;
-                var cost = new float[n, n];
-                for (int m = 0; m < n; m++)
-                    for (int k = 0; k < n; k++)
-                    {
-                        Position slot = _toWorld(provisional[k].dx, provisional[k].dz);
-                        float ex = slot.x + tx - _origins[m].x, ez = slot.z + tz - _origins[m].z;
-                        cost[m, k] = MathF.Sqrt(ex * ex + ez * ez);
-                    }
-
-                int[] slotOf = Assign(cost, heroIndex, heroSlot: rows[0] / 2);
-
-                var modelForSlot = new int[n];
-                for (int m = 0; m < n; m++) modelForSlot[slotOf[m]] = m;
-                var permX = new float[n];
-                var permZ = new float[n];
-                for (int k = 0; k < n; k++) { permX[k] = _halfXs[modelForSlot[k]]; permZ[k] = _halfZs[modelForSlot[k]]; }
-                var offsets = FormationLibrary.LayoutOffsets(permX, permZ, rows, Gap);
-
-                var slots = new Position[n];
-                for (int m = 0; m < n; m++) slots[m] = _toWorld(offsets[slotOf[m]].dx, offsets[slotOf[m]].dz);
-                if (!_uniformBases && !IsCoherent(_shapes, slots, _fwd)) continue;
-                candidates.Add((FormationLibrary.Describe(rows), slots));
-            }
-
-            Result? best = null;
-            float bestScale = -1f, bestWorst = float.MaxValue;
-            foreach (var (name, slots) in candidates)
+            Result? best = null, kept = null;
+            float bestReach = -1f, bestWorst = float.MaxValue, keptReach = 0f, keptWorst = 0f;
+            foreach (var (name, slots) in _candidates)
             {
                 var plan = GroupFormationUtilities.PlanGroupMove(slots, _origins, budgets, _c0, 1f, 0f, tx, tz);
                 if (!plan.WithinBudget) continue;
 
+                float reach = plan.TranslationScale * wanted;
                 float worst = 0f;
                 for (int i = 0; i < n; i++)
                     worst = MathF.Max(worst, Position.GetDistance2D(_origins[i], plan.NewPositions[i]));
 
+                if (name == preferred) { kept = new Result(slots, name); keptReach = reach; keptWorst = worst; }
+
                 // Further toward the cursor wins; among equals, the cheaper worst case; among those, the
                 // earlier candidate (the unit's own shape first, then the library's shallow-to-deep order).
-                bool better = plan.TranslationScale > bestScale + ScaleTie
-                    || (plan.TranslationScale > bestScale - ScaleTie && worst < bestWorst - 0.05f);
+                bool better = reach > bestReach + ReachTie
+                    || (reach > bestReach - ReachTie && worst < bestWorst - 0.05f);
                 if (!better) continue;
                 best = new Result(slots, name);
-                bestScale = plan.TranslationScale;
+                bestReach = reach;
                 bestWorst = worst;
             }
+
+            if (kept != null && best != null
+                && bestReach <= keptReach + StickReach
+                && !(bestReach > keptReach - ReachTie && bestWorst < keptWorst - StickWorst))
+                return kept;
             return best;
         }
     }
@@ -296,6 +309,13 @@ internal static class GroupReform
                 c[m, k] = allowed ? cost[m, k] : Forbidden;
             }
         return Hungarian(c);
+    }
+
+    private static float WorstCost(float[,] cost, int[] slotOf)
+    {
+        float worst = 0f;
+        for (int m = 0; m < slotOf.Length; m++) worst = MathF.Max(worst, cost[m, slotOf[m]]);
+        return worst;
     }
 
     /// <summary>The smallest threshold under which a perfect model-to-slot matching exists, optionally with

@@ -377,6 +377,8 @@ public class GuiDefineMovementResolver
             _manualOffsets.Clear();
             _formationCycle = null;
             _reformCache = null;
+            _reformHeldTravel = null;
+            _reformPreferred = null;
             _panelHoveredModel = null;
             _donePopupOpen = false;
         }
@@ -1008,8 +1010,23 @@ public class GuiDefineMovementResolver
         string? reformName = null;
         if (_formationCycle is { IsCurrentShape: true })
         {
-            Float2 rigidHeading = RotateFloat2(GroupFormationUtilities.GroupHeading(
-                lastPositions, plan.NewPositions, models.Select(m => m.Facing).ToList()), _groupFacingAngle);
+            // The heading is the direction from the unit's centre to the cursor, which spins wildly for a
+            // cursor near the centre - and a re-formed unit is laid out along it, so the whole formation
+            // spun too. Inside a small radius the last steady direction holds (the wheel still turns it).
+            bool steady = desiredTx * desiredTx + desiredTz * desiredTz >= ReformSteadyRadius * ReformSteadyRadius;
+            Float2 travel;
+            if (steady)
+            {
+                float len = MathF.Sqrt(desiredTx * desiredTx + desiredTz * desiredTz);
+                travel = new Float2(desiredTx / len, desiredTz / len);
+                _reformHeldTravel = travel;
+            }
+            else
+                travel = _reformHeldTravel ?? GroupFormationUtilities.GroupHeading(
+                    lastPositions, lastPositions, models.Select(m => m.Facing).ToList());
+            Float2 rigidHeading = RotateFloat2(travel, _groupFacingAngle);
+            // Held, the heading no longer follows the step's own travel, so it is imposed on the step.
+            if (!steady && _reformHeldTravel != null) reformHeading = rigidHeading;
             var sharedFacing = Enumerable.Repeat(rigidHeading, models.Count).ToList();
             bool rigidClear = plan.WithinBudget;
             if (rigidClear)
@@ -1021,8 +1038,8 @@ public class GuiDefineMovementResolver
                     ? new Position(pivot.x + desiredTx, pivot.z + desiredTz) : null;
                 ModelID? heroId = request.UnitDataBinding.GetValue().JoinedHeroModelId;
                 int heroIndex = heroId is { } h ? models.FindIndex(m => m.ID == h) : -1;
-                GroupReform.Prepared? prepared = PrepareReform(models, lastPositions, rigidHeading);
-                if (prepared?.Solve(budgets, target, heroIndex) is { } reform)
+                GroupReform.Prepared? prepared = PrepareReform(models, lastPositions, rigidHeading, heroIndex);
+                if (prepared?.Solve(budgets, target, preferred: _reformPreferred) is { } reform)
                 {
                     basePositions = reform.Slots;
                     pivot = GroupFormationUtilities.Centroid(basePositions);
@@ -1035,6 +1052,7 @@ public class GuiDefineMovementResolver
             }
         }
         _frameReformName = reformName;
+        _reformPreferred = reformName;
         IReadOnlyList<Position> newPositions = plan.NewPositions;
 
         // #155: the budget solve above can't see terrain or other units. If any phantom's step would violate
@@ -1300,6 +1318,8 @@ public class GuiDefineMovementResolver
                 pt.AddStep(models[i], newPositions[i], stepOffsets[i]); // #282: this step keeps this attitude
             _groupRotation = 0f;
             _groupFacingAngle = 0f;
+            _reformHeldTravel = null;
+            _reformPreferred = null;
             // #277: the committed step baked the picked shape into the waypoints — it IS the current
             // shape now, so further dragging is rigid until the player cycles again.
             _formationCycle?.Reset();
@@ -1326,7 +1346,14 @@ public class GuiDefineMovementResolver
     private int _reformCacheDegrees;
     private Position[]? _reformCacheOrigins;
 
-    private GroupReform.Prepared? PrepareReform(IReadOnlyList<IModel> models, IReadOnlyList<Position> origins, Float2 heading)
+    // Steadying the re-form against the cursor: the direction held while the cursor is near the unit's
+    // centre, and the shape shown last frame, which GroupReform keeps unless another is clearly better.
+    private const float ReformSteadyRadius = 2f;
+    private Float2? _reformHeldTravel;
+    private string? _reformPreferred;
+
+    private GroupReform.Prepared? PrepareReform(IReadOnlyList<IModel> models, IReadOnlyList<Position> origins,
+        Float2 heading, int heroIndex)
     {
         int degrees = (int)MathF.Round(MathF.Atan2(heading.Y, heading.X) * 180f / MathF.PI);
         if (_reformCache != null && _reformCacheDegrees == degrees && _reformCacheOrigins is { } cached
@@ -1335,7 +1362,8 @@ public class GuiDefineMovementResolver
 
         float radians = degrees * MathF.PI / 180f;
         _reformCache = GroupReform.Prepare(models.Select(m => m.BaseShape).ToList(), origins,
-            new Float2(MathF.Cos(radians), MathF.Sin(radians)));
+            new Float2(MathF.Cos(radians), MathF.Sin(radians)), heroIndex,
+            previous: _reformCacheOrigins is { } prior && prior.SequenceEqual(origins) ? _reformCache : null);
         _reformCacheDegrees = degrees;
         _reformCacheOrigins = origins.ToArray();
         return _reformCache;
