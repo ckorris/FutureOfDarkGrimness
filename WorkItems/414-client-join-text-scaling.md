@@ -21,6 +21,12 @@ text probably draws at an unscaled 1.0. Compare the two before changing anything
 
 ## Notes
 
+- 2026-10-28: Owner screenshot after the first fix: "much better", but "Players" was truncated, a
+  blank column showed at the right, and "Your Name" sat right of its input. Fixed columns are now
+  measured from header + widest value (`WidestText`) at the current font scale. The blank column is the
+  per-row JOIN button column, now headed "Join" and sized to the button. The table is placed at `pad`
+  so it is centred. The "Your Name" label now comes before the input. App build green.
+
 - 2026-10-28: Lead confirmed. ImGui keeps a window's `SetWindowFontScale` across frames, and
   `ClientModal` only set it inside `DrawLabeledInput` (Direct Connect tab). The Server Browser tab, the
   default whenever a list server is configured, therefore drew its name field, tab labels, table, status

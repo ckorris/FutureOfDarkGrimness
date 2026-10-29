@@ -143,10 +143,11 @@ public class ClientModal : IAppScreen
 
         ImGui.Spacing();
         ImGui.SetCursorPosX(pad);
+        ImGui.AlignTextToFramePadding();
+        ImGui.Text("Your Name");
+        ImGui.SameLine();
         ImGui.SetNextItemWidth(dw * 0.35f);
         ImGui.InputText("##BrowseName", ref _yourName, 64);
-        ImGui.SameLine();
-        ImGui.Text("Your Name");
 
         IReadOnlyList<ServerListing> listings;
         lock (_browseLock) listings = _listings;
@@ -158,17 +159,22 @@ public class ClientModal : IAppScreen
         float statusY  = buttonsY - 30f * scale;
         float tableTop = ImGui.GetCursorPosY();
         float tableH   = Math.Max(60f * scale, statusY - tableTop - 8f * scale);
+        // #414: fixed columns are measured from their header and widest value at the current font scale -
+        // the old 70-90px * scale guesses truncated "Players" and clipped "Password"/"Mismatch"/"Blocked?".
+        float joinW = ImGui.CalcTextSize("JOIN").X + ImGui.GetStyle().FramePadding.X * 2f;
+        ImGui.SetCursorPosX(pad);   // centre the table: its width already leaves pad on both sides
         if (ImGui.BeginTable("##Servers", 6,
                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.ScrollY,
                 new Vector2(dw - pad * 2f, tableH)))
         {
             ImGui.TableSetupScrollFreeze(0, 1);
             ImGui.TableSetupColumn("Server", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.TableSetupColumn("Players", ImGuiTableColumnFlags.WidthFixed, 70f * scale);
-            ImGui.TableSetupColumn("Access", ImGuiTableColumnFlags.WidthFixed, 90f * scale);
-            ImGui.TableSetupColumn("Build", ImGuiTableColumnFlags.WidthFixed, 90f * scale);
-            ImGui.TableSetupColumn("Port", ImGuiTableColumnFlags.WidthFixed, 70f * scale);
-            ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 70f * scale);
+            ImGui.TableSetupColumn("Players", ImGuiTableColumnFlags.WidthFixed, WidestText("Players", "88/88"));
+            ImGui.TableSetupColumn("Access", ImGuiTableColumnFlags.WidthFixed, WidestText("Access", "Password", "Open"));
+            ImGui.TableSetupColumn("Build", ImGuiTableColumnFlags.WidthFixed, WidestText("Build", "Mismatch", "OK"));
+            ImGui.TableSetupColumn("Port", ImGuiTableColumnFlags.WidthFixed, WidestText("Port", "Blocked?", "Open"));
+            // Holds each row's JOIN button; headed so an empty list doesn't show a stray blank column.
+            ImGui.TableSetupColumn("Join", ImGuiTableColumnFlags.WidthFixed, MathF.Max(joinW, WidestText("Join")));
             ImGui.TableHeadersRow();
 
             foreach (ServerListing listing in listings)
@@ -243,6 +249,8 @@ public class ClientModal : IAppScreen
 
         DrawPasswordPopup(scale);
     }
+
+    private static float WidestText(params string[] texts) => texts.Max(text => ImGui.CalcTextSize(text).X);
 
     private void JoinListing(ServerListing listing)
     {
