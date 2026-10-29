@@ -158,8 +158,6 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
-- [~] 414 — Client join window text was not scaled: browser tab and password popup never set the font
-  scale. Fixed; awaiting owner GUI verify. ([WorkItems/414](WorkItems/414-client-join-text-scaling.md))
 - [~] 405 - Lobby could add local players and bots but never drop one, and the four add buttons
   said nothing about what each gets you. Per-row Remove (engine owns the policy; host's own row,
   connected clients, resumed/launched lobbies excluded) + tooltips. Implemented + tested;

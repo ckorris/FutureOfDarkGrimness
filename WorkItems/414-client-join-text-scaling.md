@@ -1,6 +1,6 @@
 # 414 — Client join window text is not scaled properly
 
-**Status**: implemented (2026-10-28); awaiting owner GUI verify (fullscreen + windowed)
+**Status**: done (2026-10-28)
 **Related**: #405 (lobby buttons), HostModal (the sibling dialog that scales)
 
 ## Report (Chris, 2026-10-28)
@@ -45,3 +45,9 @@ text probably draws at an unscaled 1.0. Compare the two before changing anything
 ## Decisions
 
 ## Outcome
+
+Done 2026-10-28, verified by the owner in the GUI. The Client join dialog now sets its font scale once
+for the whole dialog. Before, only Direct Connect's labelled inputs set it, so the default Server Browser
+tab drew unscaled. The password popup scales with it. The server table's fixed columns are measured from
+their text, the JOIN button column is headed "Join", and the table is centred. "Your Name" now leads its
+input. HostModal also sets its scale up front. App commits `6a32258`, `216a376`.

@@ -254,3 +254,5 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
 - [x] 413 — Hive Guardians shot to 4/9 wounds rolled no morale: correct, 2/3 models is above half
   strength. Skipped wound-driven morale tests (shooting + strafing) now log why. **Done 2026-10-28.**
   ([WorkItems/413](413-no-morale-roll-after-shooting.md))
+- [x] 414 — Client join dialog text was not scaled (browser tab + password popup); browser columns fit
+  their text, Join column labelled, name label first. **Done 2026-10-28.** ([WorkItems/414](414-client-join-text-scaling.md))
