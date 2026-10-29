@@ -1,6 +1,6 @@
 # 413 — Hive Guardians took shooting casualties but rolled no morale test
 
-**Status**: filed (2026-10-28), not investigated
+**Status**: implemented (2026-10-28) - skip reason now logged; awaiting owner verify
 **Related**: `ResolveRangedMoraleStage` (ShootStage), `ResolveRangedMoraleStageTests`
 
 ## Report (Chris, in-game, 2026-10-28)
@@ -28,6 +28,25 @@ reconstruction) and either rolls the test or logs the reason it was skipped.
   `Resolving ranged morale`.
 
 ## Notes
+
+- 2026-10-28: Owner agreed: no rules change, just log why the test was skipped. Added
+  `MoraleUtilities.DescribeSkippedWoundDrivenMorale`. The shooting and strafing morale stages now log
+  `<unit> took no wounds - no morale test.` or `<unit> took wounds but is above half strength
+  (2/3 models | 4/6 wounds) - no morale test.` A unit destroyed outright logs nothing extra, since its
+  death is already logged. 4 new tests in `ResolveRangedMoraleStageTests` (the #413 repro shape:
+  3x Tough(3) shot to 4/9; a lone Tough model; unwounded; destroyed). Engine suite 3390 passed /
+  1 skipped. Headless smoke exits 0 and logs the new "took no wounds" line live. Awaiting owner GUI check.
+
+- 2026-10-28: Investigated against the repro save. **No test was owed; the skip was correct.**
+  Hive Guardians are 3 models with Tough(3) (9 wounds). In the save, model 1 is dead (3/3 dealt),
+  model 2 has 1 wound left, and model 3 is untouched. That is 4/9 wounds remaining but **2 of 3 models
+  alive**. `IUnit.GetIsAtHalfStrength` counts models for a multi-model unit (`living*2 <= starting`,
+  so 4 <= 3 is false) and counts wounds only for a lone model. That is the GF v3.5.1 rule and was a
+  deliberate #091 decision. No Shaken token was involved: the unit carries only
+  MovedThisRound/ActivatedThisRound. Hive Bond (+1 morale) only changes the roll, not whether one is
+  taken. The real defect is the silent log: `MoraleUtilities.ResolveWoundDrivenMorale` returns `null`
+  for three different reasons (destroyed, unwounded, above half), and neither
+  `ResolveRangedMoraleStage` nor `ResolveStrafeMoraleStage` logs the `null` case.
 
 ## Decisions
 
