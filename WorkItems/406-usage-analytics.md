@@ -252,6 +252,11 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Options polish (Chris, from screenshots).** Main-menu Options is now screen-sized (half
+  the width, menu font at ~2.6% of screen height, heading inside, scrolls past 90% height). Notes wrap
+  instead of running off the edge; slider labels sit above full-width sliders. **"Reset anonymous ID"
+  removed** at Chris's request (`AnalyticsClient.ResetInstallId` and its test with it) - opting out and
+  back in still mints a fresh ID. Supersedes the reset button in the plan sections above.
 - 2026-10-28: **Main-menu Options + saved settings.** Chris asked for an Options button on the main menu
   (the opt-out had become reachable only from inside a game). The panel body moved to `OptionsPanel`,
   drawn by both menus (controls cheat-sheet in game only). All its settings now persist in

@@ -251,19 +251,6 @@ public class AnalyticsTests
         Assert.That(client.PendingForTests(), Is.Empty);
     }
 
-    [Test]
-    public void ResetGivesANewId()
-    {
-        var config = Acknowledged();
-        using var client = Client(config, new FakeWorker());
-        TrackLaunch(client);
-        string? before = config.AnalyticsInstallId;
-
-        client.ResetInstallId();
-
-        Assert.That(config.AnalyticsInstallId, Is.Not.Null.And.Not.EqualTo(before));
-    }
-
     // ── Batching and the spool ─────────────────────────────────────────────────────────────
 
     [Test]

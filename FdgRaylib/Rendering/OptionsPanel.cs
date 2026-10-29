@@ -24,13 +24,15 @@ public static class OptionsPanel
         // #344: how long a settled dice panel stays up. Shown as a multiplier of the tuned default rather
         // than in seconds - the actual lifetime varies with the roll (a panel carrying modifier chips
         // already lingers longer), so a seconds figure would be a lie for most rolls.
-        ImGui.SliderFloat("Dice popup time", ref ViewSettings.DiceLingerScale,
+        ImGui.TextUnformatted("Dice popup time");
+        ImGui.SetNextItemWidth(-1f);
+        ImGui.SliderFloat("##dicepopup", ref ViewSettings.DiceLingerScale,
             ViewSettings.DiceLingerMin, ViewSettings.DiceLingerMax, "%.2fx");
-        ImGui.TextDisabled("1.00x is the default. Hovering the dice always freezes them.");
+        Note("1.00x is the default. Hovering the dice always freezes them.");
 
         SectionHeader("Tactical overlay");
         ImGui.Checkbox("Weapon reach (V)", ref ViewSettings.ShowReachOverlay);
-        ImGui.TextDisabled("Ghosts while moving/placing; any unit you hover.");
+        Note("Ghosts while moving/placing; any unit you hover.");
 
         // #247: "Threat frontiers (F)" and "Anchor field on my position" are both gone. The red
         // frontier layer was outdated once the reach field could answer the same question in one
@@ -40,12 +42,14 @@ public static class OptionsPanel
         SectionHeader("Audio");
         if (audio != null && audio.Enabled)
         {
-            if (ImGui.SliderFloat("Master volume", ref ViewSettings.MasterVolume, 0f, 1f, "%.2f"))
+            ImGui.TextUnformatted("Master volume");
+            ImGui.SetNextItemWidth(-1f);
+            if (ImGui.SliderFloat("##mastervolume", ref ViewSettings.MasterVolume, 0f, 1f, "%.2f"))
                 audio.SetMasterVolume(ViewSettings.MasterVolume);
         }
         else
         {
-            ImGui.TextDisabled("Audio unavailable.");
+            Note("Audio unavailable.");
         }
 
         // #406: the opt-out after the first-launch notice (the only place it lives - see PrivacyDialog).
@@ -55,20 +59,28 @@ public static class OptionsPanel
         if (!inGame) return;
 
         SectionHeader("Controls");
-        ImGui.TextDisabled("Alt+drag: measure");
-        ImGui.TextDisabled("Alt+wheel: zoom");
-        ImGui.TextDisabled("Middle-drag: pan");
-        ImGui.TextDisabled("L: army lists (all players)");
-        ImGui.TextDisabled("N labels   T tokens   F threat");
+        Note("Alt+drag: measure");
+        Note("Alt+wheel: zoom");
+        Note("Middle-drag: pan");
+        Note("L: army lists (all players)");
+        Note("N labels   T tokens   F threat");
         // #326: G toggles Group/Single -- it is Ctrl+wheel that cycles the formation (#277). The old line
         // said "G: cycle formation", which named the wrong key for the wrong action.
-        ImGui.TextDisabled("G: group / single mode (during moves)");
-        ImGui.TextDisabled("Ctrl+wheel: cycle formation (group moves)");
-        ImGui.TextDisabled($"{Resolvers.ResolverHotkeys.CycleHint}: pick model (single moves)");
-        ImGui.TextDisabled("Click a model: switch to it (single moves)");
-        ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Confirm.Hint}: auto-assign / confirm");
-        ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Back.Hint}: undo / back out");
-        ImGui.TextDisabled("Esc: open this menu");
+        Note("G: group / single mode (during moves)");
+        Note("Ctrl+wheel: cycle formation (group moves)");
+        Note($"{Resolvers.ResolverHotkeys.CycleHint}: pick model (single moves)");
+        Note("Click a model: switch to it (single moves)");
+        Note($"{Resolvers.ResolverKeybinds.Confirm.Hint}: auto-assign / confirm");
+        Note($"{Resolvers.ResolverKeybinds.Back.Hint}: undo / back out");
+        Note("Esc: open this menu");
+    }
+
+    /// <summary>Greyed explanatory text that wraps to the panel instead of running off its edge.</summary>
+    public static void Note(string text)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled]);
+        ImGui.TextWrapped(text);
+        ImGui.PopStyleColor();
     }
 
     // A small labelled divider between Options sections (SeparatorText isn't in this ImGui binding).

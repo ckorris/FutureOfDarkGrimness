@@ -89,7 +89,7 @@ public sealed class PrivacyDialog
         UsageAnalytics.SendLaunch();
     }
 
-    /// <summary>The checkbox and Reset button in the Options panel (<see cref="OptionsPanel"/>). Changes apply
+    /// <summary>The checkbox in the Options panel (<see cref="OptionsPanel"/>). Changes apply
     /// immediately: opting out clears anything queued and the local ID.</summary>
     public static void DrawSettingsControls()
     {
@@ -106,20 +106,13 @@ public sealed class PrivacyDialog
             if (enabled) UsageAnalytics.SendLaunch(); // counts this launch if it wasn't counted yet
         }
 
-        ImGui.BeginDisabled(!enabled);
-        if (UiButton.NavigateSmall("Reset anonymous ID"))
-            UsageAnalytics.Client?.ResetInstallId();
-        ImGui.EndDisabled();
-        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            UiText.Tooltip("Replaces the random ID with a new one, so future statistics can't be linked to past ones.");
-
-        ImGui.TextDisabled(enabled
-            ? "Turning this off deletes the ID and anything not yet sent. Turning it back on makes a new ID."
-            : "Nothing is sent. The ID has been deleted.");
+        OptionsPanel.Note(enabled
+            ? "Turning this off deletes the anonymous ID and anything not yet sent."
+            : "Nothing is sent. The anonymous ID has been deleted.");
 
         // A build or run that never sends regardless (a developer build, say) should say so rather than
         // let the checkbox look like it does something.
         if (UsageAnalytics.Client?.DisabledReason is { } reason)
-            ImGui.TextDisabled($"This copy of the game does not send statistics ({reason}).");
+            OptionsPanel.Note($"This copy of the game does not send statistics ({reason}).");
     }
 }

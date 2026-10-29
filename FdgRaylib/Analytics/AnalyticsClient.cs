@@ -160,18 +160,6 @@ public sealed class AnalyticsClient : IDisposable
         SetEnabled(enabled);
     }
 
-    /// <summary>Replaces the install ID with a fresh random one. Already-queued events keep the old ID
-    /// (they were recorded under it); everything after uses the new one.</summary>
-    public void ResetInstallId()
-    {
-        lock (_lock)
-        {
-            UserConfig cfg = _config();
-            cfg.AnalyticsInstallId = cfg.AnalyticsEnabled ? Guid.NewGuid().ToString("D") : null;
-            _saveConfig();
-        }
-    }
-
     private string EnsureInstallIdLocked()
     {
         UserConfig cfg = _config();

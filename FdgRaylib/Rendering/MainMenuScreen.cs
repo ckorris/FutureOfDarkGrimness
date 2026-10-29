@@ -113,11 +113,30 @@ public class MainMenuScreen : IAppScreen
         const string popupId = "Options##mainmenu";
         if (!ImGui.IsPopupOpen(popupId)) ImGui.OpenPopup(popupId);
 
-        ImGui.SetNextWindowSize(new Vector2(MathF.Min(440f, screenW * 0.9f), 0f), ImGuiCond.Always);
+        // Sized to the screen rather than the in-game menu's compact column: half the width, height
+        // fitted to the content but capped (it scrolls past that), text in the crisp menu font at about
+        // 2.6% of the screen height.
+        float w = Math.Clamp(screenW * 0.5f, MathF.Min(440f, screenW * 0.9f), screenW * 0.9f);
+        ImGui.SetNextWindowSize(new Vector2(w, 0f), ImGuiCond.Always);
+        ImGui.SetNextWindowSizeConstraints(new Vector2(w, 0f), new Vector2(w, screenH * 0.9f));
         ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always, new Vector2(0.5f, 0.5f));
-        if (!ImGui.BeginPopupModal(popupId, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-                                            ImGuiWindowFlags.AlwaysAutoResize))
+        bool useMenuFont = RaylibRenderer.MenuFontPx > 0f;
+        if (useMenuFont) ImGui.PushFont(RaylibRenderer.MenuFont);
+        // No title bar: Begin draws it before the font scale below can apply, so it would come out at
+        // the menu font's full baked size. The heading is drawn inside instead.
+        bool open = ImGui.BeginPopupModal(popupId,
+            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar);
+        if (!open)
+        {
+            if (useMenuFont) ImGui.PopFont();
             return;
+        }
+        float bodyPx = MathF.Max(18f, screenH * 0.026f);
+        if (useMenuFont) ImGui.SetWindowFontScale(bodyPx * 1.5f / RaylibRenderer.MenuFontPx);
+        float headingW = ImGui.CalcTextSize("Options").X;
+        ImGui.SetCursorPosX((ImGui.GetWindowWidth() - headingW) * 0.5f);
+        ImGui.TextUnformatted("Options");
+        if (useMenuFont) ImGui.SetWindowFontScale(bodyPx / RaylibRenderer.MenuFontPx);
 
         OptionsPanel.Draw(UiSound.Audio, inGame: false);
 
@@ -132,5 +151,6 @@ public class MainMenuScreen : IAppScreen
             ImGui.CloseCurrentPopup();
         }
         ImGui.EndPopup();
+        if (useMenuFont) ImGui.PopFont();
     }
 }
