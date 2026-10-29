@@ -251,3 +251,6 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
 - [x] 412 — Anonymous, opt-out usage analytics: first-launch notice + Options toggle (main menu and in
   game), host game_start/end/abandon + client game_join, a third Durable Object on the #271 Worker, read
   via `fetch-stats.sh`; Options settings now persist. **Done 2026-10-28.** ([WorkItems/412](412-usage-analytics.md))
+- [x] 413 — Hive Guardians shot to 4/9 wounds rolled no morale: correct, 2/3 models is above half
+  strength. Skipped wound-driven morale tests (shooting + strafing) now log why. **Done 2026-10-28.**
+  ([WorkItems/413](413-no-morale-roll-after-shooting.md))

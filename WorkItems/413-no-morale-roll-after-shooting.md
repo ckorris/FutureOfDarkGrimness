@@ -1,6 +1,6 @@
 # 413 — Hive Guardians took shooting casualties but rolled no morale test
 
-**Status**: implemented (2026-10-28) - skip reason now logged; awaiting owner verify
+**Status**: done (2026-10-28)
 **Related**: `ResolveRangedMoraleStage` (ShootStage), `ResolveRangedMoraleStageTests`
 
 ## Report (Chris, in-game, 2026-10-28)
@@ -51,3 +51,8 @@ reconstruction) and either rolls the test or logs the reason it was skipped.
 ## Decisions
 
 ## Outcome
+
+Done 2026-10-28, verified by the owner. Not a rules bug: GF v3.5.1 half strength counts models for a
+multi-model unit, and the Guardians had 2 of 3 standing. The fix is log-only:
+`MoraleUtilities.DescribeSkippedWoundDrivenMorale` gives the reason a wound-driven test was skipped, and
+`ResolveRangedMoraleStage` / `ResolveStrafeMoraleStage` log it. Engine `479888d`, bump `fe18dd8`.
