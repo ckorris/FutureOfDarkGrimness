@@ -59,6 +59,9 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [~] 325 — Pre-roll shooting forecast: effective Hit/Save + beat-identical modifier tags computed read-only engine-side, on target rows / details pane / canvas hover badge; weapon rule blob now rehydrates on deserialization (rules readable client-side). Rows/details/badge hand-verified by owner; networked re-check pending. Was #323 pre-reconciliation-43. ([WorkItems/325](WorkItems/325-shooting-forecast-ui.md))
 - [~] 345 — The volley's real size beside the #325 forecast ("Attacks: 7 of 10"): the #276 trim's own eligible-copy count stamped onto `AttackForecast`, on details pane / target row / canvas badge / CLI, silent when nothing is held back. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/345](WorkItems/345-attacks-actually-firing.md))
 
+- [ ] 413 — Hive Guardians shot to 4/9 wounds by an APC rolled no morale (log: "Resolving ranged morale", then
+  nothing). Repro save NoMoraleRollForHiveGuardians.fdgsave; first settle whether a test was owed. ([WorkItems/413](WorkItems/413-no-morale-roll-after-shooting.md))
+
 ## Model bases & geometry
 
 - [~] 149 — Configurable model base size + shapes (per-unit circle/rect via the `IBaseShape` seam): core landed; remaining facets in the detail file. The deferred hard-path geometry became #150 (awaiting verification below). ([WorkItems/149](WorkItems/149-base-shapes.md))

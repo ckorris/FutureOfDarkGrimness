@@ -776,3 +776,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > reference added by its commits (only those lines; the transport item's own 406 references were left
 > alone). Commit subjects written before the collision read `406:` - history left alone, this entry is
 > the pointer. **412 = anonymous usage analytics.**
+
+> **2026-10-28 - number 413 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `c9b9639`: index + archive max **412**, no `41x` branch on either remote. **413 = no morale roll
+> after shooting (Hive Guardians).** No collision.
