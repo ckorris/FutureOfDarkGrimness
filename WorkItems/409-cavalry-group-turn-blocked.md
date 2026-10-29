@@ -28,7 +28,8 @@ In-game bug report (#226), fetched 2026-10-28 from the list-server drop box:
 
 - 2026-10-28: Owner hand-verified ("It works!"). The checkbox is renamed "Optimize formation for
   distance", with the tooltip "Will automatically change the order of units in formation to maximize how
-  far the unit can travel." (owner's wording). Closed and archived.
+  far the unit can travel." (owner's wording). Then, at the owner's request, "units" became "models" and
+  "The unit also turns to face the direction it moves." was added. Closed and archived.
 - 2026-10-28: **Does the default fix the report? Verified against the engine.** A scratch test loaded
   vic's save and ran the riders through the engine's Done validation, `ValidatePaths`, with the real
   terrain (9 pieces), enemies (34 models) and friendlies (23), on an 8" Fast Advance:

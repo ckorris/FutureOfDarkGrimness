@@ -1560,7 +1560,7 @@ public class GuiDefineMovementResolver
             // #409: the opt-in, and a word whenever it re-forms the unit so a shape change never looks like a glitch.
             ImGui.Checkbox("Optimize formation for distance", ref _reformToTurn);
             if (ImGui.IsItemHovered())
-                ImGui.SetTooltip("Will automatically change the order of units in formation to maximize how far the unit can travel.");
+                ImGui.SetTooltip("Will automatically change the order of models in formation to maximize how far the unit can travel. The unit also turns to face the direction it moves.");
             if (_frameReformName is { } reform)
                 ImGui.TextUnformatted($"Turning: re-forming as {reform}");
             ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation");
