@@ -1,6 +1,6 @@
 # 407 — Weapon Team's Tough(3) is applied to every model in the unit
 
-**Status**: implemented + tested; awaiting GUI hand-verify
+**Status**: done (2026-10-28)
 **Related**: #410 (other per-model item rules), #093 (per-model special rules), #197 (champion upgrades kept off `unit.SpecialRules`), #383 (per-model upgrade sections), #324 / #323 (Replace upgrade accounting)
 
 ## Goal
@@ -75,5 +75,5 @@ an integration test, and a corpus census of other books with the same shape.
 
 ## Outcome
 
-Pending GUI hand-verify. In the Forge, a HDF Infantry Squad with a Weapon Team shows "Tough 3 (1 model)".
+**Done 2026-10-28, hand-verified by the owner** in `Scenarios/408-versatile-backout` (which has both units). Checked: In the Forge, a HDF Infantry Squad with a Weapon Team shows "Tough 3 (1 model)".
 In game it has 12 wounds, and the army-list pill reads "3 (1 model)".

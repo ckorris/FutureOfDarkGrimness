@@ -1,0 +1,20 @@
+{
+  "name": "#408 back out of Versatile Attack's pick + #407 HDF Weapon Team (Tough 3 on one model)",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "players": [
+    {
+      "army": "armies/408-VersatileAndWeaponTeam.fdgarmy",
+      "units": [
+        { "unit": "Veteran Prime Master", "models": [[22, 14]] },
+        { "unit": "Infantry Squad (Weapon Team)",
+          "models": [[26, 12], [27.5, 12], [29, 12], [30.5, 12], [32, 12],
+                     [26, 14], [27.5, 14], [29, 14], [30.5, 14], [32, 14]] }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy"
+    }
+  ]
+}

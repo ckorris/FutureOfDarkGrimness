@@ -1,6 +1,6 @@
 # 408 — Activation-start choices (Versatile Attack) block backing out of an activation
 
-**Status**: implemented + tested; awaiting GUI hand-verify
+**Status**: done (2026-10-28)
 **Related**: #248 (back-out of a pristine activation), #202 (Move/Charge/Disembark back-out), #197 P5a (Activation_OnActivationStart offers)
 
 ## Goal
@@ -83,6 +83,6 @@ door, with integration tests mirroring the nearest `*RuleIntegrationTests`.
 
 ## Outcome
 
-Pending GUI hand-verify. Activate a unit with Versatile Attack: Backspace at the pick returns to unit
+**Done 2026-10-28, hand-verified by the owner** in `Scenarios/408-versatile-backout` (which has both units). Checked: Activate a unit with Versatile Attack: Backspace at the pick returns to unit
 selection. Pick a mode, then Backspace at the action menu: back at unit selection, and re-activating offers
 both modes again.
