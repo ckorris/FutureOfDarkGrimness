@@ -299,7 +299,7 @@ public class AnalyticsTests
         var nextWorker = new FakeWorker();
         using var next = Client(config, nextWorker);
         next.Start();
-        next.Track(AnalyticsEvents.FeatureOpen, new Dictionary<string, object?> { ["feature"] = "host" });
+        next.Track(AnalyticsEvents.FeatureOpen, new Dictionary<string, object?> { ["feature"] = AnalyticsFeatures.Join });
         await next.FlushAsync();
 
         Assert.That(nextWorker.Bodies, Has.Count.EqualTo(1));

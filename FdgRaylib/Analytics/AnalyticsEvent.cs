@@ -57,6 +57,5 @@ public static class AnalyticsFeatures
     public const string LoadGame = "load_game";
     public const string BugReportSent = "bug_report_sent";
     public const string ServerBrowser = "server_browser";
-    public const string Host = "host";
     public const string Join = "join";
 }

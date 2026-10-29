@@ -41,7 +41,7 @@ public sealed class PrivacyDialog
         "For games you host: points, game system, each army's faction, how many human, AI and " +
             "online players, which AI types, teams, the lobby settings, and how and when the game ended.",
         "For games you join: your army's faction, game system and points.",
-        "Which parts of the game you open (Army Forge, Combat Calculator, Load Game, Host, Join) " +
+        "Which parts of the game you open (Army Forge, Combat Calculator, Load Game, Join) " +
             "and that a bug report was sent.",
     };
 

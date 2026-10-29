@@ -314,6 +314,8 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Decisions
 
+- 2026-10-28 (Chris): no `feature_open` for clicking Host - a host who launches is already counted by
+  game_start, and one who backs out isn't worth a request. Removed from client, Worker enum and disclosure.
 - `server_browser` stays in the Worker enum but the client never sends it: the Client dialog is
   browser-first whenever a list server is configured, so it would always equal `join`.
 - A winning team with any human on it reports `winner: human` (the question is "do people beat the

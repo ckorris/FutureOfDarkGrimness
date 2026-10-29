@@ -672,11 +672,9 @@ else
 
     // ── Main Menu ──────────────────────────────────────────────────────────────
     // #406: each main-menu destination records one feature_open (a no-op when analytics is off).
+    // Host deliberately records nothing: a hosted game that launches is already a game_start.
     renderer.MainMenu.OnHostClicked = () =>
-    {
-        UsageAnalytics.FeatureOpened(AnalyticsFeatures.Host);
         renderer.NavigateTo(renderer.HostModal);
-    };
 
     renderer.MainMenu.OnArmyBuilderClicked = () =>
         renderer.NavigateTo(renderer.ArmyBuilder);

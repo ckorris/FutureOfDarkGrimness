@@ -111,7 +111,7 @@ export const SCHEMA: Record<string, Record<string, PropSpec>> = {
   feature_open: {
     feature: {
       type: "enum",
-      values: ["army_forge", "combat_calculator", "load_game", "bug_report_sent", "server_browser", "host", "join"],
+      values: ["army_forge", "combat_calculator", "load_game", "bug_report_sent", "server_browser", "join"],
     },
   },
 };
