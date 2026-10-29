@@ -6,15 +6,14 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// The anonymous-usage-statistics UI (#406), in two modes over the main menu:
-/// <list type="bullet">
-/// <item><b>Notice</b> - opens by itself until the player has clicked through it once: the
-/// maintainer's message, the itemized list of what is and isn't sent, the opt-out checkbox (ticked),
-/// and OK. Nothing is sent from any install before this OK.</item>
-/// <item><b>Settings</b> - the main menu's Privacy button: the same list and checkbox, plus Reset
-/// anonymous ID.</item>
-/// </list>
-/// The escape menu's Options panel draws <see cref="DrawSettingsControls"/>, the same controls inline.
+/// The anonymous-usage-statistics notice (#406). Opens by itself over the main menu until the player
+/// has clicked through it once: the maintainer's message, the opt-out checkbox (ticked), and OK.
+/// Nothing is sent from any install before that OK.
+///
+/// <para>Kept deliberately short (Chris, 2026-10-28): no itemized list here and no Privacy button on the
+/// main menu - the full list is in the README's Privacy section, and opting out later is the
+/// checkbox in the escape menu's Options panel (<see cref="DrawSettingsControls"/>).</para>
+///
 /// All text is ASCII-only (CLAUDE.md: the font atlas has no glyphs past U+00FF).
 /// </summary>
 public sealed class PrivacyDialog
@@ -30,62 +29,24 @@ public sealed class PrivacyDialog
         "\n" +
         "Either way, thanks for playing!";
 
-    /// <summary>What is sent, generated from the event schema the Worker enforces
-    /// (tools/list-server/src/analytics.ts). Keep the two in step.</summary>
-    public static readonly string[] SentItems =
-    {
-        "A random ID made on this computer, so players can be counted without knowing who they are. " +
-            "It is not based on your hardware or account, and you can reset it below.",
-        "That the game was opened, how long your last session lasted, and whether it closed normally.",
-        "The game version, your operating system (Windows, Linux or macOS) and processor type.",
-        "For games you host: points, game system, each army's faction, how many human, AI and " +
-            "online players, which AI types, teams, the lobby settings, and how and when the game ended.",
-        "For games you join: your army's faction, game system and points.",
-        "Whether you kept the Combat Calculator open for more than a minute.",
-    };
+    public const string ChangeLaterText = "You can change this any time under Options in a game.";
 
-    public static readonly string[] NeverSentItems =
-    {
-        "Your player name, server names, chat, or army names and contents.",
-        "File paths, your computer's name, your user name, or your language settings.",
-    };
-
-    public const string WhereText =
-        "Statistics go to a small Cloudflare service run by the developer. Cloudflare sees your IP " +
-        "address like any website does; the statistics themselves never store it.";
-
-    private enum EMode { Closed, Notice, Settings }
-
-    private EMode _mode = EMode.Closed;
+    private bool _open;
     private bool _noticeChoice = true;
-    private bool _popupOpened;
 
-    public bool IsOpen => _mode != EMode.Closed;
+    public bool IsOpen => _open;
 
-    /// <summary>Opens the settings mode (the main menu's Privacy button).</summary>
-    public void OpenSettings()
-    {
-        _mode = EMode.Settings;
-        _popupOpened = false;
-    }
-
-    /// <summary>Draws the dialog if it is open, and opens the notice by itself while it has never been
-    /// acknowledged. Call once per frame from the main menu, outside its own window.</summary>
+    /// <summary>Opens the notice by itself while it has never been acknowledged, and draws it. Call once
+    /// per frame from the main menu, outside its own window.</summary>
     public void Draw(int screenW, int screenH)
     {
-        if (_mode == EMode.Closed && !UserConfig.Current.AnalyticsNoticeAcknowledged)
-        {
-            _mode = EMode.Notice;
-            _noticeChoice = true;
-            _popupOpened = false;
-        }
-        if (_mode == EMode.Closed) return;
-
         const string popupId = "Usage statistics##privacy";
-        if (!_popupOpened)
+        if (!_open)
         {
+            if (UserConfig.Current.AnalyticsNoticeAcknowledged) return;
+            _open = true;
+            _noticeChoice = true;
             ImGui.OpenPopup(popupId);
-            _popupOpened = true;
         }
 
         ImGui.SetNextWindowSize(new Vector2(Math.Min(screenW * 0.55f, 900f), 0f), ImGuiCond.Always);
@@ -94,43 +55,22 @@ public sealed class PrivacyDialog
                                             ImGuiWindowFlags.AlwaysAutoResize))
             return;
 
-        if (_mode == EMode.Notice)
-        {
-            ImGui.TextWrapped(IntroText);
-            ImGui.Spacing();
-        }
-
-        DrawItemizedList();
+        ImGui.TextWrapped(IntroText);
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
 
-        if (_mode == EMode.Notice)
+        UiButton.Checkbox("Send anonymous usage statistics", ref _noticeChoice);
+        ImGui.TextDisabled(ChangeLaterText);
+        ImGui.Spacing();
+        if (UiButton.Confirm("OK", new Vector2(ImGui.GetContentRegionAvail().X, 0f)))
         {
-            UiButton.Checkbox("Send anonymous usage statistics", ref _noticeChoice);
-            ImGui.TextDisabled("You can change this any time: Privacy on the main menu, or Options in a game.");
-            ImGui.Spacing();
-            if (UiButton.Confirm("OK", new Vector2(ImGui.GetContentRegionAvail().X, 0f)))
-            {
-                AcknowledgeNotice(_noticeChoice);
-                Close();
-            }
-        }
-        else
-        {
-            DrawSettingsControls();
-            ImGui.Spacing();
-            if (UiButton.Back("Close", new Vector2(ImGui.GetContentRegionAvail().X, 0f)))
-                Close();
+            AcknowledgeNotice(_noticeChoice);
+            _open = false;
+            ImGui.CloseCurrentPopup();
         }
 
         ImGui.EndPopup();
-    }
-
-    private void Close()
-    {
-        _mode = EMode.Closed;
-        ImGui.CloseCurrentPopup();
     }
 
     private static void AcknowledgeNotice(bool enabled)
@@ -149,8 +89,8 @@ public sealed class PrivacyDialog
         UsageAnalytics.SendLaunch();
     }
 
-    /// <summary>The checkbox and Reset button, shared by the Privacy dialog and the in-game Options
-    /// panel. Changes apply immediately: opting out clears anything queued and the local ID.</summary>
+    /// <summary>The checkbox and Reset button in the escape menu's Options panel. Changes apply
+    /// immediately: opting out clears anything queued and the local ID.</summary>
     public static void DrawSettingsControls()
     {
         bool enabled = UserConfig.Current.AnalyticsEnabled;
@@ -181,24 +121,5 @@ public sealed class PrivacyDialog
         // let the checkbox look like it does something.
         if (UsageAnalytics.Client?.DisabledReason is { } reason)
             ImGui.TextDisabled($"This copy of the game does not send statistics ({reason}).");
-    }
-
-    /// <summary>The itemized what-is-sent list, also shown in the in-game Options panel on request.</summary>
-    public static void DrawItemizedList()
-    {
-        ImGui.TextColored(ImGuiTheme.HeaderAccent, "What is sent");
-        foreach (string item in SentItems) Bullet(item);
-        ImGui.Spacing();
-        ImGui.TextColored(ImGuiTheme.HeaderAccent, "Never sent");
-        foreach (string item in NeverSentItems) Bullet(item);
-        ImGui.Spacing();
-        ImGui.TextWrapped(WhereText);
-    }
-
-    private static void Bullet(string text)
-    {
-        ImGui.Bullet();
-        ImGui.SameLine();
-        ImGui.TextWrapped(text);
     }
 }

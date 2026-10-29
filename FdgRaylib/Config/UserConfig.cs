@@ -52,7 +52,7 @@ public sealed class UserConfig
 
     /// <summary>#406: send anonymous usage statistics. On by default, but nothing is sent until
     /// <see cref="AnalyticsNoticeAcknowledged"/> - the player has seen the first-launch notice, which
-    /// carries this same toggle. Changeable later from the main menu's Privacy button and the in-game
+    /// carries this same toggle. Changeable later from the in-game
     /// Options panel.</summary>
     public bool AnalyticsEnabled { get; set; } = true;
 

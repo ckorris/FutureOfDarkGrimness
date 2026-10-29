@@ -80,7 +80,7 @@ public sealed class AnalyticsClient : IDisposable
     // ── Gates ──────────────────────────────────────────────────────────────────────────────
 
     /// <summary>Why this run sends nothing regardless of the player's choice, or null when it may send.
-    /// Shown in the Debug log; the Privacy dialog uses <see cref="Enabled"/>.</summary>
+    /// Shown in the Debug log; the Options checkbox uses <see cref="Enabled"/>.</summary>
     public string? DisabledReason
     {
         get

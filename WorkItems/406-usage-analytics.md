@@ -318,6 +318,12 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Decisions
 
+- 2026-10-28 (Chris, after seeing the popup): **notice trimmed to his message + checkbox + OK**; the
+  itemized what-is/isn't-sent lists and the "where it goes" paragraph removed from the notice and from
+  the Options panel, and the **main-menu Privacy button removed**. Rationale: don't inundate players;
+  the notice says it's anonymous general gameplay usage, the README Privacy section has the detail, and
+  opting out is one click. Opt-out after the notice now lives only in the escape menu's Options panel,
+  which is reachable only in a game (or by `"AnalyticsEnabled": false` in config.json).
 - 2026-10-28 (Chris): **all menu-click events dropped.** The only `feature_open` left is
   `combat_calculator`, sent once per visit when the calculator has stayed open a minute (`DwellTimer`,
   fires at the threshold so it doesn't depend on how the visit ends).

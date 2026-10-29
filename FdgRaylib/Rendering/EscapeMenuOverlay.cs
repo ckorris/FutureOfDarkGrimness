@@ -196,14 +196,9 @@ public sealed class EscapeMenuOverlay
             ImGui.TextDisabled("Audio unavailable.");
         }
 
-        // #406: the same opt-out as the main menu's Privacy dialog, reachable mid-game.
+        // #406: the opt-out after the first-launch notice (the only place it lives - see PrivacyDialog).
         SectionHeader("Privacy");
         PrivacyDialog.DrawSettingsControls();
-        if (ImGui.TreeNode("What is sent##privacy"))
-        {
-            PrivacyDialog.DrawItemizedList();
-            ImGui.TreePop();
-        }
 
         SectionHeader("Controls");
         ImGui.TextDisabled("Alt+drag: measure");
