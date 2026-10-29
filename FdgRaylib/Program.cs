@@ -45,6 +45,8 @@ if (args.Contains("--field-harness"))
 // #310: every install gets a config file (player name + the last hosted game's settings). Created with
 // defaults on first run; best-effort, so a read-only home directory just means nothing is remembered.
 UserConfig.EnsureExists();
+// #406: the Options panel's saved display/audio settings.
+FdgRaylib.Rendering.ViewSettings.Load(UserConfig.Current.View);
 
 bool headless = args.Contains("--headless");
 
@@ -938,5 +940,7 @@ else
         // anything unsent is spooled for the next launch.
         GameAnalyticsSession.Current?.Abandoned(renderer.CloseRequested ? "quit" : "close");
         UsageAnalytics.Shutdown();
+        // Display toggles flipped by hotkey (N/T/V) never pass through the Options panel's save.
+        FdgRaylib.Rendering.ViewSettings.Persist();
     }
 }

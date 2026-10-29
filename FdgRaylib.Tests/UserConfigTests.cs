@@ -415,4 +415,72 @@ public class UserConfigTests
         });
     }
 
+    // ── #406: Options panel settings ───────────────────────────────────────────────────────
+
+    [Test]
+    public void ViewSettings_DefaultsMatchTheRuntimeDefaults()
+    {
+        // A fresh install must look exactly as it did before these were saved.
+        var saved = new SavedViewSettings();
+        Assert.Multiple(() =>
+        {
+            Assert.That(saved.ShowLabels, Is.True);
+            Assert.That(saved.ShowGrid, Is.True);
+            Assert.That(saved.ShowAllTokens, Is.False);
+            Assert.That(saved.ShowReachOverlay, Is.True);
+            Assert.That(saved.ShowVictoryFireworks, Is.True);
+            Assert.That(saved.DiceLingerScale, Is.EqualTo(1f));
+            Assert.That(saved.MasterVolume, Is.EqualTo(1f));
+        });
+    }
+
+    [Test]
+    public void ViewSettings_RoundTripThroughTheFile()
+    {
+        string path = PathFor("view.json");
+        var view = new SavedViewSettings
+        {
+            ShowLabels = false, ShowGrid = false, ShowAllTokens = true, ShowReachOverlay = false,
+            ShowVictoryFireworks = false, DiceLingerScale = 1.5f, MasterVolume = 0.25f,
+        };
+        UserConfig.WriteTo(path, new UserConfig { View = view });
+
+        Assert.That(UserConfig.LoadFrom(path).View, Is.EqualTo(view));
+    }
+
+    [Test]
+    public void ViewSettings_AnOlderFileWithoutThemReadsAsDefaults()
+    {
+        string path = PathFor("old.json");
+        File.WriteAllText(path, "{ \"PlayerName\": \"Gary\" }");
+
+        Assert.That(UserConfig.LoadFrom(path).View, Is.EqualTo(new SavedViewSettings()));
+    }
+
+    [Test]
+    public void ViewSettings_LoadAndCaptureRoundTrip_AndOutOfRangeValuesAreClamped()
+    {
+        SavedViewSettings before = FdgRaylib.Rendering.ViewSettings.Capture();
+        try
+        {
+            var view = new SavedViewSettings { ShowGrid = false, DiceLingerScale = 1.5f, MasterVolume = 0.4f };
+            FdgRaylib.Rendering.ViewSettings.Load(view);
+            Assert.That(FdgRaylib.Rendering.ViewSettings.Capture(), Is.EqualTo(view));
+
+            FdgRaylib.Rendering.ViewSettings.Load(new SavedViewSettings { DiceLingerScale = 50f, MasterVolume = -3f });
+            Assert.Multiple(() =>
+            {
+                Assert.That(FdgRaylib.Rendering.ViewSettings.DiceLingerScale,
+                    Is.EqualTo(FdgRaylib.Rendering.ViewSettings.DiceLingerMax));
+                Assert.That(FdgRaylib.Rendering.ViewSettings.MasterVolume, Is.EqualTo(0f));
+            });
+
+            FdgRaylib.Rendering.ViewSettings.Load(new SavedViewSettings { DiceLingerScale = float.NaN });
+            Assert.That(FdgRaylib.Rendering.ViewSettings.DiceLingerScale, Is.EqualTo(1f));
+        }
+        finally
+        {
+            FdgRaylib.Rendering.ViewSettings.Load(before);
+        }
+    }
 }

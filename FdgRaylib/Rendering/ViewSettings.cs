@@ -1,10 +1,15 @@
+using FdgRaylib.Config;
+
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// Global in-game view toggles, shared between the canvas overlays that read them and the in-game
-/// menu's Options panel that sets them (#246). Static because there is one board on screen at a time
-/// and these are display preferences, not per-game state — they persist across games like the grid
-/// toggle always has.
+/// Global in-game view toggles, shared between the canvas overlays that read them and the Options panel
+/// that sets them (#246). Static because there is one board on screen at a time and these are display
+/// preferences, not per-game state.
+///
+/// <para>Saved between runs in <see cref="UserConfig"/> (#406): <see cref="Load"/> at startup,
+/// <see cref="Persist"/> when an Options panel closes and at app exit (which also catches the N/T/V
+/// hotkeys).</para>
 /// </summary>
 public static class ViewSettings
 {
@@ -40,9 +45,6 @@ public static class ViewSettings
     /// window the dice tumble and settle in. Scaling that would retire the panel before the roll it is
     /// showing had finished, on a client whose engine is still waiting. So the knob moves the part that is
     /// purely "how long you get to re-read it", which is what the setting is actually for.</para>
-    ///
-    /// <para>Session-scoped like every other flag here, deliberately: these are display toggles, not saved
-    /// preferences (<c>UserConfig</c> holds the lobby/host settings).</para>
     /// </summary>
     public static float DiceLingerScale = 1f;
 
@@ -51,4 +53,41 @@ public static class ViewSettings
 
     /// <summary>Longest the dice panels may linger: twice the default (#344).</summary>
     public const float DiceLingerMax = 2f;
+
+    /// <summary>Master volume, 0..1. The renderer hands it to the <c>AudioManager</c> when the device
+    /// opens; the Options slider sets both.</summary>
+    public static float MasterVolume = 1f;
+
+    /// <summary>Takes the saved values (#406), clamping anything a hand-edit pushed out of range.</summary>
+    public static void Load(SavedViewSettings saved)
+    {
+        ShowLabels           = saved.ShowLabels;
+        ShowGrid             = saved.ShowGrid;
+        ShowAllTokens        = saved.ShowAllTokens;
+        ShowReachOverlay     = saved.ShowReachOverlay;
+        ShowVictoryFireworks = saved.ShowVictoryFireworks;
+        DiceLingerScale      = float.IsFinite(saved.DiceLingerScale)
+            ? Math.Clamp(saved.DiceLingerScale, DiceLingerMin, DiceLingerMax) : 1f;
+        MasterVolume         = float.IsFinite(saved.MasterVolume) ? Math.Clamp(saved.MasterVolume, 0f, 1f) : 1f;
+    }
+
+    public static SavedViewSettings Capture() => new()
+    {
+        ShowLabels           = ShowLabels,
+        ShowGrid             = ShowGrid,
+        ShowAllTokens        = ShowAllTokens,
+        ShowReachOverlay     = ShowReachOverlay,
+        ShowVictoryFireworks = ShowVictoryFireworks,
+        DiceLingerScale      = DiceLingerScale,
+        MasterVolume         = MasterVolume,
+    };
+
+    /// <summary>Writes the current values to the config file, if they differ from what it holds.</summary>
+    public static void Persist()
+    {
+        SavedViewSettings now = Capture();
+        if (now == UserConfig.Current.View) return;
+        UserConfig.Current.View = now;
+        UserConfig.Save();
+    }
 }

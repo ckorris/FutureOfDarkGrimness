@@ -18,6 +18,9 @@ public class MainMenuScreen : IAppScreen
     // #406: the usage-statistics notice (opens by itself until acknowledged).
     private readonly PrivacyDialog _privacy = new();
 
+    // #406: the same Options panel as the in-game menu, in a modal over the buttons.
+    private bool _optionsOpen;
+
     public void SetModalOpen(bool open) => _modalOpen = open;
 
     public void Draw(int screenW, int screenH)
@@ -65,17 +68,18 @@ public class MainMenuScreen : IAppScreen
             ImGui.SetWindowFontScale(1.0f);
         }
 
-        ImGui.BeginDisabled(_modalOpen || _privacy.IsOpen);
+        ImGui.BeginDisabled(_modalOpen || _privacy.IsOpen || _optionsOpen);
         DrawButton("Host",         OnHostClicked,        0);
         DrawButton("Client",       OnClientClicked,      1);
         // Army Builder button temporarily hidden - re-enable by uncommenting this line and bumping the
         // order arguments below back up by one (Army Forge -> 3, Combat Calculator -> 4, Load Game -> 5,
-        // Quit -> 6).
+        // Options -> 6, Quit -> 7).
         // DrawButton("Army Builder", OnArmyBuilderClicked, 2);
         DrawButton("Army Forge",        OnArmyForgeClicked,        2);
         DrawButton("Combat Calculator", OnCombatCalculatorClicked, 3);
         DrawButton("Load Game",         OnLoadGameClicked,         4);
-        DrawButton("Quit",              OnQuitClicked,             5, back: true);
+        DrawButton("Options",           () => _optionsOpen = true, 5);
+        DrawButton("Quit",              OnQuitClicked,             6, back: true);
         ImGui.EndDisabled();
 
         if (useMenuFont) ImGui.PopFont();
@@ -95,5 +99,32 @@ public class MainMenuScreen : IAppScreen
 
         // Drawn outside the menu window so its modal sits over everything (and blocks the menu) on its own.
         if (!_modalOpen) _privacy.Draw(screenW, screenH);
+        if (_optionsOpen) DrawOptions(screenW, screenH);
+    }
+
+    private void DrawOptions(int screenW, int screenH)
+    {
+        const string popupId = "Options##mainmenu";
+        if (!ImGui.IsPopupOpen(popupId)) ImGui.OpenPopup(popupId);
+
+        ImGui.SetNextWindowSize(new Vector2(MathF.Min(440f, screenW * 0.9f), 0f), ImGuiCond.Always);
+        ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always, new Vector2(0.5f, 0.5f));
+        if (!ImGui.BeginPopupModal(popupId, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
+                                            ImGuiWindowFlags.AlwaysAutoResize))
+            return;
+
+        OptionsPanel.Draw(UiSound.Audio, inGame: false);
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+        if (UiButton.Back("Back", new Vector2(ImGui.GetContentRegionAvail().X, 0f))
+            || ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false))
+        {
+            ViewSettings.Persist();
+            _optionsOpen = false;
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.EndPopup();
     }
 }

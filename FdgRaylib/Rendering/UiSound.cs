@@ -24,6 +24,9 @@ public static class UiSound
         UiSoundCues.LoadInto(audio);
     }
 
+    /// <summary>The attached audio device, or null before <see cref="Attach"/> (the main menu's Options).</summary>
+    public static AudioManager? Audio => _audio;
+
     /// <summary>Plays a UI cue by key (no-op if not attached / audio unavailable / key unknown).</summary>
     public static void Play(string key) => _audio?.Play(key);
 

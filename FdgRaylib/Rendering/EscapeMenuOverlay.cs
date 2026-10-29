@@ -49,22 +49,17 @@ public sealed class EscapeMenuOverlay
         $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
 
-    // Options-panel dependencies: the tactical overlay (Threat + field-anchor toggles) and the audio
-    // manager (master volume). Wired in TransitionToGame; audio may be null/disabled.
-    private TacticalOverlay.TacticalOverlayController? _tactical;
+    // Options-panel dependency: the audio manager (master volume). Wired in TransitionToGame; may be
+    // null/disabled.
     private AudioManager? _audio;
-    public void AttachOptions(TacticalOverlay.TacticalOverlayController tactical, AudioManager? audio)
-    {
-        _tactical = tactical;
-        _audio    = audio;
-    }
+    public void AttachOptions(AudioManager? audio) => _audio = audio;
 
     // The bug reporter (#226), one per launched game like the save hook above; null hides the row.
     private BugReport.BugReporter? _bugReporter;
     public void AttachBugReport(BugReport.BugReporter? bugReporter) => _bugReporter = bugReporter;
 
-    public void Open()  { IsOpen = true;  _confirm = Confirm.None; _inOptions = false; _inBugReport = false; }
-    public void Close() { IsOpen = false; _confirm = Confirm.None; _inOptions = false; _inBugReport = false; }
+    public void Open()  { IsOpen = true;  _confirm = Confirm.None; LeaveOptions(); _inBugReport = false; }
+    public void Close() { IsOpen = false; _confirm = Confirm.None; LeaveOptions(); _inBugReport = false; }
 
     /// <param name="justOpened">
     /// True on the frame the renderer opened the menu from an Escape press. That same press is still
@@ -79,7 +74,7 @@ public sealed class EscapeMenuOverlay
         {
             // Escape steps back one level: out of a confirm, then out of a sub-view, then the menu.
             if (_confirm != Confirm.None) _confirm = Confirm.None;
-            else if (_inOptions) _inOptions = false;
+            else if (_inOptions) LeaveOptions();
             else if (_inBugReport) _inBugReport = false;
             else Close();   // fall through so the popup gets its CloseCurrentPopup this frame
         }
@@ -158,68 +153,19 @@ public sealed class EscapeMenuOverlay
     {
         DrawTitle("Options");
         ImGui.Spacing();
-
-        SectionHeader("Display");
-        ImGui.Checkbox("Unit labels (N)", ref ViewSettings.ShowLabels);
-        ImGui.Checkbox("Table grid", ref ViewSettings.ShowGrid);
-        ImGui.Checkbox("Show all tokens (T, dev)", ref ViewSettings.ShowAllTokens);
-        ImGui.Checkbox("Victory fireworks", ref ViewSettings.ShowVictoryFireworks);
-
-        // #344: how long a settled dice panel stays up. Shown as a multiplier of the tuned default rather
-        // than in seconds - the actual lifetime varies with the roll (a panel carrying modifier chips
-        // already lingers longer), so a seconds figure would be a lie for most rolls.
-        ImGui.SliderFloat("Dice popup time", ref ViewSettings.DiceLingerScale,
-            ViewSettings.DiceLingerMin, ViewSettings.DiceLingerMax, "%.2fx");
-        ImGui.TextDisabled("1.00x is the default. Hovering the dice always freezes them.");
-
-        if (_tactical != null)
-        {
-            SectionHeader("Tactical overlay");
-            ImGui.Checkbox("Weapon reach (V)", ref ViewSettings.ShowReachOverlay);
-            ImGui.TextDisabled("Ghosts while moving/placing; any unit you hover.");
-
-            // #247: "Threat frontiers (F)" and "Anchor field on my position" are both gone. The red
-            // frontier layer was outdated once the reach field could answer the same question in one
-            // vocabulary, and pinning an enemy is now the gesture that asks for the target-anchored
-            // picture -- so there is no second layer to toggle and no mode left to set.
-        }
-
-        SectionHeader("Audio");
-        if (_audio != null && _audio.Enabled)
-        {
-            float vol = _audio.MasterVolume;
-            if (ImGui.SliderFloat("Master volume", ref vol, 0f, 1f, "%.2f"))
-                _audio.SetMasterVolume(vol);
-        }
-        else
-        {
-            ImGui.TextDisabled("Audio unavailable.");
-        }
-
-        // #406: the opt-out after the first-launch notice (the only place it lives - see PrivacyDialog).
-        SectionHeader("Privacy");
-        PrivacyDialog.DrawSettingsControls();
-
-        SectionHeader("Controls");
-        ImGui.TextDisabled("Alt+drag: measure");
-        ImGui.TextDisabled("Alt+wheel: zoom");
-        ImGui.TextDisabled("Middle-drag: pan");
-        ImGui.TextDisabled("L: army lists (all players)");
-        ImGui.TextDisabled("N labels   T tokens   F threat");
-        // #326: G toggles Group/Single -- it is Ctrl+wheel that cycles the formation (#277). The old line
-        // said "G: cycle formation", which named the wrong key for the wrong action.
-        ImGui.TextDisabled("G: group / single mode (during moves)");
-        ImGui.TextDisabled("Ctrl+wheel: cycle formation (group moves)");
-        ImGui.TextDisabled($"{Resolvers.ResolverHotkeys.CycleHint}: pick model (single moves)");
-        ImGui.TextDisabled("Click a model: switch to it (single moves)");
-        ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Confirm.Hint}: auto-assign / confirm");
-        ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Back.Hint}: undo / back out");
-        ImGui.TextDisabled("Esc: open this menu");
+        OptionsPanel.Draw(_audio, inGame: true);
 
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
-        if (FullWidthButton("Back")) _inOptions = false;
+        if (FullWidthButton("Back")) LeaveOptions();
+    }
+
+    // Every way out of the Options view saves what changed (#406).
+    private void LeaveOptions()
+    {
+        if (_inOptions) ViewSettings.Persist();
+        _inOptions = false;
     }
 
     // The bug-report view (#226): a description box, one Send button, and an honest status line.
@@ -370,15 +316,6 @@ public sealed class EscapeMenuOverlay
             path += GameSaveFile.EXTENSION_WITH_PERIOD;
 
         File.WriteAllText(path, json);
-    }
-
-    // A small labelled divider between Options sections (SeparatorText isn't in this ImGui binding).
-    private static void SectionHeader(string text)
-    {
-        ImGui.Spacing();
-        ImGui.TextDisabled(text);
-        ImGui.Separator();
-        ImGui.Spacing();
     }
 
     private static void DrawTitle(string text)

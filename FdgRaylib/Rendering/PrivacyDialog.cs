@@ -12,7 +12,7 @@ namespace FdgRaylib.Rendering;
 ///
 /// <para>Kept deliberately short (Chris, 2026-10-28): no itemized list here and no Privacy button on the
 /// main menu - the full list is in the README's Privacy section, and opting out later is the
-/// checkbox in the escape menu's Options panel (<see cref="DrawSettingsControls"/>).</para>
+/// checkbox in the Options panel (<see cref="DrawSettingsControls"/>, main menu or in game).</para>
 ///
 /// All text is ASCII-only (CLAUDE.md: the font atlas has no glyphs past U+00FF).
 /// </summary>
@@ -29,7 +29,7 @@ public sealed class PrivacyDialog
         "\n" +
         "Either way, thanks for playing!";
 
-    public const string ChangeLaterText = "You can change this any time under Options in a game.";
+    public const string ChangeLaterText = "You can change this any time under Options.";
 
     private bool _open;
     private bool _noticeChoice = true;
@@ -89,7 +89,7 @@ public sealed class PrivacyDialog
         UsageAnalytics.SendLaunch();
     }
 
-    /// <summary>The checkbox and Reset button in the escape menu's Options panel. Changes apply
+    /// <summary>The checkbox and Reset button in the Options panel (<see cref="OptionsPanel"/>). Changes apply
     /// immediately: opting out clears anything queued and the local ID.</summary>
     public static void DrawSettingsControls()
     {

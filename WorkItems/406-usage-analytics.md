@@ -252,6 +252,13 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Main-menu Options + saved settings.** Chris asked for an Options button on the main menu
+  (the opt-out had become reachable only from inside a game). The panel body moved to `OptionsPanel`,
+  drawn by both menus (controls cheat-sheet in game only). All its settings now persist in
+  `UserConfig.View` (`SavedViewSettings`): labels, grid, tokens, reach overlay, fireworks, dice popup
+  time, master volume - loaded at startup, saved when Options closes and at app exit (catches the
+  N/T/V hotkeys). Notice line back to "You can change this any time under Options." 4 new
+  UserConfigTests; app suite 3035 green, headless smoke exit 0.
 - 2026-10-28: **Worker deployed** (wrangler re-login needed; the old OAuth token had expired in August).
   Prod `smoke.sh` all 19 sections green, including the registry and report sections; smoke cleanup
   left prod stats empty (lifetime 0). README Privacy section committed in Chris's wording. Remaining:

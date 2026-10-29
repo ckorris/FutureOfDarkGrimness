@@ -52,8 +52,8 @@ public sealed class UserConfig
 
     /// <summary>#406: send anonymous usage statistics. On by default, but nothing is sent until
     /// <see cref="AnalyticsNoticeAcknowledged"/> - the player has seen the first-launch notice, which
-    /// carries this same toggle. Changeable later from the in-game
-    /// Options panel.</summary>
+    /// carries this same toggle. Changeable later from the Options panel
+    /// (main menu or in game).</summary>
     public bool AnalyticsEnabled { get; set; } = true;
 
     /// <summary>#406: the random, resettable install ID usage events carry so unique players can be
@@ -65,6 +65,9 @@ public sealed class UserConfig
     /// <summary>#406: the player has clicked through the analytics notice. False on a fresh install
     /// and on the first launch of the version that introduced analytics.</summary>
     public bool AnalyticsNoticeAcknowledged { get; set; }
+
+    /// <summary>#406: the Options panel's display and audio settings.</summary>
+    public SavedViewSettings View { get; set; } = new();
 
     /// <summary>The lobby settings panel, as the last hosted (non-resume) game left it.</summary>
     public HostGameSettings HostSettings { get; set; } = HostGameSettings.FromDefaults();
@@ -176,6 +179,21 @@ public sealed class UserConfig
             Console.WriteLine($"Could not write {path} ({ex.Message}); settings won't be remembered.");
         }
     }
+}
+
+/// <summary>
+/// The Options panel's display and audio settings, as saved (#406). A record so <c>ViewSettings.Persist</c>
+/// can skip the write when nothing changed. Defaults match <c>ViewSettings</c>'s own.
+/// </summary>
+public sealed record SavedViewSettings
+{
+    public bool ShowLabels { get; set; } = true;
+    public bool ShowGrid { get; set; } = true;
+    public bool ShowAllTokens { get; set; }
+    public bool ShowReachOverlay { get; set; } = true;
+    public bool ShowVictoryFireworks { get; set; } = true;
+    public float DiceLingerScale { get; set; } = 1f;
+    public float MasterVolume { get; set; } = 1f;
 }
 
 /// <summary>

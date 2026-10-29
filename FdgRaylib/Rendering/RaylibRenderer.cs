@@ -244,8 +244,8 @@ public class RaylibRenderer
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
         // #230: lets the field anchor on a placement's ghosts when no move job is running.
         _tacticalOverlay.AttachResolverOverlay(resolverOverlay);
-        // The menu's Options panel drives the tactical toggles (Threat, field anchor) and master volume.
-        _escapeMenu.AttachOptions(_tacticalOverlay, _audio);
+        // The menu's Options panel sets the master volume.
+        _escapeMenu.AttachOptions(_audio);
         // #280: preview sharing rides the overlay (built at launch by GameGuiWiring.AttachPreviews).
         _previewPublisher = resolverOverlay?.PreviewPublisher;
         _remotePreviews   = resolverOverlay?.RemotePreviews;
@@ -474,6 +474,7 @@ public class RaylibRenderer
         // App-wide audio device + presentation cue bank (placeholder until real assets land in
         // Assets/Sounds/). No-ops gracefully if no audio device is available.
         _audio = new AudioManager();
+        _audio.SetMasterVolume(ViewSettings.MasterVolume); // #406: the saved level
         PresentationSoundCues.LoadInto(_audio);
         // UI chrome cues (button clicks, toggles, canvas commits) share the same device; the static
         // UiSound facade lets any screen/resolver voice one without being handed the AudioManager.
