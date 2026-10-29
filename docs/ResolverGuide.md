@@ -79,14 +79,21 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
   hiding the wheel from the resolvers) and the **zoom moved from Ctrl+wheel to Alt+wheel**, so
   zooming keeps working while a group ghost is live and nothing contends for Ctrl.
 
-- **A step that cannot be made rigidly re-forms instead (#409).** With the formation cycle on "current",
-  if the rigid step would newly stack the unit's own bases at the shared heading (the #399 test) or the
-  wheel's arc puts an outer model over budget, `GroupReform` picks a shape facing the heading, either
-  the current shape opened up or a `FormationLibrary` partition at true base extents. It assigns models
-  bottleneck-first, and the result becomes the base positions of the same two-array `PlanGroupMove`
-  with no rotation. All gates still run. The heading offset (`_groupFacingAngle`) resets on each
-  committed step like `_groupRotation`: carrying it over turned a freshly wheeled unit sideways the
-  moment it moved off.
+- **The current shape moves as one rigid body (#409).** With the formation cycle on "current", the drag
+  slides the unit and Wheel/R turns it: centres and bases together, each base keeping its own facing
+  turned by `_groupRotation`. A step can never swing a long base into its neighbour, and the shape
+  looks identical wherever the cursor goes. The price is the wheel's arc on the outer models.
+  Before, every base turned to face the direction of travel. A packed cavalry rank then stacked the
+  moment it was dragged at an angle, and the #399 gate refused the step.
+- **Opt-in: "Face the move (re-form to turn)"** (panel checkbox, `_reformToTurn`) restores the
+  travel-derived shared heading. When that step would newly stack, or the wheel's arc is over budget,
+  it re-forms. `GroupReform` picks a shape facing the heading: the current shape opened up, or a
+  `FormationLibrary` partition at true extents. Models are assigned bottleneck-first, for the turn
+  alone. The heading is held within 2" of the centre, and the shape and assignment are sticky, so the
+  preview doesn't flicker. All gates still run on the result.
+- `_groupFacingAngle` resets on each committed step like `_groupRotation`: carrying it over turned a
+  freshly wheeled unit sideways the moment it moved off. Live group facings are published per model
+  (`_groupGhostFacings`) for the shared preview and the standoff check.
 
 ## Ghost-anchored field during placement (#230)
 

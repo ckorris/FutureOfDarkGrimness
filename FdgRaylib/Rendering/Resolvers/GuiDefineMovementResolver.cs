@@ -32,6 +32,11 @@ public class GuiDefineMovementResolver
     // targeting overlay can draw ghost-aware fire lines for the whole unit. Refreshed each frame the
     // group ghost is drawn; null otherwise.
     private Dictionary<IModel, Position>? _groupGhostPositions;
+    // ...and the facing each phantom is drawn with (#409: per model when the unit moves rigidly).
+    private Dictionary<IModel, Float2>? _groupGhostFacings;
+    // #409 opt-in: group steps face the direction of travel and re-form to fit, instead of moving rigidly.
+    // Kept across moves for the session, like the other panel toggles.
+    private bool _reformToTurn;
 
     // Per-model manual rotation offset (radians) (#150): a model the player rotated by hand in single mode
     // faces its direction of travel rotated by this offset (not a fixed lock). Cleared each Resolve.
@@ -200,7 +205,8 @@ public class GuiDefineMovementResolver
                 float ghostDist = Position.GetDistance2D(committed, ghost);
                 if (ghostDist > PreviewQuantize.GhostEpsilonInches)
                 {
-                    Float2 ghostFacing = RotateFloat2(TravelFacing(committed, ghost, m.Facing), liveOffset);
+                    Float2 ghostFacing = group && _groupGhostFacings?.TryGetValue(m, out Float2 gf) == true
+                        ? gf : RotateFloat2(TravelFacing(committed, ghost, m.Facing), liveOffset);
                     int band = BandCode(ClassifyBand(committedDist + ghostDist, mAdvance, mRush, hasChargeBand));
                     ghosts.Add(new GhostPathGhost(index, PreviewQuantize.Inches(ghost.x), PreviewQuantize.Inches(ghost.z),
                         PreviewQuantize.Inches(ghostFacing.X), PreviewQuantize.Inches(ghostFacing.Y), band));
@@ -374,6 +380,7 @@ public class GuiDefineMovementResolver
             _groupRotation = 0f;
             _groupFacingAngle = 0f;
             _groupGhostPositions = null;
+            _groupGhostFacings = null;
             _manualOffsets.Clear();
             _formationCycle = null;
             _reformCache = null;
@@ -1008,7 +1015,18 @@ public class GuiDefineMovementResolver
         // already oriented, so every clamp and gate below runs on it unchanged.
         Float2? reformHeading = null;
         string? reformName = null;
-        if (_formationCycle is { IsCurrentShape: true })
+        // #409: by default the unit's current shape moves as one rigid body - the drag slides it, the wheel
+        // turns it, and each base keeps its own facing turned by the wheel, so a step can never swing a
+        // base into its neighbour and the formation looks exactly the same wherever the cursor goes.
+        // Facing the direction of travel instead (and re-forming to make that fit) is the opt-in below.
+        Float2[]? rigidFacings = null;
+        if (_formationCycle is { IsCurrentShape: true } && !_reformToTurn)
+        {
+            rigidFacings = new Float2[models.Count];
+            for (int i = 0; i < models.Count; i++)
+                rigidFacings[i] = RotateFloat2(DepartingFacing(pt, paths, models[i]), _groupRotation);
+        }
+        else if (_formationCycle is { IsCurrentShape: true })
         {
             // The heading is the direction from the unit's centre to the cursor, which spins wildly for a
             // cursor near the centre - and a re-formed unit is laid out along it, so the whole formation
@@ -1080,17 +1098,15 @@ public class GuiDefineMovementResolver
                 return arr;
             }
 
-            Float2 StepFacing(Position from, Position to, IModel m) =>
-                reformHeading ?? RotateFloat2(TravelFacing(from, to, m.Facing), _groupFacingAngle);
+            Float2 StepFacing(Position from, Position to, int i) =>
+                rigidFacings?[i] ?? reformHeading ?? RotateFloat2(TravelFacing(from, to, models[i].Facing), _groupFacingAngle);
 
             // #341: each phantom's DEPARTING attitude - where its base is standing right now, at the offset
             // its last committed step was placed with. The live group rotation belongs to the step being
             // placed, so the enemy clamp must not measure it against the ground the unit is still on.
             var departFacings = new Float2[models.Count];
             for (int i = 0; i < models.Count; i++)
-                departFacings[i] = PlannedPose(pt, models[i],
-                    paths.TryGetValue(models[i], out var committedPath)
-                        ? committedPath : (IReadOnlyList<Position>)System.Array.Empty<Position>()).facing;
+                departFacings[i] = DepartingFacing(pt, paths, models[i]);
 
             // #317: `includeDifficult: false` re-runs the identical solve with only the difficult-terrain
             // clamp switched off, which is exactly the counterfactual the gray shortfall phantoms show.
@@ -1102,7 +1118,7 @@ public class GuiDefineMovementResolver
                     Position to = candidate[i];
                     float stepDist = Position.GetDistance2D(from, to);
                     if (stepDist <= 0.0001f) continue;
-                    Float2 facing = StepFacing(from, to, models[i]);
+                    Float2 facing = StepFacing(from, to, i);
                     if (difficultActive && includeDifficult)
                     {
                         float allowedDist = MovementUtilities.ClampTravelForDifficultTerrain(
@@ -1152,7 +1168,7 @@ public class GuiDefineMovementResolver
                     var clamp = MovementUtilities.ClampTravelForDifficultTerrainDetailed(
                         new Float2(from.x, from.z), new Float2(desired[i].x, desired[i].z),
                         pt.GetTotalDistanceMoved(models[i]), committedCrossedDifficult.Contains(models[i]),
-                        models[i].BaseShape, StepFacing(from, desired[i], models[i]), terrain, ignoresDifficultTerrain: false);
+                        models[i].BaseShape, StepFacing(from, desired[i], i), terrain, ignoresDifficultTerrain: false);
                     if (clamp.Kind == MovementUtilities.EDifficultClampKind.CappedCrossing) _frameDifficultCrossing = true;
                     else if (clamp.Kind == MovementUtilities.EDifficultClampKind.StoppedShortOfEdge) _frameDifficultStopped = true;
                 }
@@ -1200,7 +1216,8 @@ public class GuiDefineMovementResolver
             var rawPath = new List<Position>(paths[models[i]]) { newPositions[i] };
             Float2 rawTravel = MovementFacingUtilities.WaypointFacings(
                 models[i].Position, rawPath, models[i].Facing)[^1];
-            stepOffsets[i] = headingAngle - MathF.Atan2(rawTravel.Y, rawTravel.X);
+            float targetAngle = rigidFacings is { } rf ? MathF.Atan2(rf[i].Y, rf[i].X) : headingAngle;
+            stepOffsets[i] = targetAngle - MathF.Atan2(rawTravel.Y, rawTravel.X);
             groupFacings[i] = RotateFloat2(rawTravel, stepOffsets[i]);
             blocked[i] = GroupPositionBlocked(newPositions[i], models[i].BaseShape, groupFacings[i], ownUnit);
             // #213: also block a phantom whose PATH crosses impassible terrain (GroupPositionBlocked only
@@ -1226,6 +1243,11 @@ public class GuiDefineMovementResolver
             if (blocked[i]) allValid = false;
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
         }
+
+        // The shared preview and the standoff check read these rather than re-deriving a facing from travel.
+        var facingMap = new Dictionary<IModel, Float2>(models.Count);
+        for (int i = 0; i < models.Count; i++) facingMap[models[i]] = groupFacings[i];
+        _groupGhostFacings = facingMap;
 
         // #399: and the pair the loop above cannot see - two models of THIS unit landing on top of each
         // other. GroupPositionBlocked skips the moving unit outright ("my own cohesion governs my models'
@@ -1256,7 +1278,7 @@ public class GuiDefineMovementResolver
             {
                 float missed = Position.GetDistance2D(newPositions[i], difficultFreePositions[i]);
                 if (missed < DifficultShortfallPlan.MIN_SHORTFALL_INCHES) continue;
-                Float2 wouldBeFacing = stepHeading;
+                Float2 wouldBeFacing = groupFacings[i];
                 DrawDifficultShortfall(dl, models[i], newPositions[i], difficultFreePositions[i], wouldBeFacing);
                 maxShortfall = MathF.Max(maxShortfall, missed);
                 labelX += difficultFreePositions[i].x;
@@ -1485,7 +1507,8 @@ public class GuiDefineMovementResolver
                 ? "current"
                 : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
             ImGui.TextUnformatted($"Group move - rotation {deg:0} deg   formation: {formation}");
-            // #409: say so when the step re-forms the unit, so a shape change never looks like a glitch.
+            // #409: the opt-in, and a word whenever it re-forms the unit so a shape change never looks like a glitch.
+            ImGui.Checkbox("Face the move (re-form to turn)", ref _reformToTurn);
             if (_frameReformName is { } reform)
                 ImGui.TextUnformatted($"Turning: re-forming as {reform}");
             ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation");
@@ -2119,7 +2142,8 @@ public class GuiDefineMovementResolver
             if (pending != null && pending.TryGetValue(m, out Position ghost))
             {
                 Position from = kvp.Value.Count > 0 ? kvp.Value[^1] : m.Position;
-                facing = RotateFloat2(TravelFacing(from, ghost, m.Facing), LiveFacingOffset(m));
+                facing = _formationMode.IsGroup && _groupGhostFacings?.TryGetValue(m, out Float2 gf) == true
+                    ? gf : RotateFloat2(TravelFacing(from, ghost, m.Facing), LiveFacingOffset(m));
                 at = ghost;
             }
             movers.Add(new ForcedChargeUtilities.StandoffPose(at, m.BaseShape, facing));
@@ -2138,6 +2162,13 @@ public class GuiDefineMovementResolver
         }
         _frameForcedMoverCount = contactedMovers.Count;
     }
+
+    // #341: a model's DEPARTING attitude - where its base stands right now, at the offset its last committed
+    // step was placed with.
+    private static Float2 DepartingFacing(PathTemplate pt, IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
+        IModel model) =>
+        PlannedPose(pt, model, paths.TryGetValue(model, out var committed)
+            ? committed : (IReadOnlyList<Position>)Array.Empty<Position>()).facing;
 
     // The rotation the player is holding right now, which shapes the LIVE ghost only - committed waypoints
     // keep the offset they were placed with (#282). Group mode rotates the whole unit as one.

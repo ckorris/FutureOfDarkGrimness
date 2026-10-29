@@ -26,6 +26,21 @@ In-game bug report (#226), fetched 2026-10-28 from the list-server drop box:
 
 ## Notes
 
+- 2026-10-28: **Owner: keep the formation the same while moving it; make the solver an option.** Even
+  steadied, the default re-form was awkward: a slight mouse move tipped the travel heading past the
+  stacking angle and the ranks visibly re-spaced (screenshots 20:23:45 and 20:23:58). Now:
+  - **Default: rigid body.** For the current shape, the drag slides the unit and Wheel/R turns it, with
+    each base keeping its departing facing turned by the wheel. It cannot stack, and the shape never
+    changes as the cursor moves. This is the mild fix for the report: wheel the riders, click, and move
+    off cleanly. A 90-degree wheel costs vic's end riders about 5.4" of an 8" Advance.
+  - **Opt-in.** The travel-heading plus re-form behaviour sits behind the panel checkbox "Face the move
+    (re-form to turn)", off by default. It is the start of the "solve the best way" option the owner
+    wants to try later.
+  - **Formation morphs** (Ctrl+Wheel picks) and coherency repairs keep the shared travel heading,
+    unchanged.
+  - **Previews.** Live group facings are published per model, so the remote ghost preview and the
+    standoff check use what the phantoms show.
+  - **Verification.** App 3012 green, build clean, smoke exit 0.
 - 2026-10-28: **Hand-test feedback: the re-form flickered.** Owner: correct but visually displeasing. The
   formation changed rapidly as the mouse moved, worst near the unit's centre and when dragging past max
   range. Three causes, three fixes:
