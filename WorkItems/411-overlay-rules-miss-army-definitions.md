@@ -1,6 +1,6 @@
 # 411 — The renderer's overlays don't know army-embedded rules (false "no definition in the registry")
 
-**Status**: implemented + tested; awaiting GUI hand-verify
+**Status**: done (2026-10-28)
 **Related**: #408 (where it surfaced), #095 (army rule data persisted on ArmyData), #059 (embedded definitions), #328 (token chips)
 
 ## Goal
@@ -36,5 +36,5 @@ description and valence, answers capability queries, and logs no false warning.
 
 ## Outcome
 
-Pending GUI hand-verify: in `Scenarios/408-versatile-backout`, pick a Versatile Attack mode. No `[rules] ...
+**Done 2026-10-28, hand-verified by the owner.** Checked: in `Scenarios/408-versatile-backout`, pick a Versatile Attack mode. No `[rules] ...
 no definition` line should appear in the log, and the unit's token chip should show the mode's description.
