@@ -784,3 +784,9 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-28 - number 414 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `ec554ff`: index + archive max **413**, no `41x` branch on either remote. **414 = Client join window
 > text not scaled.** No collision.
+
+> **2026-10-29 - numbers 415-445 reserved for the OPR 3.6 upgrade.** `git fetch origin` before filing, from
+> `origin/master` at `c5c7ebf` (engine `479888d`): index + archive max **414**, no `41x`/`42x`/`43x`/`44x`
+> branch on either remote. The whole block **415-445** is filed at once on branch `feature/opr-3.6`
+> (plan: `docs/opr-3.6-upgrade-plan.md`); the index lines are mirrored onto `master` so sessions filing from
+> `origin/master` see them. A sub-item of the upgrade takes the next free number above 445 the usual way.

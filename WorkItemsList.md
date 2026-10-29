@@ -6,12 +6,52 @@ and **never reused**, even across deletions; a split item's line stays and point
 - Per-item working memory: `WorkItems/NNN-slug.md`, created when work starts. Template + conventions: `WorkItems/README.md`.
 - Completed / closed items: `WorkItems/Archive.md` (entries moved there verbatim).
 - Number-collision log: `WorkItems/Reconciliations.md` — read before filing new numbers on a branch that has drifted from origin/master. A per-clone pre-push hook blocks duplicate numbers across this file and the archive.
+- **OPR 3.6 upgrade (2026-10-29 ->):** `docs/opr-3.6-upgrade-plan.md` - the plan, ground rules for agents, and the item table. Work happens on branch `feature/opr-3.6` in both repos; items #415-#445 below are reserved for it.
 - Cross-session priority handoff: `WorkItems/FableWindowPlan.md` — what shipped during the 2026-07 Fable window and the agreed order for what's next (top item: #169 design fork, sign-off before building).
 
 **Keep this index lean — every work session reads it whole.** An entry is at most ~3 lines: number,
 title, one-sentence scope/status, link. Running notes, commit hashes, root-cause narratives, and test
 tallies belong in the item's detail file, never here — move overflow there the same day it appears.
 When closing an item: write the Outcome in its detail file, tick the line, and move it to the archive.
+
+---
+
+## OPR 3.6 upgrade (branch `feature/opr-3.6`, plan: `docs/opr-3.6-upgrade-plan.md`)
+
+Numbers 415-445 are reserved for the upgrade; their detail files live on the feature branch. Nothing here
+merges to master before #444. Phase order and dependencies: plan section 4.
+
+- [~] 415 — OPR 3.6 upgrade umbrella: the plan, ground rules, master merges into the branch, release gate. ([WorkItems/415](WorkItems/415-opr-3-6-upgrade-umbrella.md))
+- [x] 416 — 3.6 reference snapshot (90 Army Forge books, core rules, common-rules API) + `scripts/census-opr-books.py` + coverage baseline. Done 2026-10-29. ([WorkItems/416](WorkItems/416-opr-3-6-reference-snapshot-census.md))
+- [ ] 417 — Melee ranges 3.6: 3" strike range, 3" pile-in/consolidate, vertical convention (Q4). ([WorkItems/417](WorkItems/417-melee-range-3-inches.md))
+- [ ] 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" special rules. ([WorkItems/418](WorkItems/418-fatigue-no-special-sixes.md))
+- [ ] 419 — Melee result 3.6: loser = most wounds TAKEN this activation; Fear(X) adds to the enemy's taken count. ([WorkItems/419](WorkItems/419-melee-result-wounds-taken.md))
+- [ ] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))
+- [ ] 421 — Hero 3.6: Tough(9+) heroes lend Quality for morale within 6"; both lends gated on the hero not being Shaken. ([WorkItems/421](WorkItems/421-hero-morale-aura-3-6.md))
+- [ ] 422 — Impact before either unit attacks + Fatigue gate; Counter = strike-first only; new core Brace(X) (+ Counter/Brace in Melee grants). ([WorkItems/422](WorkItems/422-impact-counter-brace.md))
+- [ ] 423 — Parry(X): new melee step (X dice per Parry model, 6+ ignores a hit, defender picks) with CLI/GUI/AI resolvers. ([WorkItems/423](WorkItems/423-parry.md))
+- [ ] 424 — Assault weapons: one weapon counts as both ranged and melee (3500+ references) across engine, importer, Forge, resolvers, AI, calculator. ([WorkItems/424](WorkItems/424-assault-weapons.md))
+- [ ] 425 — Cumbersome (new core); Artillery most-models/unmoved; Indirect = Hold-only LoS bypass, no move penalty; Quick Throw. ([WorkItems/425](WorkItems/425-cumbersome-artillery-indirect.md))
+- [ ] 426 — Deployment distances 3.6: Scout 9"/9", Vanguard and Fanatic 9" from non-Vanguard enemies, Reinforcement edges, Ambush objective lockout check. ([WorkItems/426](WorkItems/426-deployment-distances-3-6.md))
+- [ ] 427 — Core small batch 3.6: Unstoppable, Aircraft, Flying, Transport contact-to-enter, Spell Amplifier, Immobile/Strider confirm. ([WorkItems/427](WorkItems/427-core-small-batch-3-6.md))
+- [ ] 428 — "Most models have this rule" replaces every "all models" gate (Fearless, Regeneration, Stealth, Artillery, ~40 faction rules). ([WorkItems/428](WorkItems/428-most-models-gating.md))
+- [ ] 429 — Casting 3.6: LoS moves from Caster into each spell, +1 casting modifiers, once per activation, boosters within 18" without LoS, Spell Drain. ([WorkItems/429](WorkItems/429-casting-3-6.md))
+- [ ] 430 — Force org 3.6: 1 unit/200pts, 1 model-or-Tough/20pts, AoF levels (375/750/1500), Unique Hero once per army. ([WorkItems/430](WorkItems/430-force-org-3-6.md))
+- [ ] 431 — New weapon-rule family: Anti-Cover, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate, Destructive, Demolish, Purge, Reap, Scourge, Unwieldy, Imprecise, Crossing Strike. ([WorkItems/431](WorkItems/431-new-weapon-rules-3-6.md))
+- [ ] 432 — Range-conditional army-wide rules: the "over 9"/6" when shooting/charging (or shot/charged)" family + range debuffs (Darkborn/Shadowborn/Shrouded/Wild Veil). ([WorkItems/432](WorkItems/432-range-conditional-army-rules.md))
+- [ ] 433 — "Enhanced X" family (~60 names replacing the Boost family): design fork, needs sign-off before building. ([WorkItems/433](WorkItems/433-enhanced-rule-family.md))
+- [ ] 434 — GDF supplement sweep to 3.6: remaining reworded definitions, new unit/aura/buff rules, weapon-scoped grants, Voidspace Stalkers. ([WorkItems/434](WorkItems/434-gdf-supplement-3-6.md))
+- [ ] 435 — AoF supplement sweep to 3.6 + book overrides (Daemons renames) + AoF core: Sergeant AP, Banner, Musician, Brace in Melee, Parry on hand weapons. ([WorkItems/435](WorkItems/435-aof-supplement-3-6.md))
+- [ ] 436 — Remove dropped 3.5 definitions (catalog + supplements) and bring every kept description to 3.6 wording for the glossary. ([WorkItems/436](WorkItems/436-drop-3-5-definitions-text-parity.md))
+- [ ] 437 — Importer 3.6: snapshot shape, `OPR v3.6.0` stamp, renamed/parent books, share-link version gate, Assault weapon class. ([WorkItems/437](WorkItems/437-importer-3-6.md))
+- [ ] 438 — Re-bake all 88 books from the 3.6.0 snapshots: unified bake script, post-bake passes, effect-set keywords for new weapon names, bundle swap. ([WorkItems/438](WorkItems/438-rebake-books-3-6.md))
+- [ ] 439 — Spells 3.6: parser grammar (LoS clause, weapon-scoped grants, new rule names), re-import, per-book parity verification. ([WorkItems/439](WorkItems/439-spells-3-6.md))
+- [ ] 440 — Regenerate derived data (Random Army catalog, scenarios, fixtures, built-in test army) and prove legacy 3.5 `.fdgarmy` files still load (Q5 notice). ([WorkItems/440](WorkItems/440-regenerate-derived-data-3-6.md))
+- [ ] 441 — Army Forge + glossary UI for 3.6: Assault weapon display, roster, Unique Hero, import summary, hover text. ([WorkItems/441](WorkItems/441-army-forge-ui-3-6.md))
+- [ ] 442 — Tactician AI + Combat Calculator parity with 3.6 (3" melee, Assault threat, Parry/Brace, Cumbersome, Indirect). ([WorkItems/442](WorkItems/442-ai-and-calculator-parity-3-6.md))
+- [ ] 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed). Design fork; blocked on Q3. ([WorkItems/443](WorkItems/443-terrain-3-6.md))
+- [ ] 444 — Version, docs, release: RULES_VERSION OPR_3_6_0, app version (Q7), README/CLAUDE.md/EngineNotes/ResolverGuide, merge to master, tag. ([WorkItems/444](WorkItems/444-version-docs-release-3-6.md))
+- [ ] 445 — Final verification: coverage Dead 0, per-book smokes, share-link gate, hand-verify checklist. ([WorkItems/445](WorkItems/445-final-verification-3-6.md))
 
 ---
 
