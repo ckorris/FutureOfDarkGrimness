@@ -88,7 +88,7 @@ public sealed class EscapeMenuOverlay
 
         // Options and the bug-report box are wider than the plain button column.
         float menuW = _inOptions || _inBugReport
-            ? MathF.Min(440f, screenW * 0.9f) : MathF.Min(360f, screenW * 0.8f);
+            ? MathF.Min(560f, screenW * 0.9f) : MathF.Min(360f, screenW * 0.8f);
         ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always,
             new Vector2(0.5f, 0.5f));
         ImGui.SetNextWindowSize(new Vector2(menuW, 0f), ImGuiCond.Always);
