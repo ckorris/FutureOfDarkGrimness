@@ -160,9 +160,8 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
-- [~] 412 - Anonymous usage analytics: first-launch notice, Options toggle (main menu + in game), host
-  game_start/end/abandon + client game_join, a third Durable Object on the #271 Worker (deployed), read via
-  `fetch-stats.sh`. Implemented; awaiting GUI verify. ([WorkItems/412](WorkItems/412-usage-analytics.md))
+- [ ] 414 — Client join window text is not scaled properly (owner report); HostModal scales, ClientModal
+  mostly doesn't - likely lead. ([WorkItems/414](WorkItems/414-client-join-text-scaling.md))
 - [~] 405 - Lobby could add local players and bots but never drop one, and the four add buttons
   said nothing about what each gets you. Per-row Remove (engine owns the policy; host's own row,
   connected clients, resumed/launched lobbies excluded) + tooltips. Implemented + tested;

@@ -1,6 +1,6 @@
 # 412 — Anonymous usage analytics
 
-**Status**: in-progress
+**Status**: done (2026-10-28)
 **Related**: #271 (list-server Worker, the host), #226 (bug-report drop box, the pattern to mirror),
 #310 (UserConfig, where the opt-out and install ID live), #257 (teams), #191 (AI profiles)
 
@@ -394,4 +394,26 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Outcome
 
-(written at close)
+Closed 2026-10-28, verified live by Chris on prod. Anonymous, opt-out usage statistics ship in the app
+and are collected by a third SQLite Durable Object on the #271 Worker (deployed; no new server).
+
+- **Client:** a first-launch notice in Chris's words with one checkbox (nothing is sent before OK); the
+  same checkbox in Options, now on the main menu as well as in game. Opting out deletes the install ID and
+  anything queued; opting back in mints a fresh ID. Events: app_launch, host game_start /
+  game_end / game_abandon, client game_join, and feature_open for the Combat Calculator after a minute
+  open. Batched every 30s, sent immediately on quit, spooled on failure. Never sent from headless,
+  scenario or `-dev` runs unless `FDG_ANALYTICS=1`.
+- **Engine:** the launch message carries a host-minted game ID, and the host exposes each bot's AI
+  profile.
+- **Worker:** allowlist schema, per-IP rate limit (IP never stored with events), 10k events/day cap,
+  admin `/stats`, `/stats/export` (CSV/JSON), `DELETE /stats?confirm=wipe-all-analytics`; read with
+  `tools/list-server/fetch-stats.sh`.
+- **Side effect:** every Options setting (labels, grid, tokens, reach, fireworks, dice popup time,
+  volume) is now saved between runs.
+- **Verified live:** notice; full game vs AI (one game_start, one game_end, no abandon after closing
+  with the window X); opt-out deletes the ID and drops the unsent launch. Prod wiped afterwards
+  (lifetime 0). Not run live: the two-instance game_join (unit-tested).
+- **Still to do outside this item:** players only send once a release ships; re-wipe prod just before
+  it if testing adds rows. Release-note line: "Anonymous, opt-out usage statistics: a notice on first
+  launch, and you can turn it off any time in Options."
+- Renumbered from 406 after a collision (see Reconciliations).

@@ -248,3 +248,6 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
 - [x] 399 — Post-game polish pass from one reported game: grouped rectangular bases stack, "held in
   reserve" log spam, HUD colon spacing, terrain impassible==blocking + no heights, "Activated" tag
   overlap, ambush dust cloud, button text overrun. ([WorkItems/399](399-post-game-polish-pass.md))
+- [x] 412 — Anonymous, opt-out usage analytics: first-launch notice + Options toggle (main menu and in
+  game), host game_start/end/abandon + client game_join, a third Durable Object on the #271 Worker, read
+  via `fetch-stats.sh`; Options settings now persist. **Done 2026-10-28.** ([WorkItems/412](412-usage-analytics.md))

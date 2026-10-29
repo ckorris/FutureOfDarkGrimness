@@ -780,3 +780,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-28 - number 413 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `c9b9639`: index + archive max **412**, no `41x` branch on either remote. **413 = no morale roll
 > after shooting (Hive Guardians).** No collision.
+
+> **2026-10-28 - number 414 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `ec554ff`: index + archive max **413**, no `41x` branch on either remote. **414 = Client join window
+> text not scaled.** No collision.
