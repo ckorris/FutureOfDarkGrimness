@@ -252,6 +252,28 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Slice 3 built, uncommitted (stop point: popup text).** `FdgRaylib/Rendering/PrivacyDialog.cs`
+  (notice mode opens by itself until acknowledged; settings mode from a small bottom-right Privacy
+  button on the main menu; shared `DrawSettingsControls` + itemized list in the escape-menu Options
+  panel under "Privacy"), ASCII-only test over all dialog text. `PrivacyDialog.IntroText` is a marked
+  placeholder awaiting Chris's wording. **Slice 5 drafted, uncommitted (stop point: README review):**
+  README Privacy section rewritten in the working tree; EngineNotes pointers committed. Release notes
+  are hand-written on the GitHub release, so the release-note line is a draft to paste:
+  > **Anonymous usage statistics.** The game now sends anonymous, opt-out usage statistics (games
+  > played, settings, factions - never names, chat or army contents). A notice on first launch says
+  > exactly what is sent and has the off switch; you can also turn it off any time from Privacy on the
+  > main menu or Options in a game. Details in the README's Privacy section.
+
+  **Still to do before close:** Chris's notice text; README sign-off; Worker deploy (stop point) +
+  prod `smoke.sh`; engine push then superproject push (submodule-first); GUI verify list below.
+
+  **GUI verify list:** (1) fresh `FDG_CONFIG_DIR`: the notice blocks the menu on first launch, OK with the
+  box ticked creates an ID and sends app_launch (watch `wrangler dev` or `fetch-stats.sh`), unticked
+  sends nothing; (2) Privacy button: untick deletes the ID from config.json, Reset changes it;
+  (3) escape-menu Options > Privacy does the same mid-game; (4) host vs a bot to the end: one
+  game_start + one game_end, no game_abandon; (5) host + client on one machine: client's game_join
+  carries the host's game ID; (6) quit mid-game: one game_abandon with reason quit/close/menu.
+  Use `FDG_ANALYTICS=1 FDG_ANALYTICS_URL=http://localhost:8787` - local builds are `-dev` and excluded.
 - 2026-10-28: **Slice 4 (game events) done; done before slice 3** because slice 3 waits on Chris's popup
   text and nothing here depends on it. Engine `e3ebc67` (local, not pushed): `LaunchGameMessage.GameId`
   (optional on the wire both ways, no protocol bump - verified by hand-built frames with and without the
