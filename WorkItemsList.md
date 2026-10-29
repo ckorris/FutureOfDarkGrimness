@@ -17,7 +17,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
-- [ ] 409 — Cavalry hard to manoeuvre (in-game report, 0.3.0): a packed rank of long bases can't turn past ~20 deg in group mode - #399's stack gate refuses it, since group turns keep centres fixed. Owner chose re-form (option 3, respace folded in) 2026-10-28; ready to build. ([WorkItems/409](WorkItems/409-cavalry-group-turn-blocked.md))
+- [~] 409 — Cavalry hard to manoeuvre (in-game report, 0.3.0): a group step that would stack long bases, or wheel an outer model out of move, now re-forms the unit to face the heading. Implemented 2026-10-28, awaiting hand-verify. ([WorkItems/409](WorkItems/409-cavalry-group-turn-blocked.md))
 - [ ] 395 — **HIGH PRIORITY (Chris, 2026-09-04):** Random Army is a silent no-op for humans AND bots outside a dist build - the catalog scans an `armies/` folder beside the executable that build trees (VS F5, `dotnet run`) never get. Fix the path + say so in the lobby. ([WorkItems/395](WorkItems/395-random-army-silent-outside-dist.md))
 - [~] 366 — Snake (#256 S4) piled every rank that overran the arc onto one route point, so a big unit ended
   with its own models stacked and its front rank dragged backwards; no validator forbade a same-unit

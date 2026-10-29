@@ -79,6 +79,15 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
   hiding the wheel from the resolvers) and the **zoom moved from Ctrl+wheel to Alt+wheel**, so
   zooming keeps working while a group ghost is live and nothing contends for Ctrl.
 
+- **A step that cannot be made rigidly re-forms instead (#409).** With the formation cycle on "current",
+  if the rigid step would newly stack the unit's own bases at the shared heading (the #399 test) or the
+  wheel's arc puts an outer model over budget, `GroupReform` picks a shape facing the heading, either
+  the current shape opened up or a `FormationLibrary` partition at true base extents. It assigns models
+  bottleneck-first, and the result becomes the base positions of the same two-array `PlanGroupMove`
+  with no rotation. All gates still run. The heading offset (`_groupFacingAngle`) resets on each
+  committed step like `_groupRotation`: carrying it over turned a freshly wheeled unit sideways the
+  moment it moved off.
+
 ## Ghost-anchored field during placement (#230)
 
 The tactical overlay's ghost-anchored opportunity field ("what can I hit from here" — per-model weapon-range

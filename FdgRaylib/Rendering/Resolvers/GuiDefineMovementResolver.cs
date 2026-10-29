@@ -22,9 +22,10 @@ public class GuiDefineMovementResolver
     // Group-mode pending rotation (radians), applied about the formation centroid. Reset to 0 each
     // time a group step is committed (the rotation is baked into the new positions) and each Resolve.
     private float _groupRotation;
-    // Total group facing rotation (radians) across the whole move (#150). Unlike _groupRotation this is NOT
-    // reset per committed step — the position rotation accumulates via the committed waypoints, so this tracks
-    // the matching total heading. Reset only each Resolve.
+    // Group facing offset (radians) from the step's direction of travel (#150). Reset with _groupRotation on
+    // each committed step (#409): the committed step keeps its own offset (#282), and carrying it into the
+    // next step turned a unit the player had just wheeled to face its new front sideways again the moment it
+    // moved off - for long bases, straight into each other.
     private float _groupFacingAngle;
 
     // The live pending position of every model in group mode (where the phantom currently sits), so the
@@ -222,6 +223,8 @@ public class GuiDefineMovementResolver
     private bool _frameDifficultStopped;
     // #317: impassible terrain flags every phantom of a blocked group step, so its label draws once per frame.
     private bool _frameImpassibleLabelDrawn;
+    // #409: the formation a group step re-forms into this frame (null = a plain rigid step), for the panel.
+    private string? _frameReformName;
 
     // #334: per-frame forced-charge state, all of it rebuilt at the top of Draw and read by the canvas passes
     // and the info panel. A move may legally END inside the 1" standoff band - the movement validator lets it
@@ -373,6 +376,7 @@ public class GuiDefineMovementResolver
             _groupGhostPositions = null;
             _manualOffsets.Clear();
             _formationCycle = null;
+            _reformCache = null;
             _panelHoveredModel = null;
             _donePopupOpen = false;
         }
@@ -434,6 +438,7 @@ public class GuiDefineMovementResolver
         _frameDifficultCrossing = false;
         _frameDifficultStopped = false;
         _frameImpassibleLabelDrawn = false;
+        _frameReformName = null;
         Dictionary<IModel, DataBinding<ModelData>> bindings = BuildBindingMap(request);
         var committedCrossedDifficult = new HashSet<IModel>();
         var committedCrossedDangerous = new HashSet<IModel>();
@@ -994,6 +999,42 @@ public class GuiDefineMovementResolver
         }
 
         var plan = GroupFormationUtilities.PlanGroupMove(basePositions, lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
+
+        // #409: a step that cannot be made rigidly - the shared heading would swing long bases into their
+        // neighbours, or the wheel's arc runs an outer model out of move - re-forms the unit to face the
+        // heading instead of refusing. The re-formed shape becomes the base of the same two-array solve,
+        // already oriented, so every clamp and gate below runs on it unchanged.
+        Float2? reformHeading = null;
+        string? reformName = null;
+        if (_formationCycle is { IsCurrentShape: true })
+        {
+            Float2 rigidHeading = RotateFloat2(GroupFormationUtilities.GroupHeading(
+                lastPositions, plan.NewPositions, models.Select(m => m.Facing).ToList()), _groupFacingAngle);
+            var sharedFacing = Enumerable.Repeat(rigidHeading, models.Count).ToList();
+            bool rigidClear = plan.WithinBudget;
+            if (rigidClear)
+                MarkGroupSelfOverlaps(models, pt, paths, lastPositions, plan.NewPositions, sharedFacing,
+                    new bool[models.Count], ref rigidClear);
+            if (!rigidClear)
+            {
+                Position? target = overTable && !io.WantCaptureMouse
+                    ? new Position(pivot.x + desiredTx, pivot.z + desiredTz) : null;
+                ModelID? heroId = request.UnitDataBinding.GetValue().JoinedHeroModelId;
+                int heroIndex = heroId is { } h ? models.FindIndex(m => m.ID == h) : -1;
+                GroupReform.Prepared? prepared = PrepareReform(models, lastPositions, rigidHeading);
+                if (prepared?.Solve(budgets, target, heroIndex) is { } reform)
+                {
+                    basePositions = reform.Slots;
+                    pivot = GroupFormationUtilities.Centroid(basePositions);
+                    cos = 1f; sin = 0f;
+                    if (target is { } t) { desiredTx = t.x - pivot.x; desiredTz = t.z - pivot.z; }
+                    plan = GroupFormationUtilities.PlanGroupMove(basePositions, lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
+                    reformHeading = prepared.Heading;
+                    reformName = reform.Name;
+                }
+            }
+        }
+        _frameReformName = reformName;
         IReadOnlyList<Position> newPositions = plan.NewPositions;
 
         // #155: the budget solve above can't see terrain or other units. If any phantom's step would violate
@@ -1022,7 +1063,7 @@ public class GuiDefineMovementResolver
             }
 
             Float2 StepFacing(Position from, Position to, IModel m) =>
-                RotateFloat2(TravelFacing(from, to, m.Facing), _groupFacingAngle);
+                reformHeading ?? RotateFloat2(TravelFacing(from, to, m.Facing), _groupFacingAngle);
 
             // #341: each phantom's DEPARTING attitude - where its base is standing right now, at the offset
             // its last committed step was placed with. The live group rotation belongs to the step being
@@ -1125,14 +1166,16 @@ public class GuiDefineMovementResolver
         // a formation morph or a coherency repair sends each model a different way, and a unit re-formed
         // out of a scattered deployment ended up facing every direction at once. For a rigid translation
         // the two derivations agree, so plain drags are unchanged.
-        Float2 groupHeading = GroupFormationUtilities.GroupHeading(
-            lastPositions, newPositions, models.Select(m => m.Facing).ToList());
+        // A re-formed step (#409) was laid out for its heading, so it keeps that one rather than re-deriving
+        // it from a translation the clamps may have shortened to nothing.
+        Float2 stepHeading = reformHeading ?? RotateFloat2(GroupFormationUtilities.GroupHeading(
+            lastPositions, newPositions, models.Select(m => m.Facing).ToList()), _groupFacingAngle);
         var groupFacings = new Float2[models.Count];
         // The offset committed with each model's step must land that model's travel-derived facing
         // (MovementFacingUtilities.WaypointFacings, the executed result's derivation) on the shared
         // heading, so the move that plays is the move the phantoms showed.
         var stepOffsets = new float[models.Count];
-        float headingAngle = _groupFacingAngle + MathF.Atan2(groupHeading.Y, groupHeading.X);
+        float headingAngle = MathF.Atan2(stepHeading.Y, stepHeading.X);
         bool anyMovement = false;
         for (int i = 0; i < models.Count; i++)
         {
@@ -1195,7 +1238,7 @@ public class GuiDefineMovementResolver
             {
                 float missed = Position.GetDistance2D(newPositions[i], difficultFreePositions[i]);
                 if (missed < DifficultShortfallPlan.MIN_SHORTFALL_INCHES) continue;
-                Float2 wouldBeFacing = RotateFloat2(groupHeading, _groupFacingAngle);
+                Float2 wouldBeFacing = stepHeading;
                 DrawDifficultShortfall(dl, models[i], newPositions[i], difficultFreePositions[i], wouldBeFacing);
                 maxShortfall = MathF.Max(maxShortfall, missed);
                 labelX += difficultFreePositions[i].x;
@@ -1256,6 +1299,7 @@ public class GuiDefineMovementResolver
             for (int i = 0; i < models.Count; i++)
                 pt.AddStep(models[i], newPositions[i], stepOffsets[i]); // #282: this step keeps this attitude
             _groupRotation = 0f;
+            _groupFacingAngle = 0f;
             // #277: the committed step baked the picked shape into the waypoints — it IS the current
             // shape now, so further dragging is rigid until the player cycles again.
             _formationCycle?.Reset();
@@ -1275,6 +1319,28 @@ public class GuiDefineMovementResolver
     /// would overlap a live model of another unit or sit on impassible terrain — measured by the true
     /// oriented footprints (#150), not a bounding circle. Same-unit models are ignored (the group moves
     /// rigidly, so internal spacing is preserved).</summary>
+    // #409: the re-form candidates for the last heading asked about. Building them costs a few milliseconds
+    // (exact footprint gaps), so they are kept while the heading - snapped to whole degrees, which no eye can
+    // tell apart - and the unit's positions stay the same, and only the cheap per-cursor scoring runs each frame.
+    private GroupReform.Prepared? _reformCache;
+    private int _reformCacheDegrees;
+    private Position[]? _reformCacheOrigins;
+
+    private GroupReform.Prepared? PrepareReform(IReadOnlyList<IModel> models, IReadOnlyList<Position> origins, Float2 heading)
+    {
+        int degrees = (int)MathF.Round(MathF.Atan2(heading.Y, heading.X) * 180f / MathF.PI);
+        if (_reformCache != null && _reformCacheDegrees == degrees && _reformCacheOrigins is { } cached
+            && cached.SequenceEqual(origins))
+            return _reformCache;
+
+        float radians = degrees * MathF.PI / 180f;
+        _reformCache = GroupReform.Prepare(models.Select(m => m.BaseShape).ToList(), origins,
+            new Float2(MathF.Cos(radians), MathF.Sin(radians)));
+        _reformCacheDegrees = degrees;
+        _reformCacheOrigins = origins.ToArray();
+        return _reformCache;
+    }
+
     /// <summary>
     /// #399 - the group preview's self-overlap gate. Builds each phantom's start and end POSE and hands
     /// the pairwise rule to <see cref="GroupSelfOverlap"/>; see that class for why the rule exists and
@@ -1391,6 +1457,9 @@ public class GuiDefineMovementResolver
                 ? "current"
                 : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
             ImGui.TextUnformatted($"Group move - rotation {deg:0} deg   formation: {formation}");
+            // #409: say so when the step re-forms the unit, so a shape change never looks like a glitch.
+            if (_frameReformName is { } reform)
+                ImGui.TextUnformatted($"Turning: re-forming as {reform}");
             ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation");
             ImGui.TextDisabled("L-click: place step   R-click: undo   Backspace: back");
         }

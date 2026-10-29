@@ -1,6 +1,6 @@
 # 409 — Cavalry is very hard to manoeuvre: a packed unit of long bases can barely turn as a group
 
-**Status**: todo
+**Status**: implemented, awaiting hand-verify
 **Related**: #399 A (group self-overlap gate), #366 (`ValidateNoSelfOverlap`), #282 / #362 (group rotation and one shared group heading), #277 (formation cycling), #150 / #341 (oriented rectangular bases, swept rotation), #226 (in-game bug reports)
 
 ## Goal
@@ -26,6 +26,37 @@ In-game bug report (#226), fetched 2026-10-28 from the list-server drop box:
 
 ## Notes
 
+- 2026-10-28: **Implemented (re-form, respace folded in).**
+  - **Cause, confirmed from the code and the save.** The hypothesis holds and there is a second half.
+    The riders already stood about 20 degrees off their ranks' normal, so their 0.1" gaps were used up:
+    any further turn stacked. A group step faces every model along the travel direction plus the wheel
+    offset, while the wheel rotates the CENTRES rigidly. So only a drag straight along the formation's
+    own front stayed clean. Worse, `_groupFacingAngle` survived a committed step, so after wheeling 90
+    degrees and committing, dragging toward the new front faced the bases 90 degrees off it again. That
+    is "even with the rotating command".
+  - **Re-form.** New `GroupReform` (app, pure geometry). When the rigid step would newly stack (the
+    #399 test) or the wheel's arc is over an outer model's budget, it builds candidates facing the step's
+    heading:
+    - the current shape opened up across, along, or both, just enough to clear (option 2);
+    - every `FormationLibrary` row partition at the bases' true extents.
+    Each is assigned by bottleneck assignment, tie-broken by least total travel, which keeps relative
+    order. A joined hero is pinned to front-rank centre unless that costs over 1" more. The winner reaches
+    furthest toward the cursor within every budget, then has the smallest worst travel. Its slots
+    become the base of the existing two-array `PlanGroupMove` with no rotation, so terrain, enemy, table
+    edge, impassible and #399 gates all still run on the result.
+  - **Heading reset.** `_groupFacingAngle` now resets with `_groupRotation` on each committed step; the
+    step keeps its own offset (#282).
+  - **Panel.** "Turning: re-forming as 4-4-3" (or "current shape, opened") when it happens.
+  - **Cost.** The candidate build (about 2.5 ms) is cached per whole-degree heading and per unit
+    positions. The per-frame pick is about 1.5 ms (Release), and runs only while a step would stack.
+  - **On vic's unit (8" Fast Advance).** Small turns (10 to 45 degrees) open the ranks slightly, worst
+    rider moving 0.2" at most. A 90-degree turn in place becomes 4-4-3 with the worst rider moving 1.8",
+    against 5.4" for the rigid wheel. Turning 90 and riding 6" fits inside the Advance.
+  - **Tests.** `GroupReformTests` (11), on the reporter's own positions and bases. App 3010 and engine
+    3381 (1 skipped) green, build clean, headless smoke exit 0.
+  - **Not done, deliberately.** The rigid wheel still wheels whenever it fits, so a circle-based line can
+    still be swung round as before. Placing the formation beyond following the cursor isn't optimised:
+    the budget solve already pulls it back as far as it must. The AI's movement is untouched.
 - 2026-10-28: Design fork settled with the owner: option 3 (re-form), option 2 folded in. Ready to build.
 - 2026-10-28: Filed. Number 409 taken from `origin/master` at `0174787` after `git fetch`:
   index + archive max **405**, plus this clone's unpushed 406-408. No collision.
