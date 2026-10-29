@@ -12,7 +12,7 @@
 //   GET    /reports/:id    download one report, decompressed (X-Admin-Token)
 //   DELETE /reports/:id    remove a fetched report          (X-Admin-Token)
 //
-// Usage-analytics endpoints (#406, see src/analytics.ts for the schema and posture):
+// Usage-analytics endpoints (#412, see src/analytics.ts for the schema and posture):
 //   POST   /events         a batch of 1-20 anonymous usage events (no auth; allowlisted + capped)
 //   GET    /stats          canned JSON summary                 (X-Admin-Token)
 //   GET    /stats/export   raw events, paged, CSV or JSON      (X-Admin-Token)
@@ -85,7 +85,7 @@ export default {
     }
 
     if (url.pathname === "/events" || url.pathname === "/stats" || url.pathname.startsWith("/stats/")) {
-      // Same single-instance pattern again (#406): one SQLite-backed DO holds every event, so the
+      // Same single-instance pattern again (#412): one SQLite-backed DO holds every event, so the
       // row cap and the per-install table stay strongly consistent.
       const id = env.ANALYTICS.idFromName("global");
       return env.ANALYTICS.get(id).fetch(request);

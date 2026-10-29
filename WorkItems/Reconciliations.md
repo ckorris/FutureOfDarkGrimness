@@ -767,3 +767,12 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-28 - number 411 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `2d40cee`: index + archive max **410**, no `41x` branch on either remote. **411 = overlays resolve rules
 > core-only (false "no definition in the registry").** No collision.
+
+> **2026-10-28 - 406 collision; usage analytics renumbered to 412.** This clone filed **406 = anonymous
+> usage analytics** without fetching first, while another session filed 406-411 clean on `origin/master`
+> (406 = deploy into a reserve/undeployed transport). The unmerged local item yielded: from
+> `origin/master` at `c46625f` (engine `457bb41`): index + archive max **411**, no `41x` branch on either
+> remote, so analytics became **412** - its filename, index line, and every source/test/doc/Worker
+> reference added by its commits (only those lines; the transport item's own 406 references were left
+> alone). Commit subjects written before the collision read `406:` - history left alone, this entry is
+> the pointer. **412 = anonymous usage analytics.**

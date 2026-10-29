@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 /// <summary>
-/// #406 game events: what the host's game_start / game_end / game_abandon and a client's game_join
+/// #412 game events: what the host's game_start / game_end / game_abandon and a client's game_join
 /// carry, that each game ends at most once (no abandon after a finish), that clients never report a
 /// game's end, and that every prop key the client builds is one the Worker's allowlist accepts.
 /// </summary>

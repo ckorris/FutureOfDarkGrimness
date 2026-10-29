@@ -15,10 +15,10 @@ public class MainMenuScreen : IAppScreen
 
     private bool _modalOpen = false;
 
-    // #406: the usage-statistics notice (opens by itself until acknowledged).
+    // #412: the usage-statistics notice (opens by itself until acknowledged).
     private readonly PrivacyDialog _privacy = new();
 
-    // #406: the same Options panel as the in-game menu, in a modal over the buttons.
+    // #412: the same Options panel as the in-game menu, in a modal over the buttons.
     private bool _optionsOpen;
 
     public void SetModalOpen(bool open) => _modalOpen = open;

@@ -1,7 +1,7 @@
 namespace FdgRaylib.Analytics;
 
 /// <summary>
-/// Fires a callback once per visit when a screen stays open for at least a set time (#406: the Combat
+/// Fires a callback once per visit when a screen stays open for at least a set time (#412: the Combat
 /// Calculator counts as "used" after a minute, so a peek-and-back records nothing). The callback runs on
 /// a thread-pool thread at the moment the threshold passes, so it doesn't matter how the visit ends -
 /// back to the menu, Quit, or closing the window - and a visit that ends earlier never fires.

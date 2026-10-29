@@ -45,7 +45,7 @@ if (args.Contains("--field-harness"))
 // #310: every install gets a config file (player name + the last hosted game's settings). Created with
 // defaults on first run; best-effort, so a read-only home directory just means nothing is remembered.
 UserConfig.EnsureExists();
-// #406: the Options panel's saved display/audio settings.
+// #412: the Options panel's saved display/audio settings.
 FdgRaylib.Rendering.ViewSettings.Load(UserConfig.Current.View);
 
 bool headless = args.Contains("--headless");
@@ -639,7 +639,7 @@ if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
     Console.SetIn(new StringReader($"1\n{armyPath}\n1\n{armyPath}\n"));
 }
 
-// #406: anonymous usage analytics. Headless and --scenario runs (automation, the developer's own
+// #412: anonymous usage analytics. Headless and --scenario runs (automation, the developer's own
 // testing) never send, nor do -dev builds; FDG_ANALYTICS=1 overrides that for testing the pipeline.
 // Nothing is sent from any run until the player has clicked through the first-launch notice.
 UsageAnalytics.Initialize(
@@ -673,7 +673,7 @@ else
     var renderer = new RaylibRenderer();
 
     // ── Main Menu ──────────────────────────────────────────────────────────────
-    // #406: menu clicks record nothing (Chris, 2026-10-28) - the one screen-usage event is the Combat
+    // #412: menu clicks record nothing (Chris, 2026-10-28) - the one screen-usage event is the Combat
     // Calculator kept open for a minute, below.
     renderer.MainMenu.OnHostClicked = () =>
         renderer.NavigateTo(renderer.HostModal);
@@ -684,7 +684,7 @@ else
     renderer.MainMenu.OnArmyForgeClicked = () =>
         renderer.NavigateTo(renderer.ArmyForge);
 
-    // #406: "used the calculator" = still open a minute after opening it; a quick peek records nothing.
+    // #412: "used the calculator" = still open a minute after opening it; a quick peek records nothing.
     var calculatorDwell = new DwellTimer(TimeSpan.FromMinutes(1),
         () => UsageAnalytics.FeatureOpened(AnalyticsFeatures.CombatCalculator));
     renderer.MainMenu.OnCombatCalculatorClicked = () =>
@@ -805,7 +805,7 @@ else
         activeListing = listing;
         activeMapper = mapper;
         renderer.LobbyScreen.SetViewModel(lobby);
-        renderer.LobbyScreen.ListedPublicly = listing != null; // #406, after SetViewModel resets it
+        renderer.LobbyScreen.ListedPublicly = listing != null; // #412, after SetViewModel resets it
         renderer.NavigateTo(renderer.LobbyScreen);
     };
 
@@ -833,7 +833,7 @@ else
     // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271, #279).
     renderer.OnGameExited = () =>
     {
-        // #406: leaving a game that hadn't finished is an abandon (suppressed after a game_end).
+        // #412: leaving a game that hadn't finished is an abandon (suppressed after a game_end).
         GameAnalyticsSession.Current?.Abandoned("menu");
         TeardownLobby();
     };
@@ -935,7 +935,7 @@ else
         // the router to drop the port mapping - the process is about to end, so a background removal
         // would die with it.
         StopListing(blocking: true);
-        // #406: a game still running at exit was abandoned - by Quit to Desktop or by closing the window.
+        // #412: a game still running at exit was abandoned - by Quit to Desktop or by closing the window.
         // Then mark the session as cleanly ended and make one bounded (2s) attempt to send what's queued;
         // anything unsent is spooled for the next launch.
         GameAnalyticsSession.Current?.Abandoned(renderer.CloseRequested ? "quit" : "close");

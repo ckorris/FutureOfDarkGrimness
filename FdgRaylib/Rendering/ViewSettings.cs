@@ -7,7 +7,7 @@ namespace FdgRaylib.Rendering;
 /// that sets them (#246). Static because there is one board on screen at a time and these are display
 /// preferences, not per-game state.
 ///
-/// <para>Saved between runs in <see cref="UserConfig"/> (#406): <see cref="Load"/> at startup,
+/// <para>Saved between runs in <see cref="UserConfig"/> (#412): <see cref="Load"/> at startup,
 /// <see cref="Persist"/> when an Options panel closes and at app exit (which also catches the N/T/V
 /// hotkeys).</para>
 /// </summary>
@@ -58,7 +58,7 @@ public static class ViewSettings
     /// opens; the Options slider sets both.</summary>
     public static float MasterVolume = 1f;
 
-    /// <summary>Takes the saved values (#406), clamping anything a hand-edit pushed out of range.</summary>
+    /// <summary>Takes the saved values (#412), clamping anything a hand-edit pushed out of range.</summary>
     public static void Load(SavedViewSettings saved)
     {
         ShowLabels           = saved.ShowLabels;

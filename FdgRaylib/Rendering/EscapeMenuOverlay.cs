@@ -161,7 +161,7 @@ public sealed class EscapeMenuOverlay
         if (FullWidthButton("Back")) LeaveOptions();
     }
 
-    // Every way out of the Options view saves what changed (#406).
+    // Every way out of the Options view saves what changed (#412).
     private void LeaveOptions()
     {
         if (_inOptions) ViewSettings.Persist();

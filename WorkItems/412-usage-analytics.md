@@ -1,4 +1,4 @@
-# 406 — Anonymous usage analytics
+# 412 — Anonymous usage analytics
 
 **Status**: in-progress
 **Related**: #271 (list-server Worker, the host), #226 (bug-report drop box, the pattern to mirror),
@@ -252,6 +252,8 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Renumbered 406 -> 412** (collision with the transport item filed upstream; see
+  Reconciliations). Rebased onto `origin/master`; commits before this read `406:`.
 - 2026-10-28: **Options polish (Chris, from screenshots).** Main-menu Options is now screen-sized (half
   the width, menu font at ~2.6% of screen height, heading inside, scrolls past 90% height). Notes wrap
   instead of running off the edge; slider labels sit above full-width sliders. **"Reset anonymous ID"
@@ -326,7 +328,7 @@ message keeps the ID and that a message without one deserializes to null.
   hand-written later, lifetime uniques must survive upgrades, faction + GDF/AoF per army, opt-out
   both in the popup and in settings later; question round: clients also send game_join, stats via
   script + CSV, README drafted by implementer for review, exclude dev/headless/scenario runs).
-  Number 406 taken after `git fetch origin` with origin index + archive topping out at 405.
+  Number 412 taken after `git fetch origin` with origin index + archive topping out at 405.
 
 ## Decisions
 

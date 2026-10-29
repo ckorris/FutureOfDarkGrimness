@@ -6,7 +6,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// The anonymous-usage-statistics notice (#406). Opens by itself over the main menu until the player
+/// The anonymous-usage-statistics notice (#412). Opens by itself over the main menu until the player
 /// has clicked through it once: the maintainer's message, the opt-out checkbox (ticked), and OK.
 /// Nothing is sent from any install before that OK.
 ///
@@ -18,7 +18,7 @@ namespace FdgRaylib.Rendering;
 /// </summary>
 public sealed class PrivacyDialog
 {
-    /// <summary>The maintainer's own words at the top of the notice, written by Chris (#406). Must stay
+    /// <summary>The maintainer's own words at the top of the notice, written by Chris (#412). Must stay
     /// plain ASCII - a test checks it.</summary>
     public const string IntroText =
         "Hi, I'm Chris, the guy who made this game.\n" +

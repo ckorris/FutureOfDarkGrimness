@@ -415,7 +415,7 @@ public class UserConfigTests
         });
     }
 
-    // ── #406: Options panel settings ───────────────────────────────────────────────────────
+    // ── #412: Options panel settings ───────────────────────────────────────────────────────
 
     [Test]
     public void ViewSettings_DefaultsMatchTheRuntimeDefaults()

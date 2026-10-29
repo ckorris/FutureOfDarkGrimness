@@ -38,7 +38,7 @@ public class LobbyScreen : IAppScreen
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
 
-    /// <summary>#406: this host lobby is on the public server list (Program.cs sets it when the host
+    /// <summary>#412: this host lobby is on the public server list (Program.cs sets it when the host
     /// dialog created a listing). Reported on the host's anonymous game_start; reset by SetViewModel.</summary>
     public bool ListedPublicly { get; set; }
 
@@ -96,7 +96,7 @@ public class LobbyScreen : IAppScreen
         // Fires on the engine thread; the renderer just records it and reacts on the main thread.
         viewModel.OnGameEnded += result =>
         {
-            // #406: a client's only end signal - no game_end from a client, but no abandon may follow.
+            // #412: a client's only end signal - no game_end from a client, but no abandon may follow.
             GameAnalyticsSession.Current?.EndedRemotely();
             OnGameEnded?.Invoke(result);
         };
@@ -104,7 +104,7 @@ public class LobbyScreen : IAppScreen
         // taken before anything reacts to the game ending (#187).
         viewModel.OnGameCompleted += result =>
         {
-            GameAnalyticsSession.Current?.Completed(result); // #406 host game_end; never throws
+            GameAnalyticsSession.Current?.Completed(result); // #412 host game_end; never throws
             OnGameCompleted?.Invoke(result);
         };
 
@@ -1249,7 +1249,7 @@ public class LobbyScreen : IAppScreen
         var infos = _viewModel?.PlayerInfos ?? [];
         var players = infos.Select(info => (info.PlayerID, info.PlayerName)).ToList();
 
-        // #406: the host's game_start / a client's game_join (no-ops when analytics is off).
+        // #412: the host's game_start / a client's game_join (no-ops when analytics is off).
         if (_viewModel != null) GameAnalyticsSession.Launched(_viewModel, game.LocalPlayerIDs, ListedPublicly);
 
         // Host-only save hook (work item #054 will add client-initiated saving).

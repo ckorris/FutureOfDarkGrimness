@@ -5,7 +5,7 @@
 # a deployed Worker.
 # Exercises: health, register, list, heartbeat, token auth, delete, validation rejects,
 # report upload/list/fetch/delete, report auth + rate limit + bad-body rejects,
-# analytics (#406) ingest, allowlist rejects, rate limit, stats auth, summary and export.
+# analytics (#412) ingest, allowlist rejects, rate limit, stats auth, summary and export.
 set -eu
 
 BASE="${1:-http://localhost:8787}"

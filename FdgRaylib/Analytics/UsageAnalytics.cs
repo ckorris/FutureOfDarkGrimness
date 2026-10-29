@@ -3,10 +3,10 @@ using FdgRaylib.Config;
 namespace FdgRaylib.Analytics;
 
 /// <summary>
-/// The app-wide entry point for anonymous usage analytics (#406). <see cref="Initialize"/> once at
+/// The app-wide entry point for anonymous usage analytics (#412). <see cref="Initialize"/> once at
 /// startup; until then, and in any run that never calls it, every member is a harmless no-op.
 /// See <see cref="AnalyticsClient"/> for the gates, batching and opt-out behavior, and
-/// <c>WorkItems/406-usage-analytics.md</c> for what is collected and why.
+/// <c>WorkItems/412-usage-analytics.md</c> for what is collected and why.
 /// </summary>
 public static class UsageAnalytics
 {

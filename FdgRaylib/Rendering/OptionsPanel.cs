@@ -4,7 +4,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// The Options panel's contents, drawn by both the main menu and the in-game escape menu (#406) so the
+/// The Options panel's contents, drawn by both the main menu and the in-game escape menu (#412) so the
 /// two can never offer different settings. The caller owns the window, title and Back button, and calls
 /// <see cref="ViewSettings.Persist"/> when the panel closes.
 /// </summary>
@@ -52,7 +52,7 @@ public static class OptionsPanel
             Note("Audio unavailable.");
         }
 
-        // #406: the opt-out after the first-launch notice (the only place it lives - see PrivacyDialog).
+        // #412: the opt-out after the first-launch notice (the only place it lives - see PrivacyDialog).
         SectionHeader("Privacy");
         PrivacyDialog.DrawSettingsControls();
 

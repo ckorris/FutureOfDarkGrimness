@@ -4,7 +4,7 @@ namespace FdgRaylib.Analytics;
 
 /// <summary>
 /// Measures how long a play session lasted, including sessions that never got to say goodbye
-/// (#406). A small marker file in the config directory records when this launch started and when
+/// (#412). A small marker file in the config directory records when this launch started and when
 /// it was last alive; the next launch reads it and reports the previous session on its
 /// <c>app_launch</c>. That catches crashes and task-kills, which a send-on-quit never would.
 ///

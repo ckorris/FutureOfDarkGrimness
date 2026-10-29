@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 /// <summary>
-/// #406 anonymous usage analytics, client side: the gates that keep a run silent, the opt-out
+/// #412 anonymous usage analytics, client side: the gates that keep a run silent, the opt-out
 /// cleanup, batching, the retry spool, the session marker, and the name contract with the Worker's
 /// allowlist. No real network: a fake handler stands in for the Worker.
 /// </summary>

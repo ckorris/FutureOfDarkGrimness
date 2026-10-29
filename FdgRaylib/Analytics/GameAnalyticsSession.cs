@@ -9,7 +9,7 @@ using FdgRaylib.Config;
 namespace FdgRaylib.Analytics;
 
 /// <summary>
-/// The usage-analytics view of one launched game (#406): its ID, when it started, and whether it has
+/// The usage-analytics view of one launched game (#412): its ID, when it started, and whether it has
 /// already ended, so <c>game_start</c>, <c>game_end</c> and <c>game_abandon</c> pair up and an
 /// abandon is never sent after a finish.
 ///

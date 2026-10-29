@@ -1,5 +1,5 @@
 #!/bin/sh
-# Read anonymous usage analytics (#406) from the list-server Worker.
+# Read anonymous usage analytics (#412) from the list-server Worker.
 #
 #   ./fetch-stats.sh <base-url> [--days N] [--export FILE.csv]
 #

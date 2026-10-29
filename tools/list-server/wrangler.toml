@@ -18,7 +18,7 @@ class_name = "Registry"
 name = "REPORTS"
 class_name = "Reports"
 
-# Usage analytics (#406) - a third DO, SQLite-backed with real tables (events, installs, rate)
+# Usage analytics (#412) - a third DO, SQLite-backed with real tables (events, installs, rate)
 # rather than the KV API, so the summary can GROUP BY. Reading needs the same ADMIN_TOKEN.
 [[durable_objects.bindings]]
 name = "ANALYTICS"

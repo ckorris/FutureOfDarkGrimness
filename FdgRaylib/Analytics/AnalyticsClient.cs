@@ -8,7 +8,7 @@ namespace FdgRaylib.Analytics;
 
 /// <summary>
 /// Collects anonymous usage events and uploads them in small batches to the list-server Worker
-/// (#406). Never blocks a caller and never throws: <see cref="Track"/> only appends to an in-memory
+/// (#412). Never blocks a caller and never throws: <see cref="Track"/> only appends to an in-memory
 /// queue, and a background timer (or <see cref="Flush"/> at exit) does the network work.
 ///
 /// <para><b>Gates.</b> Nothing is queued unless all hold: the player left analytics on, the player has

@@ -1,5 +1,5 @@
 // Small helpers shared by the list-server Durable Objects (#271 registry, #226 reports,
-// #406 analytics).
+// #412 analytics).
 
 /** Mirrors the game's ASCII-only convention: anything outside printable ASCII becomes '?'. */
 export function asciiFold(text: string): string {

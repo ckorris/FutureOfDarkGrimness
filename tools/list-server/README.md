@@ -1,4 +1,4 @@
-# FDG list server (#271) + bug-report drop box (#226) + usage analytics (#406)
+# FDG list server (#271) + bug-report drop box (#226) + usage analytics (#412)
 
 The master-server registry behind the in-game server browser, plus the in-game bug
 reporter's drop box on the same free Worker. Two Durable Objects: hosts heartbeat
@@ -43,7 +43,7 @@ ADMIN_TOKEN=<secret> ./fetch-reports.sh https://fdg-list-server.<account>.worker
 ADMIN_TOKEN=<secret> ./fetch-reports.sh https://fdg-list-server.<account>.workers.dev --delete   # ... and clear the server
 ```
 
-## Fetching usage stats (#406)
+## Fetching usage stats (#412)
 
 ```bash
 cd tools/list-server
@@ -59,7 +59,7 @@ opened, app versions and OS. The export is every stored event with its props as 
 column. Exports land wherever you point them; `stats/` is gitignored for that purpose.
 
 Event schema and privacy posture: `src/analytics.ts` (the `SCHEMA` allowlist is the
-contract with the game client) and `WorkItems/406-usage-analytics.md`. The Worker never
+contract with the game client) and `WorkItems/412-usage-analytics.md`. The Worker never
 writes an IP next to an event: the per-IP rate limit lives in its own table, pruned after
 five minutes. Free-plan note: SQLite-backed Durable Objects bill rows written (each event
 is about two, an `app_launch` about three), which leaves room for thousands of daily

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace FdgRaylib.Analytics;
 
 /// <summary>
-/// One usage event on the wire (#406). The field set, names and value shapes are a contract with
+/// One usage event on the wire (#412). The field set, names and value shapes are a contract with
 /// the Worker's allowlist (<c>tools/list-server/src/analytics.ts</c>, <c>SCHEMA</c>): an unknown
 /// event name or prop key makes the Worker reject the whole batch, so add a prop there first.
 /// </summary>
@@ -37,7 +37,7 @@ public sealed record AnalyticsEvent(
         };
 }
 
-/// <summary>The event names the Worker accepts (#406). Kept in one place so a typo can't silently
+/// <summary>The event names the Worker accepts (#412). Kept in one place so a typo can't silently
 /// produce a batch the server rejects.</summary>
 public static class AnalyticsEvents
 {
@@ -49,7 +49,7 @@ public static class AnalyticsEvents
     public const string FeatureOpen = "feature_open";
 }
 
-/// <summary><c>feature_open.feature</c> values (#406), mirroring the Worker's enum. Only one: menu clicks
+/// <summary><c>feature_open.feature</c> values (#412), mirroring the Worker's enum. Only one: menu clicks
 /// were dropped (Chris, 2026-10-28), and the calculator counts only after a minute open (DwellTimer).</summary>
 public static class AnalyticsFeatures
 {

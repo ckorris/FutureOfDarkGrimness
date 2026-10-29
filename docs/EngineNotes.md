@@ -10,7 +10,7 @@ Multiplayer goes through `FDGHost` (TCP listener on port 6389) and `FDGClient` (
 
 When LAUNCH fires, **both** sides invoke `OnLaunched` with an `IFDGGame`. Both sides then run `LobbyScreen.HandleLaunch`, which calls `ResolverRegistryFactory.BuildGui(tableState)` and `game.AssignInterfaces(...)`. On the client, `FDGGame_AsClient.AssignInterfaces` internally creates a `NetworkedRequestMessageReceiver` that pulls `StageTaskRequestMessage` off the bus, routes them to the local resolver registry, and sends replies back to the host. So the GUI resolver pattern Just Works for networked games — no extra wiring needed on the client side.
 
-The launch message carries a host-minted game ID (`ILobbyViewModel.LaunchedGameId`, #406), used only to pair the host's anonymous `game_start`/`game_end` with each client's `game_join`. It is optional on the wire in both directions, so it did not bump `NetworkProtocol.Version`.
+The launch message carries a host-minted game ID (`ILobbyViewModel.LaunchedGameId`, #412), used only to pair the host's anonymous `game_start`/`game_end` with each client's `game_join`. It is optional on the wire in both directions, so it did not bump `NetworkProtocol.Version`.
 
 ## Engine Concepts
 
@@ -72,7 +72,7 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 ```
 FdgRaylib/
   Program.cs                               Entry point; wires screen graph and Raylib loop
-  Analytics/                               #406 anonymous usage stats: UsageAnalytics facade, AnalyticsClient
+  Analytics/                               #412 anonymous usage stats: UsageAnalytics facade, AnalyticsClient
                                            (gates/batching/spool), GameAnalyticsSession (game events),
                                            SessionTracker. Event schema = tools/list-server/src/analytics.ts
   Cli/

@@ -1,11 +1,11 @@
-// Anonymous usage analytics (#406), a third Durable Object on the list-server Worker.
+// Anonymous usage analytics (#412), a third Durable Object on the list-server Worker.
 //
 //   POST /events          a JSON array of 1..20 events (no auth; allowlisted, capped, rate-limited)
 //   GET  /stats?days=N     canned JSON summary                       (X-Admin-Token)
 //   GET  /stats/export?after=<id>&limit=<n>&format=csv|json[&newest=1]  raw rows, paged by id (X-Admin-Token)
 //   DELETE /stats/smoke    remove smoke.sh's own rows (fixed SMOKE_INSTALL id) (X-Admin-Token)
 //
-// Privacy posture (see WorkItems/406-usage-analytics.md):
+// Privacy posture (see WorkItems/412-usage-analytics.md):
 //   - The game sends a random install UUID (generated locally, resettable, never derived from
 //     hardware), a per-launch session UUID, the app version, OS, CPU arch, and an allowlisted
 //     set of per-event properties. No names, chat, army contents, paths, or locale.

@@ -3,7 +3,7 @@ using FdgRaylib.ListServer;
 namespace FdgRaylib.Analytics;
 
 /// <summary>
-/// Where usage events go and whether this run may send them at all (#406).
+/// Where usage events go and whether this run may send them at all (#412).
 ///
 /// <para>URL resolution mirrors <see cref="ListServerConfig"/>: the <c>FDG_ANALYTICS_URL</c> environment
 /// variable, then an <c>analytics.url</c> file next to the executable, then the list-server URL (the

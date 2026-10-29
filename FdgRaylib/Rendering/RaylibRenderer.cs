@@ -321,7 +321,7 @@ public class RaylibRenderer
     public void RequestClose() => _closeRequested = true;
 
     /// <summary>True when the app is closing because something asked it to (escape-menu Quit to Desktop,
-    /// main-menu Quit) rather than the window being closed. #406 tells "quit" from "close" with it.</summary>
+    /// main-menu Quit) rather than the window being closed. #412 tells "quit" from "close" with it.</summary>
     public bool CloseRequested => _closeRequested;
 
     /// <summary>
@@ -474,7 +474,7 @@ public class RaylibRenderer
         // App-wide audio device + presentation cue bank (placeholder until real assets land in
         // Assets/Sounds/). No-ops gracefully if no audio device is available.
         _audio = new AudioManager();
-        _audio.SetMasterVolume(ViewSettings.MasterVolume); // #406: the saved level
+        _audio.SetMasterVolume(ViewSettings.MasterVolume); // #412: the saved level
         PresentationSoundCues.LoadInto(_audio);
         // UI chrome cues (button clicks, toggles, canvas commits) share the same device; the static
         // UiSound facade lets any screen/resolver voice one without being handed the AudioManager.

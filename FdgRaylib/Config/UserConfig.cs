@@ -50,23 +50,23 @@ public sealed class UserConfig
 
     public string CalculatorSystemB { get; set; } = GameSystems.GrimdarkFuture;
 
-    /// <summary>#406: send anonymous usage statistics. On by default, but nothing is sent until
+    /// <summary>#412: send anonymous usage statistics. On by default, but nothing is sent until
     /// <see cref="AnalyticsNoticeAcknowledged"/> - the player has seen the first-launch notice, which
     /// carries this same toggle. Changeable later from the Options panel
     /// (main menu or in game).</summary>
     public bool AnalyticsEnabled { get; set; } = true;
 
-    /// <summary>#406: the random, resettable install ID usage events carry so unique players can be
+    /// <summary>#412: the random, resettable install ID usage events carry so unique players can be
     /// counted without identifying anyone. Null until analytics is first enabled after the notice;
     /// cleared on opt-out (re-enabling generates a fresh one). Lives here, in the per-user config
     /// directory, so it survives downloading a new build into a new folder.</summary>
     public string? AnalyticsInstallId { get; set; }
 
-    /// <summary>#406: the player has clicked through the analytics notice. False on a fresh install
+    /// <summary>#412: the player has clicked through the analytics notice. False on a fresh install
     /// and on the first launch of the version that introduced analytics.</summary>
     public bool AnalyticsNoticeAcknowledged { get; set; }
 
-    /// <summary>#406: the Options panel's display and audio settings.</summary>
+    /// <summary>#412: the Options panel's display and audio settings.</summary>
     public SavedViewSettings View { get; set; } = new();
 
     /// <summary>The lobby settings panel, as the last hosted (non-resume) game left it.</summary>
@@ -182,7 +182,7 @@ public sealed class UserConfig
 }
 
 /// <summary>
-/// The Options panel's display and audio settings, as saved (#406). A record so <c>ViewSettings.Persist</c>
+/// The Options panel's display and audio settings, as saved (#412). A record so <c>ViewSettings.Persist</c>
 /// can skip the write when nothing changed. Defaults match <c>ViewSettings</c>'s own.
 /// </summary>
 public sealed record SavedViewSettings
