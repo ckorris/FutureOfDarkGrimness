@@ -85,7 +85,7 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
   looks identical wherever the cursor goes. The price is the wheel's arc on the outer models.
   Before, every base turned to face the direction of travel. A packed cavalry rank then stacked the
   moment it was dragged at an angle, and the #399 gate refused the step.
-- **Opt-in: "Face the move (re-form to turn)"** (panel checkbox, `_reformToTurn`) restores the
+- **Opt-in: "Optimize formation for distance"** (panel checkbox, `_reformToTurn`) restores the
   travel-derived shared heading. When that step would newly stack, or the wheel's arc is over budget,
   it re-forms. `GroupReform` picks a shape facing the heading: the current shape opened up, or a
   `FormationLibrary` partition at true extents. Models are assigned bottleneck-first, for the turn
@@ -93,8 +93,8 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
   preview doesn't flicker. All gates still run on the result.
 - **One spacing for every shape (#409).** In movement, the Ctrl+Wheel catalog is
   `GroupReform.LegalPartitions` (true extents, 0.1" gaps). A pick is laid out by `GroupReform` across
-  one heading: the unit's facing turned by the wheel, or the steadied travel direction with "Face the
-  move" on. It never uses the circumscribing-radius world-axis layout, except as a fallback. Re-form
+  one heading: the unit's facing turned by the wheel, or the steadied travel direction with "Optimize
+  formation for distance" on. It never uses the circumscribing-radius world-axis layout, except as a fallback. Re-form
   candidates are never stretched to fit a heading, so spacing never varies with the cursor.
 - `_groupFacingAngle` resets on each committed step like `_groupRotation`: carrying it over turned a
   freshly wheeled unit sideways the moment it moved off. Live group facings are published per model

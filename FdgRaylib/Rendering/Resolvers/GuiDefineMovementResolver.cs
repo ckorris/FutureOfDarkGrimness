@@ -981,7 +981,7 @@ public class GuiDefineMovementResolver
         if (_formationCycle is { IsCurrentShape: false })
         {
             // #409: the picked shape is laid out across ONE heading at true extents, by the same code as a
-            // re-form: the unit's facing turned by the wheel, or with "Face the move" on, the steadied
+            // re-form: the unit's facing turned by the wheel, or with "Optimize formation for distance" on, the steadied
             // direction of travel. Already oriented, so no rotation is applied on top below.
             Position c0 = GroupFormationUtilities.Centroid(lastPositions);
             Float2 heading;
@@ -1558,7 +1558,9 @@ public class GuiDefineMovementResolver
                 : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
             ImGui.TextUnformatted($"Group move - rotation {deg:0} deg   formation: {formation}");
             // #409: the opt-in, and a word whenever it re-forms the unit so a shape change never looks like a glitch.
-            ImGui.Checkbox("Face the move (re-form to turn)", ref _reformToTurn);
+            ImGui.Checkbox("Optimize formation for distance", ref _reformToTurn);
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip("Will automatically change the order of units in formation to maximize how far the unit can travel.");
             if (_frameReformName is { } reform)
                 ImGui.TextUnformatted($"Turning: re-forming as {reform}");
             ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation");

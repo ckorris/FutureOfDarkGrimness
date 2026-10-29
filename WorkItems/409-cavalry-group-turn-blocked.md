@@ -1,6 +1,6 @@
 # 409 — Cavalry is very hard to manoeuvre: a packed unit of long bases can barely turn as a group
 
-**Status**: implemented, awaiting hand-verify
+**Status**: done (2026-10-28)
 **Related**: #399 A (group self-overlap gate), #366 (`ValidateNoSelfOverlap`), #282 / #362 (group rotation and one shared group heading), #277 (formation cycling), #150 / #341 (oriented rectangular bases, swept rotation), #226 (in-game bug reports)
 
 ## Goal
@@ -26,6 +26,9 @@ In-game bug report (#226), fetched 2026-10-28 from the list-server drop box:
 
 ## Notes
 
+- 2026-10-28: Owner hand-verified ("It works!"). The checkbox is renamed "Optimize formation for
+  distance", with the tooltip "Will automatically change the order of units in formation to maximize how
+  far the unit can travel." (owner's wording). Closed and archived.
 - 2026-10-28: **Does the default fix the report? Verified against the engine.** A scratch test loaded
   vic's save and ran the riders through the engine's Done validation, `ValidatePaths`, with the real
   terrain (9 pieces), enemies (34 models) and friendlies (23), on an 8" Fast Advance:
@@ -188,3 +191,12 @@ group turns, or opening the ranks first.
     self-overlap rule, swept terrain (#341), enemy standoff, coherency.
 
 ## Outcome
+
+**Done 2026-10-28, hand-verified by the owner** on vic's save.
+- **Default group move.** The current shape moves as one rigid body: the drag slides it, Wheel/R
+  turns centres and bases together, so it can never stack. A long-based unit can wheel and move off,
+  confirmed by the engine's Done validation on the save itself.
+- **Opt-in.** "Optimize formation for distance" faces the move and re-forms the unit to maximise reach
+  (`GroupReform`: bottleneck assignment, steadied heading, sticky shape and assignment).
+- **Spacing.** Every shape, re-form or Ctrl+Wheel pick, uses the same 0.1" spacing at true base extents.
+- **Not done.** The AI's movement is untouched.
