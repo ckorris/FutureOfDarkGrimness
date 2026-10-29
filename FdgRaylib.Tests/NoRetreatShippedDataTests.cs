@@ -18,7 +18,7 @@ namespace FdgRaylib.Tests;
 //
 // The numbers are the point. "for each result of 1-3" is a band, not a threshold, and it is the only place
 // the rule's cost lives - authoring a 1 instead of a 3 turns a brutal last stand into a free rescue, and
-// every structural check still passes. Same for the condition: AllModelsHaveThisRule is one word away from
+// every structural check still passes. Same for the condition: EveryModelHasThisRule is one word away from
 // MostModelsHaveThisRule and would quietly stop the rule firing for any unit with a joined hero.
 [TestFixture]
 public class NoRetreatShippedDataTests

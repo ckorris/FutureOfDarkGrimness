@@ -5,7 +5,7 @@
       {
         "hookID": "Movement_OnChargeDeclared",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "movementBonus",

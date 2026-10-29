@@ -13,6 +13,13 @@ explicit answer recorded here, with any re-gating applied rule by rule rather th
 
 ## Notes
 
+- 2026-10-29 (from #428, on `feature/opr-3.6`): OPR 3.6 settles this fork. Every unit-wide rule now reads "a
+  unit where MOST models have this rule", and #428 switched every gate to `MostModelsHaveThisRule`, where a
+  joined hero counts as one model of the unit. So a hero without Instinctive no longer frees the mob (3 of 4
+  is most); pinned by `MostModelsRuleGateIntegrationTests.Instinctive_JoinedHeroWithoutIt_StillCompelsTheMob`.
+  Only Inquisitorial Agent and Martial Prowess keep "all models" (`EveryModelHasThisRule`). Left open for the
+  owner to verify and close once the feature branch lands. #304's warning now only matters for a join onto a
+  single-model host (1 of 2) and for those two rules.
 - 2026-07-30: Filed. Current behaviour, verified in source:
   - Instinctive is authored `condition: allModelsHaveThisRule` at `Lifecycle_OnCapabilityQuery`
     (`FdgRaylib/Assets/Books/GdfRuleSupplement.json`).

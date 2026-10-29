@@ -39,8 +39,8 @@ public class ReinforcementShippedDataTests
         {
             Assert.That(entry.Effect, Is.InstanceOf<Effect.ReinforceUnit>());
             var gate = (Condition.And)entry.Condition;
-            Assert.That(gate.Left, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-                "'a unit where all models have this rule'");
+            Assert.That(gate.Left, Is.TypeOf<Condition.MostModelsHaveThisRule>(),
+                "'a unit where most models have this rule' (#428)");
             var not = (Condition.Not)gate.Right;
             Assert.That(((Condition.TokenPresent)not.Inner).TType,
                 Is.EqualTo(TokenType.ReinforcementSpent),

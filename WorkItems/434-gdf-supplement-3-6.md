@@ -66,6 +66,12 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-29 (from #428): Hive Bond and Hold the Line (GDF, `Morale_OnPreMoraleTest`, "units where all/most
+  models have this rule get +1 to morale test rolls") were never on the all-models gate - they are ungated -
+  so #428's switch did not touch them. The pre-morale evaluation passes no models (`MoraleUtilities.cs:88`),
+  so a joined hero's own copy is invisible (no leak). The only divergence from 3.6 is a host down to one model
+  beside a joined hero lacking the rule (1 of 2, still +1). Add `mostModelsHaveThisRule` when rewording them
+  (and pass `HeroStatRules.LivingModels` there if a hero's own copy should count toward the majority).
 - 2026-10-29: filed with the plan.
 
 ## Decisions

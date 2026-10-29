@@ -248,7 +248,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 425 | Cumbersome; Artillery and Indirect 3.6; Quick Throw | 2 | - | O | medium | todo |
 | 426 | Deployment distances: Scout, Vanguard, Fanatic, Reinforcement, Ambush objectives | 2 | - | O | medium | todo |
 | 427 | Core small batch: Unstoppable, Aircraft, Flying, Transport contact, Spell Amplifier, Immobile | 2 | - | S | medium | todo |
-| 428 | "Most models" gating replaces "all models" everywhere | 2 | - | O | medium | todo |
+| 428 | "Most models" gating replaces "all models" everywhere | 2 | - | O | medium | done 2026-10-29 (owner review: D2, D3) |
 | 429 | Casting 3.6: LoS per spell, +1 casting modifiers, once per activation, Spell Drain | 2 | #427 | O | high | todo |
 | 430 | Force org and points validation 3.6 (GDF + AoF levels, Unique Hero once per army) | 2 | - | S | medium | todo |
 | 431 | New weapon-rule family (Anti-Cover ... Crossing Strike) | 3 | #418 | O | high | todo |

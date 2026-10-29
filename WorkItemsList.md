@@ -34,7 +34,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [ ] 425 — Cumbersome (new core); Artillery most-models/unmoved; Indirect = Hold-only LoS bypass, no move penalty; Quick Throw. ([WorkItems/425](WorkItems/425-cumbersome-artillery-indirect.md))
 - [ ] 426 — Deployment distances 3.6: Scout 9"/9", Vanguard and Fanatic 9" from non-Vanguard enemies, Reinforcement edges, Ambush objective lockout check. ([WorkItems/426](WorkItems/426-deployment-distances-3-6.md))
 - [ ] 427 — Core small batch 3.6: Unstoppable, Aircraft, Flying, Transport contact-to-enter, Spell Amplifier, Immobile/Strider confirm. ([WorkItems/427](WorkItems/427-core-small-batch-3-6.md))
-- [ ] 428 — "Most models have this rule" replaces every "all models" gate (Fearless, Regeneration, Stealth, Artillery, ~40 faction rules). ([WorkItems/428](WorkItems/428-most-models-gating.md))
+- [x] 428 — "Most models have this rule" replaces every "all models" gate (Fearless, Regeneration, Stealth, Artillery, ~40 faction rules). Done 2026-10-29; owner review asked on D2/D3. ([WorkItems/428](WorkItems/428-most-models-gating.md))
 - [ ] 429 — Casting 3.6: LoS moves from Caster into each spell, +1 casting modifiers, once per activation, boosters within 18" without LoS, Spell Drain. ([WorkItems/429](WorkItems/429-casting-3-6.md))
 - [ ] 430 — Force org 3.6: 1 unit/200pts, 1 model-or-Tough/20pts, AoF levels (375/750/1500), Unique Hero once per army. ([WorkItems/430](WorkItems/430-force-org-3-6.md))
 - [ ] 431 — New weapon-rule family: Anti-Cover, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate, Destructive, Demolish, Purge, Reap, Scourge, Unwieldy, Imprecise, Crossing Strike. ([WorkItems/431](WorkItems/431-new-weapon-rules-3-6.md))

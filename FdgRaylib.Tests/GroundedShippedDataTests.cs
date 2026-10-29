@@ -47,8 +47,8 @@ public class GroundedShippedDataTests
 
         Assert.That(entry.Condition, Is.InstanceOf<Condition.And>());
         var and = (Condition.And)entry.Condition;
-        Assert.That(and.Left, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-            "'a unit where all models have this rule'.");
+        Assert.That(and.Left, Is.TypeOf<Condition.MostModelsHaveThisRule>(),
+            "'a unit where most models have this rule' (#428).");
         Assert.That(and.Right, Is.InstanceOf<Condition.MostModelsWithinInchesOfTerrain>(),
             "'... has most of them within 1in of terrain'.");
         Assert.That(((Condition.MostModelsWithinInchesOfTerrain)and.Right).DistanceInches, Is.EqualTo(1f));

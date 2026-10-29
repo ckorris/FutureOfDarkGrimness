@@ -32,8 +32,8 @@ public class AmbushRedeployShippedDataTests
         Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Activation_OnEndOfActivation),
             "'when a unit ... ends its activation'");
         Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerGame>(), "'once per game'");
-        Assert.That(ability.AvailableWhen, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-            "'a unit where all models have this rule'");
+        Assert.That(ability.AvailableWhen, Is.TypeOf<Condition.MostModelsHaveThisRule>(),
+            "'a unit where most models have this rule' (#428)");
         Assert.That(ability.Effect, Is.InstanceOf<Effect.AmbushRedeploy>());
     }
 

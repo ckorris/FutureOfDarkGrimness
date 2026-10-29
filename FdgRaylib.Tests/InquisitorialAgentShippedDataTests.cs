@@ -39,8 +39,8 @@ public class InquisitorialAgentShippedDataTests
             "the hook DeterminePlayerTurnStage fires before the player picks their next unit");
         Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerGame>(), "'once per game'");
         Assert.That(ability.TargetSelector!.TargetAffinity, Is.EqualTo(ETargetAffinity.Self));
-        Assert.That(ability.AvailableWhen, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-            "'if ALL models in this unit have this rule'");
+        Assert.That(ability.AvailableWhen, Is.TypeOf<Condition.EveryModelHasThisRule>(),
+            "'if ALL models in this unit have this rule' - one of the two rules OPR 3.6 keeps on 'all' (#428)");
         Assert.That(ability.Effect, Is.EqualTo(
                 new Effect.Reactivate(ClearsFatigue: true, ArmyRoundQuotaDivisor: 3)),
             "'stops being fatigued when activated for the second time', and 'only up to one THIRD of the " +

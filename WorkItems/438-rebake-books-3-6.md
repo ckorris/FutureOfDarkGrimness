@@ -73,6 +73,12 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-29 (from #428): the bundled books still embed the pre-3.6 `allModelsHaveThisRule` kind (228 uses).
+  It parses as the most-models gate, so the books already behave per 3.6, but `HumanInquisition.fdgbook`'s
+  Inquisitorial Agent (a 3.6 "all models" holdout) also reads as "most" until this re-bake copies the swept
+  supplement's `everyModelHasThisRule`. After the bake, check that no `.fdgbook` contains
+  `allModelsHaveThisRule` and that Inquisitorial Agent carries `everyModelHasThisRule`. The bake's authoring
+  validation now refuses the legacy kind in supplement input.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

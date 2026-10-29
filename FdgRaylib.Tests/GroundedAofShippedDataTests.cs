@@ -50,7 +50,7 @@ public class GroundedAofShippedDataTests
             "without the per-action gate, the three-action budget fold counts the entry three times.");
         Assert.That(((Condition.ActionTypeIs)and.Left).ActionType, Is.EqualTo(action));
         var gate = (Condition.And)and.Right;
-        Assert.That(gate.Left, Is.InstanceOf<Condition.AllModelsHaveThisRule>());
+        Assert.That(gate.Left, Is.TypeOf<Condition.MostModelsHaveThisRule>());
         Assert.That(gate.Right, Is.InstanceOf<Condition.MostModelsWithinInchesOfTerrain>());
         Assert.That(((Condition.MostModelsWithinInchesOfTerrain)gate.Right).DistanceInches, Is.EqualTo(1f));
     }
@@ -63,7 +63,7 @@ public class GroundedAofShippedDataTests
         Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Subject));
 
         var and = (Condition.And)entry.Condition;
-        Assert.That(and.Left, Is.InstanceOf<Condition.AllModelsHaveThisRule>());
+        Assert.That(and.Left, Is.TypeOf<Condition.MostModelsHaveThisRule>());
         Assert.That(and.Right, Is.InstanceOf<Condition.MostModelsWithinInchesOfTerrain>());
         Assert.That(((Condition.MostModelsWithinInchesOfTerrain)and.Right).DistanceInches, Is.EqualTo(1f));
 

@@ -63,6 +63,13 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-29 (from #428): two hand-offs. (1) #428 switched every gate to "most models" but deliberately left
+  the rule DESCRIPTIONS alone; twelve supplement descriptions still read "all models" and now contradict the
+  engine: GDF Versatile Defense, Defensive Frenzy, Defensive Growth, Fortified Growth, Reanimation,
+  Reinforcement, Ambush Re-Deployment, Dash; AoF Shadowborn Boost, Wild Veil Boost, Fortified Growth; plus Hive
+  Bond's (see #434). Inquisitorial Agent's "if all models" is correct and must stay. (2)
+  `AllModelsRuleGateIntegrationTests.cs` is now `MostModelsRuleGateIntegrationTests.cs` (the CounterAttack_*
+  case is still in it).
 - 2026-10-29: filed with the plan.
 
 ## Decisions

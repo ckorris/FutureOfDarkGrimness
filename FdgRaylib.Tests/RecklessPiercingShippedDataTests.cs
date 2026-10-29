@@ -42,7 +42,7 @@ public class RecklessPiercingShippedDataTests
         ActivatedAbility ability = Definition("Reckless Piercing").Activated.Single();
         Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Activation_OnActivationStart),
             "a single ability at activation start is offered as an optional Yes/No.");
-        Assert.That(ability.AvailableWhen, Is.InstanceOf<Condition.AllModelsHaveThisRule>());
+        Assert.That(ability.AvailableWhen, Is.TypeOf<Condition.MostModelsHaveThisRule>());
 
         var roll = (Effect.GrantTokenOnRoll)ability.Effect;
         Assert.That(roll.MinRoll, Is.EqualTo(2));

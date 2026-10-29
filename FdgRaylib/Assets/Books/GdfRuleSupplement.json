@@ -875,7 +875,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -905,7 +905,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -934,7 +934,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -964,7 +964,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -993,7 +993,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1026,7 +1026,7 @@
             }
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1081,7 +1081,7 @@
             }
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1135,7 +1135,7 @@
             }
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1190,7 +1190,7 @@
             }
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1236,7 +1236,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -1258,7 +1258,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -1275,7 +1275,7 @@
             "kind": "isSpell"
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1298,7 +1298,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -1320,7 +1320,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -1364,7 +1364,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -3877,7 +3877,7 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "rollModifier",
@@ -4008,7 +4008,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -4505,7 +4505,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -4535,7 +4535,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -4578,7 +4578,7 @@
           "scope": "UntilNextActivation"
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "label": "+1 to defense rolls"
       },
@@ -4603,7 +4603,7 @@
           "scope": "UntilNextActivation"
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "label": "-1 to enemy hit rolls"
       },
@@ -4628,7 +4628,7 @@
           "scope": "UntilNextActivation"
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "label": "+1 to defense rolls"
       },
@@ -4653,7 +4653,7 @@
           "scope": "UntilNextActivation"
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "label": "-1 to enemy hit rolls"
       }
@@ -4830,7 +4830,7 @@
             "minCount": 1
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -4865,7 +4865,7 @@
             "minCount": 1
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -4900,7 +4900,7 @@
             "minCount": 1
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -4970,7 +4970,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -4995,7 +4995,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -5020,7 +5020,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -5045,7 +5045,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -5347,7 +5347,7 @@
       {
         "hookID": "Shooting_OnUnitDestroyed",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "grantToken",
@@ -5371,7 +5371,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "tokenPresent",
@@ -5606,7 +5606,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "and",
@@ -5680,7 +5680,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "tokenPresent",
@@ -5795,7 +5795,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "tokenPresent",
@@ -6353,7 +6353,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -6401,7 +6401,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "mostModelsWithinInchesOfTerrain",
@@ -6453,7 +6453,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "mostModelsWithinInchesOfTerrain",
@@ -6505,7 +6505,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "mostModelsWithinInchesOfTerrain",
@@ -6567,7 +6567,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "and",
@@ -6753,7 +6753,7 @@
           "requiredRule": null
         },
         "effect": { "kind": "addRule", "ruleName": "Speed Feat Boost", "scope": "ThisActivation" },
-        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "availableWhen": { "kind": "mostModelsHaveThisRule" },
         "label": "Speed Feat"
       }
     ],
@@ -6784,7 +6784,7 @@
     "passive": [
       {
         "hookID": "Shooting_OnSaveRollComplete",
-        "condition": { "kind": "allModelsHaveThisRule" },
+        "condition": { "kind": "mostModelsHaveThisRule" },
         "effect": { "kind": "ignoreWoundOnRoll", "minRoll": 5 },
         "lifetime": "ThisAttack",
         "seat": "Subject"
@@ -6814,7 +6814,7 @@
           "requiredRule": null
         },
         "effect": { "kind": "addRule", "ruleName": "Protection Feat Guard", "scope": "UntilNextActivation" },
-        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "availableWhen": { "kind": "mostModelsHaveThisRule" },
         "label": "Protection Feat"
       }
     ],
@@ -6940,7 +6940,7 @@
     "passive": [
       {
         "hookID": "Activation_OnActivationStart",
-        "condition": { "kind": "allModelsHaveThisRule" },
+        "condition": { "kind": "mostModelsHaveThisRule" },
         "effect": { "kind": "restoreWounds", "minRoll": 5 },
         "lifetime": "UntilEndOfGame",
         "seat": "Actor"
@@ -6976,7 +6976,7 @@
         "hookID": "Lifecycle_OnSelfDestroyed",
         "condition": {
           "kind": "and",
-          "left": { "kind": "allModelsHaveThisRule" },
+          "left": { "kind": "mostModelsHaveThisRule" },
           "right": { "kind": "not", "inner": { "kind": "tokenPresent", "tType": { "id": "ReinforcementSpent" }, "minCount": 1 } }
         },
         "effect": { "kind": "reinforceUnit" },
@@ -6987,7 +6987,7 @@
         "hookID": "Morale_OnShakenApplied",
         "condition": {
           "kind": "and",
-          "left": { "kind": "allModelsHaveThisRule" },
+          "left": { "kind": "mostModelsHaveThisRule" },
           "right": { "kind": "not", "inner": { "kind": "tokenPresent", "tType": { "id": "ReinforcementSpent" }, "minCount": 1 } }
         },
         "effect": { "kind": "reinforceUnit" },
@@ -7027,7 +7027,7 @@
           "requiredRule": null
         },
         "effect": { "kind": "ambushRedeploy" },
-        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "availableWhen": { "kind": "mostModelsHaveThisRule" },
         "label": "Ambush Re-Deployment"
       }
     ],
@@ -7073,7 +7073,7 @@
         "cost": { "kind": "oncePerRound" },
         "targetSelector": { "rangeInches": 0, "minCount": 1, "maxCount": 1, "targetAffinity": "Self", "requireLineOfSight": false, "requiredToken": null, "singleModel": false, "requiredRule": null },
         "effect": { "kind": "repositionAtActivation", "distance": { "kind": "d3" }, "plusInches": 1 },
-        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "availableWhen": { "kind": "mostModelsHaveThisRule" },
         "label": "Dash"
       }
     ],
@@ -7431,7 +7431,7 @@
         "cost": { "kind": "oncePerGame" },
         "targetSelector": { "rangeInches": 0, "minCount": 1, "maxCount": 1, "targetAffinity": "Self", "requireLineOfSight": false, "requiredToken": null, "singleModel": false, "requiredRule": null },
         "effect": { "kind": "reactivate", "clearsFatigue": true, "armyRoundQuotaDivisor": 3 },
-        "availableWhen": { "kind": "allModelsHaveThisRule" }
+        "availableWhen": { "kind": "everyModelHasThisRule" }
       }
     ],
     "scope": "Unit",
@@ -7520,7 +7520,7 @@
     "passive": [
       {
         "hookID": "Lifecycle_OnCapabilityQuery",
-        "condition": { "kind": "allModelsHaveThisRule" },
+        "condition": { "kind": "mostModelsHaveThisRule" },
         "effect": { "kind": "compelClosestTarget" },
         "lifetime": "UntilEndOfGame",
         "seat": "Actor"

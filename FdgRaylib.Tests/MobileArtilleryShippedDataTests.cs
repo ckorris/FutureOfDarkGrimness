@@ -179,7 +179,7 @@ public class MobileArtilleryShippedDataTests
 
         // The defensive read, with DetermineHitRollStage's real participant shape: the attacker in the
         // Actor seat and the defender's living models in the Subject seat (which is what lets the bearer's
-        // AllModelsHaveThisRule gate see them).
+        // MostModelsHaveThisRule gate see them).
         public int NetIncomingHit(float distance, bool isMelee = false)
         {
             var sink = new RollModifierSink();

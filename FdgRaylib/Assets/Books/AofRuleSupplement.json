@@ -5,7 +5,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -27,7 +27,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -83,7 +83,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -100,7 +100,7 @@
             "kind": "isSpell"
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -128,7 +128,7 @@
             "kind": "isSpell"
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -191,7 +191,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -224,7 +224,7 @@
             }
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -276,7 +276,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -308,7 +308,7 @@
             }
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -359,7 +359,7 @@
             "distanceInches": 9
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -391,7 +391,7 @@
             }
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -709,7 +709,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -734,7 +734,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -906,7 +906,7 @@
           "isOptional": true
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         }
       }
     ],
@@ -1005,7 +1005,7 @@
           "kind": "teleport"
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         }
       }
     ],
@@ -1029,7 +1029,7 @@
             "minCount": 1
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1064,7 +1064,7 @@
             "minCount": 1
           },
           "right": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           }
         },
         "effect": {
@@ -1489,7 +1489,7 @@
       {
         "hookID": "Shooting_OnRangeCheck",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "rangeModifier",
@@ -1502,7 +1502,7 @@
       {
         "hookID": "Movement_OnChargeDeclared",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "movementBonus",
@@ -1526,7 +1526,7 @@
       {
         "hookID": "Shooting_OnRangeCheck",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "rangeModifier",
@@ -1539,7 +1539,7 @@
       {
         "hookID": "Movement_OnChargeDeclared",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "movementBonus",
@@ -1680,7 +1680,7 @@
       {
         "hookID": "Shooting_OnRangeCheck",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "rangeModifier",
@@ -1693,7 +1693,7 @@
       {
         "hookID": "Movement_OnChargeDeclared",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "movementBonus",
@@ -1717,7 +1717,7 @@
       {
         "hookID": "Shooting_OnRangeCheck",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "rangeModifier",
@@ -1730,7 +1730,7 @@
       {
         "hookID": "Movement_OnChargeDeclared",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "effect": {
           "kind": "movementBonus",
@@ -2053,7 +2053,7 @@
           "scope": "ThisActivation"
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "label": "Precision Feat"
       }
@@ -2111,7 +2111,7 @@
           "scope": "ThisActivation"
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "label": "Piercing Feat"
       }
@@ -2300,7 +2300,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "tokenPresent",
@@ -2430,7 +2430,7 @@
           "right": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "mostModelsWithinInchesOfTerrain",
@@ -2458,7 +2458,7 @@
           "right": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "mostModelsWithinInchesOfTerrain",
@@ -2486,7 +2486,7 @@
           "right": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "mostModelsWithinInchesOfTerrain",
@@ -2518,7 +2518,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "mostModelsWithinInchesOfTerrain",
@@ -2653,7 +2653,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "tokenPresent",
@@ -2676,7 +2676,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "right": {
             "kind": "tokenPresent",
@@ -2739,7 +2739,7 @@
           }
         },
         "availableWhen": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "mostModelsHaveThisRule"
         },
         "label": "Reckless Piercing"
       }
