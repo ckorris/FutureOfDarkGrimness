@@ -33,9 +33,15 @@ public class MainMenuScreen : IAppScreen
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
             ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
 
+        // The button column shares out the band between the title and the disclaimer, so adding a
+        // button shrinks them all a little instead of pushing Quit off the bottom. Capped at the
+        // original size (0.08 tall, 0.03 gap), which is what six buttons got.
+        const int buttonCount = 7;
+        const float columnTop = 0.24f, columnBottom = 0.90f;
+        float slot        = screenH * (columnBottom - columnTop) / buttonCount;
         float btnW        = screenW * 0.40f;
-        float btnH        = screenH * 0.08f;
-        float gapY        = screenH * 0.03f;
+        float btnH        = MathF.Min(screenH * 0.08f, slot * 0.75f);
+        float gapY        = MathF.Min(screenH * 0.03f, slot - btnH);
 
         // Prefer the large baked menu font and scale DOWN from it (crisp); fall back to stretching the
         // body font if the font atlas didn't load. Factors are chosen to match the previous on-screen sizes.
@@ -52,7 +58,7 @@ public class MainMenuScreen : IAppScreen
         ImGui.SetWindowFontScale(1.0f);
 
         float centerX = (screenW - btnW) * 0.5f;
-        float startY  = screenH * 0.28f;
+        float startY  = screenH * columnTop;
 
         // Navigation buttons click with the neutral Navigate tone; Quit recedes with the Back tone - but
         // every entry keeps the SAME colour: these are seven peers in a list, not an action beside its
@@ -73,7 +79,7 @@ public class MainMenuScreen : IAppScreen
         DrawButton("Client",       OnClientClicked,      1);
         // Army Builder button temporarily hidden - re-enable by uncommenting this line and bumping the
         // order arguments below back up by one (Army Forge -> 3, Combat Calculator -> 4, Load Game -> 5,
-        // Options -> 6, Quit -> 7).
+        // Options -> 6, Quit -> 7) and buttonCount above to 8.
         // DrawButton("Army Builder", OnArmyBuilderClicked, 2);
         DrawButton("Army Forge",        OnArmyForgeClicked,        2);
         DrawButton("Combat Calculator", OnCombatCalculatorClicked, 3);
