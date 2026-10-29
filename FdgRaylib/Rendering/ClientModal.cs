@@ -84,6 +84,10 @@ public class ClientModal : IAppScreen
         ImGui.PopStyleVar();
 
         float pad = 32f * scale;
+        // #414: set once for the whole dialog. ImGui keeps a window's font scale across frames, and
+        // only DrawLabeledInput used to set it - so the Server Browser tab (the default) drew at 1.0
+        // until Direct Connect had been opened once, while its columns and buttons scaled regardless.
+        ImGui.SetWindowFontScale(scale);
 
         // Title — light-blue header accent, echoing the lobby's section headers.
         ImGui.PushFont(RaylibRenderer.LargeFont);
@@ -237,7 +241,7 @@ public class ClientModal : IAppScreen
             _ = RefreshServersAsync();
         ImGui.EndDisabled();
 
-        DrawPasswordPopup();
+        DrawPasswordPopup(scale);
     }
 
     private void JoinListing(ServerListing listing)
@@ -260,7 +264,7 @@ public class ClientModal : IAppScreen
         _ = AttemptConnect();
     }
 
-    private void DrawPasswordPopup()
+    private void DrawPasswordPopup(float scale)
     {
         if (_pendingPasswordJoin == null) return;
 
@@ -269,19 +273,21 @@ public class ClientModal : IAppScreen
 
         if (ImGui.BeginPopupModal("##JoinPassword", ImGuiWindowFlags.AlwaysAutoResize))
         {
+            // The popup is its own window, so the dialog's font scale doesn't reach it (#414).
+            ImGui.SetWindowFontScale(scale);
             ImGui.Text($"Password for {_pendingPasswordJoin.Name}:");
-            ImGui.SetNextItemWidth(260f);
+            ImGui.SetNextItemWidth(260f * scale);
             bool submitted = ImGui.InputText("##JoinPasswordInput", ref _password, 64,
                 ImGuiInputTextFlags.Password | ImGuiInputTextFlags.EnterReturnsTrue);
 
-            if (UiButton.Confirm("JOIN", new Vector2(120f, 0f)) || submitted)
+            if (UiButton.Confirm("JOIN", new Vector2(120f * scale, 0f)) || submitted)
             {
                 _pendingPasswordJoin = null;
                 ImGui.CloseCurrentPopup();
                 _ = AttemptConnect();
             }
             ImGui.SameLine();
-            if (UiButton.Back("CANCEL", new Vector2(120f, 0f)))
+            if (UiButton.Back("CANCEL", new Vector2(120f * scale, 0f)))
             {
                 _pendingPasswordJoin = null;
                 _password = "";

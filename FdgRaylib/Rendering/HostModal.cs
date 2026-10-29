@@ -69,6 +69,8 @@ public class HostModal : IAppScreen
 
         float pad = 32f * scale;
         ImGui.SetCursorPos(new Vector2(pad, pad));
+        // Set up front so the title doesn't ride the previous frame's leftover scale (#414).
+        ImGui.SetWindowFontScale(scale);
 
         // Title — light-blue header accent, echoing the lobby's section headers.
         ImGui.PushFont(RaylibRenderer.LargeFont);
