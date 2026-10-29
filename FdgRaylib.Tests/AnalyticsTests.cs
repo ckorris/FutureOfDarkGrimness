@@ -299,7 +299,7 @@ public class AnalyticsTests
         var nextWorker = new FakeWorker();
         using var next = Client(config, nextWorker);
         next.Start();
-        next.Track(AnalyticsEvents.FeatureOpen, new Dictionary<string, object?> { ["feature"] = AnalyticsFeatures.Join });
+        next.Track(AnalyticsEvents.FeatureOpen, new Dictionary<string, object?> { ["feature"] = AnalyticsFeatures.CombatCalculator });
         await next.FlushAsync();
 
         Assert.That(nextWorker.Bodies, Has.Count.EqualTo(1));
@@ -365,6 +365,69 @@ public class AnalyticsTests
         client.Flush(TimeSpan.FromSeconds(2));
 
         Assert.That(File.Exists(SpoolPath), Is.True);
+    }
+
+    [Test]
+    public async Task ExitFlushWaitsForAnInFlightSendThenSendsTheRest()
+    {
+        // The 30s timer is mid-send when the player quits; the quit's events must still go out now.
+        var worker = new FakeWorker { Delay = TimeSpan.FromMilliseconds(300) };
+        using var client = Client(Acknowledged(), worker);
+        TrackLaunch(client);
+        Task timerSend = Task.Run(() => client.FlushAsync());
+        await Task.Delay(50); // let the timer's send take the gate
+        client.Track(AnalyticsEvents.GameAbandon, new Dictionary<string, object?> { ["reason"] = "quit" });
+
+        client.Flush(TimeSpan.FromSeconds(2));
+
+        // Checked the instant Flush returns: at real exit the process ends here, taking any background
+        // send with it, so whatever hasn't gone out by now doesn't go out this run.
+        int sentAtExit;
+        lock (worker.Bodies) sentAtExit = worker.Bodies.Count;
+        bool abandonSent;
+        lock (worker.Bodies) abandonSent = worker.Bodies.Any(b => b.Contains("game_abandon"));
+        await timerSend;
+
+        Assert.That(sentAtExit, Is.EqualTo(2), "the timer's batch and the quit's batch both went out before exit");
+        Assert.That(abandonSent, Is.True);
+    }
+
+    // ── Dwell timer (Combat Calculator "used" after a minute) ──────────────────────────────
+
+    [Test]
+    public async Task DwellTimerFiresOnlyForAVisitThatLastsTheThreshold()
+    {
+        int fired = 0;
+        var timer = new DwellTimer(TimeSpan.FromMilliseconds(150), () => Interlocked.Increment(ref fired));
+
+        timer.Entered();
+        await Task.Delay(50);
+        timer.Left();               // a peek: never counts
+        await Task.Delay(250);
+        Assert.That(fired, Is.EqualTo(0));
+
+        timer.Entered();            // a real visit, still open past the threshold
+        await Task.Delay(300);
+        Assert.That(fired, Is.EqualTo(1));
+        timer.Left();
+        await Task.Delay(200);
+        Assert.That(fired, Is.EqualTo(1), "once per visit");
+    }
+
+    [Test]
+    public async Task DwellTimerReEntryRestartsTheClock()
+    {
+        int fired = 0;
+        var timer = new DwellTimer(TimeSpan.FromMilliseconds(200), () => Interlocked.Increment(ref fired));
+
+        timer.Entered();
+        await Task.Delay(120);
+        timer.Left();
+        timer.Entered();            // the first visit's pending timer must not count this one
+        await Task.Delay(120);
+        Assert.That(fired, Is.EqualTo(0));
+        await Task.Delay(200);
+        Assert.That(fired, Is.EqualTo(1));
     }
 
     // ── Session marker ─────────────────────────────────────────────────────────────────────

@@ -31,6 +31,11 @@ const MAX_EVENTS_PER_BATCH = 20;
 const MIN_POST_INTERVAL_MS = 2_000; // per IP; the client flushes every ~30s
 const RATE_RETENTION_MS = 5 * 60_000; // rate records older than this are deleted on every write
 const MAX_ROWS = 2_000_000; // ~1GB at worst; well inside the free-plan DO storage allowance
+/** Events accepted per UTC day. The free plan's rows-written allowance (about 100k/day) is per account
+ *  and shared with the server browser and bug-report box on this Worker; an event costs ~2-3 row
+ *  writes, so this keeps analytics well under half of it even on a surge. Past the cap the Worker
+ *  answers 503, which clients treat as "retry later" and keep in their local spool. */
+const DAILY_EVENT_CAP = 10_000;
 const CLOCK_SKEW_SECONDS = 7 * 86_400; // client t outside +-7 days of receipt is clamped
 const MAX_EXPORT_ROWS = 5_000;
 const DEFAULT_STATS_DAYS = 30;
@@ -108,11 +113,9 @@ export const SCHEMA: Record<string, Record<string, PropSpec>> = {
     seconds: SECONDS,
     reason: { type: "enum", values: ["menu", "quit", "close"] },
   },
+  // Sent only when the Combat Calculator has stayed open for a minute (menu clicks are not recorded).
   feature_open: {
-    feature: {
-      type: "enum",
-      values: ["army_forge", "combat_calculator", "load_game", "bug_report_sent", "server_browser", "join"],
-    },
+    feature: { type: "enum", values: ["combat_calculator"] },
   },
 };
 
@@ -250,6 +253,8 @@ export class Analytics {
       install TEXT PRIMARY KEY, first_seen INTEGER NOT NULL, last_seen INTEGER NOT NULL)`);
     // Rate-limit records: the only place an IP is ever written, pruned within minutes.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS rate(ip TEXT PRIMARY KEY, last INTEGER NOT NULL)`);
+    // Events accepted per UTC day, for DAILY_EVENT_CAP. One small row per day.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS daily(day TEXT PRIMARY KEY, events INTEGER NOT NULL)`);
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -315,7 +320,17 @@ export class Analytics {
     const rows = this.sql.exec<{ n: number | null }>(`SELECT MAX(id) AS n FROM events`).toArray()[0]?.n ?? 0;
     if (rows + events.length > MAX_ROWS) return json({ error: "analytics storage full" }, 503);
 
+    const today = new Date(nowMs).toISOString().slice(0, 10);
+    const acceptedToday =
+      this.sql.exec<{ events: number }>(`SELECT events FROM daily WHERE day = ?`, today).toArray()[0]?.events ?? 0;
+    if (acceptedToday + events.length > DAILY_EVENT_CAP) {
+      return json({ error: "daily analytics budget used; retry tomorrow" }, 503);
+    }
+
     this.state.storage.transactionSync(() => {
+      this.sql.exec(
+        `INSERT INTO daily(day, events) VALUES(?, ?) ON CONFLICT(day) DO UPDATE SET events = events + excluded.events`,
+        today, events.length);
       for (const ev of events) {
         this.sql.exec(
           `INSERT INTO events(received, t, name, install, session, game, ver, os, arch, props)

@@ -256,7 +256,6 @@ public sealed class EscapeMenuOverlay
         if (FullWidthButton("Send Report"))
         {
             _bugReporter.Send(_bugDescription.Trim());
-            FdgRaylib.Analytics.UsageAnalytics.FeatureOpened(FdgRaylib.Analytics.AnalyticsFeatures.BugReportSent);
             _bugDescription = "";
             _bugSent = true;
         }

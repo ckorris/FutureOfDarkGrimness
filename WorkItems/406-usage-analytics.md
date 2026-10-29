@@ -314,6 +314,15 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Decisions
 
+- 2026-10-28 (Chris): **all menu-click events dropped.** The only `feature_open` left is
+  `combat_calculator`, sent once per visit when the calculator has stayed open a minute (`DwellTimer`,
+  fires at the threshold so it doesn't depend on how the visit ends).
+- Exit flush waits for an in-flight timer send instead of skipping, so a quit's events go out before
+  the process ends (the first version of its test awaited the background send and so passed against
+  the old behavior; it now asserts at the instant Flush returns, and fails without the fix).
+- Worker `DAILY_EVENT_CAP = 10_000` events per UTC day (503 past it, which clients spool): the
+  free plan's ~100k rows-written/day is per account and shared with the server browser and bug
+  reports, and an event costs ~2-3 row writes. Verified by dropping the cap to 3 under wrangler dev.
 - 2026-10-28 (Chris): no `feature_open` for clicking Host - a host who launches is already counted by
   game_start, and one who backs out isn't worth a request. Removed from client, Worker enum and disclosure.
 - `server_browser` stays in the Worker enum but the client never sends it: the Client dialog is

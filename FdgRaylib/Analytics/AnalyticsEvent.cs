@@ -49,13 +49,9 @@ public static class AnalyticsEvents
     public const string FeatureOpen = "feature_open";
 }
 
-/// <summary><c>feature_open.feature</c> values (#406), mirroring the Worker's enum.</summary>
+/// <summary><c>feature_open.feature</c> values (#406), mirroring the Worker's enum. Only one: menu clicks
+/// were dropped (Chris, 2026-10-28), and the calculator counts only after a minute open (DwellTimer).</summary>
 public static class AnalyticsFeatures
 {
-    public const string ArmyForge = "army_forge";
     public const string CombatCalculator = "combat_calculator";
-    public const string LoadGame = "load_game";
-    public const string BugReportSent = "bug_report_sent";
-    public const string ServerBrowser = "server_browser";
-    public const string Join = "join";
 }

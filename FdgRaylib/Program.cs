@@ -671,8 +671,8 @@ else
     var renderer = new RaylibRenderer();
 
     // ── Main Menu ──────────────────────────────────────────────────────────────
-    // #406: each main-menu destination records one feature_open (a no-op when analytics is off).
-    // Host deliberately records nothing: a hosted game that launches is already a game_start.
+    // #406: menu clicks record nothing (Chris, 2026-10-28) - the one screen-usage event is the Combat
+    // Calculator kept open for a minute, below.
     renderer.MainMenu.OnHostClicked = () =>
         renderer.NavigateTo(renderer.HostModal);
 
@@ -680,22 +680,19 @@ else
         renderer.NavigateTo(renderer.ArmyBuilder);
 
     renderer.MainMenu.OnArmyForgeClicked = () =>
-    {
-        UsageAnalytics.FeatureOpened(AnalyticsFeatures.ArmyForge);
         renderer.NavigateTo(renderer.ArmyForge);
-    };
 
+    // #406: "used the calculator" = still open a minute after opening it; a quick peek records nothing.
+    var calculatorDwell = new DwellTimer(TimeSpan.FromMinutes(1),
+        () => UsageAnalytics.FeatureOpened(AnalyticsFeatures.CombatCalculator));
     renderer.MainMenu.OnCombatCalculatorClicked = () =>
     {
-        UsageAnalytics.FeatureOpened(AnalyticsFeatures.CombatCalculator);
+        calculatorDwell.Entered();
         renderer.NavigateTo(renderer.CombatCalculator);
     };
 
     renderer.MainMenu.OnClientClicked = () =>
-    {
-        UsageAnalytics.FeatureOpened(AnalyticsFeatures.Join);
         renderer.NavigateTo(renderer.ClientModal);
-    };
 
     // The public-listing heartbeat (#271), when the host ticked "List publicly". Stopped on every
     // lobby/game exit path below; a missed path only means the entry lingers until the registry's
@@ -775,11 +772,7 @@ else
         renderer.NavigateTo(renderer.LobbyScreen);
     }
 
-    renderer.MainMenu.OnLoadGameClicked = () =>
-    {
-        UsageAnalytics.FeatureOpened(AnalyticsFeatures.LoadGame);
-        LoadGameFlow();
-    };
+    renderer.MainMenu.OnLoadGameClicked = LoadGameFlow;
     renderer.OnLoadGameRequested        = LoadGameFlow;
 
     renderer.MainMenu.OnQuitClicked = renderer.RequestClose;
@@ -794,7 +787,10 @@ else
 
     // ── Combat Calculator (#397) ─────────────────────────────────────────────────
     renderer.CombatCalculator.OnBack = () =>
+    {
+        calculatorDwell.Left();
         renderer.NavigateTo(renderer.MainMenu);
+    };
 
     // ── Host Modal ─────────────────────────────────────────────────────────────
     renderer.HostModal.OnCancel = () =>

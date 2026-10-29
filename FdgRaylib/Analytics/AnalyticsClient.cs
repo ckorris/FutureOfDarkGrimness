@@ -207,7 +207,9 @@ public sealed class AnalyticsClient : IDisposable
         try
         {
             using var cts = new CancellationTokenSource(timeout);
-            FlushAsync(cts.Token).Wait(timeout);
+            // waitForInFlight: if the 30s timer is mid-send right now, wait for it and then send the
+            // rest, rather than leaving the last events (a game_abandon, say) for the next launch.
+            FlushAsync(cts.Token, waitForInFlight: true).Wait(timeout);
         }
         catch { /* timed out or cancelled: whatever is left is spooled below */ }
         lock (_lock)
@@ -217,10 +219,19 @@ public sealed class AnalyticsClient : IDisposable
     }
 
     /// <summary>Sends everything queued, one batch at a time. Single-flight: a call while another is
-    /// running returns at once (the running one will pick up new events next tick).</summary>
-    public async Task FlushAsync(CancellationToken cancellationToken = default)
+    /// running returns at once (the running one will pick up new events next tick) - unless
+    /// <paramref name="waitForInFlight"/>, the exit path, which queues up behind it instead.</summary>
+    public async Task FlushAsync(CancellationToken cancellationToken = default, bool waitForInFlight = false)
     {
-        if (!await _flushGate.WaitAsync(0, CancellationToken.None).ConfigureAwait(false)) return;
+        if (waitForInFlight)
+        {
+            try { await _flushGate.WaitAsync(cancellationToken).ConfigureAwait(false); }
+            catch (OperationCanceledException) { return; } // out of time: the caller spools
+        }
+        else if (!await _flushGate.WaitAsync(0, CancellationToken.None).ConfigureAwait(false))
+        {
+            return;
+        }
         try
         {
             bool first = true;
