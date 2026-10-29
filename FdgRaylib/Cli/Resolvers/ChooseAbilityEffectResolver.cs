@@ -4,8 +4,8 @@ using FDG.StageResolution.Requests;
 namespace FdgRaylib.Cli.Resolvers;
 
 /// <summary>
-/// #197 P5a — "pick one of this rule's effects" on stdin. Mandatory: there is no back-out, because the rule
-/// text is "pick one effect", not "you may pick one". EOF resolves to the first option so piped play works.
+/// #197 P5a — "pick one of this rule's effects" on stdin. EOF resolves to the first option so piped play works.
+/// #408: when the request allows it, [0] backs out of the activation (un-picks the unit).
 /// </summary>
 public class ChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffectRequest, int>
 {
@@ -13,6 +13,11 @@ public class ChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffectReq
     {
         Console.WriteLine();
         Console.WriteLine($"{request.RuleName}: {request.Instructions}");
+
+        if (request.AllowCancel)
+        {
+            Console.WriteLine("  [0] Back");
+        }
 
         for (int i = 0; i < request.Options.Count; i++)
         {
@@ -36,7 +41,12 @@ public class ChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffectReq
                 return Task.FromResult(choice - 1);
             }
 
-            Console.WriteLine($"Enter a number between 1 and {request.Options.Count}.");
+            if (request.AllowCancel && input == "0")
+            {
+                return Task.FromResult(ChooseAbilityEffectRequest.CANCEL);
+            }
+
+            Console.WriteLine($"Enter a number between {(request.AllowCancel ? 0 : 1)} and {request.Options.Count}.");
         }
     }
 }

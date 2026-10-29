@@ -6,9 +6,10 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// #197 P5a — "pick one of this rule's effects", as an ImGui panel. Mandatory by design: no Back button and
-/// no cancel sentinel, because the rule text says "pick one effect". The stage only raises this when two or
-/// more effects are available, so there is always a real choice to make.
+/// #197 P5a — "pick one of this rule's effects", as an ImGui panel. There is never a "none of these" (the rule
+/// text says "pick one effect"); the stage only raises this when two or more effects are available. #408: at
+/// activation start the request allows Back (button or Backspace), which un-picks the unit rather than
+/// skipping the rule.
 /// </summary>
 public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffectRequest, int>, IGuiResolver
 {
@@ -19,7 +20,7 @@ public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffect
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
     // #248: keyboard navigation — number keys instant-pick, arrows move this highlight, Enter commits.
-    // Still mandatory: no Esc/Back (the rule text says "pick one effect").
+    // Backspace backs out only when the request allows it (#408).
     private readonly KeyboardListNav _nav = new();
     private static readonly uint KbHighlightCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.90f, 1.00f, 0.90f));
 
@@ -55,6 +56,7 @@ public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffect
         float btnW = dw - pad * 2;
 
         float headerH = ImGui.CalcTextSize(request.RuleName, false, dw - pad * 2).Y + 4f;
+        float backH = ResolverPanelLayout.ActionRowHeight();
         float instrH = ImGui.CalcTextSize(request.Instructions, false, dw - pad * 2).Y + 8f;
 
         float descWrapMeasure = (btnW - descIndent) / descScale;
@@ -117,11 +119,24 @@ public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffect
             y += rowHeights[i];
         }
 
+        // #408: Back un-picks the unit. Same dim back-out tint and key hint as the selection resolvers.
+        bool cancelled = false;
+        if (request.AllowCancel)
+        {
+            ImGui.SetCursorPos(new Vector2(pad, y + pad));
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
+            cancelled = ImGui.Button($"Back  {ResolverKeybinds.Back.Parenthetical}##back", new Vector2(btnW, backH));
+            ImGui.PopStyleColor();
+            cancelled |= ResolverHotkeys.IsBackPressed();
+        }
+
         ImGui.EndChild();
         ImGui.End();
 
         if (picked >= 0)
             Complete(tcs, picked);
+        else if (cancelled)
+            Complete(tcs, ChooseAbilityEffectRequest.CANCEL);
     }
 
     private void Complete(TaskCompletionSource<int> tcs, int index)
