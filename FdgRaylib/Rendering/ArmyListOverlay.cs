@@ -48,8 +48,9 @@ public sealed class ArmyListOverlay
     private IReadOnlyList<PlayerID> _localPlayerIDs = Array.Empty<PlayerID>();
     private GuiResolverOverlay? _resolverOverlay;
 
-    // Same core-catalog resolver the tooltip overlay holds, for resolving token display info.
-    private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
+    // Same rule set the tooltip overlay reads token display info with (#411: core + army-embedded rules).
+    private readonly DisplayRuleSet _rules = new();
+    private IRuleResolver _ruleResolver => _rules.Resolver;
 
     // Measured card heights from the previous frame, keyed by unit — masonry packing needs heights
     // BEFORE drawing, so cards pack on last frame's measurements (self-correcting after one frame;
@@ -94,6 +95,7 @@ public sealed class ArmyListOverlay
     public void Draw(int areaW, int screenH, bool escapeMenuOpen, bool gameOver)
     {
         if (_tableState == null) return;
+        _rules.Refresh(_tableState);
         if (gameOver) { Close(); return; }
 
         var io = ImGui.GetIO();

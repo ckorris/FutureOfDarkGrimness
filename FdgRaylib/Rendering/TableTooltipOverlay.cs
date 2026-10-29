@@ -35,15 +35,12 @@ public class TableTooltipOverlay
     private int   _originY;
     private float _tableH;
 
-    // Built from the core catalog so granted-rule tokens get the right valence + description. Custom
-    // army-embedded rules (#059) aren't in here and fall back to Neutral/no-description.
-    private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
-
-    // Capabilities (transport, casting, ...) are answered by the rule graph rather than by testing for a
-    // named rule, so the tooltip needs an evaluator to ask. Read-only and non-logging: the dice roller is
-    // never reached, since a capability entry's effect rolls nothing.
-    private readonly RuleEvaluator _capabilityEvaluator =
-        new RuleEvaluator(new ProbabilisticDiceRoller(), ruleResolver: CoreRuleCatalog.CreateResolver());
+    // Granted-rule tokens need the right valence + description, and capabilities (transport, casting, ...)
+    // are answered by the rule graph rather than by testing for a named rule. #411: both read the core
+    // catalog PLUS the armies' own embedded rules, refreshed each frame (a count compare once settled).
+    private readonly DisplayRuleSet _rules = new();
+    private IRuleResolver _ruleResolver => _rules.Resolver;
+    private RuleEvaluator _capabilityEvaluator => _rules.Evaluator;
 
     public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         PresentationPlayer? presentationPlayer = null)
@@ -72,6 +69,7 @@ public class TableTooltipOverlay
         Rectangle? rollStackBounds = null)
     {
         if (_tableState == null) return;
+        _rules.Refresh(_tableState);
 
         _rollStack = rollStackBounds;
 

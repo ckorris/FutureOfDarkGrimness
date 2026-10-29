@@ -763,3 +763,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-28 - number 410 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `2ee3458`: index + archive max **409**, no `41x` branch on either remote. **410 = decide which other
 > one-model item rules are model-carried (#407 follow-up).** No collision.
+
+> **2026-10-28 - number 411 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `2d40cee`: index + archive max **410**, no `41x` branch on either remote. **411 = overlays resolve rules
+> core-only (false "no definition in the registry").** No collision.
