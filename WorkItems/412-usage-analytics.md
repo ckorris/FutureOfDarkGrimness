@@ -252,6 +252,12 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **First full live game verified on prod, then wiped.** Host vs Tactician, 2000 pts: one
+  game_start, one game_end (Win, 4 rounds, 1344s, human), no game_abandon after closing with the window X
+  (correctly suppressed), clean-exit marker written, no spool left. Added admin
+  `DELETE /stats?confirm=wipe-all-analytics` (local test: refuses without confirm / wrong token), deployed
+  (version 2d2525c7), prod smoke passed, prod wiped (4 rows) - lifetime 0. Verify items left: Options
+  untick removes the ID; optional two-instance game_join.
 - 2026-10-28: **Renumbered 406 -> 412** (collision with the transport item filed upstream; see
   Reconciliations). Rebased onto `origin/master`; commits before this read `406:`.
 - 2026-10-28: **Options polish (Chris, from screenshots).** Main-menu Options is now screen-sized (half

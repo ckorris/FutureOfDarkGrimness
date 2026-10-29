@@ -4,6 +4,7 @@
 //   GET  /stats?days=N     canned JSON summary                       (X-Admin-Token)
 //   GET  /stats/export?after=<id>&limit=<n>&format=csv|json[&newest=1]  raw rows, paged by id (X-Admin-Token)
 //   DELETE /stats/smoke    remove smoke.sh's own rows (fixed SMOKE_INSTALL id) (X-Admin-Token)
+//   DELETE /stats?confirm=wipe-all-analytics  remove every event, install and daily count (X-Admin-Token)
 //
 // Privacy posture (see WorkItems/412-usage-analytics.md):
 //   - The game sends a random install UUID (generated locally, resettable, never derived from
@@ -40,6 +41,8 @@ const CLOCK_SKEW_SECONDS = 7 * 86_400; // client t outside +-7 days of receipt i
 const MAX_EXPORT_ROWS = 5_000;
 const DEFAULT_STATS_DAYS = 30;
 const MAX_STATS_DAYS = 3_650;
+
+const WIPE_CONFIRM = "wipe-all-analytics";
 
 /** The fixed install ID smoke.sh posts under. DELETE /stats/smoke removes exactly these rows, so
  *  smoking the deployed Worker leaves the real numbers untouched. Not a secret: anyone posting
@@ -267,6 +270,9 @@ export class Analytics {
       if (url.pathname === "/stats/export" && request.method === "GET") {
         return requireAdmin(request, this.env.ADMIN_TOKEN) ?? this.handleExport(url);
       }
+      if (url.pathname === "/stats" && request.method === "DELETE") {
+        return requireAdmin(request, this.env.ADMIN_TOKEN) ?? this.handleWipe(url);
+      }
       if (url.pathname === "/stats/smoke" && request.method === "DELETE") {
         return requireAdmin(request, this.env.ADMIN_TOKEN) ?? this.handleDeleteSmoke();
       }
@@ -474,12 +480,29 @@ export class Analytics {
 
   // ---- DELETE /stats/smoke -------------------------------------------------------------
 
-  /** The only delete path in this DO: removes smoke.sh's own rows (SMOKE_INSTALL) and nothing else. */
+  /** Removes smoke.sh's own rows (SMOKE_INSTALL) and nothing else. */
   private handleDeleteSmoke(): Response {
     let events = 0;
     this.state.storage.transactionSync(() => {
       events = this.sql.exec(`DELETE FROM events WHERE install = ?`, SMOKE_INSTALL).rowsWritten;
       this.sql.exec(`DELETE FROM installs WHERE install = ?`, SMOKE_INSTALL);
+    });
+    return json({ ok: true, deleted: events }, 200);
+  }
+
+  // ---- DELETE /stats --------------------------------------------------------------------
+
+  /** Starts the stats over: every event, install and daily count (e.g. dev-test rows before a
+   *  release). The confirm value guards against a stray DELETE on the summary URL. */
+  private handleWipe(url: URL): Response {
+    if (url.searchParams.get("confirm") !== WIPE_CONFIRM) {
+      return json({ error: `add ?confirm=${WIPE_CONFIRM} to delete all analytics` }, 400);
+    }
+    let events = 0;
+    this.state.storage.transactionSync(() => {
+      events = this.sql.exec(`DELETE FROM events`).rowsWritten;
+      this.sql.exec(`DELETE FROM installs`);
+      this.sql.exec(`DELETE FROM daily`);
     });
     return json({ ok: true, deleted: events }, 200);
   }

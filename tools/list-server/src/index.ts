@@ -16,6 +16,7 @@
 //   POST   /events         a batch of 1-20 anonymous usage events (no auth; allowlisted + capped)
 //   GET    /stats          canned JSON summary                 (X-Admin-Token)
 //   GET    /stats/export   raw events, paged, CSV or JSON      (X-Admin-Token)
+//   DELETE /stats?confirm=wipe-all-analytics   delete all analytics (X-Admin-Token)
 //
 // Security posture (see WorkItems/271-server-browser.md):
 //   - The advertised host address is ALWAYS the observed source IP of the registrant

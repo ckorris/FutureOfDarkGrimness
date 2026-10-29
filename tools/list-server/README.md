@@ -25,6 +25,7 @@ Design, API table, and security posture: `WorkItems/271-server-browser.md` and
 | `GET` | `/stats[?days=N]` | `X-Admin-Token` header | JSON usage summary over the last N days (default 30) |
 | `GET` | `/stats/export[?after=ID&limit=N&format=csv\|json&newest=1]` | `X-Admin-Token` header | Raw events, paged by id |
 | `DELETE` | `/stats/smoke` | `X-Admin-Token` header | Remove `smoke.sh`'s own rows (fixed install id) only |
+| `DELETE` | `/stats?confirm=wipe-all-analytics` | `X-Admin-Token` header | Delete **all** analytics (events, installs, daily counts) - e.g. dev-test rows before a release |
 
 The advertised address is always the **observed** source IP of the registrant — the
 payload has no address field, so listings can't point at third parties. The reachability
