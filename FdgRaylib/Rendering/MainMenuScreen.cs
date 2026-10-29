@@ -15,6 +15,9 @@ public class MainMenuScreen : IAppScreen
 
     private bool _modalOpen = false;
 
+    // #406: the usage-statistics notice (opens by itself until acknowledged) and the Privacy settings.
+    private readonly PrivacyDialog _privacy = new();
+
     public void SetModalOpen(bool open) => _modalOpen = open;
 
     public void Draw(int screenW, int screenH)
@@ -62,7 +65,7 @@ public class MainMenuScreen : IAppScreen
             ImGui.SetWindowFontScale(1.0f);
         }
 
-        ImGui.BeginDisabled(_modalOpen);
+        ImGui.BeginDisabled(_modalOpen || _privacy.IsOpen);
         DrawButton("Host",         OnHostClicked,        0);
         DrawButton("Client",       OnClientClicked,      1);
         // Army Builder button temporarily hidden - re-enable by uncommenting this line and bumping the
@@ -87,7 +90,19 @@ public class MainMenuScreen : IAppScreen
         ImGui.TextUnformatted(disclaimer);
         ImGui.PopStyleColor();
 
+        // #406: Privacy, bottom-right and small - a settings entry, not a peer of the menu buttons.
+        const string privacyLabel = "Privacy";
+        Vector2 privacySize = ImGui.CalcTextSize(privacyLabel) + ImGui.GetStyle().FramePadding * 2f;
+        ImGui.SetCursorPos(new Vector2(screenW - privacySize.X - screenW * 0.02f,
+            screenH - privacySize.Y - screenH * 0.02f));
+        ImGui.BeginDisabled(_modalOpen || _privacy.IsOpen);
+        if (UiButton.NavigateSmall(privacyLabel)) _privacy.OpenSettings();
+        ImGui.EndDisabled();
+
         ImGui.End();
         ImGui.PopStyleColor();
+
+        // Drawn outside the menu window so its modal sits over everything (and blocks the menu) on its own.
+        if (!_modalOpen) _privacy.Draw(screenW, screenH);
     }
 }

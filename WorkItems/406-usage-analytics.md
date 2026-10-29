@@ -252,6 +252,8 @@ message keeps the ID and that a message without one deserializes to null.
 
 ## Notes
 
+- 2026-10-28: **Slice 3 committed** with Chris's notice text (apostrophes checked straight, one trailing
+  space stripped). Remaining: README sign-off, Worker deploy + prod smoke, pushes, GUI verify list.
 - 2026-10-28: **Slice 3 built, uncommitted (stop point: popup text).** `FdgRaylib/Rendering/PrivacyDialog.cs`
   (notice mode opens by itself until acknowledged; settings mode from a small bottom-right Privacy
   button on the main menu; shared `DrawSettingsControls` + itemized list in the escape-menu Options

@@ -390,6 +390,23 @@ public class AnalyticsTests
             "an unclean end is measured to the last heartbeat.");
     }
 
+    // ── Privacy dialog text ────────────────────────────────────────────────────────────────
+
+    [Test]
+    public void PrivacyTextIsAsciiOnly()
+    {
+        // CLAUDE.md: the ImGui font atlas has no glyphs past U+00FF, so a pasted em dash or curly quote
+        // in the hand-written notice would render as '?'. Checked to U+007E to keep it plain ASCII.
+        var all = new[] { FdgRaylib.Rendering.PrivacyDialog.IntroText, FdgRaylib.Rendering.PrivacyDialog.WhereText }
+            .Concat(FdgRaylib.Rendering.PrivacyDialog.SentItems)
+            .Concat(FdgRaylib.Rendering.PrivacyDialog.NeverSentItems);
+        foreach (string text in all)
+        {
+            char bad = text.FirstOrDefault(c => c > '~' || (c < ' ' && c != '\n'));
+            Assert.That(bad, Is.EqualTo('\0'), $"non-ASCII character U+{(int)bad:X4} in: {text}");
+        }
+    }
+
     // ── Contract with the Worker ───────────────────────────────────────────────────────────
 
     [Test]
