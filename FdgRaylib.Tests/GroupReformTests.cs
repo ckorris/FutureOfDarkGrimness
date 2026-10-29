@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FDG;
+using FDG.Data;
+using FDG.Stages;
+using FDG.StageResolution.Requests;
 using FdgRaylib.Rendering.Resolvers;
 using NUnit.Framework;
 
@@ -185,6 +188,89 @@ public class GroupReformTests
         Assert.That(near?.Name, Is.EqualTo("4-4-3"));
         Assert.That(far?.Name, Is.EqualTo("4-4-3"));
         Assert.That(far!.Value.Slots, Is.EqualTo(near!.Value.Slots));
+    }
+
+    [TestCase(0f)]
+    [TestCase(37f)]
+    [TestCase(90f)]
+    [TestCase(-123f)]
+    public void EveryFormation_HasTheStandardSpacing_AtAnyHeading(float degrees)
+    {
+        // Owner's hand-test: the spacing between riders jumped about as the mouse moved a hair, and again
+        // on Ctrl+Wheel. Every shape - re-form or pick - now sits 0.1" edge to edge at the bases' true
+        // extents, whatever the heading, so nothing but the arrangement ever changes.
+        var (shapes, at) = ReportedUnit();
+        Float2 heading = Rotate(SaveFacing, degrees);
+        var prepared = GroupReform.Prepare(shapes, at, heading, HeroIndex)!;
+
+        foreach (var formation in GroupReform.LegalPartitions(shapes))
+        {
+            Position[]? slots = prepared.SlotsFor(formation.Name);
+            Assert.That(slots, Is.Not.Null, $"{formation.Name} is offered by Ctrl+Wheel, so it must lay out");
+            for (int i = 0; i < slots!.Length; i++)
+            {
+                float nearest = float.MaxValue;
+                for (int j = 0; j < slots.Length; j++)
+                    if (j != i)
+                        nearest = MathF.Min(nearest, BaseShapeGeometry.SurfaceGap2D(
+                            shapes[i], slots[i], prepared.Heading, shapes[j], slots[j], prepared.Heading));
+                Assert.That(nearest, Is.EqualTo(0.1f).Within(0.01f), $"{formation.Name}, model {i}");
+            }
+        }
+    }
+
+    [Test]
+    public void Ctrl_Wheel_Catalog_UsesTrueExtents()
+    {
+        // Spaced by circumscribing circles, a 35x60mm rider took a 2.7" slot each way and the catalog
+        // dropped the shapes it thought broke 9". At true extents the reported unit can form all of these.
+        var (shapes, _) = ReportedUnit();
+
+        var names = GroupReform.LegalPartitions(shapes).Select(f => f.Name).ToList();
+
+        Assert.That(names, Is.SupersetOf(new[] { "6-5", "4-4-3", "3-3-3-2" }));
+    }
+
+    [TestCase(90f)]
+    [TestCase(-90f)]
+    [TestCase(45f)]
+    public void TheReportedRank_WheelsAsOneBody_AndMovesOff_TheEngineAgrees(float degrees)
+    {
+        // The default group move (re-form off): the wheel turns centres AND bases together about the
+        // centroid, then the unit moves straight off along its new front. Checked by the engine's own Done
+        // validation, so it is the real "can the riders turn and go" answer, not the preview's.
+        // (Against the reporter's whole table this also holds, except the -90 move-off, which rides into
+        // difficult terrain - a genuine 6" cap, not this bug.)
+        var (shapes, at) = ReportedUnit();
+        GameDataStore store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        Position c0 = GroupFormationUtilities.Centroid(at);
+        float r = degrees * MathF.PI / 180f, c = MathF.Cos(r), s = MathF.Sin(r);
+        Float2 turned = new(SaveFacing.X * c - SaveFacing.Y * s, SaveFacing.X * s + SaveFacing.Y * c);
+        Position Wheeled(Position p)
+        {
+            float dx = p.x - c0.x, dz = p.z - c0.z;
+            return new Position(c0.x + dx * c - dz * s, c0.z + dx * s + dz * c);
+        }
+        float wheelWorst = at.Max(p => Position.GetDistance2D(p, Wheeled(p)));
+        float off = FastAdvance - wheelWorst - 0.05f; // everything the end riders have left
+
+        var moves = new List<ModelMoveEntry>();
+        for (int i = 0; i < at.Count; i++)
+        {
+            var binding = store.GetDataBinding<ModelData>(store.Create(
+                new ModelData(shapes[i], new List<Weapon>(), at[i], store)));
+            binding.GetValue().FacingBinding.SetValue(SaveFacing);
+            Position w = Wheeled(at[i]);
+            moves.Add(new ModelMoveEntry(binding,
+                new List<Position> { w, new(w.x + off * turned.X, w.z + off * turned.Y) },
+                new List<Float2> { turned, turned }));
+        }
+
+        bool ok = MovementUtilities.ValidatePaths(moves, _ => new ModelMoveBudget(FastAdvance, FastAdvance),
+            new List<EnemyModelFootprint>(), false, false, false, null, out var errors, lenientCoherency: true);
+
+        Assert.That(off, Is.GreaterThan(0f), "the wheel leaves move to spare");
+        Assert.That(ok, Is.True, string.Join(", ", errors.Select(e => e.ErrorReasonType)));
     }
 
     [Test]

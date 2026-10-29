@@ -37,7 +37,6 @@ internal static class GroupReform
     private const float Gap = 0.1f;
     // Clearance an opened-up shape must keep between bases, so float noise never reads as contact.
     private const float OpenClearance = 0.02f;
-    private const float MaxStretch = 3f;
     // Cohesion is checked a hair inside the limits so the exact-constant checks downstream agree.
     private const float CohesionMargin = 0.02f;
     // A hero keeps the front-centre slot unless that raises the worst model's travel by more than this.
@@ -89,43 +88,13 @@ internal static class GroupReform
         Position ToWorld(float dx, float dz) =>
             new(c0.x + dx * right.X + dz * fwd.X, c0.z + dx * right.Y + dz * fwd.Y);
 
+        // The unit's own shape, untouched, when its bases already clear at the new heading. It is never
+        // stretched to make them clear: a stretch sized to the exact heading changed the spacing with every
+        // twitch of the cursor. Every other candidate uses the one standard spacing below.
         var opened = new List<(string name, Position[] slots)>();
-
-        // The current shape, opened up along the heading's width axis, its depth axis, or both - only as
-        // far as needed for the bases to clear at the new heading.
-        var localX = new float[n];
-        var localZ = new float[n];
-        for (int i = 0; i < n; i++)
-        {
-            float dx = origins[i].x - c0.x, dz = origins[i].z - c0.z;
-            localX[i] = dx * right.X + dz * right.Y;
-            localZ[i] = dx * fwd.X + dz * fwd.Y;
-        }
-        foreach (var (sx, sz, how) in new[] { (1f, 0f, "widened"), (0f, 1f, "deepened"), (1f, 1f, "opened") })
-        {
-            Position[] Opened(float k)
-            {
-                var slots = new Position[n];
-                for (int i = 0; i < n; i++)
-                    slots[i] = ToWorld(localX[i] * (1f + (k - 1f) * sx), localZ[i] * (1f + (k - 1f) * sz));
-                return slots;
-            }
-            bool Clear(float k) => AllClear(shapes, Opened(k), fwd, OpenClearance);
-
-            float lo = 1f, hi = MaxStretch;
-            if (Clear(1f)) hi = 1f;
-            else if (!Clear(MaxStretch)) continue;
-            else
-                for (int iter = 0; iter < 12; iter++) // (MaxStretch - 1) / 2^12: well under a thou
-                {
-                    float mid = 0.5f * (lo + hi);
-                    if (Clear(mid)) hi = mid; else lo = mid;
-                }
-            Position[] shape = Opened(hi);
-            if (IsCoherent(shapes, shape, fwd))
-                opened.Add((hi == 1f ? "current shape" : $"current shape, {how}", shape));
-            if (hi == 1f) break; // already clear as it stands - nothing to open up
-        }
+        Position[] asIs = origins.ToArray();
+        if (AllClear(shapes, asIs, fwd, OpenClearance) && IsCoherent(shapes, asIs, fwd))
+            opened.Add(("current shape", asIs));
 
         // Every row partition, laid out across the heading at each base's own extents (a rectangle facing
         // the heading is its width across and its length deep).
@@ -187,6 +156,14 @@ internal static class GroupReform
             _assignments = assignments;
         }
 
+        /// <summary>The named formation's slots at this heading (a Ctrl+Wheel pick), if it is legal here.</summary>
+        internal Position[]? SlotsFor(string name)
+        {
+            foreach (var (n, slots) in _candidates)
+                if (n == name) return slots;
+            return null;
+        }
+
         /// <summary>The slot per model this heading gave the named formation, if it built one.</summary>
         internal int[]? AssignmentFor(string name) => _assignments.TryGetValue(name, out var a) ? a : null;
 
@@ -234,6 +211,30 @@ internal static class GroupReform
                 return kept;
             return best;
         }
+    }
+
+    /// <summary>
+    /// The row partitions this unit can legally form up in at the standard spacing and its bases' true
+    /// extents - the Ctrl+Wheel catalog, so a picked formation is spaced exactly like a re-form. Legality
+    /// doesn't depend on the heading: the whole layout turns with it.
+    /// </summary>
+    public static List<FormationLibrary.Formation> LegalPartitions(IReadOnlyList<IBaseShape> shapes)
+    {
+        int n = shapes.Count;
+        var halfXs = new float[n];
+        var halfZs = new float[n];
+        for (int i = 0; i < n; i++)
+            (halfXs[i], halfZs[i]) = BaseShapeGeometry.FootprintHalfExtents(shapes[i], new Float2(0f, 1f));
+
+        var legal = new List<FormationLibrary.Formation>();
+        foreach (int[] rows in FormationLibrary.RowPartitions(n))
+        {
+            var at = FormationLibrary.LayoutOffsets(halfXs, halfZs, rows, Gap)
+                .Select(o => new Position(o.dx, o.dz)).ToArray();
+            if (IsCoherent(shapes, at, new Float2(0f, 1f)))
+                legal.Add(new FormationLibrary.Formation(rows, FormationLibrary.Describe(rows)));
+        }
+        return legal;
     }
 
     /// <summary>True when every pair of bases, all facing <paramref name="facing"/>, is at least

@@ -26,6 +26,29 @@ In-game bug report (#226), fetched 2026-10-28 from the list-server drop box:
 
 ## Notes
 
+- 2026-10-28: **Does the default fix the report? Verified against the engine.** A scratch test loaded
+  vic's save and ran the riders through the engine's Done validation, `ValidatePaths`, with the real
+  terrain (9 pieces), enemies (34 models) and friendlies (23), on an 8" Fast Advance:
+  - Wheel 90 then move off 0 to 2.5": valid.
+  - Wheel -90: valid. Moving off 1" or more is invalid because it rides into difficult terrain and
+    hits the genuine 6" cap.
+  - Wheel 45 or -45 then 0 to 2.5": valid.
+  - Wheel 180: valid.
+  Before, the wheel alone was legal, but moving off after it stacked the bases (the carried facing
+  offset, plus bases turning to the travel direction). The save holds player data, so the committed
+  test `TheReportedRank_WheelsAsOneBody_AndMovesOff_TheEngineAgrees` uses the riders' geometry only.
+- 2026-10-28: **Owner: with the checkbox on, the spacing varied wildly; Ctrl+Wheel too.** Two causes:
+  - **Opened shapes.** The "opened" candidates stretched by the minimum each exact heading needed, so
+    the spacing slid with the cursor. They are gone. The only unlaid-out candidate is the current shape,
+    unchanged, when it already clears.
+  - **Ctrl+Wheel.** Picks were laid out by circumscribing radii, spacing a 35x60mm rider like a 70mm
+    round base, in world axes. The movement catalog is now `GroupReform.LegalPartitions`, at true extents
+    and 0.1" gaps. A pick is laid out by `GroupReform` across one heading: the unit's facing turned by
+    the wheel, or the steadied travel direction with the checkbox on. The old layout stays as a fallback
+    if a mixed-base pick can't lay out.
+  So every shape, re-form or pick, sits 0.1" edge to edge at any heading. Tests:
+  `EveryFormation_HasTheStandardSpacing_AtAnyHeading` and `Ctrl_Wheel_Catalog_UsesTrueExtents`. App 3020
+  green, build clean, smoke exit 0.
 - 2026-10-28: **Owner: keep the formation the same while moving it; make the solver an option.** Even
   steadied, the default re-form was awkward: a slight mouse move tipped the travel heading past the
   stacking angle and the ranks visibly re-spaced (screenshots 20:23:45 and 20:23:58). Now:

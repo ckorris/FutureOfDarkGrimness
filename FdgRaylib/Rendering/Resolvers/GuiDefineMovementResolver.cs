@@ -935,11 +935,12 @@ public class GuiDefineMovementResolver
         // rest re-form the unit into a FormationLibrary shape as it moves.
         var (rotationDelta, formationDelta) = GroupInput.Read(!io.WantCaptureMouse, !io.WantCaptureKeyboard);
         if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
+        // #409: the catalog is built at the bases' true extents and the standard spacing, and a pick is laid
+        // out by GroupReform below, so a picked formation is spaced exactly like a re-form. (Circumscribing
+        // radii spaced a 35x60mm rider as if it were a 70mm round base.)
         if (_formationCycle == null)
-        {
-            var cycleRadii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
-            _formationCycle = FormationCycle.Build(cycleRadii, cycleRadii, cycleRadii, includeCurrentShape: true);
-        }
+            _formationCycle = FormationCycle.FromCatalog(
+                GroupReform.LegalPartitions(models.Select(m => m.BaseShape).ToList()), includeCurrentShape: true);
         if (formationDelta != 0) _formationCycle.Cycle(formationDelta);
 
         var lastPositions = new List<Position>(models.Count);
@@ -973,8 +974,41 @@ public class GuiDefineMovementResolver
         // bases don't overlap (the authoritative move is re-validated shape-aware by the server). #150.
         var radii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
         IReadOnlyList<Position> basePositions = lastPositions;
+        var departing = models.Select(m => DepartingFacing(pt, paths, m)).ToList();
+        ModelID? heroId = request.UnitDataBinding.GetValue().JoinedHeroModelId;
+        int heroIndex = heroId is { } hid ? models.FindIndex(m => m.ID == hid) : -1;
+        Float2? morphHeading = null;
         if (_formationCycle is { IsCurrentShape: false })
         {
+            // #409: the picked shape is laid out across ONE heading at true extents, by the same code as a
+            // re-form: the unit's facing turned by the wheel, or with "Face the move" on, the steadied
+            // direction of travel. Already oriented, so no rotation is applied on top below.
+            Position c0 = GroupFormationUtilities.Centroid(lastPositions);
+            Float2 heading;
+            if (_reformToTurn)
+            {
+                float mtx = 0f, mtz = 0f;
+                if (overTable && !io.WantCaptureMouse)
+                {
+                    var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+                    mtx = mx - c0.x;
+                    mtz = mz - c0.z;
+                }
+                heading = RotateFloat2(SteadyTravel(mtx, mtz, departing).travel, _groupFacingAngle);
+            }
+            else
+                heading = RotateFloat2(AverageFacing(departing), _groupRotation);
+            GroupReform.Prepared? prepared = PrepareReform(models, lastPositions, heading, heroIndex);
+            if (prepared?.SlotsFor(_formationCycle.Selected.Name) is { } slots)
+            {
+                basePositions = slots;
+                morphHeading = prepared.Heading;
+            }
+        }
+        if (_formationCycle is { IsCurrentShape: false } && morphHeading == null)
+        {
+            // Fallback for a pick GroupReform could not lay out legally (mixed bases): the old
+            // circumscribing-radius layout, facing the direction of travel.
             // #277: a picked formation becomes the base shape; the rigid transform + budget solve then
             // carry the unit into it. The two-array PlanGroupMove measures each model's travel from its
             // real start — the same mechanism the coherency repair rides — so re-forming can never push
@@ -987,7 +1021,7 @@ public class GuiDefineMovementResolver
                 formed[i] = new Position(c0.x + offsets[i].dx, c0.z + offsets[i].dz);
             basePositions = formed;
         }
-        else if (CheckCohesion(startPairs).Any)
+        else if (morphHeading == null && CheckCohesion(startPairs).Any)
         {
             basePositions = GroupFormationUtilities.RepairCoherencyByContraction(
                 lastPositions, radii,
@@ -997,6 +1031,7 @@ public class GuiDefineMovementResolver
 
         Position pivot = GroupFormationUtilities.Centroid(basePositions);
         float cos = MathF.Cos(_groupRotation), sin = MathF.Sin(_groupRotation);
+        if (morphHeading != null) { cos = 1f; sin = 0f; } // the wheel is already in the layout's heading
 
         // Desired translation moves the centroid under the cursor (none when the mouse is off-table).
         float desiredTx = 0f, desiredTz = 0f;
@@ -1013,7 +1048,7 @@ public class GuiDefineMovementResolver
         // neighbours, or the wheel's arc runs an outer model out of move - re-forms the unit to face the
         // heading instead of refusing. The re-formed shape becomes the base of the same two-array solve,
         // already oriented, so every clamp and gate below runs on it unchanged.
-        Float2? reformHeading = null;
+        Float2? reformHeading = morphHeading;
         string? reformName = null;
         // #409: by default the unit's current shape moves as one rigid body - the drag slides it, the wheel
         // turns it, and each base keeps its own facing turned by the wheel, so a step can never swing a
@@ -1031,20 +1066,10 @@ public class GuiDefineMovementResolver
             // The heading is the direction from the unit's centre to the cursor, which spins wildly for a
             // cursor near the centre - and a re-formed unit is laid out along it, so the whole formation
             // spun too. Inside a small radius the last steady direction holds (the wheel still turns it).
-            bool steady = desiredTx * desiredTx + desiredTz * desiredTz >= ReformSteadyRadius * ReformSteadyRadius;
-            Float2 travel;
-            if (steady)
-            {
-                float len = MathF.Sqrt(desiredTx * desiredTx + desiredTz * desiredTz);
-                travel = new Float2(desiredTx / len, desiredTz / len);
-                _reformHeldTravel = travel;
-            }
-            else
-                travel = _reformHeldTravel ?? GroupFormationUtilities.GroupHeading(
-                    lastPositions, lastPositions, models.Select(m => m.Facing).ToList());
+            var (travel, held) = SteadyTravel(desiredTx, desiredTz, departing);
             Float2 rigidHeading = RotateFloat2(travel, _groupFacingAngle);
             // Held, the heading no longer follows the step's own travel, so it is imposed on the step.
-            if (!steady && _reformHeldTravel != null) reformHeading = rigidHeading;
+            if (held) reformHeading = rigidHeading;
             var sharedFacing = Enumerable.Repeat(rigidHeading, models.Count).ToList();
             bool rigidClear = plan.WithinBudget;
             if (rigidClear)
@@ -1054,8 +1079,6 @@ public class GuiDefineMovementResolver
             {
                 Position? target = overTable && !io.WantCaptureMouse
                     ? new Position(pivot.x + desiredTx, pivot.z + desiredTz) : null;
-                ModelID? heroId = request.UnitDataBinding.GetValue().JoinedHeroModelId;
-                int heroIndex = heroId is { } h ? models.FindIndex(m => m.ID == h) : -1;
                 GroupReform.Prepared? prepared = PrepareReform(models, lastPositions, rigidHeading, heroIndex);
                 if (prepared?.Solve(budgets, target, preferred: _reformPreferred) is { } reform)
                 {
@@ -1373,6 +1396,33 @@ public class GuiDefineMovementResolver
     private const float ReformSteadyRadius = 2f;
     private Float2? _reformHeldTravel;
     private string? _reformPreferred;
+
+    /// <summary>
+    /// The direction of travel toward a cursor (<paramref name="tx"/>, <paramref name="tz"/>) from the unit's
+    /// centre, steadied: a cursor near the centre makes that direction spin, so inside
+    /// <see cref="ReformSteadyRadius"/> the last steady direction holds (<c>held</c> = true), falling back to
+    /// the unit's average facing before there is one.
+    /// </summary>
+    private (Float2 travel, bool held) SteadyTravel(float tx, float tz, IReadOnlyList<Float2> departing)
+    {
+        if (tx * tx + tz * tz >= ReformSteadyRadius * ReformSteadyRadius)
+        {
+            float len = MathF.Sqrt(tx * tx + tz * tz);
+            var travel = new Float2(tx / len, tz / len);
+            _reformHeldTravel = travel;
+            return (travel, false);
+        }
+        return _reformHeldTravel is { } held ? (held, true) : (AverageFacing(departing), false);
+    }
+
+    /// <summary>The unit's average facing; the first model's when they cancel out.</summary>
+    private static Float2 AverageFacing(IReadOnlyList<Float2> facings)
+    {
+        float x = 0f, z = 0f;
+        foreach (var f in facings) { x += f.X; z += f.Y; }
+        float len = MathF.Sqrt(x * x + z * z);
+        return len > 1e-3f ? new Float2(x / len, z / len) : facings[0];
+    }
 
     private GroupReform.Prepared? PrepareReform(IReadOnlyList<IModel> models, IReadOnlyList<Position> origins,
         Float2 heading, int heroIndex)

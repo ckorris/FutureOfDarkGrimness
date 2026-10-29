@@ -91,6 +91,11 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
   `FormationLibrary` partition at true extents. Models are assigned bottleneck-first, for the turn
   alone. The heading is held within 2" of the centre, and the shape and assignment are sticky, so the
   preview doesn't flicker. All gates still run on the result.
+- **One spacing for every shape (#409).** In movement, the Ctrl+Wheel catalog is
+  `GroupReform.LegalPartitions` (true extents, 0.1" gaps). A pick is laid out by `GroupReform` across
+  one heading: the unit's facing turned by the wheel, or the steadied travel direction with "Face the
+  move" on. It never uses the circumscribing-radius world-axis layout, except as a fallback. Re-form
+  candidates are never stretched to fit a heading, so spacing never varies with the cursor.
 - `_groupFacingAngle` resets on each committed step like `_groupRotation`: carrying it over turned a
   freshly wheeled unit sideways the moment it moved off. Live group facings are published per model
   (`_groupGhostFacings`) for the shared preview and the standoff check.

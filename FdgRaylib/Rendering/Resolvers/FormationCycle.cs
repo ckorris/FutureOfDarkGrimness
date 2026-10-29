@@ -48,6 +48,11 @@ internal sealed class FormationCycle
         return new FormationCycle(catalog, includeCurrentShape);
     }
 
+    /// <summary>A cycle over a ready-made catalog - the movement resolver's, built at true base extents
+    /// (#409) so a picked formation is spaced like a re-form.</summary>
+    public static FormationCycle FromCatalog(List<FormationLibrary.Formation> catalog, bool includeCurrentShape)
+        => new(catalog, includeCurrentShape);
+
     public int Count => _catalog.Count + (IncludesCurrentShape ? 1 : 0);
 
     public bool IsCurrentShape => IncludesCurrentShape && Index == 0;
