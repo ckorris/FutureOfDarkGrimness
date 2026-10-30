@@ -51,6 +51,17 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-29 (from #432): pricing of the range conditions (`attackingFromOver` / `attackedFromOver {9, 6}`). Done: the
+  shooting forecast (`ShootingForecast`) and every real stage read the shooting distance; `CombatMath`'s hit contexts
+  carry `DistanceInches`, so the shooting arm of the hit-side rules (Devout's extra hit, Havocbound's AP, Changebound's
+  -1, Guarded's +1) prices; the charge budgets the AI plans with include Highborn's +2" (`TacticalAnalysis.ChargeBudget`)
+  and Darkborn's -2" (`EffectiveChargeDistanceAgainst`), and `EffectiveRange` folds the range half. Not modelled:
+  (1) `CombatMath`'s melee contexts pass no `ChargeOriginDistanceInches`, so no charge arm prices (a Ferocious charge
+  looks like a plain one, a Changebound defender looks unprotected against a charge); (2) its `SaveRollCompleteContext`
+  passes no distance, so the save-side shooting arms (Infected / Violent / Warbound / Destroyer's extra wound,
+  Knightborn / Warding / Angelic Blessing's 6+ ignore) never price; (3) the morale estimates ignore Hive Bond / Hold
+  the Line / Valiant's +1; (4) the Combat Calculator has no charge-distance input, so its charge arms never fire.
+  Each is one argument on an existing context.
 - 2026-10-29 (from #431): parity status of the weapon-rule family. Done: Pierce's positive-modifier ignore folds
   through the shared `RollToHitStage.WholeAttackSaveModifier` in `CombatMath` and `ShootingForecast`; the AP and
   re-roll gates run through the same evaluation. Not modelled: Scourge's counted wounds in `CombatMath`'s melee

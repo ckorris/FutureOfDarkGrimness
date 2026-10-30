@@ -60,6 +60,17 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-29 (from #432): the range-conditional family is DONE for AoF: Lucky, Destroyer, Vinci Tech (+ helpers),
+  Empyrean Spirit, Angelic Blessing, Wild Veil and Royal Legion re-authored in `AofRuleSupplement.json`; the shared
+  names (Brutal, Ferocious, Havocbound, Piercing Warrior, Violent, Warbound, Changebound, Screened, Guarded, Sturdy,
+  Warding, Shrouded, Hold the Line, Valiant, Highborn, Extra Reach, Lustbound, Scurry, Shadowborn) are inherited from
+  the GDF file (Shadowborn moved there). Every AoF Boost is deleted. `AofBookOverrides`: Melee Shrouding (Chivalrous
+  Kingdoms, Dark Elves), Lustbound + Lustbound Boost (Giant Tribes Lust Disciples, Rift Daemons of Lust) and Warbound
+  Boost (War Disciples) removed - 3.6 AoF prints the common texts - and the three files left empty were deleted; the
+  remaining override files still use 3.5 book names ("Rift Daemons of Lust" is "Daemons of Lust" in 3.6), so their
+  Mind Control / Versatile Attack entries do not reach a 3.6 import until you rename them. Versatile Defense (AoF has
+  it too) is yours, see #434's note; so are Ossified and Warden (3.6: unconditional AP(-1), Fortified's shape - they
+  still carry the 3.5 `attackedFromOverInches(9)` gate).
 - 2026-10-29 (from #431): the weapon-rule family lives in `GdfRuleSupplement.json` and the AoF file inherits it
   (no AoF copies - `WeaponRules36ShippedDataTests` pins that). AoF-relevant leftovers: "Unwieldy on its weapons in
   melee" (Ogres' Unwieldy Debuff; GDF High Elf Fleets has the same Debuff and a spell granting it) - see #434's note; whoever lands first takes it.

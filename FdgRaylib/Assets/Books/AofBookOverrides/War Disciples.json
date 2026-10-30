@@ -44,28 +44,5 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "+1 to hit rolls when attacking, for this activation."
-  },
-  {
-    "name": "Warbound Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "addExtraWound",
-          "onRollValue": 2,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Warbound, the defender's unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
   }
 ]

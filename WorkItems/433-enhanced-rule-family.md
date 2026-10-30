@@ -73,6 +73,25 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Notes
 
+- 2026-10-29 (from #432): the base rules Enhanced X lifts are now authored on two conditions and one effect - name
+  them in whichever option you take. Conditions: `attackingFromOver {shootInches: 9, chargeInches: 6}` (Actor seat:
+  Devout, Ferocious, Brutal, Lucky, Havocbound, Piercing Warrior, Infected, Violent, Warbound, Destroyer, and the
+  "(Piercing)" / "(Precision)" helpers of Versatile Warrior / Watchborn / Vinci Tech) and `attackedFromOver
+  {shootInches: 9, chargeInches: 6}` (Subject seat: Changebound, Machine-Fog, Screened, Empyrean Spirit at the
+  hit-modifier hook, Guarded / Sturdy at hit-complete, Knightborn / Warding / Angelic Blessing's 6+ arm at
+  save-complete; and the tested unit at `Morale_OnPreMoraleTest` for Hive Bond, Hold the Line, Valiant). Every
+  "always ... (instead of only when shooting/charging from over 9"/6")" Enhanced rule removes exactly that conjunct
+  (Option A: the same entry with the gate dropped plus a `Not(UnitHasRule)` on the base; Option B: the complementary
+  arm, `Not(attackedFromOver ...)` beside the base's own gate). Effect: `rangeModifier {delta, chargeDelta,
+  minResultInches}` at `Shooting_OnRangeCheck` - Darkborn / Shadowborn / Shrouded / Wild Veil `{-4, -2, 6}` (Subject),
+  Highborn / Extra Reach / Royal Legion `{4, 2, 0}` (Actor). Range ops SUM, and the floor is the largest
+  `minResultInches` among reductions, so Option B's "-8"/-4" (instead of -4"/-2")" is a second `{-4, -2, 6}` and
+  "+8"/+4"" a second `{4, 2, 0}`; Lustbound / Scurry / Agile are three `movementBonus` entries (+1/+2/+2), whose sink
+  also sums. The 3.5 Boost definitions are DELETED (77 names, #432 D9) - read the old shapes from the parent of #432's
+  superproject commit if useful - and `BoostRuleCompositionTests`, the guard that caught "authored as the boosted total,
+  then ADDED to the base" (Devout + Devout Boost gave two extra hits on one 6), went with them: re-establish that guard
+  for the Enhanced family (the item's "no-stack test"). The three Feat helpers ("Speed Feat Boost" etc.) are not Boosts
+  and stay.
 - 2026-10-29 (from #418, its D2): the 3.5 Boost rules' 5-face entries (`UnmodifiedRollEquals(5)` +
   `AddExtraHit(5)` - Primal / Clan Warrior / Devout / Ferocious / Lucky / Royal Warrior Boost, Great
   Sergeant) add an extra hit for ANY natural 5, including a miss (a Fatigued unit's 5s always miss; so do a

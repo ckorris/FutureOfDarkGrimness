@@ -66,6 +66,22 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-29 (from #432): the range-conditional family is DONE in `GdfRuleSupplement.json` (Devout, Ferocious, Brutal,
+  Havocbound, Piercing Warrior, Infected, Warbound, Violent, Versatile Warrior + helpers / Aura / Buff, Watchborn,
+  Changebound, Machine-Fog, Screened, Guarded, Sturdy, Knightborn, Warding, Darkborn, Shadowborn (moved here from the
+  AoF file), Shrouded, Hive Bond, Hold the Line, Valiant, Highborn, Extra Reach, Lustbound, Scurry), and every `X Boost`
+  / `X Boost Aura` / `X Boost Buff` is deleted. Hive Bond / Hold the Line now carry the most-models gate #428 handed you
+  (its note 5) - nothing left there. Left for you: (1) Versatile Defense - 3.6 makes the pick per attack ("you may pick
+  a different effect each time the unit is attacked"), a defender decision inside the attack; its helpers still use
+  the 3.5 `attackedFromOverInches(9)` - when re-authoring, use `attackedFromOver {9, 6}` (#432 D8). (2) The shooting-only
+  "over 9"" rules (Precision Marksman, Piercing Marksman, Targeting Visor's reworded text) need no new primitive:
+  `distanceGreaterThan 9` with `not(isMelee)`, or `attackingFromOver {9, 1000}` if you prefer one vocabulary.
+  (3) Versatile Reach's text (not range-conditional; numbers unchanged). (4) Primeborn and Guardian (GDF; Ossified and
+  Warden on the AoF side) still carry the 3.5 `attackedFromOverInches(9)` gate, but 3.6 made them unconditional
+  ("When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)" -
+  Fortified's shape), so they are not range rules any more and were left to you. New kinds: conditions `attackingFromOver
+  {shootInches, chargeInches}` / `attackedFromOver {...}`, effect field `rangeModifier.chargeDelta` (semantics in #432
+  Notes and `Condition.cs` / `Effect.cs`).
 - 2026-10-29 (from #431): the weapon-rule family is DONE in `GdfRuleSupplement.json` (Anti-Cover + its three
   variants, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate, Demolish, Purge, Reap,
   Scourge, Unwieldy, Imprecise, Crossing Strike; Destructive and Disintegrate re-authored to 3.6). Left for you: the

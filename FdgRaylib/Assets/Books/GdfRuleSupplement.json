@@ -150,146 +150,17 @@
     "name": "Highborn",
     "passive": [
       {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "actionTypeIs",
-          "actionType": "Advance"
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Advance",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "actionTypeIs",
-          "actionType": "Rush"
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Rush",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "actionTypeIs",
-          "actionType": "Charge"
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Charge",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Moves +2\" when using Advance, and +2\" when using Rush/Charge."
-  },
-  {
-    "name": "Highborn Boost",
-    "passive": [
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "actionTypeIs",
-            "actionType": "Advance"
-          },
-          "right": {
-            "kind": "unitHasRule",
-            "ruleName": "Highborn"
-          }
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Advance",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "actionTypeIs",
-            "actionType": "Rush"
-          },
-          "right": {
-            "kind": "unitHasRule",
-            "ruleName": "Highborn"
-          }
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Rush",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "actionTypeIs",
-            "actionType": "Charge"
-          },
-          "right": {
-            "kind": "unitHasRule",
-            "ruleName": "Highborn"
-          }
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Charge",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this unit has Highborn, it moves +4\" on Advance and +4\" on Rush/Charge from Highborn (instead of only +2\" and +2\")."
-  },
-  {
-    "name": "Highborn Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
+        "hookID": "Shooting_OnRangeCheck",
         "condition": {
           "kind": "always"
         },
         "effect": {
-          "kind": "aura",
-          "ruleName": "Highborn Boost"
+          "kind": "rangeModifier",
+          "delta": 4,
+          "minResultInches": 0,
+          "chargeDelta": 2
         },
-        "lifetime": "UntilEndOfGame",
+        "lifetime": "ThisActivation",
         "seat": "Actor"
       }
     ],
@@ -297,7 +168,31 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its whole unit gain Highborn Boost."
+    "description": "This model gets +4\"/+2\" range when shooting/charging."
+  },
+  {
+    "name": "Extra Reach",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": 4,
+          "minResultInches": 0,
+          "chargeDelta": 2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model gets +4\"/+2\" range when shooting/charging."
   },
   {
     "name": "Re-Position Artillery",
@@ -348,7 +243,15 @@
       {
         "hookID": "Morale_OnPreMoraleTest",
         "condition": {
-          "kind": "always"
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "rollModifier",
@@ -363,53 +266,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Units where all models have this rule get +1 to morale test rolls."
-  },
-  {
-    "name": "Hive Bond Boost",
-    "passive": [
-      {
-        "hookID": "Morale_OnPreMoraleTest",
-        "condition": {
-          "kind": "unitHasRule",
-          "ruleName": "Hive Bond"
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Morale",
-          "delta": 1
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this unit has Hive Bond, it gets +2 to morale test rolls from Hive Bond (instead of only +1)."
-  },
-  {
-    "name": "Hive Bond Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Hive Bond Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its whole unit gain Hive Bond Boost."
+    "description": "If most models in this unit have this rule, they get +1 to Morale Test rolls when shot/charged from over 9\"/6\" away."
   },
   {
     "name": "Destructive",
@@ -851,8 +708,9 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "right": {
             "kind": "mostModelsHaveThisRule"
@@ -871,7 +729,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls ."
   },
   {
     "name": "Primeborn",
@@ -910,8 +768,9 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "right": {
             "kind": "mostModelsHaveThisRule"
@@ -930,7 +789,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This unit gets +1 to defense rolls when shot or charged from over 9 inches away."
+    "description": "If most models in this unit have this rule, they get +1 to Defense rolls when shot/charged from over 9\"/6\" away."
   },
   {
     "name": "Guardian",
@@ -969,8 +828,9 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "right": {
             "kind": "mostModelsHaveThisRule"
@@ -989,226 +849,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
-  },
-  {
-    "name": "Changebound Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "attackedFromOverInches",
-              "distanceInches": 9
-            }
-          },
-          "right": {
-            "kind": "mostModelsHaveThisRule"
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": -1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Enemies attacking this unit always get -1 to hit from Changebound (not only from over 9 inches away)."
-  },
-  {
-    "name": "Changebound Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Changebound Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Changebound Boost."
-  },
-  {
-    "name": "Guardian Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "attackedFromOverInches",
-              "distanceInches": 9
-            }
-          },
-          "right": {
-            "kind": "mostModelsHaveThisRule"
-          }
-        },
-        "effect": {
-          "kind": "reduceArmorPenetration",
-          "amount": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Hits on this unit always count as AP reduced by 1 from Guardian (not only from over 9 inches away)."
-  },
-  {
-    "name": "Guardian Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Guardian Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Guardian Boost."
-  },
-  {
-    "name": "Sturdy Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "attackedFromOverInches",
-              "distanceInches": 9
-            }
-          },
-          "right": {
-            "kind": "mostModelsHaveThisRule"
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Save",
-          "delta": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This unit always gets +1 to defense rolls from Sturdy (not only from over 9 inches away)."
-  },
-  {
-    "name": "Sturdy Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Sturdy Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Sturdy Boost."
-  },
-  {
-    "name": "Machine-Fog Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "attackedFromOverInches",
-              "distanceInches": 9
-            }
-          },
-          "right": {
-            "kind": "mostModelsHaveThisRule"
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": -1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Enemies attacking this unit always get -1 to hit from Machine-Fog (not only from over 9 inches away)."
-  },
-  {
-    "name": "Machine-Fog Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Machine-Fog Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Machine-Fog Boost."
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls ."
   },
   {
     "name": "Plaguebound",
@@ -1238,7 +879,33 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "mostModelsHaveThisRule"
+          "kind": "and",
+          "left": {
+            "kind": "isSpell"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
@@ -1246,7 +913,17 @@
         },
         "lifetime": "ThisAttack",
         "seat": "Subject"
-      },
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule takes wounds, roll one die for each. If the wound was from a spell, then it is ignored on a 2+. If the wound was not from a spell, and the unit was shot/charged from over 9\"/6\" away, then it is ignored on a 6+ instead."
+  },
+  {
+    "name": "Warding",
+    "passive": [
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
@@ -1260,7 +937,27 @@
         },
         "effect": {
           "kind": "ignoreWoundOnRoll",
-          "minRoll": 4
+          "minRoll": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 6
         },
         "lifetime": "ThisAttack",
         "seat": "Subject"
@@ -1270,7 +967,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Ignores each wound on a roll of 6+. Ignores each wound from a spell on a roll of 4+ instead."
+    "description": "When a unit where most models have this rule takes wounds, roll one die for each. If the wound was from a spell, then it is ignored on a 2+. If the wound was not from a spell, and the unit was shot/charged from over 9\"/6\" away, then it is ignored on a 6+ instead."
   },
   {
     "name": "Self-Repair",
@@ -1293,106 +990,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Ignores each wound on a roll of 6+."
-  },
-  {
-    "name": "Plaguebound Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": {
-          "kind": "mostModelsHaveThisRule"
-        },
-        "effect": {
-          "kind": "ignoreWoundOnRoll",
-          "minRoll": 5
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Ignores each wound on a roll of 5+."
-  },
-  {
-    "name": "Plaguebound Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Plaguebound Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Plaguebound Boost."
-  },
-  {
-    "name": "Self-Repair Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": {
-          "kind": "mostModelsHaveThisRule"
-        },
-        "effect": {
-          "kind": "ignoreWoundOnRoll",
-          "minRoll": 5
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Ignores each wound on a roll of 5+."
-  },
-  {
-    "name": "Self-Repair Boost Buff",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 12,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Friend",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "addRule",
-          "ruleName": "Self-Repair Boost",
-          "scope": "NextTrigger"
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Self-Repair Boost for its next relevant roll."
   },
   {
     "name": "Regeneration Buff",
@@ -1501,71 +1098,6 @@
     "description": "Each unmodified 6 to hit scores an extra hit."
   },
   {
-    "name": "Primal Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "unitHasRule",
-            "ruleName": "Primal"
-          },
-          "right": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 5
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 5,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Primal, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
-  },
-  {
-    "name": "Primal Boost Buff",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 12,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Friend",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "addRule",
-          "ruleName": "Primal Boost",
-          "scope": "NextTrigger"
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Primal Boost for its next relevant roll."
-  },
-  {
     "name": "Predator Shooter",
     "passive": [
       {
@@ -1621,59 +1153,6 @@
     "description": "This model and its unit gain Predator Shooter."
   },
   {
-    "name": "Clan Warrior Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "unitHasRule",
-            "ruleName": "Clan Warrior"
-          },
-          "right": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 5
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 5,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Clan Warrior, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
-  },
-  {
-    "name": "Clan Warrior Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Clan Warrior Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Clan Warrior Boost."
-  },
-  {
     "name": "Lustbound",
     "passive": [
       {
@@ -1700,7 +1179,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Rush",
-          "distanceInches": 3,
+          "distanceInches": 2,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1715,7 +1194,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Charge",
-          "distanceInches": 3,
+          "distanceInches": 2,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1726,7 +1205,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Moves moves +1 inches on Advance and +3 inches on Rush/Charge."
+    "description": "Moves +1\" when using Advance, and +2\" when using Rush/Charge."
   },
   {
     "name": "Scurry",
@@ -1740,7 +1219,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Advance",
-          "distanceInches": 2,
+          "distanceInches": 1,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1781,7 +1260,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Moves +2 inches on Advance and +2 inches on Rush/Charge."
+    "description": "Moves +1\" when using Advance, and +2\" when using Rush/Charge."
   },
   {
     "name": "Swift",
@@ -1803,181 +1282,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Ignores the movement penalty for Difficult terrain (as Strider)."
-  },
-  {
-    "name": "Lustbound Boost",
-    "passive": [
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "actionTypeIs",
-            "actionType": "Advance"
-          },
-          "right": {
-            "kind": "unitHasRule",
-            "ruleName": "Lustbound"
-          }
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Advance",
-          "distanceInches": 1,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "actionTypeIs",
-            "actionType": "Rush"
-          },
-          "right": {
-            "kind": "unitHasRule",
-            "ruleName": "Lustbound"
-          }
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Rush",
-          "distanceInches": 3,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "actionTypeIs",
-            "actionType": "Charge"
-          },
-          "right": {
-            "kind": "unitHasRule",
-            "ruleName": "Lustbound"
-          }
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Charge",
-          "distanceInches": 3,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Lustbound, it moves +2 inches on Advance and +6 inches on Rush/Charge (instead of only +1 and +3)."
-  },
-  {
-    "name": "Lustbound Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Lustbound Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Lustbound Boost."
-  },
-  {
-    "name": "Scurry Boost",
-    "passive": [
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "actionTypeIs",
-          "actionType": "Advance"
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Advance",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "actionTypeIs",
-          "actionType": "Rush"
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Rush",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Movement_OnMoveActionDeclared",
-        "condition": {
-          "kind": "actionTypeIs",
-          "actionType": "Charge"
-        },
-        "effect": {
-          "kind": "movementBonus",
-          "actionType": "Charge",
-          "distanceInches": 2,
-          "minResultInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Moves a further +2 inches on Advance and +2 inches on Rush/Charge, on top of Scurry."
-  },
-  {
-    "name": "Scurry Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Scurry Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Scurry Boost."
   },
   {
     "name": "Swift Aura",
@@ -2041,7 +1345,9 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "always"
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
         },
         "effect": {
           "kind": "addExtraWound",
@@ -2056,7 +1362,32 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each of the defender's unmodified Defense rolls of 1 deals an extra wound."
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified results of 1 to block hits from weapons deal 1 extra wound."
+  },
+  {
+    "name": "Violent",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified results of 1 to block hits from weapons deal 1 extra wound."
   },
   {
     "name": "Infected",
@@ -2064,7 +1395,9 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "always"
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
         },
         "effect": {
           "kind": "addExtraWound",
@@ -2079,7 +1412,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each of the defender's unmodified Defense rolls of 1 deals an extra wound."
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified results of 1 to block hits from weapons deal 1 extra wound."
   },
   {
     "name": "Shred Mark",
@@ -2120,8 +1453,16 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "unmodifiedRollEquals",
-          "dieValue": 6
+          "kind": "and",
+          "left": {
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          }
         },
         "effect": {
           "kind": "addExtraHit",
@@ -2136,7 +1477,39 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit scores an extra hit."
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified result of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
+  },
+  {
+    "name": "Brutal",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified result of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
   },
   {
     "name": "Devout",
@@ -2144,8 +1517,16 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "unmodifiedRollEquals",
-          "dieValue": 6
+          "kind": "and",
+          "left": {
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          }
         },
         "effect": {
           "kind": "addExtraHit",
@@ -2160,7 +1541,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit scores an extra hit."
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified result of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
   },
   {
     "name": "Point-Blank Surge",
@@ -2204,126 +1585,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "When shooting enemies within 12 inches, each unmodified 6 to hit scores an extra hit."
-  },
-  {
-    "name": "Devout Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "unitHasRule",
-              "ruleName": "Devout"
-            },
-            "right": {
-              "kind": "unmodifiedRollEquals",
-              "dieValue": 5
-            }
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 5,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Devout and shoots or charges enemies over 9 inches away, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
-  },
-  {
-    "name": "Ferocious Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "unitHasRule",
-              "ruleName": "Ferocious"
-            },
-            "right": {
-              "kind": "unmodifiedRollEquals",
-              "dieValue": 5
-            }
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 5,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Ferocious and shoots or charges enemies over 9 inches away, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
-  },
-  {
-    "name": "Devout Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Devout Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Devout Boost."
-  },
-  {
-    "name": "Ferocious Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Ferocious Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Ferocious Boost."
   },
   {
     "name": "Point-Blank Piercing",
@@ -2452,23 +1713,9 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "or",
-          "left": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "distanceGreaterThan",
-              "distanceInches": 9
-            }
-          },
-          "right": {
-            "kind": "isCharging"
-          }
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
         },
         "effect": {
           "kind": "rollModifier",
@@ -2483,7 +1730,32 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When shooting enemies over 9 inches away, or when charging, this model's weapons get AP(+1)."
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, its weapons get AP(+1)."
+  },
+  {
+    "name": "Piercing Warrior",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, its weapons get AP(+1)."
   },
   {
     "name": "Targeting Visor",
@@ -2543,142 +1815,6 @@
     "engineArgumentCount": 0,
     "valence": "Negative",
     "description": "This model gets -1 to hit rolls when shooting."
-  },
-  {
-    "name": "Havocbound Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "unitHasRule",
-            "ruleName": "Havocbound"
-          },
-          "right": {
-            "kind": "not",
-            "inner": {
-              "kind": "or",
-              "left": {
-                "kind": "and",
-                "left": {
-                  "kind": "not",
-                  "inner": {
-                    "kind": "isMelee"
-                  }
-                },
-                "right": {
-                  "kind": "distanceGreaterThan",
-                  "distanceInches": 9
-                }
-              },
-              "right": {
-                "kind": "isCharging"
-              }
-            }
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Save",
-          "delta": -1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Havocbound, it always gets AP(+1) (not only when shooting over 9 inches away, or when charging)."
-  },
-  {
-    "name": "Havocbound Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Havocbound Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Havocbound Boost."
-  },
-  {
-    "name": "Targeting Visor Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "unitHasRule",
-            "ruleName": "Targeting Visor"
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "not",
-              "inner": {
-                "kind": "distanceGreaterThan",
-                "distanceInches": 9
-              }
-            }
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Targeting Visor, it always gets +1 to hit when shooting (not only over 9 inches away)."
-  },
-  {
-    "name": "Targeting Visor Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Targeting Visor Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Targeting Visor Boost."
   },
   {
     "name": "Unstoppable Mark",
@@ -3141,7 +2277,15 @@
       {
         "hookID": "Morale_OnPreMoraleTest",
         "condition": {
-          "kind": "always"
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "rollModifier",
@@ -3156,16 +2300,23 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This unit gets +1 to morale test rolls."
+    "description": "If most models in this unit have this rule, they get +1 to Morale Test rolls when shot/charged from over 9\"/6\" away."
   },
   {
-    "name": "Hold the Line Boost",
+    "name": "Valiant",
     "passive": [
       {
         "hookID": "Morale_OnPreMoraleTest",
         "condition": {
-          "kind": "unitHasRule",
-          "ruleName": "Hold the Line"
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "rollModifier",
@@ -3180,29 +2331,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this unit has Hold the Line, it gets +2 to morale test rolls from Hold the Line (instead of only +1)."
-  },
-  {
-    "name": "Hold the Line Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Hold the Line Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Hold the Line Boost."
+    "description": "If most models in this unit have this rule, they get +1 to Morale Test rolls when shot/charged from over 9\"/6\" away."
   },
   {
     "name": "Courage Buff",
@@ -4064,8 +3193,9 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "right": {
             "kind": "mostModelsHaveThisRule"
@@ -4084,7 +3214,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This unit gets +1 to defense rolls when shot or charged from over 9 inches away."
+    "description": "If most models in this unit have this rule, they get +1 to Defense rolls when shot/charged from over 9\"/6\" away."
   },
   {
     "name": "Guarded Buff",
@@ -4246,98 +3376,6 @@
     "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Increased Shooting Range for its next relevant roll."
   },
   {
-    "name": "Warbound Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": {
-          "kind": "attackedFromOverInches",
-          "distanceInches": 9
-        },
-        "effect": {
-          "kind": "addExtraWound",
-          "onRollValue": 2,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Warbound and shoots or charges enemies over 9 inches away, the defender's unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
-  },
-  {
-    "name": "Warbound Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Warbound Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Warbound Boost."
-  },
-  {
-    "name": "Infected Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": {
-          "kind": "attackedFromOverInches",
-          "distanceInches": 9
-        },
-        "effect": {
-          "kind": "addExtraWound",
-          "onRollValue": 2,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Infected and shoots or charges enemies over 9 inches away, the defender's unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
-  },
-  {
-    "name": "Infected Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Infected Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Infected Boost."
-  },
-  {
     "name": "Versatile Attack (Piercing)",
     "passive": [
       {
@@ -4451,8 +3489,9 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "attackedFromOverInches",
-          "distanceInches": 9
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
         },
         "effect": {
           "kind": "rollModifier",
@@ -4467,7 +3506,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "AP(+1) when shooting or charging enemies over 9 inches away, for this activation."
+    "description": "AP(+1) when shooting/charging enemies over 9\"/6\" away, for this activation."
   },
   {
     "name": "Watchborn (Precision)",
@@ -4475,8 +3514,9 @@
       {
         "hookID": "Shooting_OnHitRollModifier",
         "condition": {
-          "kind": "attackedFromOverInches",
-          "distanceInches": 9
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
         },
         "effect": {
           "kind": "rollModifier",
@@ -4491,7 +3531,173 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "+1 to hit when shooting or charging enemies over 9 inches away, for this activation."
+    "description": "+1 to hit rolls when shooting/charging enemies over 9\"/6\" away, for this activation."
+  },
+  {
+    "name": "Versatile Warrior",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Versatile Warrior (Piercing)",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "always"
+        },
+        "label": "AP(+1)"
+      },
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Versatile Warrior (Precision)",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "always"
+        },
+        "label": "+1 to hit"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is activated, pick one effect: until the end of the activation, when shooting/charging enemies over 9\"/6\" away, all models with this rule in it either get AP(+1) or get +1 to hit rolls."
+  },
+  {
+    "name": "Versatile Warrior (Piercing)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "AP(+1) when shooting/charging enemies over 9\"/6\" away, for this activation."
+  },
+  {
+    "name": "Versatile Warrior (Precision)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "+1 to hit rolls when shooting/charging enemies over 9\"/6\" away, for this activation."
+  },
+  {
+    "name": "Versatile Warrior Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Versatile Warrior"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Versatile Warrior."
+  },
+  {
+    "name": "Versatile Warrior Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Versatile Warrior",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Versatile Warrior once (next time the effect would apply)."
   },
   {
     "name": "Watchborn",
@@ -4551,7 +3757,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(+1) or +1 to hit rolls."
+    "description": "When this unit is activated, pick one effect: until the end of the activation, when shooting/charging enemies over 9\"/6\" away, all models with this rule in it either get AP(+1) or get +1 to hit rolls."
   },
   {
     "name": "Versatile Defense (Guard)",
@@ -5100,31 +4306,6 @@
     "description": "When this unit is activated, it may place all its models anywhere fully within D3+1 inches of their position."
   },
   {
-    "name": "Rapid Blink Boost",
-    "passive": [
-      {
-        "hookID": "Activation_OnActivationStart",
-        "condition": {
-          "kind": "mostModelsHaveThisRule"
-        },
-        "effect": {
-          "kind": "repositionAtActivation",
-          "distance": {
-            "kind": "d3"
-          },
-          "plusInches": 0
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Rapid Blink, it may be placed within 2D3 inches instead of only D3 inches."
-  },
-  {
     "name": "Bounding Aura",
     "passive": [
       {
@@ -5145,28 +4326,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Bounding."
-  },
-  {
-    "name": "Rapid Blink Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Rapid Blink Boost"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Rapid Blink Boost."
   },
   {
     "name": "Banner",
@@ -6409,8 +5568,9 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "right": {
             "kind": "mostModelsHaveThisRule"
@@ -6429,7 +5589,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls ."
   },
   {
     "name": "Screened Aura",
@@ -7161,74 +6321,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit get Dash."
-  },
-  {
-    "name": "Mischievous Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": { "kind": "attackedFromOverInches", "distanceInches": 9 },
-        "effect": { "kind": "reroll", "roll": "Save", "condition": { "kind": "onUnmodifiedValue", "minValue": 5 } },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Mischievous, when it shoots or charges enemies over 9 inches away, enemies taking hits from it must re-roll successful unmodified defense results of 5-6. Save re-rolls compose by the widest band, so this states the full 5-6 rather than an increment."
-  },
-  {
-    "name": "Mischievous Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": { "kind": "always" },
-        "effect": { "kind": "aura", "ruleName": "Mischievous Boost" },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit get Mischievous Boost."
-  },
-  {
-    "name": "Scrapper Boost",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": { "kind": "attackedFromOverInches", "distanceInches": 9 },
-        "effect": { "kind": "reroll", "roll": "Save", "condition": { "kind": "onUnmodifiedValue", "minValue": 5 } },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If this model has Scrapper, when it shoots or charges enemies over 9 inches away, enemies taking hits from it must re-roll successful unmodified defense results of 5-6. Save re-rolls compose by the widest band, so this states the full 5-6 rather than an increment."
-  },
-  {
-    "name": "Scrapper Boost Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": { "kind": "always" },
-        "effect": { "kind": "aura", "ruleName": "Scrapper Boost" },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit get Scrapper Boost."
   },
   {
     "name": "Mind Control",
@@ -8000,5 +7092,77 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, when this model moves through enemy units, pick one of them and attack it with this weapon as if it was shooting. This weapon may only be used in this way."
+  },
+  {
+    "name": "Darkborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule is targeted by an enemy unit for shooting/charging, that enemy unit gets -4\"/-2\" range to a min. of 6\"."
+  },
+  {
+    "name": "Shadowborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule is targeted by an enemy unit for shooting/charging, that enemy unit gets -4\"/-2\" range to a min. of 6\"."
+  },
+  {
+    "name": "Shrouded",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule is targeted by an enemy unit for shooting/charging, that enemy unit gets -4\"/-2\" range to a min. of 6\"."
   }
 ]

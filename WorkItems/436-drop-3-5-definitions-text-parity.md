@@ -63,6 +63,14 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-29 (from #432): yours to delete once nothing old needs them: the catalog's "Darkborn (Offensive)" / "Darkborn
+  (Defensive)" (3.6 has one bare "Darkborn", defined in the GDF supplement; the importer no longer rewrites to them),
+  and - with the bundled books re-baked - the dropped 3.5 rules still on `attackedFromOverInches` (Mobile Artillery,
+  Versatile Attack + helpers; the other users, Versatile Defense's helpers and Primeborn / Guardian / Ossified / Warden,
+  are #434/#435 re-authors). Keep the `attackedFromOverInches` KIND and
+  `IHasAttackOriginDistance`: old army files embed them. Text parity: Changebound / Machine-Fog / Screened / Empyrean
+  Spirit carry OPR's verbatim "-1 to hit rolls ." (stray space; #432 D12) - normalise or keep, owner's call. The family
+  #432 re-authored already carries 3.6 text verbatim, so the parity pass can skip it.
 - 2026-10-29 (from #431): no 3.6 book names "Ignores Cover", "Ignores Cover when Shooting", "Ignores Cover Aura",
   "Ignores Cover when Shooting Aura", "Ignores Regeneration" or "Ignores Regeneration in Melee" - their 3.6 renames
   (Anti-Cover + variants, Anti-Regen) are in the GDF supplement, so the six old definitions are yours to delete.
