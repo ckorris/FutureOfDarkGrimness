@@ -267,7 +267,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | todo |
 | 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | todo |
 | 446 | Units that activate in Dangerous terrain take the test (pre-existing gap found by #420) | 2 | #420 | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4) |
-| 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | todo |
+| 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | done 2026-10-30 (owner review: D1, D3) |
 
 Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, the code anchors
 (Appendix A), the acceptance test, and the branch rules restated.
@@ -277,7 +277,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file

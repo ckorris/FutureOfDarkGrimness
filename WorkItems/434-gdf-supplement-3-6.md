@@ -66,6 +66,15 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30 (from #447): Ravage, when you re-author it (3.6 book rule in 13 GDF + 9 AoF 3.6.0 books: "Once per round,
+  when it's this model's turn to strike in melee, roll X dice before attacking, unless this unit is Fatigued. For each
+  6+ the target takes one wound."), has the per-model gaps #447 fixed for Impact: `ResolveRavageWoundsStage` evaluates
+  the Actor without its models, so a joined hero's Ravage (relocated onto its model) never fires; and
+  `Effect.DealAutoWounds` counts every living model for a unit-attached copy (a joined hero included) and counts a
+  weapon-carried copy by definition rather than by attachment (a resumed game, which rehydrates one attachment per
+  weapon, would multiply it - #422 D3). Template: `Effect.ChargeImpactHits.CountCarriers` and
+  `ResolveImpactHitsStage.ChargerParticipant`. Not changed in #447; the impact stage now narrates only impact ops
+  (#447 D4), so a hero's Ravage no longer shows up there either.
 - 2026-10-30 (orchestrator, relaying #429's findings that were recorded on #436 only): Mind Control's 3.6 text adds
   "Units may only be moved once per round in this way." (a behaviour change - needs a per-round moved-by-Mind-Control
   gate, not just text); Spell Resistance is NEW in 3.6 with no definition anywhere; Casting Debuff appears in no

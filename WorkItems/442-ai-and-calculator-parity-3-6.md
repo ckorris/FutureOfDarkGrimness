@@ -51,6 +51,16 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #447): Impact(X) is per model now (X dice per living model carrying it; a joined hero's own Impact
+  adds; Brace subtracts from the total). Done (pinned): `CombatMath.EstimateMelee` and the calculator's read-only
+  pre-check take the charge-contact participants from the stage (`ResolveImpactHitsStage.ChargerParticipant` /
+  `ChargeContactParticipants`), so both sum per model through the same effect, and the calculator's Impact row shows
+  the pool as a chip ("5 models x Impact(1)"); pins `CombatMathPinTests.EstimateMelee_ImpactDice_SumPerModel_
+  AJoinedHerosImpactAdds` (+2 re-pinned) and `CombatCalculatorTests` (+2). The #422 D8 note below is resolved. Open for
+  you: (1) if the owner overrules #447 D1 (count only the models in melee range at charge contact), `CombatMath` has no
+  charge-contact positions and needs its own approximation; (2) multi-model Impact units are worth far more on the
+  charge than before (the built-in 5 Warriors with Impact(2) went from 2 dice to 10) - re-run the `--ai-profile` bench
+  (goal item 6) with that in mind; (3) nothing else in `Ai/` reads Impact's X directly (grepped).
 - 2026-10-30 (from #446): Dangerous terrain "or that activate in it". A unit with any living model's base in a
   `Dangerous` piece now takes the #420 test (one d6 per wound to destroy it, each 1 a wound) FIRST THING in its
   activation (`ActivatedInDangerousTerrainStage`), and one test per activation covers both triggers (a move out

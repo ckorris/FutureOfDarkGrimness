@@ -73,6 +73,17 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #447): Impact / Heavy Impact are per model, and a one-model Impact item now compiles to a #407 model
+  grant (`ListCompiler.ModelPersonalRuleNames`) unless every model still holds the item after the purchase. The
+  re-bake brings 42 multi-model profile carriers (3.6.0 snapshots; today's bundled books have 73), 23 more multi-model
+  units whose profile ITEM gives every model Impact (mounts / Trample; they fold unit-wide, which is right), and 4
+  per-model items: Orc Marauders Hover Bikers "Rotor Blade Attack (Impact(3))", Ratmen Storm Ogres "Replace any ... ->
+  Roller-Fists (Heavy Impact(3))" (both become grants), and Dragon Empire Dragonkin Horsemen / Ghostly Undead Dread
+  Knights "Replace one ... and Trample -> Trample (Impact(1))" (the guard keeps them unit-wide). Re-pin
+  `FdgRaylib.Tests/PerModelImpactShippedDataTests.ThePerModelItemPopulation_IsTheTwoBikers` (it lists the bundled 3.5
+  sites, OrcMarauders Hover Bikers and DarkElfRaiders Jetbike Riders) after checking the re-baked sites pass
+  `EveryPerModelItem_IsAOneModelGrant_AndRollsOnlyThatModelsDice` (it already expects the Trample swap to stay
+  unit-wide); `EveryMultiModelProfileCarrier_RollsXPerModel` asserts at least 42 carriers.
 - 2026-10-29 (from #431): `WeaponEffectAssigner.CarriesStrafing` (#379) gives range-0 bomb weapons the aerial-bomb
   effect set by matching the rule NAME "Strafing"; 3.6 bombs carry "Crossing Strike" instead, so add that name to the
   check when the effect-set keywords are redone, or the re-baked bombs fall back to a melee look.
