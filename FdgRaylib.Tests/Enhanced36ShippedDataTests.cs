@@ -99,6 +99,66 @@ public class Enhanced36ShippedDataTests
             ELifetime.ThisAttack),
     };
 
+    private static readonly Condition NotSpell = new Condition.IsNotSpell();
+
+    private static HookEntry[] MinusHit(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollModifier, And(Has(x), And(Not(Attacked), MostModels)),
+            new Effect.RollModifier(ERollKind.Hit, -1), ELifetime.ThisAttack, ERuleSeat.Subject),
+    };
+
+    private static HookEntry[] PlusDefense(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollComplete, And(Has(x), And(Not(Attacked), MostModels)),
+            new Effect.RollModifier(ERollKind.Save, 1), ELifetime.ThisAttack, ERuleSeat.Subject),
+    };
+
+    private static HookEntry[] Ward(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnSaveRollComplete, And(Has(x), And(And(ShotOrCharged, Not(Attacked)), MostModels)),
+            new Effect.IgnoreWoundOnRoll(6), ELifetime.ThisAttack, ERuleSeat.Subject),
+    };
+
+    private static HookEntry[] Morale(string x) => new[]
+    {
+        new HookEntry(EHookID.Morale_OnPreMoraleTest, And(Has(x), And(Not(Attacked), MostModels)),
+            new Effect.RollModifier(ERollKind.Morale, 1), ELifetime.ThisActivation),
+    };
+
+    private static HookEntry[] ExtraHit(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollComplete,
+            And(Has(x), And(And(Not(Attacking), NotSpell), new Condition.UnmodifiedRollEquals(6))),
+            new Effect.AddExtraHit(6, 1), ELifetime.ThisAttack),
+    };
+
+    private static HookEntry[] ApPlusOne(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollComplete, And(Has(x), And(Not(Attacking), NotSpell)),
+            new Effect.RollModifier(ERollKind.Save, -1), ELifetime.ThisAttack),
+    };
+
+    private static HookEntry[] ExtraWound(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnSaveRollComplete, And(Has(x), And(Not(Attacking), NotSpell)),
+            new Effect.AddExtraWound(1, 1), ELifetime.ThisAttack),
+    };
+
+    private static HookEntry[] Pick(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollComplete, And(Has($"{x} (Piercing)"), And(Not(Attacking), NotSpell)),
+            new Effect.RollModifier(ERollKind.Save, -1), ELifetime.ThisAttack),
+        new HookEntry(EHookID.Shooting_OnHitRollModifier, And(Has($"{x} (Precision)"), Not(Attacking)),
+            new Effect.RollModifier(ERollKind.Hit, 1), ELifetime.ThisAttack),
+    };
+
+    private static HookEntry[] PlusHit(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollModifier,
+            And(Has(x), Not(And(Not(new Condition.IsMelee()), new Condition.DistanceGreaterThan(9f)))),
+            new Effect.RollModifier(ERollKind.Hit, 1), ELifetime.ThisAttack),
+    };
+
     private static HookEntry[] TwoD3(string x) => new[]
     {
         new HookEntry(EHookID.Activation_OnActivationStart, And(Has(x), MostModels),
@@ -126,6 +186,33 @@ public class Enhanced36ShippedDataTests
     private const string PostCombatSixText =
         "If most models in this unit have {X}, they may move by up to 6\" from {X} (instead of only 3\").";
     private const string TwoD3Text = "If this model has {X}, it may move by up to 2D3\" from {X} (instead of only D3\").";
+    private const string MinusHitText =
+        "If most models in this unit have {X}, enemies attacking them always get -1 to hit rolls from {X} (instead of " +
+        "only when shooting/charging from over 9\"/6\" away).";
+    private const string PlusDefenseText =
+        "If most models in this unit have {X}, they always get +1 to Defense rolls from {X} (instead of only when " +
+        "shot/charged from over 9\"/6\" away).";
+    private const string WardText =
+        "If most models in this unit have {X}, they always ignore shooting/charging wounds on rolls of 6+ from {X} " +
+        "(instead of only when shot/charged from over 9\"/6\" away).";
+    private const string MoraleText =
+        "If most models in this unit have {X}, they always get +1 to Morale Test rolls from {X} (instead of only when " +
+        "shot/charged from over 9\"/6\" away).";
+    private const string ExtraHitText =
+        "If this model has {X}, the target always takes hits on unmodified hit results of 6 from {X} (instead of only " +
+        "when shooting/charging enemies over 9\"/6\" away).";
+    private const string ApPlusOneText =
+        "If this model has {X}, it always gets AP(+1) from {X} (instead of only when shooting/charging enemies over " +
+        "9\"/6\" away).";
+    private const string ExtraWoundText =
+        "If this model has {X}, enemies always take wounds on unmodified results of 1 to block from {X} (instead of " +
+        "only when shooting/charging enemies over 9\"/6\" away).";
+    // OPR's own text names the mechanic ("Versatile Attack") for all three pick rules; kept verbatim (#435 note).
+    private const string PickText =
+        "If this model has Versatile Attack, it always gets either AP(+1) or +1 to hit rolls from Versatile Attack " +
+        "(instead of only when shooting/charging enemies over 9\"/6\" away).";
+    private const string PlusHitText =
+        "If this model has {X}, it always gets +1 to hit rolls from {X} (instead of only when shooting over 9\" away).";
 
     private static string Text(string template, string x) => template.Replace("{X}", x);
 
@@ -160,6 +247,32 @@ public class Enhanced36ShippedDataTests
         foreach (string x in new[] { "Wolfborn", "Nimble", "Rapid Blink" })
             yield return Case(Gdf, x, Text(TwoD3Text, x), TwoD3(x));
         yield return Case(Aof, "Wave-Step", Text(TwoD3Text, "Wave-Step"), TwoD3("Wave-Step"));
+        // C: the "always" complements.
+        foreach (string x in new[] { "Changebound", "Machine-Fog", "Screened" })
+            yield return Case(Gdf, x, Text(MinusHitText, x), MinusHit(x));
+        yield return Case(Aof, "Empyrean Spirit", Text(MinusHitText, "Empyrean Spirit"), MinusHit("Empyrean Spirit"));
+        foreach (string x in new[] { "Guarded", "Sturdy" })
+            yield return Case(Gdf, x, Text(PlusDefenseText, x), PlusDefense(x));
+        foreach (string x in new[] { "Knightborn", "Warding" })
+            yield return Case(Gdf, x, Text(WardText, x), Ward(x));
+        yield return Case(Aof, "Angelic Blessing", Text(WardText, "Angelic Blessing"), Ward("Angelic Blessing"));
+        foreach (string x in new[] { "Hive Bond", "Hold the Line", "Valiant" })
+            yield return Case(Gdf, x, Text(MoraleText, x), Morale(x));
+        foreach (string x in new[] { "Devout", "Ferocious", "Brutal" })
+            yield return Case(Gdf, x, Text(ExtraHitText, x), ExtraHit(x));
+        yield return Case(Aof, "Lucky", Text(ExtraHitText, "Lucky"), ExtraHit("Lucky"));
+        foreach (string x in new[] { "Havocbound", "Piercing Warrior" })
+            yield return Case(Gdf, x, Text(ApPlusOneText, x), ApPlusOne(x));
+        foreach (string x in new[] { "Infected", "Warbound", "Violent" })
+            yield return Case(Gdf, x, Text(ExtraWoundText, x), ExtraWound(x));
+        yield return Case(Aof, "Destroyer", Text(ExtraWoundText, "Destroyer"), ExtraWound("Destroyer"));
+        foreach (string x in new[] { "Versatile Warrior", "Watchborn" })
+            yield return new TestCaseData(Gdf, $"Enhanced {x}", $"{x} (", PickText, Pick(x)).SetArgDisplayNames($"Enhanced {x}");
+        yield return new TestCaseData(Aof, "Enhanced Vinci Tech", "Vinci Tech (", PickText, Pick("Vinci Tech"))
+            .SetArgDisplayNames("Enhanced Vinci Tech");
+        foreach (string x in new[] { "Targeting Visor", "Precision Marksman" })
+            yield return Case(Gdf, x, Text(PlusHitText, x), PlusHit(x));
+        yield return Case(Aof, "Buccaneer", Text(PlusHitText, "Buccaneer"), PlusHit("Buccaneer"));
     }
 
     private static TestCaseData Case(string file, string x, string text, HookEntry[] entries) =>
@@ -181,10 +294,11 @@ public class Enhanced36ShippedDataTests
             $"every entry is inert without {x}: the gate is a conjunct of each condition");
     }
 
-    // A UnitHasRule(x) in a conjunctive position (the And chain), the shape of every Enhanced entry.
+    // A UnitHasRule(x) in a conjunctive position (the And chain), the shape of every Enhanced entry. The pick rules gate
+    // each entry on one of the pick's helpers ("Versatile Warrior (Piercing)" / "(Precision)"), so their x is the prefix.
     private static bool Gates(Condition condition, string x) => condition switch
     {
-        Condition.UnitHasRule has => string.Equals(has.RuleName, x, StringComparison.OrdinalIgnoreCase),
+        Condition.UnitHasRule has => has.RuleName.StartsWith(x, StringComparison.OrdinalIgnoreCase),
         Condition.And and => Gates(and.Left, x) || Gates(and.Right, x),
         _ => false,
     };
@@ -295,6 +409,31 @@ public class Enhanced36ShippedDataTests
         sink.ApplyFrom(world.Evaluator.EvaluateAll(new RoundStartContext(unit), RuleParticipant.Actor(unit)));
 
         Assert.That(sink.Entries, Is.EqualTo(new[] { (TokenType.Shaken, 3) }));
+    }
+
+    [Test]
+    public void ShippedChangeboundAndEnhancedChangebound_MinusOneToHit_AtEveryDistance_Once()
+    {
+        var world = new World();
+        UnitData attacker = world.Unit();
+        UnitData daemons = world.Unit(Shipped(Gdf, "Changebound"), Shipped(Gdf, "Enhanced Changebound"));
+        UnitData pretender = world.Unit(Shipped(Gdf, "Enhanced Changebound"));
+
+        int NetHit(UnitData defender, HitRollModifierContext context)
+        {
+            var sink = new RollModifierSink();
+            sink.ApplyFrom(world.Evaluator.EvaluateAll(context, RuleParticipant.Actor(attacker),
+                RuleParticipant.Subject(defender, models: HeroStatRules.LivingModels(defender))));
+            return sink.Net(ERollKind.Hit);
+        }
+
+        Assert.That(NetHit(daemons, new HitRollModifierContext(attacker, daemons, 10f)), Is.EqualTo(-1), "the base arm");
+        Assert.That(NetHit(daemons, new HitRollModifierContext(attacker, daemons, 8f)), Is.EqualTo(-1), "the Enhanced arm");
+        Assert.That(NetHit(daemons, new HitRollModifierContext(attacker, daemons, 0.5f, IsMelee: true, IsCharging: true,
+            ChargeOriginDistanceInches: 7f)), Is.EqualTo(-1));
+        Assert.That(NetHit(daemons, new HitRollModifierContext(attacker, daemons, 0.5f, IsMelee: true, IsCharging: true,
+            ChargeOriginDistanceInches: 5f)), Is.EqualTo(-1));
+        Assert.That(NetHit(pretender, new HitRollModifierContext(attacker, pretender, 8f)), Is.EqualTo(0), "inert alone");
     }
 
     private static DiceResults TestFaces(params int[] faces)

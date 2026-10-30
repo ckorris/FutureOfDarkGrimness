@@ -9586,5 +9586,996 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "If this model has Rapid Blink, it may move by up to 2D3\" from Rapid Blink (instead of only D3\")."
+  },
+  {
+    "name": "Enhanced Changebound",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Changebound"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Changebound, enemies attacking them always get -1 to hit rolls from Changebound (instead of only when shooting/charging from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Machine-Fog",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Machine-Fog"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Machine-Fog, enemies attacking them always get -1 to hit rolls from Machine-Fog (instead of only when shooting/charging from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Screened",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Screened"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Screened, enemies attacking them always get -1 to hit rolls from Screened (instead of only when shooting/charging from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Guarded",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Guarded"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Guarded, they always get +1 to Defense rolls from Guarded (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Sturdy",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Sturdy"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Sturdy, they always get +1 to Defense rolls from Sturdy (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Knightborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Knightborn"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "attackedFromOver",
+                "shootInches": 0,
+                "chargeInches": 0
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackedFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 6
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Knightborn, they always ignore shooting/charging wounds on rolls of 6+ from Knightborn (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Warding",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Warding"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "attackedFromOver",
+                "shootInches": 0,
+                "chargeInches": 0
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackedFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 6
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Warding, they always ignore shooting/charging wounds on rolls of 6+ from Warding (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Hive Bond",
+    "passive": [
+      {
+        "hookID": "Morale_OnPreMoraleTest",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Hive Bond"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Morale",
+          "delta": 1
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Hive Bond, they always get +1 to Morale Test rolls from Hive Bond (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Hold the Line",
+    "passive": [
+      {
+        "hookID": "Morale_OnPreMoraleTest",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Hold the Line"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Morale",
+          "delta": 1
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Hold the Line, they always get +1 to Morale Test rolls from Hold the Line (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Valiant",
+    "passive": [
+      {
+        "hookID": "Morale_OnPreMoraleTest",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Valiant"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Morale",
+          "delta": 1
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Valiant, they always get +1 to Morale Test rolls from Valiant (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Devout",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Devout"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackingFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "isNotSpell"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Devout, the target always takes hits on unmodified hit results of 6 from Devout (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Ferocious",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Ferocious"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackingFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "isNotSpell"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Ferocious, the target always takes hits on unmodified hit results of 6 from Ferocious (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Brutal",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Brutal"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackingFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "isNotSpell"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Brutal, the target always takes hits on unmodified hit results of 6 from Brutal (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Havocbound",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Havocbound"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Havocbound, it always gets AP(+1) from Havocbound (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Piercing Warrior",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Piercing Warrior"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Piercing Warrior, it always gets AP(+1) from Piercing Warrior (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Infected",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Infected"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Infected, enemies always take wounds on unmodified results of 1 to block from Infected (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Warbound",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Warbound"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Warbound, enemies always take wounds on unmodified results of 1 to block from Warbound (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Violent",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Violent"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Violent, enemies always take wounds on unmodified results of 1 to block from Violent (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Versatile Warrior",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Versatile Warrior (Piercing)"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Versatile Warrior (Precision)"
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackingFromOver",
+              "shootInches": 9,
+              "chargeInches": 6
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Versatile Attack, it always gets either AP(+1) or +1 to hit rolls from Versatile Attack (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Watchborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Watchborn (Piercing)"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Watchborn (Precision)"
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackingFromOver",
+              "shootInches": 9,
+              "chargeInches": 6
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Versatile Attack, it always gets either AP(+1) or +1 to hit rolls from Versatile Attack (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Targeting Visor",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Targeting Visor"
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "isMelee"
+                }
+              },
+              "right": {
+                "kind": "distanceGreaterThan",
+                "distanceInches": 9
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Targeting Visor, it always gets +1 to hit rolls from Targeting Visor (instead of only when shooting over 9\" away)."
+  },
+  {
+    "name": "Enhanced Precision Marksman",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Precision Marksman"
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "isMelee"
+                }
+              },
+              "right": {
+                "kind": "distanceGreaterThan",
+                "distanceInches": 9
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Precision Marksman, it always gets +1 to hit rolls from Precision Marksman (instead of only when shooting over 9\" away)."
   }
 ]
