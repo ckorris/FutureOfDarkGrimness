@@ -291,6 +291,114 @@ public class Enhanced36ShippedDataTests
     private static TestCaseData Case(string file, string x, string text, HookEntry[] entries) =>
         new TestCaseData(file, $"Enhanced {x}", x, text, entries).SetArgDisplayNames($"Enhanced {x}");
 
+    // --- E: the wrappers ---------------------------------------------------------------------------------------------
+
+    private static readonly string[] GdfAuras =
+    {
+        "Bloodborn", "Brutal", "Changebound", "Clan Warrior", "Darkborn", "Devout", "Ferocious", "Guardian", "Guerrilla",
+        "Harassing", "Havocbound", "Highborn", "Hive Bond", "Hold the Line", "Infected", "Knightborn", "Lustbound",
+        "Machine-Fog", "Mischievous", "Plaguebound", "Rapid Blink", "Scrapper", "Scurry", "Shadowborn", "Sturdy",
+        "Targeting Visor", "Warbound", "Watchborn", "Wolfborn",
+    };
+
+    private static readonly string[] AofAuras =
+    {
+        "Bestial", "Buccaneer", "Destroyer", "Empyrean Spirit", "Lucky", "Ossified", "Royal Legion", "Royal Warrior",
+        "Vale Oath", "Vinci Tech", "Warden", "Wave-Step", "Wild Veil",
+    };
+
+    private static readonly string[] GdfBuffs = { "Hold the Line", "Primal", "Self-Repair", "Shadowborn" };
+    private static readonly string[] AofBuffs = { "Angelic Blessing", "Cursed Undead" };
+
+    private static IEnumerable<TestCaseData> Auras()
+    {
+        foreach (string x in GdfAuras) yield return new TestCaseData(Gdf, x).SetArgDisplayNames($"Enhanced {x} Aura");
+        foreach (string x in AofAuras) yield return new TestCaseData(Aof, x).SetArgDisplayNames($"Enhanced {x} Aura");
+    }
+
+    private static IEnumerable<TestCaseData> Buffs()
+    {
+        foreach (string x in GdfBuffs) yield return new TestCaseData(Gdf, x).SetArgDisplayNames($"Enhanced {x} Buff");
+        foreach (string x in AofBuffs) yield return new TestCaseData(Aof, x).SetArgDisplayNames($"Enhanced {x} Buff");
+    }
+
+    [TestCaseSource(nameof(Auras))]
+    public void TheShippedAura_GrantsTheEnhancedRule_WithThe36Text(string file, string x)
+    {
+        SpecialRuleDefinition aura = Shipped(file, $"Enhanced {x} Aura");
+
+        Assert.That(aura.Passive, Is.EqualTo(new[]
+        {
+            new HookEntry(EHookID.Lifecycle_OnUnitCreated, new Condition.Always(), new Effect.Aura($"Enhanced {x}"),
+                ELifetime.UntilEndOfGame),
+        }));
+        Assert.That(aura.Activated, Is.Empty);
+        Assert.That(aura.Scope, Is.EqualTo(ERuleScope.Unit));
+        // OPR's 3.6.0 books print "This model and its unit Enhanced Brutal." / "... Enhanced Ferocious." (a missing
+        // "get"); kept verbatim like every other book text (#432 D12 precedent), for #436's parity pass to normalise.
+        string expected = x is "Brutal" or "Ferocious"
+            ? $"This model and its unit Enhanced {x}."
+            : $"This model and its unit get Enhanced {x}.";
+        Assert.That(aura.Description, Is.EqualTo(expected));
+    }
+
+    [TestCaseSource(nameof(Buffs))]
+    public void TheShippedBuff_GrantsTheEnhancedRuleOnce_ToAFriendWithin12_WithThe36Text(string file, string x)
+    {
+        SpecialRuleDefinition buff = Shipped(file, $"Enhanced {x} Buff");
+
+        Assert.That(buff.Passive, Is.Empty);
+        ActivatedAbility ability = buff.Activated.Single();
+        Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Activation_OnBeforeAttackAction));
+        Assert.That(ability.Cost, Is.EqualTo(new Cost.OncePerActivation()));
+        Assert.That(ability.TargetSelector.TargetAffinity, Is.EqualTo(ETargetAffinity.Friend));
+        Assert.That(ability.TargetSelector.RangeInches, Is.EqualTo(12f));
+        Assert.That((ability.TargetSelector.MinCount, ability.TargetSelector.MaxCount), Is.EqualTo((1, 1)));
+        Assert.That(ability.Effect, Is.EqualTo(new Effect.AddRule($"Enhanced {x}", ELifetime.NextTrigger)));
+        Assert.That(ability.AvailableWhen, Is.EqualTo(new Condition.Always()));
+        Assert.That(buff.Description, Is.EqualTo("Once per activation, before attacking, pick one friendly unit within " +
+            $"12\", which gets Enhanced {x} once (next time the effect would apply)."));
+    }
+
+    [Test]
+    public void EveryWrapper_GrantsAnEnhancedRule_DefinedInTheSameUniverse_ThatReadsNoArgument()
+    {
+        var gdfUniverse = Load(Gdf).ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
+        var aofUniverse = Load(Gdf).Concat(Load(Aof)).GroupBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.Last(), StringComparer.OrdinalIgnoreCase);
+
+        foreach ((string file, Dictionary<string, SpecialRuleDefinition> universe) in new[] { (Gdf, gdfUniverse), (Aof, aofUniverse) })
+        {
+            foreach (SpecialRuleDefinition rule in Load(file).Where(r => r.Name.StartsWith("Enhanced ")
+                         && (r.Name.EndsWith(" Aura") || r.Name.EndsWith(" Buff"))))
+            {
+                string granted = rule.Passive.Select(e => e.Effect).OfType<Effect.Aura>().Select(a => a.RuleName)
+                    .Concat(rule.Activated.Select(a => a.Effect).OfType<Effect.AddRule>().Select(a => a.RuleName))
+                    .Single();
+                Assert.That(universe.ContainsKey(granted), Is.True, $"{file}: {rule.Name} grants '{granted}'");
+                // RuleEvaluator.CollectGrantedRules skips a granted rule that reads Arg(n) - grants carry no arguments.
+                Assert.That(RuleArgumentArity.MaxReferencedArgIndex(universe[granted]), Is.EqualTo(-1),
+                    $"{granted} must read no argument to be grantable");
+            }
+        }
+    }
+
+    // --- the whole family --------------------------------------------------------------------------------------------
+
+    [Test]
+    public void TheFamily_IsExactlyThe36Inventory()
+    {
+        // Every "Enhanced X" / Aura / Buff the 3.6.0 book snapshots define (91 names referenced by units, the rest
+        // defined for spells and future books), 112 definitions, and nothing else under the prefix.
+        var expected = new HashSet<string>(PassiveRules().Select(c => (string)c.Arguments[1]!)
+            .Concat(GdfAuras.Concat(AofAuras).Select(x => $"Enhanced {x} Aura"))
+            .Concat(GdfBuffs.Concat(AofBuffs).Select(x => $"Enhanced {x} Buff")));
+        List<string> shipped = Load(Gdf).Concat(Load(Aof)).Select(r => r.Name).Where(n => n.StartsWith("Enhanced ")).ToList();
+
+        Assert.That(shipped, Is.EquivalentTo(expected));
+        Assert.That(shipped.Count, Is.EqualTo(112));
+    }
+
     [TestCaseSource(nameof(PassiveRules))]
     public void TheShippedDefinition_IsTheTestedShape_WithThe36Text(string file, string name, string x, string text,
         HookEntry[] entries)
