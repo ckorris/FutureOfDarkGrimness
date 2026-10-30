@@ -159,6 +159,12 @@ public class Enhanced36ShippedDataTests
             new Effect.RollModifier(ERollKind.Hit, 1), ELifetime.ThisAttack),
     };
 
+    private static HookEntry[] HitsOnFive(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollComplete, And(Has(x), new Condition.UnmodifiedRollHits(5)),
+            new Effect.AddExtraHit(5, 1), ELifetime.ThisAttack),
+    };
+
     private static HookEntry[] TwoD3(string x) => new[]
     {
         new HookEntry(EHookID.Activation_OnActivationStart, And(Has(x), MostModels),
@@ -213,6 +219,9 @@ public class Enhanced36ShippedDataTests
         "(instead of only when shooting/charging enemies over 9\"/6\" away).";
     private const string PlusHitText =
         "If this model has {X}, it always gets +1 to hit rolls from {X} (instead of only when shooting over 9\" away).";
+    private const string HitsOnFiveText =
+        "If this model has {X}, it gets extra attacks on successful unmodified hit results of 5-6 from {X} (instead of " +
+        "only on 6).";
 
     private static string Text(string template, string x) => template.Replace("{X}", x);
 
@@ -273,6 +282,10 @@ public class Enhanced36ShippedDataTests
         foreach (string x in new[] { "Targeting Visor", "Precision Marksman" })
             yield return Case(Gdf, x, Text(PlusHitText, x), PlusHit(x));
         yield return Case(Aof, "Buccaneer", Text(PlusHitText, "Buccaneer"), PlusHit("Buccaneer"));
+        // D: extra attacks on successful 5-6.
+        foreach (string x in new[] { "Bloodborn", "Clan Warrior", "Primal", "Predator" })
+            yield return Case(Gdf, x, Text(HitsOnFiveText, x), HitsOnFive(x));
+        yield return Case(Aof, "Royal Warrior", Text(HitsOnFiveText, "Royal Warrior"), HitsOnFive("Royal Warrior"));
     }
 
     private static TestCaseData Case(string file, string x, string text, HookEntry[] entries) =>
@@ -434,6 +447,29 @@ public class Enhanced36ShippedDataTests
         Assert.That(NetHit(daemons, new HitRollModifierContext(attacker, daemons, 0.5f, IsMelee: true, IsCharging: true,
             ChargeOriginDistanceInches: 5f)), Is.EqualTo(-1));
         Assert.That(NetHit(pretender, new HitRollModifierContext(attacker, pretender, 8f)), Is.EqualTo(0), "inert alone");
+    }
+
+    [Test]
+    public void ShippedBloodbornAndEnhancedBloodborn_OneExtraHitPerSuccessfulFiveOrSix()
+    {
+        var world = new World();
+        UnitData target = world.Unit();
+        UnitData berserkers = world.Unit(Shipped(Gdf, "Bloodborn"), Shipped(Gdf, "Enhanced Bloodborn"));
+        UnitData pretender = world.Unit(Shipped(Gdf, "Enhanced Bloodborn"));
+
+        float Extra(UnitData attacker, int needed, params int[] faces)
+        {
+            var sink = new HitInjectionSink();
+            sink.ApplyFrom(world.Evaluator.EvaluateAll(
+                new HitRollCompleteContext(attacker, target, TestFaces(faces), 10f, HitRollNeeded: needed),
+                RuleParticipant.Actor(attacker), RuleParticipant.Subject(target)));
+            return sink.TotalExtraHits;
+        }
+
+        Assert.That(Extra(berserkers, 4, 5, 6), Is.EqualTo(2f), "one from the 5, one from the 6");
+        Assert.That(Extra(berserkers, 4, 6, 6), Is.EqualTo(2f), "the 6s pay once each - the delta is only the 5 face");
+        Assert.That(Extra(berserkers, 6, 5, 6), Is.EqualTo(1f), "needing 6s: the 5 missed and pays nothing");
+        Assert.That(Extra(pretender, 4, 5), Is.EqualTo(0f), "Enhanced Bloodborn without Bloodborn is inert");
     }
 
     private static DiceResults TestFaces(params int[] faces)

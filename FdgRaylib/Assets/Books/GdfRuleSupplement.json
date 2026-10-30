@@ -10577,5 +10577,129 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "If this model has Precision Marksman, it always gets +1 to hit rolls from Precision Marksman (instead of only when shooting over 9\" away)."
+  },
+  {
+    "name": "Enhanced Bloodborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Bloodborn"
+          },
+          "right": {
+            "kind": "unmodifiedRollHits",
+            "dieValue": 5
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 5,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Bloodborn, it gets extra attacks on successful unmodified hit results of 5-6 from Bloodborn (instead of only on 6)."
+  },
+  {
+    "name": "Enhanced Clan Warrior",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Clan Warrior"
+          },
+          "right": {
+            "kind": "unmodifiedRollHits",
+            "dieValue": 5
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 5,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Clan Warrior, it gets extra attacks on successful unmodified hit results of 5-6 from Clan Warrior (instead of only on 6)."
+  },
+  {
+    "name": "Enhanced Primal",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Primal"
+          },
+          "right": {
+            "kind": "unmodifiedRollHits",
+            "dieValue": 5
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 5,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Primal, it gets extra attacks on successful unmodified hit results of 5-6 from Primal (instead of only on 6)."
+  },
+  {
+    "name": "Enhanced Predator",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Predator"
+          },
+          "right": {
+            "kind": "unmodifiedRollHits",
+            "dieValue": 5
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 5,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Predator, it gets extra attacks on successful unmodified hit results of 5-6 from Predator (instead of only on 6)."
   }
 ]
