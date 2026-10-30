@@ -63,6 +63,9 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-29 (from #419): `CoreRuleCatalog.Fear`'s description is the Core Rules v3.6.0 text verbatim ("When in melee
+  with this model, enemies count as having taken +X wounds when checking who won."), so the parity pass can skip it.
+  No supplement or `AofBookOverrides` entry defines a Fear-like rule (nothing uses `extraMeleeWoundCount`).
 - 2026-10-29 (from #427): text changed to the Core Rules v3.6.0 wording, so the parity pass can skip these:
   `CoreRuleCatalog` Unstoppable (and "Unstoppable when shooting" / "Unstoppable in melee": "Ignores Regeneration, and
   ignores all negative modifiers to this weapon which are not from this model's special rules." with the combat-kind

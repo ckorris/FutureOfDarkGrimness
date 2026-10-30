@@ -51,6 +51,17 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-29 (from #419): melee-result parity. The engine's loser is now the unit that took the most wounds during
+  the ACTIVATION: the melee's own wounds plus any it took earlier in the activation (a Dangerous Terrain test on the
+  charge move, a Breath Attack / spell / Surprise Attack / Storm on the target; ledger `WoundsTakenThisActivation`,
+  snapshotted as `CombatActionContext.Attacker/DefenderWoundsTakenBeforeMelee`). Fear(X) now lands on the enemy's
+  taken total - numerically the same, so `CombatMath.MeleeEstimate.ExpectedWoundsMargin` (impact + swings + own Fear
+  vs return + enemy Fear) is still exact for the exchange (comment updated, no code change). Not mirrored: (1) wounds a
+  side already took earlier in the activation (read `WoundsTakenThisActivation.Peek` on both units when estimating
+  mid-activation, e.g. after a before-attack ability); (2) the charger's expected Dangerous Terrain wounds on its
+  charge path (`IUnit.GetWoundsToDestroy() / 6` when the path crosses Dangerous terrain); (3) Scourge, already noted below. The planner
+  prices melee by `ValueFraction` margins and never prices the melee-result morale test itself (pre-existing), so
+  the gap is small. The Combat Calculator computes no melee winner.
 - 2026-10-29 (from #427): parity status. **Unstoppable's modifier immunity needs nothing here**: it lives in the
   evaluator's first pass (`RuleEvaluator.ApplyNegativeModifierImmunity`), and `CombatMath` / the calculator run the same
   evaluation with the weapon as an Actor participant, so a Stealth / Fortified / Evasive target is priced away for an
