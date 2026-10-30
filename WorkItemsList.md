@@ -7,6 +7,7 @@ and **never reused**, even across deletions; a split item's line stays and point
 - Completed / closed items: `WorkItems/Archive.md` (entries moved there verbatim).
 - Number-collision log: `WorkItems/Reconciliations.md` — read before filing new numbers on a branch that has drifted from origin/master. A per-clone pre-push hook blocks duplicate numbers across this file and the archive.
 - **OPR 3.6 upgrade (2026-10-29 ->):** `docs/opr-3.6-upgrade-plan.md` - the plan, ground rules for agents, and the item table. Work happens on branch `feature/opr-3.6` in both repos; items #415-#445 below are reserved for it.
+- **Replay system (2026-10-30 ->):** `docs/replay-plan.md` - record-what-happened replays (host + client), auto-saved, embedded in saves, GUI viewer + CLI tools. Work happens on branch `feature/replay` in both repos; items #449-#457 below are reserved for it.
 - Cross-session priority handoff: `WorkItems/FableWindowPlan.md` — what shipped during the 2026-07 Fable window and the agreed order for what's next (top item: #169 design fork, sign-off before building).
 
 **Keep this index lean — every work session reads it whole.** An entry is at most ~3 lines: number,
@@ -56,6 +57,18 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [ ] 447 — Impact(X) is rolled once per UNIT, but the rule is per model: a 5-model unit with Impact(1) rolls 1 die, not 5 (42 multi-model 3.6 units carry Impact). Pre-existing engine bug found by #422. ([WorkItems/447](WorkItems/447-impact-per-model.md))
 
 ---
+
+## Replay system (branch `feature/replay`, plan: `docs/replay-plan.md`)
+
+- [~] 449 — Replay system umbrella: plan, ground rules, master merges into the branch, release gate. Planning done 2026-10-30; sizing measured (plan sec 5). ([WorkItems/449](WorkItems/449-replay-umbrella.md))
+- [ ] 450 — Engine: replay container format + host-side `ReplayRecorder` (store deltas, request/reply, beats, log, markers, per-round snapshots, concrete seed always). ([WorkItems/450](WorkItems/450-replay-recorder-host.md))
+- [ ] 451 — Engine: `StageTaskNotifyResolvedMessage` carries request + reply payloads (D2, partial reversal of #088) + `ClientReplayRecorder` so remote clients record the same replay. ([WorkItems/451](WorkItems/451-replay-client-recording.md))
+- [ ] 452 — App: auto-write `.fdgreplay` to `Replays/` on every game exit (normal, disconnect, escape menu, window close, headless, scenario, crash best-effort), host and client. ([WorkItems/452](WorkItems/452-replay-autosave.md))
+- [ ] 453 — Replay embedded in `.fdgsave`: save carries it, resume continues it (`Saved`/`Resumed` markers), clients of a resumed game receive the history. ([WorkItems/453](WorkItems/453-replay-in-save.md))
+- [ ] 454 — Engine: playback - `ReplayTimeline` (steps = decisions, one-option requests fold), `ReplayPlayer` (seek via snapshot + deltas, step fwd/back), shared `StoreDeltaApplier`, decision describer. ([WorkItems/454](WorkItems/454-replay-playback-engine.md))
+- [ ] 455 — Headless `--replay FILE --dump | --events | --stats | --verify | --export | --at N --make-save` so an agent can read a replay and cut a repro save from it. ([WorkItems/455](WorkItems/455-replay-cli-tools.md))
+- [ ] 456 — GUI replay viewer: browser screen over `Replays/`, table view with real beats, play/pause/step/seek/speed, decision list + details. Forks F1/F2 need Chris first. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
+- [ ] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
 
 ## Movement
 

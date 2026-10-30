@@ -804,3 +804,10 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-30 - number 448 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `8e598a9`: index + archive max **447** (415-447 reserved for the OPR 3.6 upgrade), no `448` branch on
 > either remote. **448 = holographic war-table main menu background.** No collision.
+
+> **2026-10-30 - numbers 449-457 reserved clean (replay system).** `git fetch origin` before filing, from
+> `origin/master` at `479888d`: index + archive max **448**, no `449`-`457` branch on either remote.
+> **449 = replay umbrella, 450-457 = its sub-items** (`docs/replay-plan.md` section 6). Reserved on `master`
+> like the 415-447 block; the work happens on `feature/replay` in both repos. A new replay sub-item or 3.6
+> sub-item takes max(origin/master index + archive) + 1 the usual way, so expect the two efforts' numbers to
+> interleave above 457. No collision.
