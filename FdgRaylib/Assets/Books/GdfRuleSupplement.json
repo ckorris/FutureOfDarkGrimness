@@ -6681,7 +6681,8 @@
         "effect": {
           "kind": "selfWoundOnUnmodifiedRoll",
           "onRollValue": 1,
-          "count": 1
+          "count": 1,
+          "countFromBlastOrDeadly": true
         },
         "lifetime": "ThisAttack",
         "seat": "Actor"
@@ -6691,7 +6692,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Attacks with this weapon get AP(4), but this weapon's unit takes one wound on unmodified rolls of 1 to hit."
+    "description": "Gets AP(4), but on unmodified results of 1 to hit this model takes one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule."
   },
   {
     "name": "Speed Feat Boost",

@@ -66,6 +66,20 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30: **Batch 5 - Hazardous 3.6 (engine).** "Gets AP(4), but on unmodified results of 1 to hit this model takes
+  one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule." (3.5: "this weapon's unit takes one wound".)
+  `Effect.SelfWoundOnUnmodifiedRoll` gained `CountFromBlastOrDeadly` (JSON `countFromBlastOrDeadly`, default false): a
+  natural 1 is worth the FIRING weapon's Blast(X) / Deadly(X) (the larger if both), else `Count`; `InflictSelfWounds`
+  carries `WoundsPerDie` and `RollToHitResults.SelfWoundsPerDie` takes it to `ApplyWoundsStage`, which now calls the new
+  `CasualtyPresentation.ApplyCarrierWounds`: the wounds land on the living models that fired the volley's profile, one
+  die's worth per model in turn (wounded carrier first), overflow on a model lost (a Deadly clump's rule), never spilled
+  onto a model that did not fire; no carrier found falls back to the unit's order. Still unsaveable and after the attack
+  (the #197 rulings). The supplement's Hazardous carries the flag and the 3.6 text. Tests: engine
+  `HazardousRuleIntegrationTests` +6 (the gunner, not the front model, takes it; Blast(3) = 3 wounds; Deadly(3) on a
+  1-wound gunner kills only the gunner; two 1s from two gunners land one each; the planner's fractional last die; JSON
+  round trip + legacy parse), its hand-built shape on the 3.6 flag; app `HazardousShippedDataTests` (the flag and text).
+  Negative controls: back to the unit's order fails 2, the Blast/Deadly read off fails 2 (Blast and two-gunner cases).
+
 - 2026-10-30: **Batch 4 - "Hold actions" at the AP hook; Slayer / Ranged Slayer; the importer's stale rename; texts
   (engine).** 3.6 Slayer: "When using Hold actions and shooting, or when charging, this model's weapons get AP(+2) if
   most models in the target have Tough(3) or higher." (3.5: shooting from over 9"); Ranged Slayer the shooting half.

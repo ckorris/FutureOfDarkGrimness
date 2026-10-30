@@ -69,8 +69,12 @@ public class HazardousShippedDataTests
             "the unmodified hit dice are only readable at the hook that just rolled them.");
         Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor),
             "the SHOOTER is the one that overheats, so the rule sits in the Actor seat.");
-        Assert.That(entry.Effect, Is.EqualTo(new Effect.SelfWoundOnUnmodifiedRoll(OnRollValue: 1, Count: 1)),
-            "'takes one wound on unmodified rolls of 1 to hit' - one wound, on 1s.");
+        // #434 (3.6): "this model takes one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule".
+        Assert.That(entry.Effect, Is.EqualTo(new Effect.SelfWoundOnUnmodifiedRoll(OnRollValue: 1, Count: 1,
+                CountFromBlastOrDeadly: true)),
+            "one wound on each 1, or the weapon's Blast(X) / Deadly(X)");
+        Assert.That(rule.Description, Is.EqualTo("Gets AP(4), but on unmodified results of 1 to hit this model takes " +
+            "one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule."));
     }
 
     // ---- What it produces in play ---------------------------------------------------------------------
