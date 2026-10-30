@@ -291,6 +291,10 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
   bump for a breaking ruleset change), `RULES_VERSION=OPR_3_6_0`, tag `v0.4.0`, title "... v0.4.0 (OPR 3.6.0)".
 - **Q8 Bundled roster.** Default: bundle Voidspace Stalkers; skip the two 0-unit parent entries; rename the
   Daemons books to OPR's new names (file names follow); regenerate the Random Army catalog accordingly.
+- **Q10 Dangerous terrain "or that activate in it" (found by #420).** A unit that Holds or shoots while standing
+  in Dangerous terrain without moving takes no test today; only moves across it (and the debuff) roll. The
+  clause is in the 3.6 text (and was in 3.5), so it is a pre-existing gap, not part of C4. Default: file it as
+  its own item above #445 once Q1 is settled (so the number is reserved on master too), implement after phase 2.
 - **Q9 Parallel sessions.** How many sessions do you want running at once on phase 2/3? The plan assumes up
   to three in parallel (one per independent item), each on its own files.
 
