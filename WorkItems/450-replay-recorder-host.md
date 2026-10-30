@@ -94,6 +94,35 @@ Engine suite green; `dotnet build`; headless smoke exits 0; a GUI local game sti
 user-visible changes in this ticket). Commit on `feature/replay` (engine first, then bump).
 
 ## Notes
+- 2026-10-30 - Slice 3 (engine wiring): `RequestMessageSender.Observer` (request before any send, so a
+  synchronous AI reply can't be recorded first; reply / error / disconnect-failure after the claim and
+  before the stage resumes), `PresentationRelayer.Observer`, `IGameContext.GameId` + `ReplayMarkers`
+  (`IReplayMarkerSink`, default `NullReplayMarkerSink`), `ReplayMarkerRelay` (FDGServer's sink: numbers
+  activations, snapshots after GameStart/RoundStart, broadcasts every marker and snapshot cue as the new
+  `ReplayMarkerMessage`), marker calls in `ReconcileNewRoundStage` / `DeterminePlayerTurnStage` /
+  `MainUnitActionStage`, `FDGServer(..., ReplayRecorder? replay = null)` on both constructors (header from
+  the slots + store armies, `ReplayTextOutput` around the players' log, GameStart + snapshot 0 just before
+  the state machine launches, GameEnded then close in `RaiseGameCompleted`), `GameProgressData.GameId`
+  (appended last; `Capture` copies it from the context, `WriteProgress` never clears it, `StoreClone`
+  copies it), D5 seed materialisation on both constructors (`FDGServer.WithConcreteSeed`),
+  `IFDGGame.Replay` (`FDGGame_AsLocal.AttachReplay`; client null until #451), `ILobbyViewModel.Replay`,
+  both `LobbyViewModel_Host` launch paths build a recorder (new-game path also materialises the seed for
+  its bots), host lobby `Dispose` stops recording, client lobby registers a no-op `ReplayMarkerMessage`
+  handler. Tests: `Tests/ReplayRecorderGameTests.cs` (6) - an unseeded fresh in-process AI game records a
+  structurally complete replay (header seed == save seed, GameId == progress == server, dense Seq, GameStart
+  first with no round, exactly one GameEnded and it is last, RoundStart 1..N each followed by a snapshot,
+  snapshots == rounds + 1, every request closed exactly once and after itself, activations numbered 1..n
+  per round with each unit-naming repeat matching its boundary and naming the actor's unit, beats / logs /
+  updates present, every marker and snapshot cue broadcast in order, export == recorded); a seeded game
+  keeps its seed; a recorder with a failing beat serializer disables itself and the game still plays all
+  four rounds (clients still get the markers); a resumed scenario mints a GameId and seed, starts the
+  recording in round 2 with no RoundStart of its own and activation numbering from 1; a preset GameId
+  survives the resume; `ReplayMarkerMessage` round-trips the wire. `GameProgressTests` +4 (Capture
+  carries the context's GameId, a rewrite keeps it, save/load keeps it, a pre-#450 record loads as
+  Empty). First full run caught four `SimulationServiceTests` / `StoreCloneTests` byte-identity failures:
+  the resume constructor minted a fresh GameId per simulation run; fixed by never minting for a
+  simulation (see Decisions). Engine suite 3421 passed, 1 skipped; `dotnet build` clean; headless smoke
+  exit 0, `Game result: outcome=Tie winner=none rounds=4`.
 - 2026-10-30 - Slice 2 (recorder, scripted): `ReplayRecorder` (one lock, dense Seq, T from a stopwatch,
   `Start`/`AttachStore`/`Record*`/`Snapshot`/`ExportGzip`/`Summary`/`Dispose`), `IReplaySource` +
   `ReplaySummary`, `IRequestObserver`, `IBeatObserver`, and `ReplayTextOutput` (the log decorator; named so
@@ -118,8 +147,54 @@ user-visible changes in this ticket). Commit on `feature/replay` (engine first, 
   non-gzip, of an empty file, and of unknown/missing Kinds. Engine suite 3401 passed, 1 skipped.
 
 ## Decisions
-- (record here: where exactly `ActivationStart` is emitted; where the first snapshot is taken; the
-  serializer settings used for beats and whether `WireJsonSettings.For(store)` is needed for requests)
+- **Where `ActivationStart` is emitted - twice per activation.** Neither suggested point knows the unit
+  (`TryAdvanceToNextPlayer` picks the PLAYER; `SingleTurnStage.Enter` runs before `ChooseUnitToActivate`),
+  and the only point that does (`MainUnitActionStage.Enter`) comes after the activation's first decisions
+  (Martial Prowess reactivation offers, the unit pick, the Delayed Action offer), which would then be
+  attributed to the previous activation. So: (1) at the activation boundary in `DeterminePlayerTurnStage`,
+  right after the #052 rolling snapshot and the simulation stop check, with `Round`, `Activation`,
+  `PlayerId` and `UnitRef` null; (2) REPEATED from `MainUnitActionStage.Enter` with the same
+  Round/Activation/PlayerId and the committed `UnitRef` - again after a #248 back-out re-pick. Append-only,
+  every decision of an activation follows its boundary, and the unit is recorded the moment it is known. A
+  Delayed Action turn has no repeat (no unit activated). Rule for #451/#454: an ActivationStart repeating
+  the open (Round, Activation) is not a new activation; it names (or re-names) its unit.
+- **Activation numbering** is the recording side's count of boundaries since the last RoundStart (the
+  relay's counter, not engine state), so after a resume it restarts at 1 within the resumed round.
+  Persisting a counter for exact numbering across a resume is #453's call if it wants it.
+- **`RoundStart` is emitted from `ReconcileNewRoundStage.Enter`, not `SingleRoundStage.Enter`** (a
+  deviation from the ticket text): `RoundCount` is already advanced there, and the round banner,
+  round-start token grants and reserve arrivals - decisions included - run in
+  `StartOfRoundExtraActionStage` BEFORE `SingleRoundStage`. Marking at `SingleRoundStage` would put those
+  under the previous round and snapshot after them. A resume enters `SingleRoundStage` directly, so the
+  resumed round gets no RoundStart; `GameStart` carries its `Round` instead.
+- **Where the first snapshot is taken:** `GameStart` + snapshot 0 at the end of `FDGServer`'s world
+  creation (`BuildContextAndLaunch`, after `CreateArmies` and the creation rules, just before the state
+  machine launches). The store subscription starts at the same moment, so map setup (terrain, objectives)
+  and deployment are recorded as deltas on snapshot 0, and round 1's RoundStart snapshot follows them. On
+  resume / scenario launch snapshot 0 is the loaded store and `GameStart.Round` is the resumed round. #453
+  will add `Resumed` for a resume that continues an embedded replay.
+- **`GameEnded` closes the recording.** `RaiseGameCompleted` records it (once, however many paths report
+  the end), broadcasts it ahead of the lobby's `GameEndedMessage`, then disposes the recorder, before
+  `OnGameCompleted` subscribers (recovery save, teardown) run - so GameEnded is always the last event.
+- **`GameId` vs the lobby's `LaunchedGameId` (#412):** separate. The launch ID is per launch (a resume
+  gets a new one); the replay needs an identity that survives save/resume. `GameProgressData.GameId` is
+  minted by `FDGServer`'s new-game constructor, carried through `GameContext.GameId` into every
+  `Capture`, never cleared by `WriteProgress`, and minted by the resume constructor only when the store
+  has none (pre-#450 save, compiled scenario). **Never minted for a simulation** - a simulation is a
+  throwaway copy of a game, and its runs must stay byte-identical (`SimulationServiceTests`).
+- **D5 seed:** `FDGServer.WithConcreteSeed` on both constructors, before anything reads the settings,
+  written back to the progress record on resume. Additionally the lobby's new-game launch (and CliApp,
+  slice 4) materialise it BEFORE building the AI controllers, so the bots derive their streams from the
+  same seed the dice use - otherwise a re-run with the recorded seed would replay the dice but not the AI.
+  Launch-local copy: the lobby's own setting stays "random" for the next game. (Observation, not changed:
+  `LaunchResume` seeds resumed bots from the LOBBY's seed, not the save's - pre-existing.)
+- **`ReplayMarkerMessage`** carries the marker's fields flat plus `SnapshotIndex` for a snapshot cue
+  (never the save JSON). It is registered on clients (a no-op handler in `LobbyViewModel_Client`, next to
+  `GameEndedMessage`) so the type is known; #451 replaces the no-op with the client recorder. The first
+  markers go out during `FDGServer` construction, i.e. before `LaunchGameMessage` - #451 must not rely on
+  receiving GameStart / snapshot cue 0 (its own join snapshot is its snapshot 0 anyway).
+- **Requests closed on disconnect:** `FailPendingRequestsForPlayer` also reports `OnFailed`, so every
+  recorded request ends in a Reply or a RequestError even when a player drops.
 - **Kind discriminator.** `ReplayEvent.Kind` is a computed property serialized right after `Seq`/`T`
   (`JsonProperty(Order)`), so every line starts `{"Seq":n,"T":ms,"Kind":"..."`. The reader resolves Kind
   through a fixed table (`ReplayEventKinds`); the container's settings have NO `TypeNameHandling`, because a
