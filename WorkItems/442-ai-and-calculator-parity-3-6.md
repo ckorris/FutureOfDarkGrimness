@@ -51,6 +51,15 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 10 - #446 Dangerous end position, B): the planner's Score charges a candidate that leaves the
+  unit standing in Dangerous terrain (any living model's base overlapping a Dangerous piece at its planned end, or
+  where it stands for a Hold - the engine's swept-base test, `TacticalAnalysis.EndsInDangerousTerrain`) the expected
+  wounds of the "activates in it" test it then owes next activation, `WoundsToDestroy / 6`, as a value fraction at
+  the retaliation weight (not posture-scaled: a certain cost); Flying / Aircraft (`IgnoresAllTerrain`) pay nothing,
+  Strider pays. Pins: `TacticianPlannerTests.HoldInDangerousTerrain_PaysTheNextActivationsTest` (lava vs open ground;
+  Flying exempt), `TacticalAnalysisTests.EndsInDangerousTerrain_ReadsThePlannedEnds_AndBaseOverlap`. Not done (C,
+  pre-existing): avoiding Dangerous pieces on the WAY (path cost), and activation order around it (#446's (2)).
+  Deferred (D9, OWNER REVIEW): #425 (2), Artillery's defensive -1 lost on a move - needs a hypothetical-token seam.
 - 2026-10-30 (#442 batch 9 - #434 / #425 / #427 estimator terms, B): `CombatMath` now prices (1) Hazardous - each
   unmodified 1 to hit worth one wound or the weapon's Blast(X) / Deadly(X), capped at a model's wounds per die (the
   excess is lost), as `AttackEstimate.ExpectedSelfWounds`; the planner's shooting offense and the shooting resolver
@@ -382,6 +391,14 @@ with no illegal-action retries in the log.
   public `FearlessRerollPassesOn` constant - no behaviour change, so the estimator reads the very Quality and
   re-roll the test uses instead of a copy. Flagged because #191's stop-and-ask list names engine changes outside
   `Ai/Tactician/`.
+- **D9 - Artillery's "haven't moved this round" -1 is not priced for move candidates (2026-10-30) - OWNER REVIEW.**
+  #425 (2): a move candidate's incoming-fire estimate still sees the defensive -1, because the rule's condition reads
+  the live `MovedThisRound` token and `CombatMath` can only evaluate the unit as it stands. Options: (a) a read-only
+  "assumed tokens" overlay in `RuleEvaluator` that `TokenPresent` consults during a query (an engine seam in
+  `Rules/`, reusable for every "after I move / after I'm Shaken" hypothetical); (b) stamp the token on the live unit
+  around the estimate and remove it (mutates shared, synced state from a resolver - rejected); (c) drop the op by
+  rule name after evaluation (re-implements the rule's gate by name - against plan G1). Recommendation: (a), as its
+  own small item; deferred here, nothing built.
 
 ## Outcome
 
