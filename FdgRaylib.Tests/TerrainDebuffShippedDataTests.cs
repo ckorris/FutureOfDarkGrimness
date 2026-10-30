@@ -49,11 +49,13 @@ public class TerrainDebuffShippedDataTests
     // ---- The offer shape, against the corpus text ---------------------------------------------------
 
     // "Once per activation, before attacking, pick one enemy unit within 18in [in line of sight]".
-    // The line-of-sight column is the interesting one: the deferred DANGEROUS variant requires it and the
-    // other two do not, which is easy to lose by copying whichever sibling was nearest in the file.
+    // The line-of-sight column is the interesting one, which is easy to lose by copying whichever sibling was
+    // nearest in the file. #434: the 3.6.0 Difficult Terrain Debuff says "within 18" in line of sight" (so did
+    // 3.5's; the old copy had dropped the clause). The Immediate variant is a 3.5-only name (no 3.6.0 book prints
+    // it) and keeps its 3.5 shape.
     [TestCase(DangerousDeferred, true)]
     [TestCase(DangerousImmediate, false)]
-    [TestCase(Difficult, false)]
+    [TestCase(Difficult, true)]
     public void EachVariant_OffersOnceBeforeAttacking_AtTheCorpusRangeAndSight(
         string ruleName, bool needsLineOfSight)
     {

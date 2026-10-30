@@ -46,7 +46,7 @@ public class SergeantShippedDataTests
     // ---- The authored definition ----------------------------------------------------------------------
 
     [Test]
-    public void Sergeant_IsAWeaponScopedSurgeBody()
+    public void Sergeant_IsAWeaponScopedApBody()
     {
         SpecialRuleDefinition rule = Sergeant();
         HookEntry entry = rule.Passive.Single();
@@ -56,12 +56,14 @@ public class SergeantShippedDataTests
         // copy at all.
         Assert.That(rule.Scope, Is.EqualTo(ERuleScope.Weapon));
 
-        Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollComplete),
-            "the shared hit-complete hook - fires for shooting AND melee, as 'when this model attacks' asks");
-        Assert.That(entry.Condition, Is.InstanceOf<Condition.UnmodifiedRollEquals>());
-        Assert.That(entry.Effect, Is.InstanceOf<Effect.AddExtraHit>());
-        Assert.That(((Effect.AddExtraHit)entry.Effect).OnRollValue, Is.EqualTo(6));
+        // #434: 3.6.0 - "This model gets AP(+1) when attacking." (3.5 was a Surge body.) The shared hit-complete
+        // hook fires for shooting AND melee, as "when attacking" asks; carried by the champion's weapon copy, the
+        // AP rides only that copy's volley.
+        Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollComplete));
+        Assert.That(entry.Condition, Is.InstanceOf<Condition.Always>());
+        Assert.That(entry.Effect, Is.EqualTo(new Effect.RollModifier(ERollKind.Save, -1)));
         Assert.That(rule.EngineArgumentCount, Is.EqualTo(0));
+        Assert.That(rule.Description, Is.EqualTo("This model gets AP(+1) when attacking."));
     }
 
     // ---- The corpus: the exact shape the compiler gate keys on -----------------------------------------

@@ -1,6 +1,6 @@
 # 434 — GDF supplement sweep to 3.6
 
-**Status**: todo
+**Status**: in-progress (batch 1 of the burn-down landed 2026-10-30; see Notes)
 **Related**: #415, #431/#432/#433 (families, land first), #197 (the 3.5 sweep this mirrors), #436 (drops + text parity), #438 (bake)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high. Work book-family by book-family and commit per batch.
 
@@ -65,6 +65,47 @@ Deferred names also get a player-visible diagnostic (#168 path).
 - The ~45 `FutureOfDarkGrimness/Tests/*ShippedDataTests.cs` pin 3.5 rule counts and unit names (see #440).
 
 ## Notes
+
+- 2026-10-30: **Batch 1 - new names and re-authors on existing primitives (data + tests, no engine code).**
+  - **Coverage baseline (scratch import of the 49 GDF 3.6.0 snapshots against HEAD's `GdfRuleSupplement.json`,
+    `--rule-coverage`):** "Total references: 20045 / Dead: 3163 (3163 no-definition across 92 names)": Enhanced 162 refs
+    across 60 names (#433), Assault 2740 (#424) and Parry 12 (#423), and 249 refs across 30 names for this item.
+  - **After batch 1:** "Total references: 20045 / Dead: 2915 (2915 no-definition across 63 names)" - Enhanced 60 names,
+    Assault, Parry, and Ravage Aura (1, left for the Ravage batch).
+  - **New definitions** (GDF supplement, 3.6.0 text verbatim): Bravery Aura / Bravery Buff, Spell Resistance (+ Aura),
+    Dodge, Grounded Defense (+ Aura), Grounded Evasion, Piercing Charge (+ Aura), Piercing Marksman (+ Aura), Precision
+    Marksman, Predator (+ Aura), Thrust in Melee (+ Buff), Versatile Expert (+ two helpers), Nimble, Vicious,
+    Infiltrating Precision Strike, "Unwieldy on its weapons in melee", Rapid Rush Buff (moved from the AoF file), and
+    ten spell-phrase aliases ("Unstoppable on their weapons when shooting", "Shred on its weapons when shooting", "AP(1) on
+    their weapons when shooting", "Indirect on their weapons", "Rending on their weapons in melee", "+6\" range on its /
+    their weapons when shooting", "Bane on their weapons when attacking", "Shred on its weapons in melee", "Shred on
+    their weapons when attacking").
+  - **Re-authored behaviour:** Entrenched (Artillery's defensive facet: most models, unmoved this round, shot from over
+    12", -1; the old copy was a plain +1 Defense), Fortified Growth (Defensive Growth's round-start clock, AP(-1) per two
+    tokens; the old copy ticked at round end per token and cleared on Shaken), Grounded Precision (terrain gate only),
+    Guardian / Primeborn (unconditional, Fortified's shape), Sergeant (AP(+1) when attacking, still weapon-scoped for the
+    champion marking), Shatter (AP(+3) on natural 6s), Speed Feat (no ownership gate), Difficult Terrain Debuff (now in
+    line of sight), Thrust in Melee Aura (grants Thrust in Melee), Unwieldy Debuff (grants "Unwieldy on its weapons in
+    melee"). AoF Defense Buff granted Entrenched (whose old copy was +1 Defense); it now places a +1 Defense token
+    (Defense Debuff's mirror) so the Entrenched rewrite does not break it.
+  - **Text only** (behaviour already 3.6): Battleborn, Honor Code, Steadfast, Dangerous / Defense / Fatigue / Morale /
+    Piercing Debuff, Defensive Frenzy / Growth, Inquisitorial Agent, Melee Slayer, No Retreat, Piercing / Precision
+    Frenzy, Growth and Spotter, Plaguebound, Self-Repair, Rending / Shred / Unstoppable / Bane / Indirect / Piercing
+    Shooting Mark, Increased Shooting Range Buff / Mark, Bane in Melee Buff, Rending when Shooting Aura, Indirect when
+    Shooting Aura, Piercing Fighter / Shooter Aura, Targeting Visor, Speed Debuff.
+  - **Tests.** Engine (new): `GdfSweep36RuleIntegrationTests` (37 cases through the real AssignWounds / DetermineHitRoll /
+    RollToHit -> DetermineSaveRollsNeeded stages, SyntheticHitResolution for the spell exclusion, the evaluator for
+    the activation pick, round-start clock and terrain gate), shapes in `GdfSweep36Definitions`. App (new):
+    `GdfSweep36ShippedDataTests` (111 cases: every touched name's 3.6 text, each new shape, twins, grants, aliases).
+    App tests updated for 3.6: `GroundedShippedDataTests` (Grounded Precision lost its carrier gate; Defense / Evasion
+    cases), `QuickShotAndUnwieldyShippedDataTests` (the Debuff's new grant target), `SergeantShippedDataTests` (AP body),
+    `SpeedFeatShippedDataTests` (no gate), `TerrainDebuffShippedDataTests` (Difficult needs line of sight).
+    Mutation checks on the new engine cases (each reverted): Dodge without its Fatigue gate fails 2, Entrenched without
+    its moved gate fails 1, Piercing Marksman without its spell/melee gate fails 1.
+  - **Counts.** Engine 4004 -> 4041 passed (1 skipped). FdgRaylib.Tests 3107 -> 3255.
+  - **Verification.** Full build 0 errors; `--validate-rules GdfRuleSupplement.json AofRuleSupplement.json` "OK: 328
+    definitions, no problems." (each AofBookOverrides file on top also OK); `--rule-coverage FdgRaylib/Assets/Books`
+    "Dead: 36 (36 no-definition across 2 names)" (unchanged); headless smoke exit 0 ("Game result: outcome=Win ...").
 
 - 2026-10-30 (from #447): Ravage, when you re-author it (3.6 book rule in 13 GDF + 9 AoF 3.6.0 books: "Once per round,
   when it's this model's turn to strike in melee, roll X dice before attacking, unless this unit is Fatigued. For each

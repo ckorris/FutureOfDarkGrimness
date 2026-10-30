@@ -33,9 +33,12 @@ public class GroundedShippedDataTests
 
     [TestCase("Grounded Reinforcement", EHookID.Shooting_OnHitRollComplete, ERuleSeat.Subject,
         ERollKind.Save, 1)]
-    [TestCase("Grounded Precision", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Actor,
-        ERollKind.Hit, 1)]
     [TestCase("Grounded Stealth", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Subject,
+        ERollKind.Hit, -1)]
+    // #434: the 3.6 names Grounded Defense / Grounded Evasion are word for word the shapes above.
+    [TestCase("Grounded Defense", EHookID.Shooting_OnHitRollComplete, ERuleSeat.Subject,
+        ERollKind.Save, 1)]
+    [TestCase("Grounded Evasion", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Subject,
         ERollKind.Hit, -1)]
     public void EachRule_GatesOnTerrain_AndAppliesTheRightModifierAtTheRightHookAndSeat(
         string name, EHookID hook, ERuleSeat seat, ERollKind roll, int delta)
@@ -59,8 +62,25 @@ public class GroundedShippedDataTests
         Assert.That(mod.Delta, Is.EqualTo(delta));
     }
 
+    // #434: 3.6 Grounded Precision - "If most models in this unit are within 1" of terrain, this model gets +1 to hit
+    // rolls when attacking." No "where most models have this rule" clause any more: the terrain gate alone.
+    [Test]
+    public void GroundedPrecision_36_GatesOnTerrainOnly_NotOnItsCarriers()
+    {
+        SpecialRuleDefinition rule = Definition("Grounded Precision");
+        HookEntry entry = rule.Passive.Single();
+
+        Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollModifier));
+        Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor));
+        Assert.That(entry.Condition, Is.EqualTo(new Condition.MostModelsWithinInchesOfTerrain(1f)));
+        Assert.That(entry.Effect, Is.EqualTo(new Effect.RollModifier(ERollKind.Hit, 1)));
+        Assert.That(rule.Description, Is.EqualTo(
+            "If most models in this unit are within 1\" of terrain, this model gets +1 to hit rolls when attacking."));
+    }
+
     [TestCase("Grounded Reinforcement Aura", "Grounded Reinforcement")]
     [TestCase("Grounded Precision Aura", "Grounded Precision")]
+    [TestCase("Grounded Defense Aura", "Grounded Defense")]
     public void EachAura_ConfersItsBaseRule(string auraName, string baseName)
     {
         HookEntry entry = Definition(auraName).Passive.Single();

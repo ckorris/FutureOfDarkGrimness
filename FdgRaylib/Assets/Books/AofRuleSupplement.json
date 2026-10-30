@@ -652,9 +652,10 @@
           "requiredRule": null
         },
         "effect": {
-          "kind": "addRule",
-          "ruleName": "Entrenched",
-          "scope": "NextTrigger"
+          "kind": "statModifier",
+          "roll": "Save",
+          "delta": 1,
+          "lifetimeScope": "NextTrigger"
         },
         "availableWhen": {
           "kind": "always"
@@ -664,7 +665,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Entrenched for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets +1 to Defense rolls once (next time the effect would apply)."
   },
   {
     "name": "Buccaneer",
@@ -944,40 +945,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Piercing Assault for its next relevant roll."
-  },
-  {
-    "name": "Rapid Rush Buff",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 12,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Friend",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "addRule",
-          "ruleName": "Rapid Rush",
-          "scope": "NextTrigger"
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Rapid Rush for its next relevant roll."
   },
   {
     "name": "Versatile Attack Buff",
