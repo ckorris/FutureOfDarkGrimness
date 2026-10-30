@@ -51,6 +51,19 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 6 - morale pass chance, B: #421 + #432 (3) + #435 Banner): new
+  `TacticalAnalysis.MoralePassChance` prices `MoraleUtilities.TakeMoraleTest` instead of rolling it - the Quality from
+  `ResolveMoraleQuality` (own / joined hero / Tough(9)+ Hero aura; a new `ITableState` overload, the `IGameContext`
+  one delegates - D8), the pre-test modifiers through the same `PreMoraleTestContext` (Hive Bond / Hold the Line /
+  Valiant's +1 when shot from over 9", Banner's +1 only for a shooting- or melee-triggered test), granted morale tokens
+  peeked, the 2-6 clamp, Fearless's 4+ second chance, Shaken = 0, a No Retreat conversion = pass. The shooting
+  resolver discounts `MoraleBreakBonus` by it (D7) and now measures the attack the way the hit stages and the ranged
+  morale test do (unit to unit, base to base - it used shooter-centre distances, so a "shot from over 9"" arm could
+  fire an inch early). Pins: `MoralePassChancePinTests` (11; the engine's test enumerated over all 36 decisive-die
+  pairs: plain Q2/4/5, Fearless, Hive Bond at 10"/8", Banner shooting/other, Hero aura at 5"/7", Shaken) and
+  `TacticianTargetChoiceTests.Shooting_BreakBonus_PrefersTheMobLessLikelyToPassItsTest` (fails with the flat bonus).
+  Not added: a melee-loser morale estimate (the planner never prices the melee-result test, pre-existing - #419's
+  note), so Banner / charged-from-over-6" morale arms have no AI reader yet beyond this helper.
 - 2026-10-30 (#442 batch 5 - #425's enemy Cumbersome, B): an ENEMY that may not declare a Charge is no charge threat
   anywhere the Tactician prices one - `TacticalAnalysis.MayCharge` (`ActionRestrictionQueries.MayDeclare(..., Charge)`)
   now gates the planner's `EnemyFacts.HasMelee` (retaliation, projected threat, approach staging, the cover habit's
@@ -306,6 +319,16 @@ with no illegal-action retries in the log.
   leaf net (`StrategistLeafV1.json`); changing what it encodes (Cumbersome enemies' threat reach, charge arms) would
   drift a trained model's inputs without re-training, which is OWNER REVIEW territory (plan rule 8). Every estimator
   change in this item is in the hand-written policy and `CombatMath`; the net sees exactly what it saw at #417.
+- **D7 - the break bonus is discounted, not renormalized (2026-10-30) - OWNER REVIEW.** The shooting resolver's
+  half-strength bonus becomes `1 + (MoraleBreakBonus - 1) x P(fail)`, so a Quality 4 mob's 1.3 reads 1.15 and a
+  Fearless one's 1.075. That lowers the bonus's average weight (it was a flat 1.3 since #191 A5-4, never tuned against a
+  failure rate). The alternative - scaling so a coin-flip test keeps 1.3 (`... x P(fail) / 0.5`) - keeps the tuned
+  average but would price a Quality 6 mob's break at 1.5. Chose the literal discount; the bench (D below) is the check.
+- **D8 - one engine seam outside `Ai/` (2026-10-30).** `MoraleUtilities.ResolveMoraleQuality(ITableState, IUnit)`
+  is a new overload the `IGameContext` one now delegates to (it only ever read `gameContext.TableState`), plus a
+  public `FearlessRerollPassesOn` constant - no behaviour change, so the estimator reads the very Quality and
+  re-roll the test uses instead of a copy. Flagged because #191's stop-and-ask list names engine changes outside
+  `Ai/Tactician/`.
 
 ## Outcome
 
