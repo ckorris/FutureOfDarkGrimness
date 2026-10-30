@@ -2874,31 +2874,12 @@
     "name": "Indirect when shooting",
     "passive": [
       {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "right": {
-            "kind": "afterMoving"
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": -1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      },
-      {
         "hookID": "Shooting_OnSaveRollModifier",
         "condition": {
-          "kind": "always"
+          "kind": "not",
+          "inner": {
+            "kind": "afterMoving"
+          }
         },
         "effect": {
           "kind": "ignoreLineOfSight"
@@ -2909,10 +2890,13 @@
       {
         "hookID": "Shooting_OnSaveRollModifier",
         "condition": {
-          "kind": "always"
+          "kind": "not",
+          "inner": {
+            "kind": "afterMoving"
+          }
         },
         "effect": {
-          "kind": "ignoreCover"
+          "kind": "ignoreSightBlockerCover"
         },
         "lifetime": "ThisAttack",
         "seat": "Actor"
@@ -2922,7 +2906,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Fires at targets out of line of sight and ignores cover when shooting; -1 to hit if the unit moved this activation."
+    "description": "Gets Indirect when shooting: when using Hold actions and shooting, may target enemies that are not in line of sight as if in line of sight, and ignores Cover from Sight Blockers."
   },
   {
     "name": "Indirect when Shooting Aura",
@@ -2945,6 +2929,28 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Indirect when shooting."
+  },
+  {
+    "name": "Quick Throw",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollModifier",
+        "condition": {
+          "kind": "weaponHasRule",
+          "ruleName": "Indirect"
+        },
+        "effect": {
+          "kind": "ignoreLineOfSight"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model may always target enemies that are not in line of sight when shooting with Indirect weapons (instead of only when using Hold actions)."
   },
   {
     "name": "Rapid Advance Buff",
@@ -5853,37 +5859,7 @@
   },
   {
     "name": "Quick Readjustment",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "weaponHasRule",
-            "ruleName": "Indirect"
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "afterMoving"
-            },
-            "right": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            }
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
+    "passive": [],
     "activated": [],
     "scope": "Weapon",
     "engineArgumentCount": 0,

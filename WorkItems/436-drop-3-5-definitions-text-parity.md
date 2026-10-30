@@ -63,6 +63,25 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #425): yours to delete - Mobile Artillery, Re-Position Artillery and Quick Readjustment (all
+  dropped in 3.6; #425 left them in place). Entries: `GdfRuleSupplement.json` "Mobile Artillery", "Re-Position
+  Artillery", "Quick Readjustment" (none is a catalog rule; the bundled 3.5 books that name them - 3, 18 and 4
+  books - embed their own copies until #438). Tests and fixtures that go with them: `FdgRaylib.Tests/
+  MobileArtilleryShippedDataTests.cs`, `FdgRaylib.Tests/QuickReadjustmentShippedDataTests.cs` (now pins the INERT
+  entry), the "Quick Readjustment" allowlist line in `FdgRaylib.Tests/RuleSupplementLintTests.cs` (remove it with the
+  entry, or `AllowlistNamesExistInSupplement` fails), `FutureOfDarkGrimness/Tests/QuickReadjustmentRuleIntegrationTests.cs`
+  (hand-built copies - retire), `Scenarios/mobile-artillery-defensive.json` + `mobile-artillery-moved.json` +
+  `Scenarios/armies/MobileArtillery.fdgarmy`. Keep the `MovedThisRound` token and its tests
+  (`MovementBackOutTests` "#197 Mobile Artillery" block, `MovedTokenVisibilityTests`): 3.6 Artillery's defensive -1
+  reads it now (`ArtilleryRuleIntegrationTests`) - re-word their comments rather than deleting them. Re-Position
+  Artillery's mechanism is also exercised generically by `BeforeAttackActionRuleIntegrationTests` (~:159, a
+  `requiredRule` selector) and `UnitWideAbilityGateTests` (~:162) - those use the shape, not the rule, and can stay.
+  Text already 3.6, skip in the parity pass: `CoreRuleCatalog` Cumbersome (new), Indirect, Artillery, and the GDF
+  supplement's new "Quick Throw". Re-authored but under a 3.5 NAME: the supplement's "Indirect when shooting" is now
+  the 3.6 Indirect shape (Hold-only LoS + Sight-Blocker-cover bypass) because "Indirect when Shooting Aura" - still a
+  3.6.0 book rule - grants it; if you delete "Indirect when shooting" (it is on your drop list), re-point the aura's
+  `ruleName` at "Indirect" in the same change. "Indirect Mark" (Robot Legions, Dragon Empire) is still 3.6 and grants
+  the catalog Indirect, so it is Hold-gated with no change.
 - 2026-10-30 (from #429): casting text. Already 3.6, skip: `CoreRuleCatalog.Caster` (pinned by
   `CasterRuleIntegrationTests.Caster_CarriesTheCore360Wording_WithNoLineOfSightClause`) and the new supplement entry
   `Spell Drain`. Seen but NOT changed (supplement descriptions vs the 3.6.0 snapshots' `specialRules`): `Spell

@@ -11,8 +11,9 @@ public static class SightRuleLabel
 {
     /// <summary>
     /// The attribution phrase for the given cover- and LoS-ignore rule names (either may be null), without
-    /// surrounding parentheses — or null if neither rule applies. When one rule ignores both (e.g. Indirect),
-    /// it's named once: "Indirect ignores cover and line of sight".
+    /// surrounding parentheses — or null if neither rule applies. When one rule ignores both, it's named once:
+    /// "X ignores cover and line of sight". (3.5 Indirect did; Core Rules v3.6.0 Indirect only ignores Cover from
+    /// Sight Blockers, and only on a Hold - #425 - so it reports line of sight alone, per the shooter's move state.)
     /// </summary>
     public static string? Describe(string? coverIgnoreRule, string? lineOfSightIgnoreRule)
     {

@@ -51,6 +51,26 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #425): Hold-vs-Advance parity status. Done (pinned): `CombatMath.EstimateShooting` exempts an
+  Indirect weapon from a cut lane only on a Hold (it passes the candidate's `AttackerMoved` to
+  `SightRuleQueries.IgnoresTerrain`; `TacticianLineOfSightTests.EstimateShooting_BlockedSight_IndirectAfterMoving_NeedsTheLane`);
+  the 3.5 "-1 after moving" is no longer priced (it was the catalog's, now gone); the planner never generates a
+  charge/charge-approach macro for a unit that may not Charge (`MacroActionGenerator` via
+  `ActionRestrictionQueries.MayDeclare`), never credits a volley to an Advance plan of a Cumbersome unit
+  (`TacticianPlanner.CanShootAfter`), and the activation urgency prices only the Hold volley for it
+  (`TacticianPhantomVolleyTests.Urgency_CumbersomeShooter_PricesOnlyTheHoldVolley`); Cumbersome move budgets are
+  Advance-only everywhere the planner reads them (`MovementRuleQueries`). Not modelled, yours: (1) ENEMY Cumbersome
+  units are still priced as charge threats (`FactsOf(enemy).HasMelee`, `TacticalAnalysis.ChargeBudget` /
+  `MeleeThreatReach` ignore the restriction) - gate them on `ActionRestrictionQueries.MayDeclare(enemy, ..., Charge)`;
+  (2) #360 facet 1 is now Artillery's: moving forfeits the 3.6 defensive -1 (`MovedThisRound`) and the retaliation
+  term still evaluates incoming fire with the unit's CURRENT tokens, so a move candidate keeps the -1 for free; (3)
+  the urgency kill term prices only the advance-then-shoot volley for an Indirect unit - a Hold volley through a wall
+  (Indirect's line-of-sight bypass) is not considered there (the planner's Score does consider it, Hold candidates
+  carry `AttackerMoved: false`); (4) cover: `AttackContext.DefenderInCover` is caller-supplied and positional, so the
+  planner does not know that an Indirect Hold shot ignores Sight-Blocker cover but keeps Cover-terrain cover
+  (`ChooseRangedAttackRequest` rows now carry that per weapon - `TacticianRangedAttackResolver` reads them); (5) the
+  Combat Calculator has an "attacker moved" input but no Hold/Advance labelling, so a user pricing an Indirect shot
+  sees no difference except through cover/LoS, which the calculator does not model.
 - 2026-10-30 (from #429): casting pricing gaps, none changed there (D7). (1) `SpellValuation.BaseCastSuccessChance`
   is a flat 0.5: it ignores Spell Amplifier (`CastRollRules.Net(caster, evaluator, live: false)`), the caster's granted
   cast tokens (`GrantedRollModifiers.PeekNet(caster, ERollKind.Cast)`), the Spell Conduit relay bonus and boost/hinder.

@@ -27,8 +27,16 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         {
             Console.WriteLine();
             Console.WriteLine($"--- Move: {unit.Name} ({models.Count} model{(models.Count != 1 ? "s" : "")}) ---");
-            Console.WriteLine($"  Advance (<= {request.MaxAdvanceDistance:F1}\"): move freely, can still shoot afterward");
-            Console.WriteLine($"  Rush    (<= {request.MaxDistanceInches:F1}\"): move farther, but cannot shoot this turn");
+            // #425 Cumbersome: the budgets are Advance-only and the move forfeits the shot - say so instead of
+            // promising a shot and a Rush the engine will refuse.
+            string afterMove = request.NoShootAfterMoveRule != null
+                ? $"cannot shoot afterward ({request.NoShootAfterMoveRule}: can't shoot when moving)"
+                : "can still shoot afterward";
+            Console.WriteLine($"  Advance (<= {request.MaxAdvanceDistance:F1}\"): move freely, {afterMove}");
+            if (request.AdvanceOnlyRule != null)
+                Console.WriteLine($"  Rush    : not allowed ({request.AdvanceOnlyRule}: may only use Hold or Advance actions)");
+            else
+                Console.WriteLine($"  Rush    (<= {request.MaxDistanceInches:F1}\"): move farther, but cannot shoot this turn");
             if (models.Count > 1)
             {
                 Console.WriteLine($"  Cohesion: each model must end within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES:F0}\" (base-to-base) of at least one teammate");

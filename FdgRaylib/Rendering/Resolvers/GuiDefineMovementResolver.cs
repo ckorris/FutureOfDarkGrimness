@@ -1579,8 +1579,11 @@ public class GuiDefineMovementResolver
                 string capTag = row.CappedByTerrain ? " (difficult terrain cap)" : string.Empty;
                 var color = row.InRush ? RushTextCol : AdvanceTextCol;
                 ImGui.PushStyleColor(ImGuiCol.Text, color);
-                ImGui.TextUnformatted($"{ModelRoster.RowDistanceText(row)}{capTag}  "
-                    + $"({(row.InRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
+                // #425: a Cumbersome unit never Rushes; moving at all is what costs it the shot.
+                string status = request.NoShootAfterMoveRule != null
+                    ? (row.Started ? $"advance - cannot shoot ({request.NoShootAfterMoveRule})" : "not moved - may shoot")
+                    : (row.InRush ? "RUSH - cannot shoot" : "advance - may shoot");
+                ImGui.TextUnformatted($"{ModelRoster.RowDistanceText(row)}{capTag}  ({status})");
                 ImGui.PopStyleColor();
             }
             else
@@ -1821,7 +1824,9 @@ public class GuiDefineMovementResolver
         IModel model, bool capped, int ordinal = 0)
     {
         var (advance, _, maxDist) = request.BudgetFor(model.ID);
-        return ModelRoster.BuildRow(ordinal, pt.GetTotalDistanceMoved(model), advance, maxDist, capped);
+        // #425 Cumbersome: any move forfeits the shot, so the "can still shoot" threshold is 0", not the Advance.
+        float shootThreshold = request.NoShootAfterMoveRule != null ? 0f : advance;
+        return ModelRoster.BuildRow(ordinal, pt.GetTotalDistanceMoved(model), shootThreshold, maxDist, capped);
     }
 
     /// <summary>
@@ -1966,6 +1971,13 @@ public class GuiDefineMovementResolver
 
     private static string FormatDistanceSummary(DefineMovementPathRequest request)
     {
+        // #425 Cumbersome: Advance only, and the move forfeits the shot - name the rule instead of a "rush up to"
+        // figure that equals the Advance.
+        if (request.AdvanceOnlyRule != null)
+        {
+            string only = $"advance up to {FormatInches(request.MaxAdvanceDistance)}\" - no Rush ({request.AdvanceOnlyRule})";
+            return request.NoShootAfterMoveRule != null ? only + ", no shooting after moving" : only;
+        }
         string s = $"advance up to {FormatInches(request.MaxAdvanceDistance)}\"   rush up to {FormatInches(request.MaxRushDistance)}\"";
         if (request.MaxDistanceInches > request.MaxRushDistance + 0.0001f)
             s += $"   charge up to {FormatInches(request.MaxDistanceInches)}\"";
@@ -2483,7 +2495,8 @@ public class GuiDefineMovementResolver
     {
         // Shooting aggregate is driven by committed paths so it doesn't flicker on rush-boundary hover.
         // Per-line shooting from the selected model + the charge overlay are ghost-aware.
-        bool canShootCommitted = true;
+        // #425 Cumbersome: "can't shoot when moving" - no post-move fire lines or shooter counts at all.
+        bool canShootCommitted = request.NoShootAfterMoveRule == null;
         foreach (var m in paths.Keys)
             if (pt.GetTotalDistanceMoved(m) > request.MaxAdvanceDistance + 0.0001f) { canShootCommitted = false; break; }
 
@@ -2567,12 +2580,17 @@ public class GuiDefineMovementResolver
         // #042 Indirect/Takedown/Blast: per-weapon sight overrides from the request, so the post-move
         // targeting overlay reflects weapons that ignore line of sight (a target behind terrain is still
         // shootable) or cover (no +1, no dashed "cover" line). Keyed by weapon name (unit-scoped today).
-        var sightByWeapon = new Dictionary<string, (bool ignoresLoS, bool ignoresCover, string? losRule, string? coverRule)>();
+        // #425: the profiles describe the shot AFTER this move, so Indirect (Hold-only in 3.6) arrives here as an
+        // ordinary weapon; a weapon that still ignores LoS (Quick Throw) keeps Sight-Blocker cover unless the
+        // profile says otherwise.
+        var sightByWeapon = new Dictionary<string, (bool ignoresLoS, bool ignoresCover, string? losRule, string? coverRule,
+            bool ignoresBlockerCover)>();
         foreach (var profile in request.WeaponSightProfiles)
             sightByWeapon[profile.Weapon.Name] = (profile.IgnoresTerrain, profile.IgnoresCover,
-                profile.LineOfSightIgnoreRule, profile.CoverIgnoreRule);
+                profile.LineOfSightIgnoreRule, profile.CoverIgnoreRule, profile.IgnoresSightBlockerCover);
         bool WeaponIgnoresLoS(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s) && s.ignoresLoS;
         bool WeaponIgnoresCover(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s) && s.ignoresCover;
+        bool WeaponIgnoresBlockerCover(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s) && s.ignoresBlockerCover;
         // #052: the alias-aware attribution suffix for a weapon, e.g. " (Indirect ignores line of sight)".
         string WeaponSightSuffix(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s)
             ? SightRuleLabel.Parenthetical(s.coverRule, s.losRule) : string.Empty;
@@ -2772,9 +2790,13 @@ public class GuiDefineMovementResolver
                             new CoverContext(selPos, attacker.BaseShape, attacker.Facing,
                                 em.Position, em.BaseShape, em.Facing),
                             _coverProximityExceptions);
-                        // #042 Indirect/Takedown ignore LoS (a blocked line still hits); Blast/Indirect/Takedown
-                        // ignore cover (no dashed cover line). Normalise the effect so the shot draws as clear.
-                        if (ignoresLoS && effect == ESightLineEffect.Blocking) effect = ESightLineEffect.Clear;
+                        // #042 a weapon that ignores LoS still hits along a blocked line; Blast and friends ignore
+                        // cover (no dashed cover line). #425: the blocked line is "behind Sight Blockers" - cover,
+                        // unless the weapon also ignores the cover a Sight Blocker grants (Indirect on a Hold, which
+                        // a post-move preview never is). Approximation kept from before: a line that crosses both a
+                        // blocker and Cover terrain reads as the blocker (CoverMajority reads every piece).
+                        if (ignoresLoS && effect == ESightLineEffect.Blocking)
+                            effect = WeaponIgnoresBlockerCover(w) ? ESightLineEffect.Clear : ESightLineEffect.Cover;
                         if (ignoresCover && effect == ESightLineEffect.Cover) effect = ESightLineEffect.Clear;
                         if (effect != ESightLineEffect.Blocking)
                         {
