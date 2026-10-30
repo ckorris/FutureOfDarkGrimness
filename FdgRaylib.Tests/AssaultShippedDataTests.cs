@@ -41,9 +41,8 @@ public class AssaultShippedDataTests
         {
             new HookEntry(EHookID.Lifecycle_OnCapabilityQuery, new Condition.Always(), new Effect.EnableMeleeUse(),
                 ELifetime.UntilEndOfGame),
-            new HookEntry(EHookID.Lifecycle_OnCapabilityQuery, new Condition.Always(), new Effect.EnableRangedUse(),
-                ELifetime.UntilEndOfGame),
-        }), "a weapon ROLE grant through the capability convention - not a name-based marker");
+        }), "a weapon ROLE grant through the capability convention - not a name-based marker; the melee arm only " +
+            "(#424 D3, owner: every Assault weapon has a printed range, so a ranged arm would only restate it)");
     }
 
     [Test]

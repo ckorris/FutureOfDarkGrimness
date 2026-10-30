@@ -163,6 +163,10 @@ absent everywhere ("Piercing Assault", "Twin Assault Blaster" are unrelated subs
 
 ## Notes
 
+- 2026-10-30 (owner review): D3 decided - Assault's redundant `enableRangedUse` arm removed from the definition and the
+  pins (shipped-data, formatter fake, engine integration fakes); D2 (structural role read) assessed for Chris, see the
+  orchestrator's note in Decisions.
+
 - 2026-10-30 (G, acceptance): all-90 scratch re-import with the current supplements
   (`scratchpad/424/all-after/`): Dead 563 = Parry 264 + Enhanced 299 (92 names), Assault 0 (was 3503 of 4066).
   Shipped `--rule-coverage FdgRaylib/Assets/Books`: Dead 36 (unchanged, Counter-Attack family until #438).
@@ -227,7 +231,9 @@ absent everywhere ("Piercing Assault", "Twin Assault Blaster" are unrelated subs
   role. It mirrors `CapabilityRuleQueries` in shape (ask for the operation type, `*Source` attribution, nothing tests
   the name "Assault") but not in dispatch. Alternative: a stand-in `RuleInvocation` with a null bearer - rejected,
   any effect reading its bearer would throw.
-- D3 (OWNER REVIEW): the Assault definition authors BOTH arms (`enableMeleeUse` and `enableRangedUse`) because the
+- D3 (OWNER REVIEW -> DECIDED by Chris 2026-10-30: the ranged arm is DROPPED; the definition grants melee use only.
+  "A 0\" gun is indeed senseless." The `EnableRangedUse` primitive stays available but unused. Original text:) the
+  Assault definition authored BOTH arms (`enableMeleeUse` and `enableRangedUse`) because the
   rule says "both". Every 3.6.0 Assault weapon has a printed range, so the ranged arm restates the range for the whole
   corpus; a hypothetical range-0 Assault weapon would be offered as a 0\" gun (no target ever in range). Alternative:
   melee-only grant - no behavioural difference for the corpus, less literal.

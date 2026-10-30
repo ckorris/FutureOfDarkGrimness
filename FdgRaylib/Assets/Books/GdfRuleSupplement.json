@@ -8680,17 +8680,6 @@
         },
         "lifetime": "UntilEndOfGame",
         "seat": "Actor"
-      },
-      {
-        "hookID": "Lifecycle_OnCapabilityQuery",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "enableRangedUse"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
       }
     ],
     "activated": [],
