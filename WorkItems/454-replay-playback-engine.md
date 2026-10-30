@@ -68,6 +68,24 @@ the final store equals the live final store", and `ReplayPlayer` is usable from 
 Engine suite green; `dotnet build`. No app change in this ticket.
 
 ## Notes
+- 2026-10-30 - Slice 3 (`ReplayPlayer`): `Replay/ReplayPlayer.cs` - `Store`, `TableState`, `CurrentStep`,
+  `IsAtEnd`, `OnStoreReplaced`, `SeekToStep`, `StepForward`, `StepBack`, `SeekToEnd`; `PlaybackSpan`
+  (FromSeq exclusive, ToSeq inclusive, Events, Beats, LogLines, Markers, StoreReplaced, Problems);
+  `ReplayPlaybackException`. `GameSaveSerializer.Load(json, stampLegacyReserves: false)` (internal) is the
+  playback load. Tests `Tests/ReplayPlaybackTests.cs` (4): scripted recording through the real recorder
+  (state at every step == a save of the live store taken when that decision was asked; forward never
+  replaces the store, back always does; an add into a slot recycled before the round's snapshot);
+  no-snapshot refusal and no-step start; a real in-process game - final played-back state == live final
+  state, seek == walk at every step; every snapshot of a real game re-saves to itself under the playback
+  load, and NOT under the save path's load (the legacy stamp - see Decisions). `ReplayRecorderGameTests`'
+  harness is now internal and captures the live final save at completion. Engine 3438 passed / 1 skipped;
+  build clean.
+  Measured on the plan's 2k game (BB vs Orks, seed 42; FdgLab exported it through a temporary env-gated
+  patch, archived at `~/Projects/fdg-lab-scratch/replay-454/`, reverted): 4278 events, 349 requests -> 312
+  steps + 37 folded, 5 snapshots; played back from snapshot 0 to the end it EQUALS the live final save.
+  Debug build: read 371 ms, index 110 ms, player construction 363 ms (all first-call, JIT included), walk
+  all 312 steps forward 375 ms; `SeekToStep` median 29 ms, p95 39 ms, max 49 ms; one 394 KB snapshot
+  load 19 ms.
 - 2026-10-30 - Slice 2 (reader warnings, timeline, step filter): `ReplayDocument.Warnings` (a `BuildVersion`
   mismatch is a warning naming both builds, never an error; dev builds all stamp `-dev`). The reader was
   already a line-at-a-time read off the gzip stream, so "streaming" needed no change. `Replay/ReplayTimeline.cs`:
@@ -90,7 +108,19 @@ Engine suite green; `dotnet build`. No app change in this ticket.
   `Tests/StoreDeltaApplierTests.cs` (4). Engine 3427 passed / 1 skipped; build clean; headless smoke exit 0.
 
 ## Decisions
-- (still to record: the seek timing)
+- **Seek timing: met with room to spare, no cache.** Worst `SeekToStep` on a 2k game is 49 ms in a Debug
+  build against the 250 ms target (one snapshot load ~19 ms plus at most a round of deltas), so the player
+  keeps no per-step cache or extra snapshots; a step back is simply a re-seek.
+- **Playback loads snapshots exactly** (`stampLegacyReserves: false`). The save path's load re-derives
+  InReserve for "every model at the origin", which is every unit in snapshot 0 (taken before deployment):
+  each would show as in reserve until its next recorded update. Pinned: under the normal load snapshot 0
+  does NOT re-save to itself; under the playback load every snapshot does.
+- **Beats are read at their own place in the stream**, against the store as it stood then (a beat's
+  bindings must resolve, and a later remove in the same span would break them). One that cannot be read is
+  a `PlaybackSpan.Problems` line, not an exception; a delta that cannot be applied IS a
+  `ReplayPlaybackException` (the state would be wrong), and the next move rebuilds from a snapshot.
+- **Forward from the last step goes to the end of the recording** (`IsAtEnd`, `CurrentStep` null), so the
+  last decision's effects and the game's end can be watched; `StepForward` at the end returns null.
 - **Option count: parse the request JSON as a plain token tree** (`JObject`), not a regex and not a bind to
   the CLR type. A regex for `"Options":[` would have missed every real list: the wire writes interface-typed
   lists as `{"$type":...,"$values":[...]}` wrappers, and the field is `ValidOptions`. Binding to the type
