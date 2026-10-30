@@ -161,11 +161,12 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
                     }
 
                     // #197 P22: flat minimum, Repel keep-out discs and Beacon waivers, judged together.
+                    // #426: Scout / Vanguard keep-outs ride the same discs; the stage words their reason.
                     if (PlacementDistanceRules.ViolatesEnemyDistance(request, newPos, enemies))
                     {
                         Console.WriteLine(TooCloseToEnemy(newPos, enemies, minEnemyDist)
                             ? $"    ! Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units."
-                            : "    ! Inside an enemy's Repel Ambushers keep-away - set up further from that unit (or within a friendly Ambush Beacon's range).");
+                            : $"    ! {PlacementKeepOutText.Reason(request)}");
                         continue;
                     }
 

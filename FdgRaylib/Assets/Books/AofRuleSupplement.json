@@ -346,9 +346,10 @@
           "requiredRule": null
         },
         "effect": {
-          "kind": "triggeredMove",
+          "kind": "repositionOnDeploy",
           "maxInches": 9,
-          "isOptional": true
+          "enemyClearanceInches": 9,
+          "exemptEnemyRule": "Vanguard"
         },
         "availableWhen": {
           "kind": "mostModelsHaveThisRule"
@@ -358,7 +359,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per game, immediately after deploying, this unit may move up to 9 inches."
+    "description": "After this model is deployed, it may be placed anywhere fully within 9\" of its position, over 9\" away from non-Vanguard enemy units."
   },
   {
     "name": "Traversal",

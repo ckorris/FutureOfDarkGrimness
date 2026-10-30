@@ -63,6 +63,16 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #426): text already 3.6, skip: `CoreRuleCatalog.Scout`, `.Ambush`, `.Vanguard`, `.Fanatic`
+  (pinned by `ScoutPlacementRuleIntegrationTests`, `AmbushRuleIntegrationTests`, `VanguardRuleIntegrationTests`);
+  supplement `Reinforcement`, `Spawn`, `Split` (GDF) and `Drakesworn` (AoF) (pinned by
+  `DeploymentDistancesShippedDataTests`); the `PendingReinforcementArrival` token description. Seen, NOT changed (yours or
+  the owner's): (1) Reinforcement's 3.6 text still says "a unit where ALL models have this rule", but its shipped gate is
+  #428's `mostModelsHaveThisRule` - text and gate disagree; (2) Teleport: the census lists no 3.6 change, but the book
+  text is "fully within 3" of its position when using Advance/Charge actions, or fully within 6" ... when using Rush
+  actions" while `CoreRuleCatalog.Teleport` is a flat 6" with a "place each model fully within 6"" description - a
+  pre-existing behaviour gap as well as a text one, so it probably wants its own number; (3) Infiltrate's supplement text
+  matches 3.6.
 - 2026-10-30 (from #425): yours to delete - Mobile Artillery, Re-Position Artillery and Quick Readjustment (all
   dropped in 3.6; #425 left them in place). Entries: `GdfRuleSupplement.json` "Mobile Artillery", "Re-Position
   Artillery", "Quick Readjustment" (none is a catalog rule; the bundled 3.5 books that name them - 3, 18 and 4

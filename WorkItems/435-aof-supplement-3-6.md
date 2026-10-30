@@ -60,6 +60,11 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30 (from #426): Drakesworn is DONE - its 3.6 text is Vanguard's word for word ("...over 9" away from
+  non-Vanguard enemy units"), so `AofRuleSupplement.json` now carries Vanguard's exact effect (`repositionOnDeploy`,
+  `maxInches` 9, `enemyClearanceInches` 9, `exemptEnemyRule` "Vanguard", most models), pinned by
+  `DeploymentDistancesShippedDataTests.Drakesworn_IsThe36VanguardPlacement`. Strike it from your list. The bundled
+  Volcanic Dwarves book embeds the old 9" move until #438 re-bakes.
 - 2026-10-30 (orchestrator): #429 found Mind Control gained a 3.6 clause ("Units may only be moved once per round in
   this way.") and Spell Resistance is new with no definition; #434 owns the GDF side. Check the AoF 3.6.0 snapshots for
   the same names (and Casting Debuff, which no GDF book names any more) and share #434's definitions.

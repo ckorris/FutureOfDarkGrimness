@@ -568,13 +568,14 @@ public class GuiPlaceObjectsResolver<T>
 
         // #197 P22: the shared authority folds the flat minimum, Repel keep-out discs and Beacon
         // waivers together; TooCloseToEnemy is kept only to word the reason for the common case.
+        // #426: Scout's "non-Scout" and Vanguard's "non-Vanguard" keep-outs ride the same discs, and the
+        // stage words their reason (one wording shared with the CLI resolver).
         PlaceObjectsRequest<T>? req = ConstraintRequest;
         if (req != null && PlacementDistanceRules.ViolatesEnemyDistance(req, cand, enemies))
         {
             reason = minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist)
                 ? $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units."
-                : "Inside an enemy's Repel Ambushers keep-away - set up further from that unit " +
-                  "(or within a friendly Ambush Beacon's range).";
+                : PlacementKeepOutText.Reason(req);
             return false;
         }
 
@@ -925,7 +926,9 @@ public class GuiPlaceObjectsResolver<T>
 
     // IEnemyExclusionProvider: surfaces the no-go geometry while an Ambush-style placement is pending, so
     // the renderer can draw the blob. Keep-out = the flat over-9" rule as a disc per live enemy model plus
-    // the request's Repel Ambushers discs (#197 P22, each at its own radius); waivers = Ambush Beacon
+    // the request's keep-out discs - Repel Ambushers (#197 P22, each at its own radius) and, since #426,
+    // Scout's "over 9in from non-Scout enemy units" and Vanguard's / Fanatic's "non-Vanguard" ones, so the
+    // Scout band and a Vanguard reach ring show their enemy keep-out too; waivers = Ambush Beacon
     // regions the renderer ERASES from the blob (and outlines), since inside one every enemy-distance
     // restriction is void. The engine thread is blocked awaiting this resolution during placement, so
     // reading table state here is safe.

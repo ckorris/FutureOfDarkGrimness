@@ -51,6 +51,19 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #426): deployment placement parity. Done (pinned): every AI placement honours the new keep-out
+  discs through `PlacementDistanceRules` - Scout's "over 9" from non-Scout enemies" (`AiPlacement_FindsTheLegalStrip_
+  BehindAnEnemyLine`), Reinforcement's 9" band + 9" enemy minimum (`TheCopy_AiPlacement_StaysInTheNineInchBand_...`),
+  and Vanguard/Fanatic/Drakesworn, which are now PLACEMENTS: `AiPlaceObjectsResolver.AdvanceAfterDeploying` answers a
+  deploy-time reposition (`RepositionPlacement.DeployRepositionTaskName`) with a rigid shift toward the nearest enemy
+  model, as far as legal, keeping the 1" standoff (parity with the old 9" Vanguard move, which the solo movement
+  resolver marched at the nearest enemy; the Tactician inherits it). Gaps for you, none changed in #426: (1) the
+  reposition aim is "nearest enemy", not objective-aware like the Tactician's deployment aim (`PreferredBlockCenter`) -
+  a Scout-style aim (forward edge of the reach, toward the lane's objective) would fit; (2) the Tactician's Scout aim
+  ignores the keep-out until the spiral search shoves it - aiming 9"+ off the nearest non-Scout enemy would place it
+  deliberately; (3) the alternation (players alternate placing Scout/Ambush units) is invisible to the AI: it places
+  its next unit in list order, never choosing WHICH unit to place in reply (the engine offers no pick, #426 D6);
+  (4) the Combat Calculator has no deployment facet, nothing to do there.
 - 2026-10-30 (from #425): Hold-vs-Advance parity status. Done (pinned): `CombatMath.EstimateShooting` exempts an
   Indirect weapon from a cut lane only on a Hold (it passes the candidate's `AttackerMoved` to
   `SightRuleQueries.IgnoresTerrain`; `TacticianLineOfSightTests.EstimateShooting_BlockedSight_IndirectAfterMoving_NeedsTheLane`);

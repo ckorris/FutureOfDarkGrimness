@@ -6115,7 +6115,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\" of it."
+    "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\" of it. Units placed via Spawn can't seize or contest objectives on the round they are placed."
   },
   {
     "name": "Split",
@@ -6132,7 +6132,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\" of it before removing the last model."
+    "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\" of it before removing the last model. Units placed via Split can't seize or contest objectives on the round they are placed."
   },
   {
     "name": "Reanimation",
@@ -6198,7 +6198,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When a unit where all models have this rule is Shaken or fully destroyed, you may remove it from the table as destroyed and place a new copy of it fully within 12\" of any table edge at the beginning of the next round after Ambushers have been deployed. Units that deploy via Reinforcement can't seize or contest objectives on the round they deploy, and this rule doesn't apply to the new copy of the unit."
+    "description": "When a unit where all models have this rule is Shaken, you may remove it from the table as destroyed. At the beginning of the next round after a unit where all models have this rule is destroyed, after Ambushers have been deployed, you may place a new copy of it fully within 9\" of any table edge, over 9\" away from enemy units. Units that deploy via Reinforcement can't seize or contest objectives on the round they deploy, and this rule doesn't apply to the new copy of the unit."
   },
   {
     "name": "Ambush Re-Deployment",

@@ -927,7 +927,8 @@ public class RaylibRenderer
 
     // Draws the Ambush no-go region: a single blended blob covering everywhere an enemy-distance rule
     // forbids. Each keep-out disc (the flat over-9" rule per enemy model, plus Repel Ambushers' larger
-    // per-model discs — #197 P22) is painted OPAQUE into an offscreen texture so overlaps overwrite
+    // per-model discs — #197 P22 — and, since #426, Scout's "non-Scout" and Vanguard's "non-Vanguard"
+    // 9" discs) is painted OPAQUE into an offscreen texture so overlaps overwrite
     // rather than stack; waiver discs (Ambush Beacon) are then ERASED back out — inside one, every
     // enemy-distance restriction is void, so the hole IS the semantics — and the whole union is
     // composited once at a uniform light alpha. Waiver bubbles get a green outline so the player sees

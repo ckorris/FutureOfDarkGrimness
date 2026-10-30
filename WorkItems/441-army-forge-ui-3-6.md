@@ -46,6 +46,11 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #426): glossary text. `RuleGlossary` reads definition descriptions, so Scout, Ambush, Vanguard and
+  Fanatic tooltips already show the full 3.6 text (catalog). Drakesworn, Reinforcement, Spawn and Split are book-embedded:
+  their tooltips keep the 3.5 text until #438 re-bakes the books from the updated supplements. The 3.6 texts are 2-4x
+  longer than the old one-liners (Scout and Ambush especially) - worth a look at tooltip wrapping in the Forge and the
+  in-game rule hovers.
 - 2026-10-29: filed with the plan.
 
 ## Decisions
