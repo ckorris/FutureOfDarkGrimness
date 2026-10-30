@@ -3997,6 +3997,86 @@
     "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Bane in melee for its next relevant roll."
   },
   {
+    "name": "Counter in Melee",
+    "passive": [
+      {
+        "hookID": "Melee_OnCounterTrigger",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "countsAsFatiguedInMelee"
+          }
+        },
+        "effect": {
+          "kind": "strikeFirst"
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model gets Counter on its weapons in melee."
+  },
+  {
+    "name": "Counter in Melee Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Counter"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Counter on its weapons in melee."
+  },
+  {
+    "name": "Counter in Melee Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Counter in Melee",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Counter in Melee."
+  },
+  {
     "name": "Guarded",
     "passive": [
       {
@@ -6608,7 +6688,10 @@
       {
         "hookID": "Melee_OnChargeContact",
         "condition": {
-          "kind": "always"
+          "kind": "not",
+          "inner": {
+            "kind": "countsAsFatiguedInMelee"
+          }
         },
         "effect": {
           "kind": "chargeImpactHits",
@@ -6626,7 +6709,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "On charging into contact, rolls X bonus dice that score automatic hits with AP(1) before melee swings."
+    "description": "Counts as having Impact(X) with hits that have AP(1)."
   },
   {
     "name": "Quick Readjustment",

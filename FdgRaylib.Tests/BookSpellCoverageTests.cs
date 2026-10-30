@@ -31,7 +31,13 @@ public class BookSpellCoverageTests
     // bundled book resolves; a stale entry (the name starts resolving) fails the fixture too.
     // Still empty after #378 bundled the AoF books: their spells' references all resolve (the known
     // #381 Retreating Strike gap is unit-attached in Dark Elves, pinned by BookRuleCensusTests).
-    private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>();
+    // #422: OPR 3.6 dropped Counter-Attack; two bundled 3.5 spells (AoF-Orcs "Evil Gaze", ElvenJesters
+    // "Asphyxiating Fog") still grant it. Their 3.6 text grants "Counter in Melee once" instead - the #438/#439
+    // re-bake and spell re-import pick that up; remove this entry then.
+    private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>
+    {
+        ["Counter-Attack"] = "dropped by OPR 3.6 (#422); 3.5 spells grant it until the #438/#439 re-import",
+    };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 

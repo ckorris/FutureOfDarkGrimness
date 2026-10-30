@@ -73,6 +73,13 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-29 (from #422): the re-bake must clear four allowlist entries #422 added (each test fails once its entry
+  goes stale): `BookRuleCensusTests` "Counter-Attack" and "Counter-Attack Aura" (15 bundled 3.5 books, 36 refs -
+  `--rule-coverage` reports Dead: 36 until then), `BookSpellCoverageTests` / `BookSpellCastProbeTests`
+  "Counter-Attack" (AoF-Orcs "Evil Gaze", ElvenJesters "Asphyxiating Fog" grant it; 3.6 grants "Counter in Melee
+  once" - #439), and `BookRuleFireLintTests` "Counter in Melee" (AoF-ChivalrousKingdoms embeds the 3.5 copy with
+  the now-inert `reduceImpactDicePerModel` facet). The re-bake also picks up the gated Heavy Impact (7 books embed
+  the ungated 3.5 copy) and the gated, Counter-only "Counter in Melee".
 - 2026-10-29 (from #420): the two Dangerous Terrain Debuff descriptions in `GdfRuleSupplement.json` ("Dangerous
   Terrain Debuff Effect" and "... (Immediate)") now describe the 3.6 test ("it rolls a die per wound it would
   take to destroy it, taking a wound on each 1"). The baked `.fdgbook` copies (11 books, including the

@@ -242,7 +242,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 419 | Melee result = wounds taken this activation; Fear(X) rewording | 2 | - | O | medium | todo |
 | 420 | Dangerous terrain dice = wounds to destroy the unit | 2 | - | S | medium | done 2026-10-29 (open: D5 "activates in it") |
 | 421 | Hero morale: Tough(9+) 6" Quality aura; not-Shaken gate | 2 | #428 | O | high | todo |
-| 422 | Impact before attacks + Fatigue gate; Counter split; new Brace(X) | 2 | - | O | high | todo |
+| 422 | Impact before attacks + Fatigue gate; Counter split; new Brace(X) | 2 | - | O | high | done 2026-10-29 (awaiting GUI hand-verify; owner: D1, D4, D8) |
 | 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | F | xhigh | todo |
 | 424 | Assault weapons count as ranged and melee | 2 | - | F | xhigh | todo |
 | 425 | Cumbersome; Artillery and Indirect 3.6; Quick Throw | 2 | - | O | medium | todo |
@@ -276,7 +276,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file

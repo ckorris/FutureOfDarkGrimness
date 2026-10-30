@@ -51,6 +51,11 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-29 (from #422): goal item 2's Impact/Brace/Counter half is done - `CombatMath.EstimateMelee` reads Impact,
+  Brace and Counter through the same evaluation the stages run, so the 3.6 Fatigue gates and the Counter/Brace split
+  reached it with no code change; pinned in `CombatMathPinTests` (fatigued Impact charger, Brace defender, fatigued
+  Counter defender) and `CombatCalculatorTests` (fatigued Impact charger, no Impact row). Open owner question #422
+  D8: Impact(X) is rolled once per unit, not per model, in the engine and so in the AI.
 - 2026-10-29 (from #417): goal item 1's strike-range half is done - `TacticalAnalysis.MeleeThreatReach`,
   `TacticianPlanner.MeleeReachOf` and `PositionEncoder.CheapThreatReach` read `MELEE_RANGE_INCHES_HORIZONTAL`,
   now 3". Open for this item: the shipped Strategist leaf net (`MlpPositionEvaluator`) was trained when

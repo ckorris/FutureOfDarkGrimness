@@ -26,9 +26,15 @@ public class BookRuleCensusTests
     // fails the fixture too - that is the reminder to delete it when the blocking item lands.
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-        // Empty since #381 landed (Retreating Strike, the last dead AoF name) - both corpora are at
-        // zero dead references. Add entries only for a name that is KNOWINGLY dead, with the item that
-        // owns it.
+        // Empty from #381 (Retreating Strike, the last dead AoF name) until #422. Add entries only for a
+        // name that is KNOWINGLY dead, with the item that owns it.
+        //
+        // #422: OPR 3.6 dropped Counter-Attack and its Aura, so the core catalog no longer defines them, but
+        // the bundled 3.5 books still name them (15 books, 36 references) until #438 re-bakes the corpus from
+        // the 3.6 sources. A list naming them loads with the "not implemented" diagnostic. Remove both
+        // entries once #438 lands - AllowlistedNamesAreStillDeadSomewhere fails until you do.
+        ["Counter-Attack"] = "dropped by OPR 3.6 (#422); bundled 3.5 books name it until the #438 re-bake",
+        ["Counter-Attack Aura"] = "dropped by OPR 3.6 (#422); bundled 3.5 books name it until the #438 re-bake",
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

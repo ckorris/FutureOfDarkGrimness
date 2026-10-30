@@ -60,6 +60,10 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-29 (from #422): "Brace in Melee" is DONE in `AofRuleSupplement.json` (weapon scope, Brace(1) as a literal,
+  the Fatigue gate, 3.6 text), and "Counter in Melee" left the AoF file for the GDF one (one definition serves
+  both; the old copy's `reduceImpactDicePerModel` facet is gone). No 3.6 book names a "Brace in Melee Aura" or
+  "Buff" (grepped both snapshot folders). "Counter in Melee Aura" is in the GDF file. Nothing left here for them.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

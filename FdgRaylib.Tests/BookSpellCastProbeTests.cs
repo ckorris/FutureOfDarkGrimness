@@ -36,6 +36,29 @@ public class BookSpellCastProbeTests
 {
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
+    // Rule names a bundled spell knowingly grants with nothing behind them, each with its reason. A diagnostic
+    // naming one (quoted, as every rule diagnostic quotes its rule) is not a failure; an entry no diagnostic
+    // mentions any more is stale and fails the sweep, so it gets removed when its blocking item lands.
+    // #422: OPR 3.6 dropped Counter-Attack, which two 3.5 spells (AoF-Orcs "Evil Gaze", ElvenJesters
+    // "Asphyxiating Fog") still grant; their 3.6 text grants "Counter in Melee once" (#438/#439 re-import).
+    private static readonly IReadOnlyDictionary<string, string> KnownDeadGrants = new Dictionary<string, string>
+    {
+        ["Counter-Attack"] = "dropped by OPR 3.6 (#422); 3.5 spells grant it until the #438/#439 re-import",
+    };
+
+    private static bool IsKnownDead(string diagnostic, HashSet<string> seen)
+    {
+        foreach (string name in KnownDeadGrants.Keys)
+        {
+            if (diagnostic.Contains($"'{name}'", StringComparison.Ordinal))
+            {
+                seen.Add(name);
+                return true;
+            }
+        }
+        return false;
+    }
+
     [Test]
     public async Task EverySpellInEveryBundledBook_CastsCleanly()
     {
@@ -45,6 +68,7 @@ public class BookSpellCastProbeTests
 
         var problems = new List<string>();
         var diagnostics = new List<string>();
+        var knownDeadSeen = new HashSet<string>(StringComparer.Ordinal);
         void CaptureWarning(string message) => diagnostics.Add(message);
         void CaptureDrop(RuleDrop drop) => diagnostics.Add(drop.Message);
 
@@ -67,6 +91,7 @@ public class BookSpellCastProbeTests
                 IReadOnlyList<RuntimeSpell> spells = ArmyListSpellResolution.ResolveSpells(book.Spells, resolver);
                 foreach (string diagnostic in diagnostics)
                 {
+                    if (IsKnownDead(diagnostic, knownDeadSeen)) continue;
                     problems.Add($"{bookName} (load): {diagnostic}");
                 }
 
@@ -81,6 +106,7 @@ public class BookSpellCastProbeTests
 
                     foreach (string diagnostic in diagnostics)
                     {
+                        if (IsKnownDead(diagnostic, knownDeadSeen)) continue;
                         problems.Add($"{bookName} | {spell.Definition.Name}: {diagnostic}");
                     }
 
@@ -94,6 +120,14 @@ public class BookSpellCastProbeTests
         {
             RuleDiagnostics.OnWarning -= CaptureWarning;
             RuleDiagnostics.OnRuleDropped -= CaptureDrop;
+        }
+
+        foreach ((string name, string reason) in KnownDeadGrants)
+        {
+            if (!knownDeadSeen.Contains(name))
+            {
+                problems.Add($"known-dead grant '{name}' ({reason}) raised no diagnostic - remove its stale entry.");
+            }
         }
 
         Assert.That(problems, Is.Empty,

@@ -63,6 +63,11 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-29 (from #422): Counter-Attack and Counter-Attack Aura are already DELETED from the catalog, with
+  `CounterRuleIntegrationTests`' Counter-Attack case and `MostModelsRuleGateIntegrationTests.CounterAttack_*`
+  retired; a list naming them loads with the #168 Unimplemented drop (`CounterLegacyDataTests`). Counter's 3.5
+  impact facet is gone too (now Brace(X)); its JSON kind `reduceImpactDicePerModel` parses as a no-op for old
+  files. Impact, Counter, Brace, Heavy Impact and the Counter/Brace in Melee grants already carry 3.6 text.
 - 2026-10-29 (from #428): two hand-offs. (1) #428 switched every gate to "most models" but deliberately left
   the rule DESCRIPTIONS alone; twelve supplement descriptions still read "all models" and now contradict the
   engine: GDF Versatile Defense, Defensive Frenzy, Defensive Growth, Fortified Growth, Reanimation,

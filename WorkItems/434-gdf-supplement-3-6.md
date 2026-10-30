@@ -66,6 +66,10 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-29 (from #422): "Counter in Melee", "Counter in Melee Aura" and "Counter in Melee Buff" are DONE in
+  `GdfRuleSupplement.json` (3.6 text; Counter in Melee moved here from the AoF file because GDF books name it too).
+  The Buff grants "Counter in Melee" NextTrigger - its 3.6 text omits the usual "once (next time ...)"; owner
+  review asked in #422 D4. Heavy Impact now carries Impact's Fatigue gate and its 3.6 text. Skip all four here.
 - 2026-10-29 (from #428): Hive Bond and Hold the Line (GDF, `Morale_OnPreMoraleTest`, "units where all/most
   models have this rule get +1 to morale test rolls") were never on the all-models gate - they are ungated -
   so #428's switch did not touch them. The pre-morale evaluation passes no models (`MoraleUtilities.cs:88`),

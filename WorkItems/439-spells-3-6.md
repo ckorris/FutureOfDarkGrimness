@@ -63,6 +63,10 @@ so trailing clauses (including "in line of sight") are silently ignored today; L
 
 ## Notes
 
+- 2026-10-29 (from #422): AoF Orcs "Evil Gaze" and GDF Elven Jesters "Asphyxiating Fog" grant "Counter-Attack" in the
+  bundled 3.5 books (dropped by 3.6, now an allowlisted dead grant); their 3.6 text is "Pick one friendly unit
+  within 12", which gets Counter in Melee once (next time the effect would apply)." - `addRule "Counter in Melee"`
+  NextTrigger, and "Counter in Melee" is defined in `GdfRuleSupplement.json`.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

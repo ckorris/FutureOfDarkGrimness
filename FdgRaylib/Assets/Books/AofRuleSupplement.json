@@ -2329,26 +2329,22 @@
     "description": "Gains a marker at the start of each round while on the table and not Shaken (max 4). If all models have this rule, every two markers reduce attackers' AP by 1 (min AP(0), up to 2)."
   },
   {
-    "name": "Counter in Melee",
+    "name": "Brace in Melee",
     "passive": [
-      {
-        "hookID": "Melee_OnCounterTrigger",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "strikeFirst"
-        },
-        "lifetime": "ThisActivation",
-        "seat": "Subject"
-      },
       {
         "hookID": "Melee_OnChargeContact",
         "condition": {
-          "kind": "always"
+          "kind": "not",
+          "inner": {
+            "kind": "countsAsFatiguedInMelee"
+          }
         },
         "effect": {
-          "kind": "reduceImpactDicePerModel"
+          "kind": "cancelImpactDice",
+          "dicePerModel": {
+            "kind": "literal",
+            "value": 1
+          }
         },
         "lifetime": "ThisAttack",
         "seat": "Subject"
@@ -2358,7 +2354,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When charged, this unit strikes first and the charger rolls one fewer Impact die per living model."
+    "description": "This model gets Brace(1) on its weapons in melee."
   },
   {
     "name": "AP",
