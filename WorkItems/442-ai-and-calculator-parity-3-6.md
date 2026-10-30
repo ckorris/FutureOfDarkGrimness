@@ -51,6 +51,16 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 5 - #425's enemy Cumbersome, B): an ENEMY that may not declare a Charge is no charge threat
+  anywhere the Tactician prices one - `TacticalAnalysis.MayCharge` (`ActionRestrictionQueries.MayDeclare(..., Charge)`)
+  now gates the planner's `EnemyFacts.HasMelee` (retaliation, projected threat, approach staging, the cover habit's
+  melee share), the transport bail, the screen lane's melee threats, `TacticalAnalysis.ThreatRangeAgainst` (the kite
+  band), the shooting resolver's "threatens us" factor and the ambush-spot retaliation. It still strikes back, so the
+  exchange estimates themselves are unchanged. Not touched on purpose: `Learning/PositionEncoder.CheapThreatReach`
+  (the shipped Strategist leaf's input; D6). Pins: `TacticianPlannerTests.CumbersomeEnemy_IsNoChargeThreat` (a Hold
+  candidate 8" from Cumbersome brutes scores higher than from plain ones), `TacticalAnalysisTests.
+  ThreatRange_CumbersomeBrawler_ThreatensNoCharge`, plus `ChargeOriginDistance_IsTheBaseEdgeGap_...` for batch 4's
+  helpers.
 - 2026-10-30 (#442 batch 4 - #432's charge and save-side arms, B): `AttackContext.ChargeOriginInches` (new) reaches
   `CombatMath`'s hit-modifier, hit-complete AND save-complete contexts for a charging melee swing only (a strike-back
   or a Countered charge carries none, as `CombatActionContext` reports); the save context also gets the shooting
@@ -292,6 +302,10 @@ with no illegal-action retries in the log.
   living base edge from its centroid), or the victim's spread plus 1" for a not-yet-placed arriver; memoized per
   half-inch. The planner's own charge and every current-position term measure the real gap. Deployment matchup
   pricing keeps 0 (no charge arm) - it has no positions at all.
+- **D6 - the learned evaluator's inputs are left alone (2026-10-30).** `PositionEncoder` feeds the shipped Strategist
+  leaf net (`StrategistLeafV1.json`); changing what it encodes (Cumbersome enemies' threat reach, charge arms) would
+  drift a trained model's inputs without re-training, which is OWNER REVIEW territory (plan rule 8). Every estimator
+  change in this item is in the hand-written policy and `CombatMath`; the net sees exactly what it saw at #417.
 
 ## Outcome
 
