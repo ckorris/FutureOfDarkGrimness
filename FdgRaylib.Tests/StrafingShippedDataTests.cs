@@ -13,50 +13,19 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #197 Strafing - the 12 corpus references, which were dead as a scope mismatch until the catalog rule was
-// re-authored at weapon scope. Unlike most #197 slices this one changed NO book data: the books were right
-// all along (every reference sits on a bomb weapon) and the catalog was the approximation.
+// #197 Strafing / #431 Crossing Strike - the strafe weapons in the shipped books. 3.6 renamed Strafing to Crossing
+// Strike (a GDF supplement rule, the same activated ability - WeaponRules36ShippedDataTests pins it), and #436 deleted
+// the catalog Strafing, retiring this file's catalog-shape tests and its "12 references resolve" pin. The bundled
+// books are still the 3.5 bake until #438, so their Strafing references are dead in the interim (the #168 drop);
+// the re-bake gives the bombs Crossing Strike.
 //
-// What is pinned here is that agreement, plus the two properties whose failure modes are silent:
-//  - the rule attaches at Weapon scope, without which army load drops all 12 references again;
-//  - it carries no fly-over passive, and its carriers therefore need Aircraft or Flying of their own. If a
-//    future import adds a Strafing bomb to a grounded unit, the weapon can never be used - the engine warns,
-//    but a shipped book should never reach that state.
-// The mechanism (the attack, the pick, the weapon restriction) is pinned engine-side by
-// StrafingRuleIntegrationTests.
+// What is still pinned is the property whose failure mode is silent: neither rule grants a fly-over, so every carrier
+// needs Aircraft or Flying of its own. If an import adds a strafe bomb to a grounded unit, the weapon can never be
+// used - the engine warns, but a shipped book should never reach that state. It reads both names so it holds before
+// and after the re-bake. The mechanism is pinned engine-side by StrafingRuleIntegrationTests.
 [TestFixture]
 public class StrafingShippedDataTests
 {
-    private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
-
-    [Test]
-    public void TheCatalogRule_IsWeaponScoped_AndAttacksWithTheCarryingWeapon()
-    {
-        SpecialRuleDefinition strafing = CoreRuleCatalog.Strafing;
-
-        Assert.That(strafing.Scope, Is.EqualTo(ERuleScope.Weapon),
-            "every corpus reference sits on a weapon - at unit scope army load drops all 12");
-
-        ActivatedAbility ability = strafing.Activated.Single();
-        Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Movement_OnMoveThroughEnemy));
-        Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerActivation>(), "'once per activation'");
-        Assert.That(ability.TargetSelector.MaxCount, Is.EqualTo(1), "'pick ONE of them'");
-        Assert.That(ability.TargetSelector.TargetAffinity, Is.EqualTo(ETargetAffinity.Foe));
-        Assert.That(ability.Effect, Is.InstanceOf<Effect.AttackWithThisWeapon>(),
-            "'attack it with this weapon as if it was shooting' - a fixed hit count would ignore the " +
-            "weapon's own Attacks, AP and Blast");
-    }
-
-    [Test]
-    public void TheCatalogRule_GrantsNoFlyOver()
-    {
-        // The source rule presupposes a unit that can already move through enemies rather than granting it.
-        // Keeping the passive here would also be inert: it is weapon-scoped now, and the movement hook that
-        // MovementRuleQueries.CanMoveThroughEnemies fires never reads weapon rules.
-        Assert.That(CoreRuleCatalog.Strafing.Passive, Is.Empty,
-            "Aircraft and Flying grant the fly-over; Strafing only uses it");
-    }
-
     // Every Strafing reference in the corpus, with the unit it belongs to and whether that unit can fly.
     private record StrafeSite(string Book, string Unit, string Weapon, bool CanFlyOver);
 
@@ -105,21 +74,18 @@ public class StrafingShippedDataTests
         ArmyListRuleResolution.DescribeRuleEntry(rule).lookupName;
 
     private static bool IsStrafing(SpecialRuleEntry rule) =>
-        string.Equals(NameOf(rule), "Strafing", StringComparison.OrdinalIgnoreCase);
+        string.Equals(NameOf(rule), "Strafing", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(NameOf(rule), "Crossing Strike", StringComparison.OrdinalIgnoreCase);
 
     private static bool CanFly(IEnumerable<string> ruleNames) => ruleNames.Any(name =>
         string.Equals(name, "Flying", StringComparison.OrdinalIgnoreCase)
         || string.Equals(name, "Aircraft", StringComparison.OrdinalIgnoreCase));
 
     [Test]
-    public void EveryStrafingReference_SitsOnAWeapon_AndResolvesCleanly()
+    public void TheShippedBooks_StillCarryStrafeWeapons()
     {
-        List<StrafeSite> sites = StrafeSites().ToList();
-
-        Assert.That(sites.Count, Is.EqualTo(12),
-            "the audit's 12 Strafing references - a change here means the corpus moved, not the engine");
-        Assert.That(CoreRuleCatalog.CreateResolver().TryResolve("Strafing", out ResolvedRule resolved), Is.True);
-        Assert.That(resolved.Definition.Scope, Is.EqualTo(ERuleScope.Weapon));
+        Assert.That(StrafeSites().Count(), Is.GreaterThan(0),
+            "the carrier check below must have something to check - a zero here means the name moved again");
     }
 
     [Test]
@@ -131,7 +97,7 @@ public class StrafingShippedDataTests
             .ToList();
 
         Assert.That(grounded, Is.Empty,
-            "Strafing grants no fly-over, so a carrier without Aircraft or Flying can never use the " +
+            "Strafing / Crossing Strike grant no fly-over, so a carrier without Aircraft or Flying can never use the " +
             "weapon at all: " + string.Join(", ", grounded));
     }
 }

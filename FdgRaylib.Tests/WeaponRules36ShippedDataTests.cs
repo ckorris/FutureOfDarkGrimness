@@ -125,16 +125,19 @@ public class WeaponRules36ShippedDataTests
     [Test]
     public void CrossingStrike_IsStrafingsAbility_UnderThe36Name()
     {
+        // #436 deleted the catalog's 3.5 Strafing; its ability is spelled out here instead of compared against it.
         SpecialRuleDefinition crossing = Gdf("Crossing Strike");
-        ActivatedAbility strafing = CoreRuleCatalog.Strafing.Activated.Single();
 
         Assert.That(crossing.Scope, Is.EqualTo(ERuleScope.Weapon));
         Assert.That(crossing.Passive, Is.Empty, "no fly-over permission - the carrier needs Flying or Aircraft");
         ActivatedAbility ability = crossing.Activated.Single();
-        Assert.That(ability.TriggerHook, Is.EqualTo(strafing.TriggerHook));
-        Assert.That(ability.Cost, Is.EqualTo(strafing.Cost), "once per activation");
-        Assert.That(ability.TargetSelector, Is.EqualTo(strafing.TargetSelector));
-        Assert.That(ability.Effect, Is.EqualTo(strafing.Effect), "attack with THIS weapon, as if shooting");
+        Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Movement_OnMoveThroughEnemy));
+        Assert.That(ability.Cost, Is.EqualTo(new Cost.OncePerActivation()), "once per activation");
+        Assert.That(ability.TargetSelector, Is.EqualTo(new TargetSelector(1f, 1, 1, ETargetAffinity.Foe, false)),
+            "pick ONE enemy moved through");
+        Assert.That(ability.Effect, Is.EqualTo(new Effect.AttackWithThisWeapon()), "attack with THIS weapon, as if shooting");
+        Assert.That(CoreRuleCatalog.CreateResolver().TryResolve("Strafing", out _), Is.False,
+            "the 3.5 name is gone from the catalog (#436)");
         Assert.That(crossing.Description, Is.EqualTo(
             "Once per activation, when this model moves through enemy units, pick one of them and attack it with " +
             "this weapon as if it was shooting. This weapon may only be used in this way."));
@@ -142,7 +145,7 @@ public class WeaponRules36ShippedDataTests
         var bombs = new Weapon("Flame Bombs", rangeInches: 0f, attacks: 1, armorPenetration: 0);
         bombs.AttachRuleDefinition(new ResolvedRule(crossing.Name, crossing));
         Assert.That(StrafingRules.IsStrafeOnly(bombs), Is.True,
-            "'This weapon may only be used in this way' - the supplement copy is restricted like the catalog rule");
+            "'This weapon may only be used in this way' - the weapon is out of the ordinary attack pools");
     }
 
     [TestCase("Anti-Cover Aura")]

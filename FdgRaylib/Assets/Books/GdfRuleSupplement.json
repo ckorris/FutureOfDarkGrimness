@@ -8665,8 +8665,7 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "When a unit where most models have this rule is targeted by an enemy unit for shooting/charging, that enemy unit gets -4\"/-2\" range to a min. of 6\"."
-  }
-,
+  },
   {
     "name": "Assault",
     "passive": [

@@ -37,6 +37,13 @@ public class BookSpellCoverageTests
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>
     {
         ["Counter-Attack"] = "dropped by OPR 3.6 (#422); 3.5 spells grant it until the #438/#439 re-import",
+        // #436: more 3.5 catalog rules 3.6 dropped, still granted by bundled 3.5 spells (Brutal Massacre, Magic
+        // Arrows, Dark Isle Spirit, Rune of Piercing, Battle Guts, ...). Remove with the #438/#439 re-import.
+        ["Crack"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Harassing Boost"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Piercing Assault"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Piercing Hunter"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Resistance"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

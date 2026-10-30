@@ -44,6 +44,12 @@ public class BookSpellCastProbeTests
     private static readonly IReadOnlyDictionary<string, string> KnownDeadGrants = new Dictionary<string, string>
     {
         ["Counter-Attack"] = "dropped by OPR 3.6 (#422); 3.5 spells grant it until the #438/#439 re-import",
+        // #436: the same for the other dropped 3.5 catalog rules bundled 3.5 spells grant.
+        ["Crack"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Harassing Boost"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Piercing Assault"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Piercing Hunter"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
+        ["Resistance"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
     };
 
     private static bool IsKnownDead(string diagnostic, HashSet<string> seen)

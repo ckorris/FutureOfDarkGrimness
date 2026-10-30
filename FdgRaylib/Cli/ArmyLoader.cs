@@ -102,7 +102,6 @@ public static class ArmyLoader
                         new SpecialRuleEntry_Core("Thrust"),
                         new SpecialRuleEntry_CoreNumeric("Impact", 2),
                         new SpecialRuleEntry_Core("Furious"),
-                        new SpecialRuleEntry_Core("Strafing"),
                     },
                     Weapons = new List<WeaponFileEntry>
                     {

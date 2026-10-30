@@ -915,40 +915,6 @@
     "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Melee Evasion once (next time the effect would apply)."
   },
   {
-    "name": "Piercing Assault Buff",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 12,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Friend",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "addRule",
-          "ruleName": "Piercing Assault",
-          "scope": "NextTrigger"
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Piercing Assault for its next relevant roll."
-  },
-  {
     "name": "Versatile Attack Buff",
     "passive": [],
     "activated": [
