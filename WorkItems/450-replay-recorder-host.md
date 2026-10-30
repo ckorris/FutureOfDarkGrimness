@@ -94,6 +94,21 @@ Engine suite green; `dotnet build`; headless smoke exits 0; a GUI local game sti
 user-visible changes in this ticket). Commit on `feature/replay` (engine first, then bump).
 
 ## Notes
+- 2026-10-30 - Slice 2 (recorder, scripted): `ReplayRecorder` (one lock, dense Seq, T from a stopwatch,
+  `Start`/`AttachStore`/`Record*`/`Snapshot`/`ExportGzip`/`Summary`/`Dispose`), `IReplaySource` +
+  `ReplaySummary`, `IRequestObserver`, `IBeatObserver`, and `ReplayTextOutput` (the log decorator; named so
+  it does not collide with the tests' `RecordingTextOutput` double). `Tests/ReplayRecorderTests.cs` (10):
+  the ticket's scripted sequence (army adds, model move, token update, YesNo request/reply, two beats, a
+  log line, a snapshot) exported and read back - order, counts, dense Seq, monotonic T, every setup add and
+  both updates byte-equal to the store's own save, beats read back as their concrete types, snapshot ==
+  `GameSaveSerializer.Save` and loadable; markers stamped and summarized; nothing before Start; Start twice
+  refused; failing snapshot / failing beat serializer / throwing failure sink all disable once and never
+  throw; Dispose detaches but keeps the data; the decorator keeps the Debug category; 4000 concurrent
+  appends keep Seq dense. Engine suite 3411 passed, 1 skipped.
+  Found on the way, for #454: `ModelData` serializes a read-only `Position` derived from its
+  `PositionBinding`, so a ModelData entry's JSON goes stale when only its Position entry is rewritten (no
+  ModelData update fires). Load ignores the field, so playback is unaffected - but never diff ModelData
+  JSON against a live save to judge playback; compare whole re-saved stores.
 - 2026-10-30 - Slice 1 (format): `FutureOfDarkGrimness/Replay/` gains `ReplayFormat` (version 1, build/engine
   stamps, the container's JSON settings), `ReplayFile` (extension), `ReplayFormatException`, `ReplayHeader` +
   `ReplaySlot`, the ten event records, `ReplayWriter.WriteGzip` and the minimal `ReplayReader.ReadGzip`.
@@ -114,6 +129,21 @@ user-visible changes in this ticket). Commit on `feature/replay` (engine first, 
   embedding would re-format floats on read). Costs some escaping; gzip absorbs most of it.
 - **Container JSON settings:** enums by name, nulls omitted (marker lines stay short), dates UTC, and
   `DateParseHandling.None` so a date-shaped log line is not re-formatted by the Kind converter's JObject.
+- **Failure policy.** The first failing `Record*`/`Snapshot` logs ONE `[replay] Recording stopped: ...`
+  line (ASCII-folded) to the failure sink `FDGServer` passes to `Start` - the players' log, never the
+  recording decorator - and turns recording off. Events recorded before the failure stay exportable; the
+  stream just ends without a GameEnded marker. `ExportGzip` before `Start` throws (a wiring error, and it
+  is only ever called from the app, never the engine thread).
+- **Snapshot index counts calls**, recorded or not, so the index a marker broadcast carries to clients
+  stays aligned with what they count even after the host recorder disabled itself.
+- **`ReplaySummary.Steps`** counts answered requests; #454's step filter (fold requests with <= 1 option)
+  is NOT applied here. **`SizeBytes`** is the approximate UNcompressed stream size (payload characters + a
+  per-line allowance), cheap enough to read every frame; the file size is the exported byte count.
+- **Beat serializer settings:** `WireJsonSettings.For(store)` (adopted at `AttachStore`), serialized
+  declared as `PresentationBeat` so the root carries `$type` - the same bytes `PresentBeatMessage` puts on
+  the wire. **Requests need no settings of their own:** the recorder stores the body string
+  `RequestMessageSender` already built with `WireJsonSettings.For(store)`, so it is byte-identical to the
+  wire payload.
 - **`LogEvent.Debug`** (omitted when false) is one field beyond plan 4.1's `Line`: the live log hides
   Debug-category lines unless the toggle is on, and the viewer needs the same flag to do likewise.
 
