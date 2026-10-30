@@ -48,27 +48,31 @@ UserConfig.EnsureExists();
 // #412: the Options panel's saved display/audio settings.
 FdgRaylib.Rendering.ViewSettings.Load(UserConfig.Current.View);
 
-// --menu-preview <out.png> [WxH] [menu|privacy|options] (#448): the main menu rendered offscreen from a
-// hidden window (war table + real ImGui menu), written to a PNG, then exit. No analytics, no network.
+// --menu-preview <out.png> [WxH] [menu|privacy|options] [seed] (#448): the main menu rendered offscreen
+// from a hidden window (war table + real ImGui menu), written to a PNG, then exit. The seed picks the
+// army pairing (default 1, so a preview is reproducible). No analytics, no network.
 int menuPreviewIdx = Array.IndexOf(args, "--menu-preview");
 if (menuPreviewIdx >= 0)
 {
     if (menuPreviewIdx + 1 >= args.Length)
     {
-        Console.Error.WriteLine("--menu-preview needs an output path: --menu-preview out.png [1920x1080] [menu|privacy|options]");
+        Console.Error.WriteLine("--menu-preview needs an output path: --menu-preview out.png [1920x1080] [menu|privacy|options] [seed]");
         Environment.Exit(2);
     }
     int previewW = 1920, previewH = 1080;
     string previewState = "menu";
+    int previewSeed = 1;
     foreach (string extra in args.Skip(menuPreviewIdx + 2).TakeWhile(a => !a.StartsWith("--")))
     {
         string[] dims = extra.Split('x');
         if (dims.Length == 2 && int.TryParse(dims[0], out int pw) && int.TryParse(dims[1], out int ph))
             (previewW, previewH) = (pw, ph);
+        else if (int.TryParse(extra, out int seed))
+            previewSeed = seed;
         else
             previewState = extra;
     }
-    Environment.Exit(FdgRaylib.Rendering.MenuBackground.MenuPreview.Run(args[menuPreviewIdx + 1], previewW, previewH, previewState));
+    Environment.Exit(FdgRaylib.Rendering.MenuBackground.MenuPreview.Run(args[menuPreviewIdx + 1], previewW, previewH, previewState, previewSeed));
 }
 
 bool headless = args.Contains("--headless");

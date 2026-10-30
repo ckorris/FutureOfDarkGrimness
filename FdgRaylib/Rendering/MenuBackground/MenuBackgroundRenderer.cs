@@ -50,6 +50,8 @@ void main()
     private const float BloomThreshold = 0.16f;
 
     private readonly HoloTableScene _scene = HoloTableScene.BuildDefault();
+    private readonly Random _rng;
+    private HoloSkirmish _skirmish;
 
     private int _w, _h, _ss;
     private bool _haveTargets;
@@ -68,6 +70,24 @@ void main()
     private bool _fontLoaded;
     private Texture2D _radial;          // soft white disc fading to clear: the projector glow pool
     private bool _radialReady;
+
+    /// <param name="seed">Fixes the army pairing sequence (the offscreen preview); null = random.</param>
+    public MenuBackgroundRenderer(int? seed = null)
+    {
+        _rng = seed is { } s ? new Random(s) : new Random();
+        _skirmish = HoloSkirmish.Random(_rng);
+    }
+
+    /// <summary>The armies currently on the table.</summary>
+    public HoloSkirmish Skirmish => _skirmish;
+
+    /// <summary>Deals a new pair of armies onto the table. The renderer calls this each time the menu
+    /// comes back into view, so every visit shows a different matchup.</summary>
+    public void Reshuffle()
+    {
+        _skirmish = HoloSkirmish.Random(_rng);
+        _dirty = true;
+    }
 
     /// <summary>Draws the background over the whole screen. Call inside BeginDrawing, before ImGui.</summary>
     public void Draw(int screenW, int screenH, MainMenuLayout layout)
@@ -155,6 +175,7 @@ void main()
         Raylib.BeginBlendMode(BlendMode.Additive);
         DrawGlowPool(cam);
         DrawScene(cam, px * _ss);
+        DrawUnits(cam, px * _ss);
         Raylib.EndBlendMode();
         Raylib.EndTextureMode();
 
@@ -244,6 +265,71 @@ void main()
             Vector2 at = P(label.At);
             Vector2 extent = Raylib.MeasureTextEx(font, label.Text, size, 0f);
             Raylib.DrawTextEx(font, label.Text, at - extent * 0.5f, size, 0f, Glow(TerrainRgb, 0.8f));
+        }
+    }
+
+    // ---- units ----
+
+    private void GroundCircle(HoloCamera cam, Vector2 centre, float radius, float width, Color col, bool dashed, int segments)
+    {
+        Vector2 prev = cam.Project(new Vector3(centre.X + radius, centre.Y, 0f)) * _ss;
+        for (int i = 1; i <= segments; i++)
+        {
+            float a = i * 2f * MathF.PI / segments;
+            Vector2 next = cam.Project(new Vector3(centre.X + radius * MathF.Cos(a), centre.Y + radius * MathF.Sin(a), 0f)) * _ss;
+            if (!dashed || i % 2 == 1) Raylib.DrawLineEx(prev, next, width, col);
+            prev = next;
+        }
+    }
+
+    /// <summary>Each unit: dotted trail, a ring per base (casualties dashed and faint; a vehicle gets an
+    /// inner ring and a facing tick), and one flag on the leader with the unit's tag beside it.</summary>
+    private void DrawUnits(HoloCamera cam, float ws)
+    {
+        Vector2 P(Vector3 p) => cam.Project(p) * _ss;
+        Font font = _fontLoaded ? _font : Raylib.GetFontDefault();
+
+        foreach (HoloUnit unit in _skirmish.Units)
+        {
+            Vector3 rgb = unit.Army.Rgb;
+            for (int i = 0; i + 1 < unit.Trail.Count; i++)
+                for (int k = 0; k < 5; k++)
+                {
+                    Vector2 at = Vector2.Lerp(unit.Trail[i], unit.Trail[i + 1], k / 5f);
+                    Raylib.DrawCircleV(P(new Vector3(at, 0f)), 2f * ws, Glow(rgb, 0.45f));
+                }
+
+            int segments = unit.BaseRadius < 1f ? 24 : 48;
+            foreach (Vector2 m in unit.Models.Take(unit.Dead))
+                GroundCircle(cam, m, unit.BaseRadius, 1.5f * ws, Glow(rgb, 0.3f), dashed: true, segments);
+            foreach (Vector2 m in unit.Alive)
+            {
+                GroundCircle(cam, m, unit.BaseRadius, 2f * ws, Glow(rgb, 0.9f), dashed: false, segments);
+                if (unit.IsVehicle)
+                {
+                    GroundCircle(cam, m, unit.BaseRadius * 0.6f, 1.5f * ws, Glow(rgb, 0.5f), dashed: true, segments);
+                    float f = unit.Facing * unit.BaseRadius;
+                    Raylib.DrawLineEx(P(new Vector3(m.X, m.Y + f * 0.6f, 0f)), P(new Vector3(m.X, m.Y + f * 1.35f, 0f)),
+                        3f * ws, Glow(rgb, 1f));
+                }
+            }
+
+            Vector2 leader = unit.Leader;
+            Vector2 foot = P(new Vector3(leader, 0f));
+            Vector2 top = P(new Vector3(leader, unit.IsVehicle ? 5.5f : 4f));
+            Raylib.DrawLineEx(foot, top, 2f * ws, Glow(rgb, 0.9f));
+            Vector2 tip = top + new Vector2(20f * unit.Facing, 6f) * ws, tail = top + new Vector2(0f, 12f) * ws;
+            Rlgl.DisableBackfaceCulling();
+            Raylib.DrawTriangle(top, tip, tail, Glow(rgb, 0.55f));
+            Rlgl.DrawRenderBatchActive();
+            Rlgl.EnableBackfaceCulling();
+            Raylib.DrawLineEx(top, tip, 1.5f * ws, Glow(rgb, 1f));
+            Raylib.DrawLineEx(tip, tail, 1.5f * ws, Glow(rgb, 1f));
+
+            float size = 15f * ws;
+            Vector2 extent = Raylib.MeasureTextEx(font, unit.Tag, size, 0f);
+            float x = unit.Facing > 0 ? top.X + 6f * ws : top.X - 6f * ws - extent.X;
+            Raylib.DrawTextEx(font, unit.Tag, new Vector2(x, top.Y - 19f * ws), size, 0f, Glow(rgb, 0.9f));
         }
     }
 

@@ -88,6 +88,8 @@ public class RaylibRenderer
 
     // #448: the main menu's animated war table; created on first use (it needs the GL context).
     private MenuBackgroundRenderer? _menuBackground;
+    // Whether last frame showed it, so coming back to the menu deals a fresh pair of armies.
+    private bool _menuBackgroundShownLastFrame;
     private readonly TableTooltipOverlay _tooltipOverlay = new();
     private readonly TableHitTester      _hitTester      = new();
     private readonly MeasurementOverlay  _measurementOverlay = new();
@@ -547,6 +549,11 @@ public class RaylibRenderer
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Background);
 
+            bool menuBackground = !_inGame && _currentScreen.ShowsMenuBackground;
+            if (menuBackground && !_menuBackgroundShownLastFrame)
+                (_menuBackground ??= new MenuBackgroundRenderer()).Reshuffle();
+            _menuBackgroundShownLastFrame = menuBackground;
+
             if (_inGame)
             {
                 _presentationPlayer?.Update(Raylib.GetFrameTime());
@@ -735,11 +742,8 @@ public class RaylibRenderer
             else
             {
                 // #448: the main menu (and the Host/Join dialogs over it) sit on the holographic war table.
-                if (_currentScreen.ShowsMenuBackground)
-                {
-                    _menuBackground ??= new MenuBackgroundRenderer();
-                    _menuBackground.Draw(screenW, screenH, MainMenuLayout.Compute(screenW, screenH));
-                }
+                if (menuBackground)
+                    _menuBackground!.Draw(screenW, screenH, MainMenuLayout.Compute(screenW, screenH));
 
                 rlImGui.Begin();
                 _currentScreen.Draw(screenW, screenH);

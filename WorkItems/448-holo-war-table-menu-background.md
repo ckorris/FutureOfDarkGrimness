@@ -1,6 +1,6 @@
 # 448 — Holographic war-table main menu background
 
-**Status**: in-progress (slice 1 done 2026-10-30; awaiting GUI hand-verify)
+**Status**: in-progress (slices 1-2 done 2026-10-30; awaiting GUI hand-verify)
 **Related**: `docs/menu-background/` (mockup, army colour sheet, generators, pairing check)
 
 ## Goal
@@ -78,7 +78,7 @@ re-run the script after any colour or group change.
    into a render texture, bloom/scanline/vignette post-process; `MainMenuScreen` window made transparent,
    layout A + C, new labels (HOST/SOLO, JOIN), same-size title; privacy popup + Options modal restyled
    to match the panel.
-2. **Armies + units.** Army table + clash groups in C#, random allowed pairing per menu visit, formations,
+2. **[done 2026-10-30] Armies + units.** Army table + clash groups in C#, random allowed pairing per menu visit, formations,
    flags, labels, casualties, trails.
 3. **Activity + line of fire.** Tracers, fire, pulse, measuring line; shooter/target choice rejects lines
    crossing terrain. Fork to settle first: reuse the engine's LOS against real terrain pieces vs a local
@@ -89,6 +89,21 @@ re-run the script after any colour or group change.
 5. **Options toggle** (Animated / Static / Off) + perf check on a weak GPU; pause/dim while a modal is open.
 
 ## Notes
+- 2026-10-30: **Slice 2 implemented.** `MenuArmies` (25 armies + 12 clash groups, `CanFace`, `AllowedPairs`
+  = 238, `PickPair` uniform over pairs with random near/far), `HoloSkirmish` (the mockup's 8 unit slots:
+  near = 3-model command group, 10 squad, 5 squad, vehicle; far = 8 squad with 2 casualties, 5 squad,
+  3 large bases, walker; formations seeded per slot; labels `ABBR n`, tag `ABBR n xALIVE`), drawn by
+  `MenuBackgroundRenderer.DrawUnits` (base rings, dashed casualties, vehicle inner ring + facing tick, one
+  flag + pennant on the leader, tag text, dotted trails). A fresh pairing is dealt each time the menu
+  comes back into view (`RaylibRenderer` tracks last frame; Host/Join <-> menu keeps it).
+  `--menu-preview` takes a seed (default 1: C-BR vs E-DYN; 7: H-ELF vs D-ELF - H-ELF's pale blue stays
+  readable against the terrain cyan). Tests: `MainMenuArmiesTests` (9) - C# table/groups parsed against
+  `army_pairings_check.py` (drift fails), pairing rules, every army reachable on the near side, labels,
+  squads + one vehicle a side, bases on table / clear of terrain (+0.3") / not overlapping, trails.
+  Mutation-checked: colour drift, group drift, squad moved onto a forest, wild jitter, fixed near/far
+  each redden their test; dropping the explicit mirror check stays green because every army is in at
+  least one clash group (an equivalent mutant - the check guards a future army added to no group).
+  Formation jitter tightened to +-0.15" so bases can never touch.
 - 2026-10-30: **Slice 1 implemented.** `Rendering/MenuBackground/` (`HoloCamera` fit + lens shift,
   `HoloTableScene` table/grid/ticks/labels + the 13 mockup terrain pieces with tagged footprints,
   `MenuBackgroundRenderer` 2x-supersampled additive scene -> bright-pass + half/quarter Gaussian bloom ->

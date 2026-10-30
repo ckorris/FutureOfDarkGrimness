@@ -4,14 +4,14 @@ using rlImGui_cs;
 namespace FdgRaylib.Rendering.MenuBackground;
 
 /// <summary>
-/// <c>--menu-preview &lt;out.png&gt; [WxH] [menu|privacy|options]</c> (#448): renders the main menu - the
+/// <c>--menu-preview &lt;out.png&gt; [WxH] [menu|privacy|options] [seed]</c> (#448): renders the main menu - the
 /// war table plus the real ImGui menu, fonts and theme - into an image from a hidden window, then exits.
 /// For checking the look on a given screen size without opening (or driving) a visible window, the same
 /// way <c>--field-harness</c> checks the tactical overlay. Clicks nothing and saves no settings.
 /// </summary>
 internal static class MenuPreview
 {
-    public static int Run(string outPath, int width, int height, string state)
+    public static int Run(string outPath, int width, int height, string state, int seed)
     {
         Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
         Raylib.SetConfigFlags(ConfigFlags.HiddenWindow);
@@ -21,7 +21,7 @@ internal static class MenuPreview
 
         var menu = new MainMenuScreen();
         menu.OpenForPreview(state);
-        var background = new MenuBackgroundRenderer();
+        var background = new MenuBackgroundRenderer(seed);
         RenderTexture2D target = Raylib.LoadRenderTexture(w, h);
 
         // A few frames: ImGui sizes auto-fit popups from the previous frame's content.
@@ -47,7 +47,10 @@ internal static class MenuPreview
         background.Dispose();
         rlImGui.Shutdown();
         Raylib.CloseWindow();
-        Console.WriteLine(ok ? $"[menu-preview] wrote {outPath} ({w}x{h}, {state})" : $"[menu-preview] FAILED to write {outPath}");
+        HoloSkirmish skirmish = background.Skirmish;
+        Console.WriteLine(ok
+            ? $"[menu-preview] wrote {outPath} ({w}x{h}, {state}, seed {seed}: {skirmish.Near.Abbr} vs {skirmish.Far.Abbr})"
+            : $"[menu-preview] FAILED to write {outPath}");
         return ok ? 0 : 1;
     }
 }
