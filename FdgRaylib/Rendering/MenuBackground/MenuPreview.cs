@@ -21,16 +21,18 @@ internal static class MenuPreview
 
         var menu = new MainMenuScreen();
         menu.OpenForPreview(state);
-        var background = new MenuBackgroundRenderer(seed);
+        // A frozen clock at 3s: the pulse is two-thirds out, tracers mid-flight, the measure fully drawn.
+        var background = new MenuBackgroundRenderer(seed) { FixedTime = 3f };
         RenderTexture2D target = Raylib.LoadRenderTexture(w, h);
 
         // A few frames: ImGui sizes auto-fit popups from the previous frame's content.
         for (int frame = 0; frame < 4; frame++)
         {
             Raylib.BeginDrawing();
+            background.Prepare(w, h, MainMenuLayout.Compute(w, h));   // its own passes, outside our target
             Raylib.BeginTextureMode(target);
             Raylib.ClearBackground(new Color(30, 30, 30, 255));
-            background.Draw(w, h, MainMenuLayout.Compute(w, h));
+            background.Present();
             rlImGui.Begin();
             menu.Draw(w, h);
             rlImGui.End();

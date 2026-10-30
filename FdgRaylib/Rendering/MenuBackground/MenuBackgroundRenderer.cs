@@ -11,9 +11,10 @@ namespace FdgRaylib.Rendering.MenuBackground;
 ///
 /// <para>Pipeline: the scene is drawn into a supersampled target (2x up to ~1200p, so line edges come out
 /// smooth without MSAA), box-filtered down to screen size, then blurred at half and quarter size by a
-/// separable Gaussian shader; the blurs are added back over the sharp image for the glow. The scene is
-/// static in this slice, so the finished frame is cached and only re-rendered when the window size
-/// changes. If the blur shader will not compile the table is still drawn, just without glow.</para>
+/// separable Gaussian shader; the blurs are added back over the sharp image for the glow. The whole
+/// pipeline runs every frame, since the fire, tracers, pulse and measuring line animate (slice 3) - a
+/// couple of thousand lines and five small blur passes. If the blur shader will not compile the table
+/// is still drawn, just without glow.</para>
 /// </summary>
 internal sealed class MenuBackgroundRenderer : IDisposable
 {
@@ -23,6 +24,16 @@ internal sealed class MenuBackgroundRenderer : IDisposable
     private static readonly Vector3 BracketRgb = new(0.80f, 0.97f, 1.00f);
     private static readonly Vector3 SurfaceRgb = new(0.016f, 0.040f, 0.070f);
     private static readonly Color BaseColor = new(2, 3, 6, 255);
+    private static readonly Vector3 TracerRgb = new(1.00f, 0.97f, 0.88f);   // white-hot: reads on any army colour
+    private static readonly Vector3 MeasureRgb = new(0.90f, 0.95f, 1.00f);
+    private static readonly Vector3 PulseRgb = new(0.50f, 0.90f, 1.00f);
+
+    // Animation timings, seconds. The pulse sweeps out to PulseReach inches and starts again; tracers
+    // cross their line once per TracerCycle; the measuring line draws, holds, fades, rests.
+    private const float PulsePeriod = 4.5f;
+    private const float PulseReach = 26f;
+    private const float TracerCycle = 0.9f;
+    private const float MeasureCycle = 7f, MeasureDraw = 1.2f, MeasureHold = 5.5f, MeasureFade = 6.3f;
 
     // Separable 9-tap Gaussian folded into 5 bilinear fetches (offsets/weights from the standard
     // linear-sampling derivation). texelStep carries both the direction and the spread. threshold is a
@@ -52,14 +63,14 @@ void main()
     private readonly HoloTableScene _scene = HoloTableScene.BuildDefault();
     private readonly Random _rng;
     private HoloSkirmish _skirmish;
+    private HoloEngagement _engagement;
 
     private int _w, _h, _ss;
     private bool _haveTargets;
     private RenderTexture2D _sceneRT;   // supersampled scene
     private RenderTexture2D _imageRT;   // scene at screen size
     private RenderTexture2D _halfA, _halfB, _quarterA, _quarterB;
-    private RenderTexture2D _finalRT;   // the cached, finished frame
-    private bool _dirty = true;
+    private RenderTexture2D _finalRT;   // the finished frame
 
     private bool _triedInit;
     private Shader _blur;
@@ -76,7 +87,11 @@ void main()
     {
         _rng = seed is { } s ? new Random(s) : new Random();
         _skirmish = HoloSkirmish.Random(_rng);
+        _engagement = HoloEngagement.Plan(_skirmish, _scene.Footprints);
     }
+
+    /// <summary>Freezes the animation clock at this many seconds (the offscreen preview); null = live.</summary>
+    internal float? FixedTime { get; set; }
 
     /// <summary>The armies currently on the table.</summary>
     public HoloSkirmish Skirmish => _skirmish;
@@ -86,21 +101,34 @@ void main()
     public void Reshuffle()
     {
         _skirmish = HoloSkirmish.Random(_rng);
-        _dirty = true;
+        _engagement = HoloEngagement.Plan(_skirmish, _scene.Footprints);
     }
 
     /// <summary>Draws the background over the whole screen. Call inside BeginDrawing, before ImGui.</summary>
     public void Draw(int screenW, int screenH, MainMenuLayout layout)
     {
+        Prepare(screenW, screenH, layout);
+        Present();
+    }
+
+    /// <summary>
+    /// Renders this frame into the background's own targets. It switches render targets on its own and
+    /// leaves the default framebuffer bound, so it must not run inside the caller's BeginTextureMode -
+    /// a caller drawing the menu into a texture (the offscreen preview) prepares first, then presents
+    /// inside its own target.
+    /// </summary>
+    public void Prepare(int screenW, int screenH, MainMenuLayout layout)
+    {
         if (screenW <= 0 || screenH <= 0) return;
         EnsureInit();
         if (!_haveTargets || screenW != _w || screenH != _h) Resize(screenW, screenH);
-        if (_dirty)
-        {
-            RenderFrame(layout);
-            _dirty = false;
-        }
-        DrawTargetFlipped(_finalRT, new Rectangle(0, 0, _w, _h), Color.White);
+        RenderFrame(layout, FixedTime ?? (float)Raylib.GetTime());
+    }
+
+    /// <summary>Draws the frame <see cref="Prepare"/> rendered over the whole of the current target.</summary>
+    public void Present()
+    {
+        if (_haveTargets) DrawTargetFlipped(_finalRT, new Rectangle(0, 0, _w, _h), Color.White);
     }
 
     private void EnsureInit()
@@ -151,7 +179,6 @@ void main()
             Raylib.SetTextureWrap(rt.Texture, TextureWrap.Clamp);
         }
         _haveTargets = true;
-        _dirty = true;
     }
 
     private void UnloadTargets()
@@ -162,7 +189,7 @@ void main()
         _haveTargets = false;
     }
 
-    private void RenderFrame(MainMenuLayout layout)
+    private void RenderFrame(MainMenuLayout layout, float time)
     {
         ScreenRect region = layout.TableRegion;
         HoloCamera cam = HoloCamera.FitToRegion(new Vector3(0f, 1f, 0f), HoloTableScene.SlabCorners,
@@ -174,8 +201,10 @@ void main()
         Raylib.ClearBackground(BaseColor);
         Raylib.BeginBlendMode(BlendMode.Additive);
         DrawGlowPool(cam);
-        DrawScene(cam, px * _ss);
+        float pulsePhase = time % PulsePeriod / PulsePeriod;
+        DrawScene(cam, px * _ss, pulsePhase);
         DrawUnits(cam, px * _ss);
+        DrawEngagement(cam, px * _ss, time, pulsePhase);
         Raylib.EndBlendMode();
         Raylib.EndTextureMode();
 
@@ -239,7 +268,16 @@ void main()
             new Rectangle(c.X - rw, c.Y - rh, rw * 2f, rh * 2f), Vector2.Zero, 0f, new Color(5, 13, 24, 255));
     }
 
-    private void DrawScene(HoloCamera cam, float widthScale)
+    /// <summary>How much brighter a terrain piece glows as the pulse ring passes over it (1 = not at all).</summary>
+    private float PulseBoost(int piece, float pulsePhase)
+    {
+        if (piece < 0) return 1f;
+        float d = Vector2.Distance(_scene.PieceCentres[piece], _engagement.PulseCentre);
+        float r = pulsePhase * PulseReach;
+        return 1f + 1.3f * (1f - pulsePhase) * MathF.Exp(-MathF.Pow((d - r) / 3f, 2f));
+    }
+
+    private void DrawScene(HoloCamera cam, float widthScale, float pulsePhase)
     {
         Vector2 P(Vector3 p) => cam.Project(p) * _ss;
 
@@ -247,7 +285,7 @@ void main()
         Rlgl.DisableBackfaceCulling();
         foreach (HoloFill f in _scene.Fills)
         {
-            Color col = Glow(TintRgb(f.Tint), f.Intensity);
+            Color col = Glow(TintRgb(f.Tint), f.Intensity * PulseBoost(f.Piece, pulsePhase));
             Vector2 a = P(f.A), b = P(f.B), c = P(f.C), d = P(f.D);
             Raylib.DrawTriangle(a, b, c, col);
             Raylib.DrawTriangle(a, c, d, col);
@@ -256,7 +294,8 @@ void main()
         Rlgl.EnableBackfaceCulling();
 
         foreach (HoloLine l in _scene.Lines)
-            Raylib.DrawLineEx(P(l.A), P(l.B), MathF.Max(1f, l.Width * widthScale), Glow(TintRgb(l.Tint), l.Intensity));
+            Raylib.DrawLineEx(P(l.A), P(l.B), MathF.Max(1f, l.Width * widthScale),
+                Glow(TintRgb(l.Tint), l.Intensity * PulseBoost(l.Piece, pulsePhase)));
 
         Font font = _fontLoaded ? _font : Raylib.GetFontDefault();
         float size = 13f * widthScale;
@@ -270,15 +309,22 @@ void main()
 
     // ---- units ----
 
-    private void GroundCircle(HoloCamera cam, Vector2 centre, float radius, float width, Color col, bool dashed, int segments)
+    /// <param name="clipToTable">Skip the arcs that fall off the table (the pulse ring).</param>
+    private void GroundCircle(HoloCamera cam, Vector2 centre, float radius, float width, Color col, bool dashed, int segments,
+        bool clipToTable = false)
     {
-        Vector2 prev = cam.Project(new Vector3(centre.X + radius, centre.Y, 0f)) * _ss;
+        Vector2 prevWorld = centre + new Vector2(radius, 0f);
+        Vector2 prev = cam.Project(new Vector3(prevWorld, 0f)) * _ss;
         for (int i = 1; i <= segments; i++)
         {
             float a = i * 2f * MathF.PI / segments;
-            Vector2 next = cam.Project(new Vector3(centre.X + radius * MathF.Cos(a), centre.Y + radius * MathF.Sin(a), 0f)) * _ss;
-            if (!dashed || i % 2 == 1) Raylib.DrawLineEx(prev, next, width, col);
+            Vector2 world = centre + new Vector2(MathF.Cos(a), MathF.Sin(a)) * radius;
+            Vector2 next = cam.Project(new Vector3(world, 0f)) * _ss;
+            Vector2 mid = (prevWorld + world) * 0.5f;
+            bool onTable = MathF.Abs(mid.X) <= HoloTableScene.HalfW && MathF.Abs(mid.Y) <= HoloTableScene.HalfD;
+            if ((!dashed || i % 2 == 1) && (!clipToTable || onTable)) Raylib.DrawLineEx(prev, next, width, col);
             prev = next;
+            prevWorld = world;
         }
     }
 
@@ -331,6 +377,117 @@ void main()
             float x = unit.Facing > 0 ? top.X + 6f * ws : top.X - 6f * ws - extent.X;
             Raylib.DrawTextEx(font, unit.Tag, new Vector2(x, top.Y - 19f * ws), size, 0f, Glow(rgb, 0.9f));
         }
+    }
+
+    // ---- the fight ----
+
+    private static float Frac(float x) => x - MathF.Floor(x);
+
+    /// <summary>The pulse ring, tracers along every line of fire, the fire on the burning unit, and the
+    /// measuring line - all driven by <paramref name="time"/>.</summary>
+    private void DrawEngagement(HoloCamera cam, float ws, float time, float pulsePhase)
+    {
+        Vector2 P(Vector2 p, float z = 0f) => cam.Project(new Vector3(p, z)) * _ss;
+        HoloEngagement e = _engagement;
+
+        // Pulse: a bright leading edge with two fading echoes behind it, dimming as it spreads.
+        float r = pulsePhase * PulseReach, fade = 1f - pulsePhase;
+        GroundCircle(cam, e.PulseCentre, r, 2.5f * ws, Glow(PulseRgb, 0.9f * fade), false, 128, clipToTable: true);
+        GroundCircle(cam, e.PulseCentre, MathF.Max(0f, r - 0.6f), 2f * ws, Glow(PulseRgb, 0.35f * fade), false, 128, clipToTable: true);
+        GroundCircle(cam, e.PulseCentre, MathF.Max(0f, r - 1.4f), 1.5f * ws, Glow(PulseRgb, 0.15f * fade), false, 128, clipToTable: true);
+
+        // Tracers: a faint line of fire, two bright dashes travelling down it, a muzzle flash as each leaves.
+        for (int i = 0; i < e.Shots.Count; i++)
+        {
+            HoloShot shot = e.Shots[i];
+            Vector2 a = P(shot.From, 0.9f), b = P(shot.To, 0.8f);
+            Raylib.DrawLineEx(a, b, 1f * ws, Glow(TracerRgb, 0.18f));
+            float phase = Frac(time / TracerCycle + i * 0.37f);
+            foreach (float ph in new[] { phase, Frac(phase + 0.5f) })
+                if (ph < 0.92f)
+                    Raylib.DrawLineEx(Vector2.Lerp(a, b, ph), Vector2.Lerp(a, b, ph + 0.08f), 3f * ws, Glow(TracerRgb, 1f));
+            if (phase < 0.12f) Raylib.DrawCircleV(a, 3.5f * ws, Glow(TracerRgb, 0.9f));
+        }
+
+        if (e.Burning is not null) DrawFire(P(e.FireAt), cam, e.FireAt, ws, time);
+        if (e.Measure is { } m) DrawMeasure(m, cam, ws, time);
+    }
+
+    /// <summary>Simple stylised flames: three layers of three flickering tongues, rising embers, and
+    /// orange heat rings on the table.</summary>
+    private void DrawFire(Vector2 at, HoloCamera cam, Vector2 world, float ws, float time)
+    {
+        float heat = 0.85f + 0.15f * MathF.Sin(time * 5.3f);
+        GroundCircle(cam, world, 2.0f, 2f * ws, Glow(new Vector3(1f, 0.45f, 0.15f), 0.6f * heat), false, 48);
+        GroundCircle(cam, world, 3.0f, 2f * ws, Glow(new Vector3(1f, 0.45f, 0.15f), 0.35f * heat), false, 48);
+
+        var layers = new (Vector3 Rgb, float Height, float Width, float Intensity)[]
+        {
+            (new(1.0f, 0.25f, 0.08f), 50f, 30f, 0.75f),
+            (new(1.0f, 0.55f, 0.12f), 36f, 21f, 0.9f),
+            (new(1.0f, 0.90f, 0.50f), 20f, 10f, 0.9f),
+        };
+        Rlgl.DisableBackfaceCulling();
+        for (int k = 0; k < layers.Length; k++)
+        {
+            var (rgb, height, width, intensity) = layers[k];
+            Color col = Glow(rgb, intensity);
+            for (int j = 0; j < 3; j++)
+            {
+                float ox = (j - 1) * width * 0.55f * ws;
+                float h = height * ws * (0.8f + 0.25f * MathF.Sin(time * 9f + j * 2.1f + k * 1.3f));
+                float sway = MathF.Sin(time * 7f + j * 1.7f + k) * 4f * ws;
+                float w = width * ws;
+                Vector2 baseC = at + new Vector2(ox, 0f);
+                Vector2[] tongue =
+                {
+                    baseC + new Vector2(-w * 0.5f, 0f), baseC + new Vector2(-w * 0.2f, -h * 0.55f),
+                    baseC + new Vector2(sway, -h), baseC + new Vector2(w * 0.25f, -h * 0.5f), baseC + new Vector2(w * 0.5f, 0f),
+                };
+                for (int t = 1; t + 1 < tongue.Length; t++)
+                    Raylib.DrawTriangle(tongue[0], tongue[t], tongue[t + 1], col);
+            }
+        }
+        Rlgl.DrawRenderBatchActive();
+        Rlgl.EnableBackfaceCulling();
+
+        for (int k = 0; k < 12; k++)
+        {
+            float life = Frac(time * 0.6f + k * 0.083f);
+            Vector2 ember = at + new Vector2(MathF.Sin(k * 12.9f) * 30f + MathF.Sin(time * 2f + k) * 4f, -(50f + life * 70f)) * ws;
+            Raylib.DrawCircleV(ember, (1.4f + k % 3 * 0.5f) * ws, Glow(new Vector3(1f, 0.6f, 0.2f), 0.8f * (1f - life)));
+        }
+    }
+
+    /// <summary>The measuring line draws itself out base to base, shows its distance, holds, then fades.</summary>
+    private void DrawMeasure(HoloMeasure m, HoloCamera cam, float ws, float time)
+    {
+        float tc = time % MeasureCycle;
+        if (tc > MeasureFade) return;
+        float reach = MathF.Min(1f, tc / MeasureDraw);
+        float alpha = tc <= MeasureHold ? 1f : 1f - (tc - MeasureHold) / (MeasureFade - MeasureHold);
+
+        Vector2 a = cam.Project(new Vector3(m.From, 0.05f)) * _ss, b = cam.Project(new Vector3(m.To, 0.05f)) * _ss;
+        Color col = Glow(MeasureRgb, alpha);
+        const int dashes = 30;
+        for (int i = 0; i < dashes; i += 2)
+        {
+            float s0 = i / (float)dashes, s1 = (i + 1) / (float)dashes;
+            if (s0 >= reach) break;
+            Raylib.DrawLineEx(Vector2.Lerp(a, b, s0), Vector2.Lerp(a, b, MathF.Min(s1, reach)), 2f * ws, col);
+        }
+        Raylib.DrawCircleV(a, 3f * ws, col);
+        if (reach < 1f) return;
+        Raylib.DrawCircleV(b, 3f * ws, col);
+
+        Font font = _fontLoaded ? _font : Raylib.GetFontDefault();
+        string text = $"{m.Inches:0.0}\"";
+        float size = 19f * ws;
+        Vector2 extent = Raylib.MeasureTextEx(font, text, size, 0f);
+        Vector2 mid = (a + b) * 0.5f + new Vector2(14f * ws, -extent.Y * 0.5f);
+        var box = new Rectangle(mid.X - 6f * ws, mid.Y - 3f * ws, extent.X + 12f * ws, extent.Y + 6f * ws);
+        Raylib.DrawRectangleLinesEx(box, MathF.Max(1f, ws), Glow(MeasureRgb, 0.7f * alpha));
+        Raylib.DrawTextEx(font, text, mid, size, 0f, Glow(new Vector3(0.95f, 1f, 1f), alpha));
     }
 
     // ---- post ----

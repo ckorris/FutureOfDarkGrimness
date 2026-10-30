@@ -1,6 +1,6 @@
 # 448 — Holographic war-table main menu background
 
-**Status**: in-progress (slices 1-2 done 2026-10-30; awaiting GUI hand-verify)
+**Status**: in-progress (slices 1-3 done 2026-10-30; awaiting GUI hand-verify)
 **Related**: `docs/menu-background/` (mockup, army colour sheet, generators, pairing check)
 
 ## Goal
@@ -80,7 +80,7 @@ re-run the script after any colour or group change.
    to match the panel.
 2. **[done 2026-10-30] Armies + units.** Army table + clash groups in C#, random allowed pairing per menu visit, formations,
    flags, labels, casualties, trails.
-3. **Activity + line of fire.** Tracers, fire, pulse, measuring line; shooter/target choice rejects lines
+3. **[done 2026-10-30] Activity + line of fire.** Tracers, fire, pulse, measuring line; shooter/target choice rejects lines
    crossing terrain. Fork to settle first: reuse the engine's LOS against real terrain pieces vs a local
    2D footprint test (cosmetic only, as in the mockup). **Decided 2026-10-30: the simplest - the local
    2D footprint test** (owner: "use whatever is the simplest").
@@ -89,6 +89,30 @@ re-run the script after any colour or group change.
 5. **Options toggle** (Animated / Static / Off) + perf check on a weak GPU; pause/dim while a modal is open.
 
 ## Notes
+- 2026-10-30: **Slice 3 implemented.** `HoloEngagement.Plan` (pure): enemy squad pairs within 30" whose two
+  lines of fire (shooter's 2 models nearest the target -> target's 2 nearest the shooter) are both
+  `IsClear` (2D segment >= 0.4" from every footprint, neither end inside one), nearest first, up to 3
+  fights with distinct shooters; vehicles excluded so they carry the measure. Fire on a targeted unit
+  with casualties (else the first target), at its casualties' centroid. Measure: vehicle to vehicle,
+  base edge to base edge (reads `d - r1 - r2`), falling back to the nearest clear idle pair. Pulse centre
+  = mean of the engaged units. Renderer now redraws every frame (cache removed): pulse ring (4.5s, out to
+  26", clipped to the table, two echoes) that also brightens terrain pieces it crosses; faint line of
+  fire + two travelling white-hot dashes + muzzle flash per shot; three-layer flickering flame tongues
+  with rising embers and heat rings; measure draws out over 1.2s, holds to 5.5s with its `27.3"` label,
+  fades by 6.3s, rests to 7s. The tracer/fire/pulse/measure ANIMATION landed here rather than slice 4
+  (they are animated by nature); slice 4 keeps camera motion, unit advances and the director.
+  `MenuBackgroundRenderer` split into `Prepare` + `Present`: its passes switch render targets and end on
+  the default framebuffer, so the offscreen preview (which draws into its own target) must prepare
+  outside that target - found when the first per-frame preview came out blank (the cached frame had
+  masked it); the game draws straight to the screen and was never affected. Preview clock frozen at 3s.
+  Tests: `MainMenuEngagementTests` (7) - `IsClear` cases (through, grazing within pad, starting inside,
+  clear, beside), every shot + measure clear for all 476 ordered pairings, fight shape (<=3 fights, both
+  sides, no friendly fire, vehicles kept out, fire on a casualty-bearing target, vehicle measure),
+  base-to-base distance, shots from/to living models within range, pulse on table, and a blocked-table
+  plan (walls across every open-table line -> new choices must clear them). Mutation-checked: removing
+  the shot or measure LOS filter was invisible to the first six tests (the real layout's nearest picks
+  are clear anyway) - the blocked-table test was added for exactly that and now reddens on both; no pad,
+  centre-to-centre measure and fire-on-last-target each redden their test.
 - 2026-10-30: **Slice 2 implemented.** `MenuArmies` (25 armies + 12 clash groups, `CanFace`, `AllowedPairs`
   = 238, `PickPair` uniform over pairs with random near/far), `HoloSkirmish` (the mockup's 8 unit slots:
   near = 3-model command group, 10 squad, 5 squad, vehicle; far = 8 squad with 2 casualties, 5 squad,
