@@ -1,6 +1,6 @@
 # 442 — Tactician AI + Combat Calculator parity with 3.6
 
-**Status**: todo
+**Status**: in-progress (2026-10-30)
 **Related**: #415, #191 (Tactician umbrella), #364 (melee threat reach), #360 (Indirect pricing), #066 (AI resolver legality tests), #325 (forecast), the phase-2 items it mirrors (#417, #422, #423, #424, #425)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high. Run after phase 2 lands; read `docs/ai-agent-plan.md`.
 
@@ -51,6 +51,20 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 1 - legality, A): 3.6 legality smokes. 14 scratch armies compiled from the #435 scratch books
+  (`scratchpad/442/armies/`, built with a throwaway BuilderList compiler so upgrade picks and joined heroes are in:
+  Wolf Brothers, Elven Jesters, Goblin Reclaimers (Hazardous picks), Blessed Sisters (Precision Target, Spell Drain),
+  Alien Hives (Piercing Target, Regenerative Strength), Knight Brothers (Ravage), Custodian Brothers (Dash), Daemons of
+  Lust (Mind Control), Chivalrous Kingdoms (Sergeant/Musician/Banner), Ghostly Undead, Deep-Sea Elves, Ogres (Ravage,
+  Great Sergeant), Vampiric Undead (Mind Control, Ravage), Dark Elves (Regenerative Strength)). 11 pairings x
+  {solorules, tactician} as FdgLab `smoke` games (both slots the same profile, seed 42): 22/22 exit 0, 0 faults,
+  0 re-prompts, 0 "resolver path invalid" declines (the silent-decline path an illegal optional move would take - the
+  debug line reaches FdgLab logs). 129 Tactician solo-fallbacks, every one the activation-start reposition move
+  ("no cached plan"); 5 legal Cancel declines. Never exercised by either bot: Teleport (neither offers itself the menu
+  option), Mind Control / Spell Drain / Tag and Target placement (before-attack abilities - both bots skip them).
+  Tests: `AiTriggeredRequestLegalityTests` (5) - the real `ActivationStartStage` with the solo and the Tactician
+  movement resolvers answering a Wolfborn move (open board, wall in the way, enemy inside the standoff), asserting the
+  engine applied exactly the AI's path or the AI declined; the Tag spend prompt answered by the solo string resolver.
 - 2026-10-30 (from #435): (1) Banner now helps only a Morale Test triggered by shooting or melee (`PreMoraleTestContext.Cause`,
   `EMoraleTestCause`); no AI / Combat Calculator code reads Banner or Courage today, but a morale estimate that adds Banner
   should skip spell / rule-forced tests. (2) Ethereal: the AI and the CLI accept the teleport offer and answer the placement
@@ -202,7 +216,10 @@ with no illegal-action retries in the log.
 
 ## Decisions
 
-(none yet)
+- **D1 - what "no illegal-action retries" is measured as (2026-10-30).** The engine never retries: an invalid reply
+  either throws (the game faults) or, for an OPTIONAL triggered move, is silently treated as a decline
+  (`GameOperationServices.MoveUnit`, with a "resolver path invalid" debug line). So the gate counts faults, that debug
+  line, and the stages' "re-prompting" lines; G3 solo-fallbacks are legal and reported separately as a rate.
 
 ## Outcome
 
