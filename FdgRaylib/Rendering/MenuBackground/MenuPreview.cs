@@ -4,14 +4,15 @@ using rlImGui_cs;
 namespace FdgRaylib.Rendering.MenuBackground;
 
 /// <summary>
-/// <c>--menu-preview &lt;out.png&gt; [WxH] [menu|privacy|options] [seed]</c> (#448): renders the main menu - the
+/// <c>--menu-preview &lt;out.png&gt; [WxH] [menu|privacy|options] [seed] [t=SECONDS]</c> (#448): renders the main menu - the
 /// war table plus the real ImGui menu, fonts and theme - into an image from a hidden window, then exits.
 /// For checking the look on a given screen size without opening (or driving) a visible window, the same
 /// way <c>--field-harness</c> checks the tactical overlay. Clicks nothing and saves no settings.
 /// </summary>
 internal static class MenuPreview
 {
-    public static int Run(string outPath, int width, int height, string state, int seed)
+    /// <param name="time">Battle time to freeze at, seconds (see <see cref="HoloDirector"/>).</param>
+    public static int Run(string outPath, int width, int height, string state, int seed, float time)
     {
         Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
         Raylib.SetConfigFlags(ConfigFlags.HiddenWindow);
@@ -21,8 +22,7 @@ internal static class MenuPreview
 
         var menu = new MainMenuScreen();
         menu.OpenForPreview(state);
-        // A frozen clock at 3s: the pulse is two-thirds out, tracers mid-flight, the measure fully drawn.
-        var background = new MenuBackgroundRenderer(seed) { FixedTime = 3f };
+        var background = new MenuBackgroundRenderer(seed) { FixedTime = time };
         RenderTexture2D target = Raylib.LoadRenderTexture(w, h);
 
         // A few frames: ImGui sizes auto-fit popups from the previous frame's content.
@@ -51,7 +51,7 @@ internal static class MenuPreview
         Raylib.CloseWindow();
         HoloSkirmish skirmish = background.Skirmish;
         Console.WriteLine(ok
-            ? $"[menu-preview] wrote {outPath} ({w}x{h}, {state}, seed {seed}: {skirmish.Near.Abbr} vs {skirmish.Far.Abbr})"
+            ? $"[menu-preview] wrote {outPath} ({w}x{h}, {state}, seed {seed}, t={time}s: {skirmish.Near.Abbr} vs {skirmish.Far.Abbr})"
             : $"[menu-preview] FAILED to write {outPath}");
         return ok ? 0 : 1;
     }

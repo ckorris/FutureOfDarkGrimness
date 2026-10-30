@@ -42,9 +42,15 @@ internal sealed class HoloEngagement
         PulseCentre = pulseCentre;
     }
 
-    public static HoloEngagement Plan(HoloSkirmish skirmish, IReadOnlyList<HoloFootprint> footprints)
+    public static HoloEngagement Plan(HoloSkirmish skirmish, IReadOnlyList<HoloFootprint> footprints) =>
+        Plan(skirmish.Units, footprints);
+
+    /// <summary>Plans over any set of units (tests build their own; the menu passes a skirmish's).</summary>
+    public static HoloEngagement Plan(IReadOnlyList<HoloUnit> units, IReadOnlyList<HoloFootprint> footprints)
     {
-        var squads = skirmish.Units.Where(u => !u.IsVehicle).ToList();
+        // Units that walk on along a trail are still moving when the shooting starts, so only units
+        // already in place fight (and the vehicles are kept for the measuring line).
+        var squads = units.Where(u => !u.IsVehicle && u.Trail.Count == 0).ToList();
 
         // Every enemy pairing in range whose two lines of fire are both clear, nearest first; then the
         // closest fights with a different shooter each (a unit fires at one target).
@@ -76,18 +82,18 @@ internal sealed class HoloEngagement
         var engaged = shots.SelectMany(s => new[] { s.Shooter, s.Target }).Distinct().ToList();
         Vector2 pulse = engaged.Count > 0 ? Mean(engaged.Select(u => u.Centre)) : Vector2.Zero;
 
-        return new HoloEngagement(shots, burning, fireAt, PlanMeasure(skirmish, footprints, engaged), pulse);
+        return new HoloEngagement(shots, burning, fireAt, PlanMeasure(units, footprints, engaged), pulse);
     }
 
     /// <summary>The two vehicles if their line is clear, else the closest clear pair of units not already
     /// fighting; base edge to base edge, the way the rules measure.</summary>
-    private static HoloMeasure? PlanMeasure(HoloSkirmish skirmish, IReadOnlyList<HoloFootprint> footprints, IReadOnlyList<HoloUnit> engaged)
+    private static HoloMeasure? PlanMeasure(IReadOnlyList<HoloUnit> units, IReadOnlyList<HoloFootprint> footprints, IReadOnlyList<HoloUnit> engaged)
     {
         var pairs = new List<(HoloUnit A, HoloUnit B)>();
-        var vehicles = skirmish.Units.Where(u => u.IsVehicle).ToList();
+        var vehicles = units.Where(u => u.IsVehicle).ToList();
         if (vehicles.Count(v => v.Side == 0) > 0 && vehicles.Count(v => v.Side == 1) > 0)
             pairs.Add((vehicles.First(v => v.Side == 0), vehicles.First(v => v.Side == 1)));
-        var idle = skirmish.Units.Where(u => !engaged.Contains(u)).ToList();
+        var idle = units.Where(u => !engaged.Contains(u)).ToList();
         pairs.AddRange(
             from a in idle from b in idle
             where a.Side == 0 && b.Side == 1

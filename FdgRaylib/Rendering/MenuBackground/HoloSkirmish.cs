@@ -29,6 +29,27 @@ internal sealed record HoloUnit(
 
     /// <summary>The text over the flag: "ORK 2 x10", or just "ORK 4" for a lone model.</summary>
     public string Tag => Models.Count > 1 ? $"{Label} x{AliveCount}" : Label;
+
+    /// <summary>
+    /// How far the unit is from its final spot when it is <paramref name="progress"/> (0..1) of the way
+    /// along its trail, measured by distance: add it to every model. Zero for a unit with no trail, and
+    /// zero once it has arrived.
+    /// </summary>
+    public Vector2 OffsetAt(float progress)
+    {
+        if (Trail.Count < 2) return Vector2.Zero;
+        float total = 0f;
+        for (int i = 0; i + 1 < Trail.Count; i++) total += Vector2.Distance(Trail[i], Trail[i + 1]);
+        float left = Math.Clamp(progress, 0f, 1f) * total;
+        for (int i = 0; i + 1 < Trail.Count; i++)
+        {
+            float leg = Vector2.Distance(Trail[i], Trail[i + 1]);
+            if (left <= leg || i + 2 == Trail.Count)
+                return Vector2.Lerp(Trail[i], Trail[i + 1], leg == 0f ? 1f : Math.Clamp(left / leg, 0f, 1f)) - Centre;
+            left -= leg;
+        }
+        return Vector2.Zero;
+    }
 }
 
 /// <summary>

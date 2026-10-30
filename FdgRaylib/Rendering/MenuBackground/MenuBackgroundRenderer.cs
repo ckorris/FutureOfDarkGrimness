@@ -12,8 +12,9 @@ namespace FdgRaylib.Rendering.MenuBackground;
 /// <para>Pipeline: the scene is drawn into a supersampled target (2x up to ~1200p, so line edges come out
 /// smooth without MSAA), box-filtered down to screen size, then blurred at half and quarter size by a
 /// separable Gaussian shader; the blurs are added back over the sharp image for the glow. The whole
-/// pipeline runs every frame, since the fire, tracers, pulse and measuring line animate (slice 3) - a
-/// couple of thousand lines and five small blur passes. If the blur shader will not compile the table
+/// pipeline runs every frame, since everything animates - the fight (slice 3), and the drifting,
+/// directed camera and the battle timeline of <see cref="HoloDirector"/> (slice 4) - a couple of
+/// thousand lines and five small blur passes. If the blur shader will not compile the table
 /// is still drawn, just without glow.</para>
 /// </summary>
 internal sealed class MenuBackgroundRenderer : IDisposable
@@ -64,6 +65,8 @@ void main()
     private readonly Random _rng;
     private HoloSkirmish _skirmish;
     private HoloEngagement _engagement;
+    private float? _battleStart;        // wall time the current pairing's battle began (null = next frame)
+    private int _battleIndex;           // alternates the camera's close-up between the fight and the measure
 
     private int _w, _h, _ss;
     private bool _haveTargets;
@@ -96,12 +99,15 @@ void main()
     /// <summary>The armies currently on the table.</summary>
     public HoloSkirmish Skirmish => _skirmish;
 
-    /// <summary>Deals a new pair of armies onto the table. The renderer calls this each time the menu
-    /// comes back into view, so every visit shows a different matchup.</summary>
+    /// <summary>Deals a new pair of armies onto the table and starts their battle from the top. The
+    /// renderer calls this each time the menu comes back into view; a battle that runs its full length
+    /// deals the next one itself.</summary>
     public void Reshuffle()
     {
         _skirmish = HoloSkirmish.Random(_rng);
         _engagement = HoloEngagement.Plan(_skirmish, _scene.Footprints);
+        _battleStart = null;
+        _battleIndex++;
     }
 
     /// <summary>Draws the background over the whole screen. Call inside BeginDrawing, before ImGui.</summary>
@@ -191,9 +197,20 @@ void main()
 
     private void RenderFrame(MainMenuLayout layout, float time)
     {
-        ScreenRect region = layout.TableRegion;
-        HoloCamera cam = HoloCamera.FitToRegion(new Vector3(0f, 1f, 0f), HoloTableScene.SlabCorners,
-            region.X, region.Y, region.W, region.H, _h);
+        // A frozen clock (the preview) reads as battle time; a live one counts from the battle's start.
+        _battleStart ??= FixedTime is null ? time : 0f;
+        float battle = time - _battleStart.Value;
+        if (battle >= HoloDirector.BattleLength)
+        {
+            Reshuffle();
+            _battleStart = time;
+            battle = 0f;
+        }
+        float presence = HoloDirector.Presence(battle);
+        // A hologram stutters as it resolves: while fading, every other 1/17s frame drops a third.
+        if (presence < 1f && Frac(time * 17f) < 0.5f) presence *= 0.65f;
+
+        HoloCamera cam = DirectedCamera(layout.TableRegion, time, battle);
         float px = _h / 1080f;   // authored line widths are 1080p pixels
 
         // 1. The sharp scene, supersampled. Everything glows, so it all adds.
@@ -201,10 +218,11 @@ void main()
         Raylib.ClearBackground(BaseColor);
         Raylib.BeginBlendMode(BlendMode.Additive);
         DrawGlowPool(cam);
-        float pulsePhase = time % PulsePeriod / PulsePeriod;
+        // Before the fight starts the pulse sits at phase 1, where it has faded to nothing.
+        float pulsePhase = battle < HoloDirector.FightsFrom ? 1f : (battle - HoloDirector.FightsFrom) % PulsePeriod / PulsePeriod;
         DrawScene(cam, px * _ss, pulsePhase);
-        DrawUnits(cam, px * _ss);
-        DrawEngagement(cam, px * _ss, time, pulsePhase);
+        DrawUnits(cam, px * _ss, battle, presence);
+        DrawEngagement(cam, px * _ss, time, battle, pulsePhase, presence);
         Raylib.EndBlendMode();
         Raylib.EndTextureMode();
 
@@ -239,6 +257,36 @@ void main()
         }
         DrawScreenTreatments(layout);
         Raylib.EndTextureMode();
+    }
+
+    /// <summary>
+    /// This frame's camera: the slow drift round the table, fitted to show the whole slab, blended toward
+    /// a close framing of the action as the director calls for it - the firefight on even battles, the
+    /// vehicles' measuring line on odd ones.
+    /// </summary>
+    private HoloCamera DirectedCamera(ScreenRect region, float time, float battle)
+    {
+        float yaw = HoloDirector.YawDeg(time), pitch = HoloDirector.PitchDeg(time);
+        HoloCamera overview = HoloCamera.FitToRegion(new Vector3(0f, 1f, 0f), HoloTableScene.SlabCorners,
+            region.X, region.Y, region.W, region.H, _h, pitch, yaw);
+        float w = HoloDirector.FocusWeight(battle);
+        if (w <= 0f) return overview;
+
+        Vector2 centre = _engagement.PulseCentre, half = new(18f, 13f);
+        if (_battleIndex % 2 == 1 && _engagement.Measure is { } m)
+        {
+            centre = (m.From + m.To) * 0.5f;
+            half = new Vector2(MathF.Max(MathF.Abs(m.To.X - m.From.X) * 0.5f + 6f, 14f),
+                               MathF.Max(MathF.Abs(m.To.Y - m.From.Y) * 0.5f + 6f, 10f));
+        }
+        var box = new List<Vector3>();
+        foreach (float sx in new[] { -1f, 1f })
+        foreach (float sy in new[] { -1f, 1f })
+        foreach (float z in new[] { 0f, 6f })
+            box.Add(new Vector3(centre.X + sx * half.X, centre.Y + sy * half.Y, z));
+        HoloCamera focus = HoloCamera.FitToRegion(new Vector3(centre, 0f), box,
+            region.X, region.Y, region.W, region.H, _h, pitch, yaw);
+        return HoloCamera.Blend(overview, focus, w);
     }
 
     // ---- scene ----
@@ -330,52 +378,65 @@ void main()
 
     /// <summary>Each unit: dotted trail, a ring per base (casualties dashed and faint; a vehicle gets an
     /// inner ring and a facing tick), and one flag on the leader with the unit's tag beside it.</summary>
-    private void DrawUnits(HoloCamera cam, float ws)
+    private void DrawUnits(HoloCamera cam, float ws, float battle, float presence)
     {
         Vector2 P(Vector3 p) => cam.Project(p) * _ss;
         Font font = _fontLoaded ? _font : Raylib.GetFontDefault();
+        float advance = HoloDirector.Advance(battle);
 
         foreach (HoloUnit unit in _skirmish.Units)
         {
             Vector3 rgb = unit.Army.Rgb;
+            Color Lit(float k) => Glow(rgb, k * presence);
+            Vector2 offset = unit.OffsetAt(advance);
+
+            // The trail is history: only the stretch already walked is dotted in.
+            float walked = 0f, total = 0f;
+            for (int i = 0; i + 1 < unit.Trail.Count; i++) total += Vector2.Distance(unit.Trail[i], unit.Trail[i + 1]);
             for (int i = 0; i + 1 < unit.Trail.Count; i++)
+            {
+                float leg = Vector2.Distance(unit.Trail[i], unit.Trail[i + 1]);
                 for (int k = 0; k < 5; k++)
                 {
+                    if (walked + leg * k / 5f > advance * total) break;
                     Vector2 at = Vector2.Lerp(unit.Trail[i], unit.Trail[i + 1], k / 5f);
-                    Raylib.DrawCircleV(P(new Vector3(at, 0f)), 2f * ws, Glow(rgb, 0.45f));
+                    Raylib.DrawCircleV(P(new Vector3(at, 0f)), 2f * ws, Lit(0.45f));
                 }
+                walked += leg;
+            }
 
             int segments = unit.BaseRadius < 1f ? 24 : 48;
             foreach (Vector2 m in unit.Models.Take(unit.Dead))
-                GroundCircle(cam, m, unit.BaseRadius, 1.5f * ws, Glow(rgb, 0.3f), dashed: true, segments);
-            foreach (Vector2 m in unit.Alive)
+                GroundCircle(cam, m + offset, unit.BaseRadius, 1.5f * ws, Lit(0.3f), dashed: true, segments);
+            foreach (Vector2 alive in unit.Alive)
             {
-                GroundCircle(cam, m, unit.BaseRadius, 2f * ws, Glow(rgb, 0.9f), dashed: false, segments);
+                Vector2 m = alive + offset;
+                GroundCircle(cam, m, unit.BaseRadius, 2f * ws, Lit(0.9f), dashed: false, segments);
                 if (unit.IsVehicle)
                 {
-                    GroundCircle(cam, m, unit.BaseRadius * 0.6f, 1.5f * ws, Glow(rgb, 0.5f), dashed: true, segments);
+                    GroundCircle(cam, m, unit.BaseRadius * 0.6f, 1.5f * ws, Lit(0.5f), dashed: true, segments);
                     float f = unit.Facing * unit.BaseRadius;
                     Raylib.DrawLineEx(P(new Vector3(m.X, m.Y + f * 0.6f, 0f)), P(new Vector3(m.X, m.Y + f * 1.35f, 0f)),
-                        3f * ws, Glow(rgb, 1f));
+                        3f * ws, Lit(1f));
                 }
             }
 
-            Vector2 leader = unit.Leader;
+            Vector2 leader = unit.Leader + offset;
             Vector2 foot = P(new Vector3(leader, 0f));
             Vector2 top = P(new Vector3(leader, unit.IsVehicle ? 5.5f : 4f));
-            Raylib.DrawLineEx(foot, top, 2f * ws, Glow(rgb, 0.9f));
+            Raylib.DrawLineEx(foot, top, 2f * ws, Lit(0.9f));
             Vector2 tip = top + new Vector2(20f * unit.Facing, 6f) * ws, tail = top + new Vector2(0f, 12f) * ws;
             Rlgl.DisableBackfaceCulling();
-            Raylib.DrawTriangle(top, tip, tail, Glow(rgb, 0.55f));
+            Raylib.DrawTriangle(top, tip, tail, Lit(0.55f));
             Rlgl.DrawRenderBatchActive();
             Rlgl.EnableBackfaceCulling();
-            Raylib.DrawLineEx(top, tip, 1.5f * ws, Glow(rgb, 1f));
-            Raylib.DrawLineEx(tip, tail, 1.5f * ws, Glow(rgb, 1f));
+            Raylib.DrawLineEx(top, tip, 1.5f * ws, Lit(1f));
+            Raylib.DrawLineEx(tip, tail, 1.5f * ws, Lit(1f));
 
             float size = 15f * ws;
             Vector2 extent = Raylib.MeasureTextEx(font, unit.Tag, size, 0f);
             float x = unit.Facing > 0 ? top.X + 6f * ws : top.X - 6f * ws - extent.X;
-            Raylib.DrawTextEx(font, unit.Tag, new Vector2(x, top.Y - 19f * ws), size, 0f, Glow(rgb, 0.9f));
+            Raylib.DrawTextEx(font, unit.Tag, new Vector2(x, top.Y - 19f * ws), size, 0f, Lit(0.9f));
         }
     }
 
@@ -385,13 +446,14 @@ void main()
 
     /// <summary>The pulse ring, tracers along every line of fire, the fire on the burning unit, and the
     /// measuring line - all driven by <paramref name="time"/>.</summary>
-    private void DrawEngagement(HoloCamera cam, float ws, float time, float pulsePhase)
+    private void DrawEngagement(HoloCamera cam, float ws, float time, float battle, float pulsePhase, float presence)
     {
+        if (battle < HoloDirector.FightsFrom) return;
         Vector2 P(Vector2 p, float z = 0f) => cam.Project(new Vector3(p, z)) * _ss;
         HoloEngagement e = _engagement;
 
         // Pulse: a bright leading edge with two fading echoes behind it, dimming as it spreads.
-        float r = pulsePhase * PulseReach, fade = 1f - pulsePhase;
+        float r = pulsePhase * PulseReach, fade = (1f - pulsePhase) * presence;
         GroundCircle(cam, e.PulseCentre, r, 2.5f * ws, Glow(PulseRgb, 0.9f * fade), false, 128, clipToTable: true);
         GroundCircle(cam, e.PulseCentre, MathF.Max(0f, r - 0.6f), 2f * ws, Glow(PulseRgb, 0.35f * fade), false, 128, clipToTable: true);
         GroundCircle(cam, e.PulseCentre, MathF.Max(0f, r - 1.4f), 1.5f * ws, Glow(PulseRgb, 0.15f * fade), false, 128, clipToTable: true);
@@ -401,23 +463,24 @@ void main()
         {
             HoloShot shot = e.Shots[i];
             Vector2 a = P(shot.From, 0.9f), b = P(shot.To, 0.8f);
-            Raylib.DrawLineEx(a, b, 1f * ws, Glow(TracerRgb, 0.18f));
+            Raylib.DrawLineEx(a, b, 1f * ws, Glow(TracerRgb, 0.18f * presence));
             float phase = Frac(time / TracerCycle + i * 0.37f);
             foreach (float ph in new[] { phase, Frac(phase + 0.5f) })
                 if (ph < 0.92f)
-                    Raylib.DrawLineEx(Vector2.Lerp(a, b, ph), Vector2.Lerp(a, b, ph + 0.08f), 3f * ws, Glow(TracerRgb, 1f));
-            if (phase < 0.12f) Raylib.DrawCircleV(a, 3.5f * ws, Glow(TracerRgb, 0.9f));
+                    Raylib.DrawLineEx(Vector2.Lerp(a, b, ph), Vector2.Lerp(a, b, ph + 0.08f), 3f * ws, Glow(TracerRgb, presence));
+            if (phase < 0.12f) Raylib.DrawCircleV(a, 3.5f * ws, Glow(TracerRgb, 0.9f * presence));
         }
 
-        if (e.Burning is not null) DrawFire(P(e.FireAt), cam, e.FireAt, ws, time);
-        if (e.Measure is { } m) DrawMeasure(m, cam, ws, time);
+        if (e.Burning is not null) DrawFire(P(e.FireAt), cam, e.FireAt, ws, time, presence);
+        if (e.Measure is { } m && battle >= HoloDirector.MeasureFrom)
+            DrawMeasure(m, cam, ws, battle - HoloDirector.MeasureFrom, presence);
     }
 
     /// <summary>Simple stylised flames: three layers of three flickering tongues, rising embers, and
     /// orange heat rings on the table.</summary>
-    private void DrawFire(Vector2 at, HoloCamera cam, Vector2 world, float ws, float time)
+    private void DrawFire(Vector2 at, HoloCamera cam, Vector2 world, float ws, float time, float presence)
     {
-        float heat = 0.85f + 0.15f * MathF.Sin(time * 5.3f);
+        float heat = (0.85f + 0.15f * MathF.Sin(time * 5.3f)) * presence;
         GroundCircle(cam, world, 2.0f, 2f * ws, Glow(new Vector3(1f, 0.45f, 0.15f), 0.6f * heat), false, 48);
         GroundCircle(cam, world, 3.0f, 2f * ws, Glow(new Vector3(1f, 0.45f, 0.15f), 0.35f * heat), false, 48);
 
@@ -431,7 +494,7 @@ void main()
         for (int k = 0; k < layers.Length; k++)
         {
             var (rgb, height, width, intensity) = layers[k];
-            Color col = Glow(rgb, intensity);
+            Color col = Glow(rgb, intensity * presence);
             for (int j = 0; j < 3; j++)
             {
                 float ox = (j - 1) * width * 0.55f * ws;
@@ -455,17 +518,18 @@ void main()
         {
             float life = Frac(time * 0.6f + k * 0.083f);
             Vector2 ember = at + new Vector2(MathF.Sin(k * 12.9f) * 30f + MathF.Sin(time * 2f + k) * 4f, -(50f + life * 70f)) * ws;
-            Raylib.DrawCircleV(ember, (1.4f + k % 3 * 0.5f) * ws, Glow(new Vector3(1f, 0.6f, 0.2f), 0.8f * (1f - life)));
+            Raylib.DrawCircleV(ember, (1.4f + k % 3 * 0.5f) * ws, Glow(new Vector3(1f, 0.6f, 0.2f), 0.8f * (1f - life) * presence));
         }
     }
 
-    /// <summary>The measuring line draws itself out base to base, shows its distance, holds, then fades.</summary>
-    private void DrawMeasure(HoloMeasure m, HoloCamera cam, float ws, float time)
+    /// <summary>The measuring line draws itself out base to base, shows its distance, holds, then fades;
+    /// <paramref name="time"/> counts from when measuring began.</summary>
+    private void DrawMeasure(HoloMeasure m, HoloCamera cam, float ws, float time, float presence)
     {
         float tc = time % MeasureCycle;
         if (tc > MeasureFade) return;
         float reach = MathF.Min(1f, tc / MeasureDraw);
-        float alpha = tc <= MeasureHold ? 1f : 1f - (tc - MeasureHold) / (MeasureFade - MeasureHold);
+        float alpha = (tc <= MeasureHold ? 1f : 1f - (tc - MeasureHold) / (MeasureFade - MeasureHold)) * presence;
 
         Vector2 a = cam.Project(new Vector3(m.From, 0.05f)) * _ss, b = cam.Project(new Vector3(m.To, 0.05f)) * _ss;
         Color col = Glow(MeasureRgb, alpha);

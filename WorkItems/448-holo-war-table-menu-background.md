@@ -1,6 +1,6 @@
 # 448 — Holographic war-table main menu background
 
-**Status**: in-progress (slices 1-3 done 2026-10-30; awaiting GUI hand-verify)
+**Status**: in-progress (slices 1-4 done 2026-10-30; awaiting GUI hand-verify)
 **Related**: `docs/menu-background/` (mockup, army colour sheet, generators, pairing check)
 
 ## Goal
@@ -84,11 +84,33 @@ re-run the script after any colour or group change.
    crossing terrain. Fork to settle first: reuse the engine's LOS against real terrain pieces vs a local
    2D footprint test (cosmetic only, as in the mockup). **Decided 2026-10-30: the simplest - the local
    2D footprint test** (owner: "use whatever is the simplest").
-4. **Motion + camera director.** Drift, glide to skirmishes, unit advances; optional click-to-dive
-   transition on leaving the menu.
+4. **[done 2026-10-30] Motion + camera director.** Drift, glide to skirmishes, unit advances.
+   **Deferred:** the optional click-to-dive transition on leaving the menu (not built; see Notes).
 5. **Options toggle** (Animated / Static / Off) + perf check on a weak GPU; pause/dim while a modal is open.
 
 ## Notes
+- 2026-10-30: **Slice 4 implemented.** `HoloDirector` (pure timeline): a 32s battle per pairing - 1s
+  hologram fade-in (with a stutter while fading), units with trails walk in over 8s (eased, by distance
+  along the polyline - `HoloUnit.OffsetAt`), fight/pulse from 1s, measure from 9s (after arrival),
+  camera glides in 14-18s, holds to 24s, back out by 28s, 2s fade-out, then a fresh pairing is dealt.
+  The close-up alternates per battle: the firefight (an 18"x13" box round the pulse centre) on even
+  battles, the vehicles' measuring line on odd ones. Camera drift on wall time underneath: yaw -16 +-7
+  deg (45s), pitch 47 +-3 deg (60s). `HoloCamera.Blend` lerps eye + lens shift between the overview
+  and close-up fits (same orientation by construction). `HoloEngagement` now only lets units WITHOUT a
+  trail fight (a tracer from where a walker will be is wrong) and gained a units-list overload so a test
+  can build a table the fixed layout never produces. `--menu-preview` takes `t=SECONDS` (default 12:
+  all arrived, fighting, measuring, overview); checked t=4 (vehicle mid-advance), 12, 21 (close-up).
+  Tests: `MainMenuMotionTests` (11) - fade in/out, schedule order (no fire while materialising, vehicles
+  arrive before they are measured, close-up after setup, back on the overview before the dissolve),
+  no curve jumps between 60fps frames, overview fits at every drift extreme on 4 screen shapes, blend
+  endpoints, trail walking (start, end, stays, halfway by distance), walkers never shoot (fixed layout
+  and a hand-built table). Mutation-checked: measure before arrival, glide snaps, blend ignores t,
+  never walks, walkers shoot (only the hand-built-table test sees it - the fixed layout never puts a
+  walker in range), no fade-in - each reddens its test.
+  **Deferred, not dropped:** the click-to-dive transition (camera plunges into the table when a menu
+  button is pressed). It was optional in the design; it needs the screen change held back a few hundred
+  ms, which touches every navigation callback in `Program.cs`. Left for a follow-up if wanted after the
+  owner sees the motion live.
 - 2026-10-30: **Slice 3 implemented.** `HoloEngagement.Plan` (pure): enemy squad pairs within 30" whose two
   lines of fire (shooter's 2 models nearest the target -> target's 2 nearest the shooter) are both
   `IsClear` (2D segment >= 0.4" from every footprint, neither end inside one), nearest first, up to 3

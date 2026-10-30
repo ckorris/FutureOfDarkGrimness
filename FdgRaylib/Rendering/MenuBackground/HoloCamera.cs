@@ -50,6 +50,14 @@ internal readonly struct HoloCamera
     }
 
     /// <summary>
+    /// A camera part-way from <paramref name="a"/> to <paramref name="b"/> (#448 slice 4: the director's
+    /// glide from the whole-table overview to a close framing). Both must share an orientation - two fits
+    /// made with the same pitch and yaw do - so only the eye and the lens shift move.
+    /// </summary>
+    public static HoloCamera Blend(HoloCamera a, HoloCamera b, float t) =>
+        new(Vector3.Lerp(a.Eye, b.Eye, t), a.Forward, a.Right, a.Up, Vector2.Lerp(a.Principal, b.Principal, t), a.PixelsPerTan);
+
+    /// <summary>
     /// The camera looking at <paramref name="target"/> from <paramref name="pitchDeg"/> above the table
     /// and <paramref name="yawDeg"/> round from straight-on, pulled back just far enough that every point
     /// in <paramref name="mustShow"/> lands inside the region, then shifted so their bounding box is
