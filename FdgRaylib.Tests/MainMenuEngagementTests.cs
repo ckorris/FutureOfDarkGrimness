@@ -44,6 +44,25 @@ public class MainMenuEngagementTests
     }
 
     [Test]
+    public void EveryModelThatCanSee_Fires_AndNoOtherDoes()
+    {
+        // Owner, 2026-10-30: "it should be all models with line of sight", not the front two.
+        foreach (var (pa, pb) in MenuArmies.AllowedPairs.Take(30))
+        {
+            var plan = HoloEngagement.Plan(new HoloSkirmish(pa, pb), Scene.Footprints);
+            foreach (var (shooter, target) in plan.Fights)
+            {
+                var firing = plan.Shots.Where(s => s.Shooter == shooter && s.Target == target).Select(s => s.From).ToList();
+                var canSee = shooter.Alive.Where(m => target.Alive.Any(t => HoloEngagement.IsClear(m, t, Scene.Footprints))).ToList();
+                Assert.That(firing, Is.EquivalentTo(canSee), $"{shooter.Label} -> {target.Label}");
+            }
+        }
+        var big = HoloEngagement.Plan(new HoloSkirmish(MenuArmies.All[0], MenuArmies.All[1]), Scene.Footprints);
+        Assert.That(big.Fights.Any(f => big.Shots.Count(s => s.Shooter == f.Shooter) > 2), Is.True,
+            "a squad fires more than two shots");
+    }
+
+    [Test]
     public void Plan_PicksOtherLines_WhenTerrainBlocksTheObviousOnes()
     {
         // On an open table the planner takes the nearest fights and the vehicle-to-vehicle measure. Drop a
@@ -82,14 +101,14 @@ public class MainMenuEngagementTests
         Assert.That(plan.Shots.Select(s => s.Shooter).Distinct().Count(), Is.InRange(1, 3), "at most three fights");
         Assert.That(plan.Shots.All(s => s.Shooter.Side != s.Target.Side), Is.True, "no friendly fire");
         Assert.That(plan.Shots.Select(s => s.Shooter.Side).Distinct().Count(), Is.EqualTo(2), "both sides shoot");
-        Assert.That(plan.Shots.All(s => !s.Shooter.IsVehicle && !s.Target.IsVehicle), Is.True,
-            "the vehicles are kept for the measuring line");
+        Assert.That(plan.Shots.All(s => s.Shooter.Role != EHoloRole.Patrols && s.Target.Role != EHoloRole.Patrols), Is.True,
+            "patrollers never fight");
 
         Assert.That(plan.Fights, Is.EquivalentTo(plan.Shots.Select(s => (s.Shooter, s.Target)).Distinct()),
             "Fights lists each shooter/target pair once");
 
         Assert.That(plan.Measure, Is.Not.Null);
-        Assert.That(plan.Measure!.A.IsVehicle && plan.Measure.B.IsVehicle, Is.True, "vehicle to vehicle");
+        Assert.That(plan.Measure!.A.Side, Is.Not.EqualTo(plan.Measure.B.Side), "measured across the table");
     }
 
     [Test]
@@ -97,7 +116,7 @@ public class MainMenuEngagementTests
     {
         var plan = HoloEngagement.Plan(new HoloSkirmish(MenuArmies.All[0], MenuArmies.All[1]), Scene.Footprints);
         HoloMeasure m = plan.Measure!;
-        Vector2 a = m.A.Alive.Single(), b = m.B.Alive.Single();
+        var (a, b) = (from x in m.A.Alive from y in m.B.Alive orderby Vector2.Distance(x, y) select (x, y)).First();
 
         Assert.That(m.Inches, Is.EqualTo(Vector2.Distance(a, b) - m.A.BaseRadius - m.B.BaseRadius).Within(1e-4f));
         Assert.That(Vector2.Distance(m.From, a), Is.EqualTo(m.A.BaseRadius).Within(1e-4f), "starts on A's base edge");

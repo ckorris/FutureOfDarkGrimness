@@ -26,8 +26,7 @@ public class MainMenuMotionTests
     public void Schedule_RunsInOrder()
     {
         Assert.That(HoloDirector.FightsFrom, Is.GreaterThanOrEqualTo(HoloDirector.FadeIn), "no shooting while still materialising");
-        Assert.That(HoloDirector.Advance(HoloDirector.MeasureFrom), Is.EqualTo(1f), "vehicles have arrived before they are measured");
-        Assert.That(HoloDirector.FocusIn, Is.GreaterThan(HoloDirector.MeasureFrom), "the close-up comes after the action is set up");
+        Assert.That(HoloDirector.FocusIn, Is.GreaterThan(HoloDirector.StillMoment), "the close-up comes after the action is set up");
         Assert.That(HoloDirector.FocusBack, Is.LessThanOrEqualTo(HoloDirector.BattleLength - HoloDirector.FadeOut),
             "the camera is back on the overview before the battle dissolves");
     }
@@ -41,7 +40,8 @@ public class MainMenuMotionTests
         for (float t = 0f; t < HoloDirector.BattleLength; t += dt)
         {
             Assert.That(MathF.Abs(HoloDirector.FocusWeight(t + dt) - HoloDirector.FocusWeight(t)), Is.LessThan(0.02f), $"focus at {t}");
-            Assert.That(MathF.Abs(HoloDirector.Advance(t + dt) - HoloDirector.Advance(t)), Is.LessThan(0.01f), $"advance at {t}");
+            foreach (HoloUnit u in new[] { Mover(EHoloRole.Advances, 5f), Mover(EHoloRole.Patrols, HoloDirector.BattleLength) })
+                Assert.That(MathF.Abs(u.ProgressAt(t + dt) - u.ProgressAt(t)), Is.LessThan(0.01f), $"{u.Role} at {t}");
             Assert.That(HoloDirector.FocusWeight(t), Is.InRange(0f, 1f));
         }
         Assert.That(HoloDirector.FocusWeight(0f), Is.EqualTo(0f));
@@ -113,35 +113,74 @@ public class MainMenuMotionTests
     }
 
     [Test]
-    public void AdvancingUnits_DoNotShoot()
+    public void Shots_StartOnlyOnceBothUnitsStandStill()
     {
-        // They are still walking in when the shooting starts; a tracer from where a unit will be is wrong.
+        // A unit that advances moves first, then shoots; nobody fires at a unit still on the move - a
+        // tracer from or to where a unit WILL be reads as a bug.
         var scene = HoloTableScene.BuildDefault();
         foreach (var (a, b) in MenuArmies.AllowedPairs.Take(20))
         {
             var plan = HoloEngagement.Plan(new HoloSkirmish(a, b), scene.Footprints);
             Assert.That(plan.Shots, Is.Not.Empty);
-            Assert.That(plan.Shots.All(s => s.Shooter.Trail.Count == 0 && s.Target.Trail.Count == 0), Is.True);
+            foreach (HoloShot shot in plan.Shots)
+            {
+                Assert.That(shot.StartsAt, Is.GreaterThanOrEqualTo(shot.Shooter.ArriveAt), "a unit moves first, then shoots");
+                Assert.That(shot.StartsAt, Is.GreaterThanOrEqualTo(shot.Target.ArriveAt), "and is only shot at once it stands still");
+                Assert.That(shot.StartsAt, Is.GreaterThanOrEqualTo(HoloDirector.FightsFrom));
+            }
         }
     }
 
     [Test]
-    public void AWalkingUnit_IsPassedOver_EvenWhenItIsTheNearestTarget()
+    public void EachRole_MovesAsDescribed()
     {
-        // The fixed menu layout never puts a walking unit within range of an enemy, so the rule is pinned
-        // on a hand-built table: the walker is the closest enemy to the far squad, yet nobody fires at it
-        // and it fires at nobody.
+        // Owner, 2026-10-30: "make things that move keep moving the whole time. Something can also move
+        // and then switch to shooting."
+        HoloUnit holds = Mover(EHoloRole.Holds, 0f), advances = Mover(EHoloRole.Advances, 6f), patrols = Mover(EHoloRole.Patrols, HoloDirector.BattleLength);
+
+        Assert.That(holds.ProgressAt(0f), Is.EqualTo(1f), "a holder is in place from the start");
+        Assert.That(advances.ProgressAt(0f), Is.EqualTo(0f));
+        Assert.That(advances.ProgressAt(3f), Is.InRange(0.01f, 0.99f), "an advancer is on its way");
+        Assert.That(advances.ProgressAt(6f), Is.EqualTo(1f), "and stops when it arrives");
+        Assert.That(advances.ProgressAt(20f), Is.EqualTo(1f));
+
+        float last = -1f;
+        for (float t = 0f; t < HoloDirector.BattleLength; t += 0.5f)
+        {
+            float p = patrols.ProgressAt(t);
+            Assert.That(p, Is.GreaterThan(last), $"a patroller is still moving at {t}s");
+            Assert.That(p, Is.LessThan(1f), $"and has not finished its route at {t}s");
+            last = p;
+        }
+    }
+
+    /// <summary>A three-model unit with a trail and the given role (no position needed for timing).</summary>
+    private static HoloUnit Mover(EHoloRole role, float arriveAt) =>
+        new("M", 0, MenuArmies.All[0], new Vector2(0f, -10f), 0.5f, 0, new[] { new Vector2(0f, -10f) },
+            new[] { new Vector2(0f, -20f), new Vector2(0f, -10f) }) { Role = role, ArriveAt = arriveAt };
+
+    [Test]
+    public void APatroller_IsPassedOver_EvenWhenItIsTheNearestTarget_ButAnAdvancerJoinsIn()
+    {
+        // A patroller never stops, so it never fights - even as the closest enemy. An advancer in the same
+        // spot does fight, from the moment it arrives.
         MenuArmy near = MenuArmies.All[0], far = MenuArmies.All[1];
-        HoloUnit Squad(string label, int side, MenuArmy army, Vector2 c, params Vector2[] trail) => new(label, side, army, c, 0.5f, 0,
-            new[] { c + new Vector2(-1.2f, 0f), c, c + new Vector2(1.2f, 0f) }, trail.Length == 0 ? Array.Empty<Vector2>() : trail.Append(c).ToArray());
+        HoloUnit Squad(string label, int side, MenuArmy army, Vector2 c, EHoloRole role, float arrive, params Vector2[] trail) =>
+            new(label, side, army, c, 0.5f, 0, new[] { c + new Vector2(-1.2f, 0f), c, c + new Vector2(1.2f, 0f) },
+                trail.Length == 0 ? Array.Empty<Vector2>() : trail.Append(c).ToArray()) { Role = role, ArriveAt = arrive };
 
-        var walker = Squad("W", 0, near, new Vector2(0f, -5f), new Vector2(0f, -15f));
-        var other = Squad("N", 0, near, new Vector2(20f, -5f));
-        var target = Squad("F", 1, far, new Vector2(0f, 5f));
-        var plan = HoloEngagement.Plan(new[] { walker, other, target }, Array.Empty<HoloFootprint>());
+        var patroller = Squad("P", 0, near, new Vector2(0f, -5f), EHoloRole.Patrols, HoloDirector.BattleLength, new Vector2(-8f, -5f));
+        var other = Squad("N", 0, near, new Vector2(20f, -5f), EHoloRole.Holds, 0f);
+        var target = Squad("F", 1, far, new Vector2(0f, 5f), EHoloRole.Holds, 0f);
+        var plan = HoloEngagement.Plan(new[] { patroller, other, target }, Array.Empty<HoloFootprint>());
+        Assert.That(plan.Shots, Is.Not.Empty, "the standing pair still fight");
+        Assert.That(plan.Shots.Any(s => s.Shooter == patroller || s.Target == patroller), Is.False);
+        Assert.That(plan.Measure is null || (plan.Measure.A != patroller && plan.Measure.B != patroller), Is.True, "nor is it measured to");
 
-        Assert.That(plan.Shots, Is.Not.Empty, "the stationary pair still fight");
-        Assert.That(plan.Shots.Any(s => s.Shooter == walker || s.Target == walker), Is.False);
+        var advancer = patroller with { Role = EHoloRole.Advances, ArriveAt = 7f };
+        var plan2 = HoloEngagement.Plan(new[] { advancer, other, target }, Array.Empty<HoloFootprint>());
+        Assert.That(plan2.Shots.Where(s => s.Shooter == advancer).Select(s => s.StartsAt).Distinct(), Is.EqualTo(new[] { 7f }),
+            "the advancer opens fire as it arrives");
     }
 
     [Test]
@@ -186,34 +225,17 @@ public class MainMenuMotionTests
     }
 
     [Test]
-    public void ScanLine_CrossesTheTableLengthwise_ThenStartsAgain()
-    {
-        // Owner, 2026-10-30: a wave from one table side to the other, long-wise, instead of the ripple.
-        Assert.That(HoloDirector.SweepX(0f), Is.Null, "nothing before the fight starts");
-        float start = HoloDirector.SweepX(HoloDirector.FightsFrom)!.Value;
-        float end = HoloDirector.SweepX(HoloDirector.FightsFrom + HoloDirector.SweepPeriod - 0.001f)!.Value;
-        Assert.That(start, Is.LessThan(-HoloTableScene.HalfW), "starts beyond the left short edge");
-        Assert.That(end, Is.GreaterThan(HoloTableScene.HalfW), "ends beyond the right one");
-
-        float last = start;
-        for (float t = HoloDirector.FightsFrom + 0.05f; t < HoloDirector.FightsFrom + HoloDirector.SweepPeriod - 0.05f; t += 0.05f)
-        {
-            float x = HoloDirector.SweepX(t)!.Value;
-            Assert.That(x, Is.GreaterThan(last), "always moving the same way along the long axis");
-            last = x;
-        }
-        Assert.That(HoloDirector.SweepX(HoloDirector.FightsFrom + HoloDirector.SweepPeriod)!.Value, Is.EqualTo(start).Within(1e-3f),
-            "and goes round again");
-    }
-
-    [Test]
     public void StillMoment_ShowsTheWholeFight()
     {
         float t = HoloDirector.StillMoment;
         Assert.That(HoloDirector.Presence(t), Is.EqualTo(1f));
-        Assert.That(HoloDirector.Advance(t), Is.EqualTo(1f), "everyone has arrived");
-        Assert.That(t, Is.GreaterThan(HoloDirector.MeasureFrom), "the measure is up");
         Assert.That(HoloDirector.FocusWeight(t), Is.EqualTo(0f), "on the overview");
+        for (int seed = 0; seed < 100; seed++)
+        {
+            var battle = HoloBattle.Generate(new Random(seed));
+            Assert.That(battle.Engagement.Shots.All(s => s.StartsAt <= t), Is.True, $"seed {seed}: every volley has opened");
+            Assert.That(battle.Engagement.Measure!.StartsAt + 1.2f, Is.LessThanOrEqualTo(t), $"seed {seed}: the measure is fully drawn");
+        }
     }
 
     private static float WalkedTo(IReadOnlyList<Vector2> trail, int leg, float t)

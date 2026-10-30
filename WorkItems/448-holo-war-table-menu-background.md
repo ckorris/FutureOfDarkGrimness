@@ -103,6 +103,32 @@ re-run the script after any colour or group change.
    `--menu-preview out.png privacy`.)
 
 ## Notes
+- 2026-10-30: **Owner feedback round 2** ("looks great!"): (1) remove the scrolling line; (2) remove the
+  solid line under the blaster fire; (3) Titan Lords field ONLY big single-model units; (4) things that
+  move keep moving the whole battle, and a unit can move then switch to shooting; (5, mid-turn) every
+  model with line of sight shoots, not just two. **All done in one commit.** (1) `SweepX`, the boost and
+  the draw are gone. (2) Only the travelling bolts and muzzle flash remain. (3) `HoloSkirmish.RosterFor`
+  swaps a TITAN side's four slots for single bases of 1.8-2.2" radius (fixed layout and random alike).
+  (4) `EHoloRole` on every unit - Holds (shoots all battle), Advances (walks a route in from behind,
+  arrives at 5-10s, then shoots), Patrols (a three-leg wander through its own half at a steady pace from
+  the first second to the last; never shoots, never shot at, never measured to). Each side gets at least
+  one of each. `HoloUnit.ProgressAt(battleTime)` per role replaces the global advance curve;
+  `HoloShot.StartsAt` / `HoloMeasure.StartsAt` wait for both units to stand still. Placement now keeps
+  every moving model's path a base's width + 1.5" clear of every other unit's standing bases and every
+  other path (timing ignored, so paths never even cross), standing units 4" apart for their labels, and
+  routes in their own half (the half check became side-aware - a winding patrol could otherwise have
+  drifted over the centre line). Vehicles may now shoot (a Titan side would otherwise never fire); the
+  measure is any two units that end up standing still, idle pairs first. (5) `ShotLines`: each living
+  model fires at the nearest target model it has a clear line to; a model with none holds its fire.
+  `StillMoment` (and the preview default) moved to 13.5s so every volley has opened and the measure is
+  fully drawn. Tests: per-role motion (holder in place, advancer moving then stopped, patroller still
+  moving and unfinished at every half-second), shots start only once both units stand still, a
+  patroller is passed over while an advancer in its spot opens fire on arrival, every model that can see
+  fires and no other does, every side has all three roles, moving units never pass through anything,
+  Titan sides are big singles only (random sweep + fixed layout, both sides), still moment shows every
+  volley open + a drawn measure over 100 seeds. Mutation-checked (front two fire, Titan rule off,
+  everyone holds, paths through standing units, paths crossing paths, patrollers fight, shots ignore
+  arrival, patrol stops early, own half unchecked) - each reddens its test.
 - 2026-10-30: **Owner feedback round 1, item (1): every battle is a fresh layout.** `HoloBattle.Generate`:
   random terrain (`HoloTableScene.BuildRandom` - 3 ruins (straight or L, random lengths/heights), 2
   forests (random radius, 4-5 scattered trees), a bunker, 3 containers, a crater, 2 barricades; random

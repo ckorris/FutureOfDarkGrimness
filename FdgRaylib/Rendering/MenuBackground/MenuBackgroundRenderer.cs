@@ -13,7 +13,7 @@ namespace FdgRaylib.Rendering.MenuBackground;
 /// <para>Pipeline: the scene is drawn into a supersampled target (2x up to ~1200p, so line edges come out
 /// smooth without MSAA), box-filtered down to screen size, then blurred at half and quarter size by a
 /// separable Gaussian shader; the blurs are added back over the sharp image for the glow. The whole
-/// pipeline runs every frame, since everything animates - the fight and scan line (slice 3), and the drifting,
+/// pipeline runs every frame, since everything animates - the fight (slice 3), and the drifting,
 /// directed camera and the battle timeline of <see cref="HoloDirector"/> (slice 4) - a couple of
 /// thousand lines and five small blur passes. If the blur shader will not compile the table
 /// is still drawn, just without glow.</para>
@@ -28,10 +28,9 @@ internal sealed class MenuBackgroundRenderer : IDisposable
     private static readonly Color BaseColor = new(2, 3, 6, 255);
     private static readonly Vector3 TracerRgb = new(1.00f, 0.97f, 0.88f);   // white-hot: reads on any army colour
     private static readonly Vector3 MeasureRgb = new(0.90f, 0.95f, 1.00f);
-    private static readonly Vector3 PulseRgb = new(0.50f, 0.90f, 1.00f);
 
     // Animation timings, seconds. Tracers cross their line once per TracerCycle; the measuring line
-    // draws, holds, fades, rests. (The scan line's timing lives in HoloDirector.)
+    // draws, holds, fades, rests.
     private const float TracerCycle = 0.9f;
     private const float MeasureCycle = 7f, MeasureDraw = 1.2f, MeasureHold = 5.5f, MeasureFade = 6.3f;
 
@@ -250,10 +249,9 @@ void main()
         Raylib.ClearBackground(BaseColor);
         Raylib.BeginBlendMode(BlendMode.Additive);
         DrawGlowPool(cam);
-        float? sweepX = HoloDirector.SweepX(battle);
-        DrawScene(cam, px * _ss, sweepX);
+        DrawScene(cam, px * _ss);
         DrawUnits(cam, px * _ss, battle, presence);
-        DrawEngagement(cam, px * _ss, time, battle, sweepX, presence);
+        DrawEngagement(cam, px * _ss, time, battle, presence);
         Raylib.EndBlendMode();
         Raylib.EndTextureMode();
 
@@ -341,18 +339,7 @@ void main()
             new Rectangle(c.X - rw, c.Y - rh, rw * 2f, rh * 2f), Vector2.Zero, 0f, new Color(5, 13, 24, 255));
     }
 
-    /// <summary>How much brighter something at <paramref name="x"/> glows as the scan line passes it
-    /// (1 = not at all): a soft three-inch band either side of the line.</summary>
-    private static float SweepBoost(float x, float? sweepX) =>
-        sweepX is { } s ? 1f + 1.3f * MathF.Exp(-MathF.Pow((x - s) / 3f, 2f)) : 1f;
-
-    /// <summary>Lines the scan lights up: terrain, and the table lines that run ACROSS the sweep (grid
-    /// lines and ticks of constant X), which it lights one at a time. Lines along the sweep would light
-    /// end to end at once, so they are left alone, as is the rim.</summary>
-    private static bool SweepLights(HoloLine l) =>
-        l.Piece >= 0 || (l.Tint == EHoloTint.Terrain && l.A.X == l.B.X);
-
-    private void DrawScene(HoloCamera cam, float widthScale, float? sweepX)
+    private void DrawScene(HoloCamera cam, float widthScale)
     {
         Vector2 P(Vector3 p) => cam.Project(p) * _ss;
 
@@ -360,8 +347,7 @@ void main()
         Rlgl.DisableBackfaceCulling();
         foreach (HoloFill f in _scene.Fills)
         {
-            float boost = f.Piece >= 0 ? SweepBoost((f.A.X + f.B.X + f.C.X + f.D.X) / 4f, sweepX) : 1f;
-            Color col = Glow(TintRgb(f.Tint), f.Intensity * boost);
+            Color col = Glow(TintRgb(f.Tint), f.Intensity);
             Vector2 a = P(f.A), b = P(f.B), c = P(f.C), d = P(f.D);
             Raylib.DrawTriangle(a, b, c, col);
             Raylib.DrawTriangle(a, c, d, col);
@@ -371,7 +357,7 @@ void main()
 
         foreach (HoloLine l in _scene.Lines)
             Raylib.DrawLineEx(P(l.A), P(l.B), MathF.Max(1f, l.Width * widthScale),
-                Glow(TintRgb(l.Tint), l.Intensity * (SweepLights(l) ? SweepBoost((l.A.X + l.B.X) * 0.5f, sweepX) : 1f)));
+                Glow(TintRgb(l.Tint), l.Intensity));
 
         Font font = _fontLoaded ? _font : Raylib.GetFontDefault();
         float size = 13f * widthScale;
@@ -403,12 +389,11 @@ void main()
     {
         Vector2 P(Vector3 p) => cam.Project(p) * _ss;
         Font font = _fontLoaded ? _font : Raylib.GetFontDefault();
-        float advance = HoloDirector.Advance(battle);
-
         foreach (HoloUnit unit in _skirmish.Units)
         {
             Vector3 rgb = unit.Army.Rgb;
             Color Lit(float k) => Glow(rgb, k * presence);
+            float advance = unit.ProgressAt(battle);
             Vector2 offset = unit.OffsetAt(advance);
 
             // The trail is history: only the stretch already walked is dotted in.
@@ -465,30 +450,19 @@ void main()
 
     private static float Frac(float x) => x - MathF.Floor(x);
 
-    /// <summary>The scan line, tracers along every line of fire, and the measuring line.</summary>
-    private void DrawEngagement(HoloCamera cam, float ws, float time, float battle, float? sweepX, float presence)
+    /// <summary>Blaster fire along every line of fire whose shooting has started, and the measuring line.</summary>
+    private void DrawEngagement(HoloCamera cam, float ws, float time, float battle, float presence)
     {
-        if (battle < HoloDirector.FightsFrom) return;
         Vector2 P(Vector2 p, float z = 0f) => cam.Project(new Vector3(p, z)) * _ss;
         HoloEngagement e = _engagement;
 
-        // Scan line: a bright leading edge across the table's width with two fading echoes behind it,
-        // drawn only where it is over the table.
-        if (sweepX is { } sx)
-            foreach (var (lag, width, intensity) in new[] { (0f, 2.5f, 0.9f), (0.6f, 2f, 0.35f), (1.4f, 1.5f, 0.15f) })
-            {
-                float x = sx - lag;
-                if (MathF.Abs(x) > HoloTableScene.HalfW) continue;
-                Raylib.DrawLineEx(P(new Vector2(x, -HoloTableScene.HalfD), 0.02f), P(new Vector2(x, HoloTableScene.HalfD), 0.02f),
-                    width * ws, Glow(PulseRgb, intensity * presence));
-            }
-
-        // Tracers: a faint line of fire, two bright dashes travelling down it, a muzzle flash as each leaves.
+        // Blaster fire: two bright bolts travelling down the line of fire, a muzzle flash as each leaves.
+        // (No line drawn under them - owner, 2026-10-30.)
         for (int i = 0; i < e.Shots.Count; i++)
         {
             HoloShot shot = e.Shots[i];
+            if (battle < shot.StartsAt) continue;
             Vector2 a = P(shot.From, 0.9f), b = P(shot.To, 0.8f);
-            Raylib.DrawLineEx(a, b, 1f * ws, Glow(TracerRgb, 0.18f * presence));
             float phase = Frac(time / TracerCycle + i * 0.37f);
             foreach (float ph in new[] { phase, Frac(phase + 0.5f) })
                 if (ph < 0.92f)
@@ -496,8 +470,8 @@ void main()
             if (phase < 0.12f) Raylib.DrawCircleV(a, 3.5f * ws, Glow(TracerRgb, 0.9f * presence));
         }
 
-        if (e.Measure is { } m && battle >= HoloDirector.MeasureFrom)
-            DrawMeasure(m, cam, ws, battle - HoloDirector.MeasureFrom, presence);
+        if (e.Measure is { } m && battle >= m.StartsAt)
+            DrawMeasure(m, cam, ws, battle - m.StartsAt, presence);
     }
 
     /// <summary>The measuring line draws itself out base to base, shows its distance, holds, then fades;

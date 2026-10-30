@@ -50,8 +50,8 @@ FdgRaylib.Rendering.ViewSettings.Load(UserConfig.Current.View);
 
 // --menu-preview <out.png> [WxH] [menu|privacy|options] [seed] [t=SECONDS] (#448): the main menu rendered
 // offscreen from a hidden window (war table + real ImGui menu), written to a PNG, then exit. The seed picks
-// the army pairing (default 1) and t the moment of its battle (default 12s: everyone arrived, fighting,
-// measuring, camera on the overview), so a preview is reproducible. `bench` also times the live
+// the army pairing (default 1) and t the moment of its battle (default HoloDirector.StillMoment: everyone
+// who advances has arrived, fighting, measuring, camera on the overview), so a preview is reproducible. `bench` also times the live
 // background per frame. No analytics, no network, no settings saved.
 int menuPreviewIdx = Array.IndexOf(args, "--menu-preview");
 if (menuPreviewIdx >= 0)
@@ -64,7 +64,7 @@ if (menuPreviewIdx >= 0)
     int previewW = 1920, previewH = 1080;
     string previewState = "menu";
     int previewSeed = 1;
-    float previewTime = 12f;
+    float previewTime = FdgRaylib.Rendering.MenuBackground.HoloDirector.StillMoment;
     bool previewBench = false;
     foreach (string extra in args.Skip(menuPreviewIdx + 2).TakeWhile(a => !a.StartsWith("--")))
     {

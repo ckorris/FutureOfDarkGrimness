@@ -128,6 +128,71 @@ public class MainMenuRandomBattleTests
     }
 
     [Test]
+    public void EverySide_HoldsAdvancesAndPatrols()
+    {
+        foreach (var (seed, b) in Battles().Where(x => !x.Battle.IsFallback))
+        foreach (int side in new[] { 0, 1 })
+        {
+            var roles = b.Skirmish.Units.Where(u => u.Side == side).Select(u => u.Role).ToList();
+            Assert.That(roles, Does.Contain(EHoloRole.Holds).And.Contain(EHoloRole.Advances).And.Contain(EHoloRole.Patrols),
+                $"seed {seed} side {side}");
+        }
+    }
+
+    [Test]
+    public void MovingUnits_NeverPassThroughAnything()
+    {
+        // Every moving model's path keeps a base's width plus a gap from every other unit's standing bases
+        // and from every other moving model's path (timing ignored, so paths never even cross).
+        foreach (var (seed, b) in Battles().Where(x => !x.Battle.IsFallback))
+        {
+            var units = b.Skirmish.Units;
+            IEnumerable<(Vector2 A, Vector2 B)> PathsOf(HoloUnit u) => u.Trail.Count < 2
+                ? Enumerable.Empty<(Vector2, Vector2)>()
+                : u.Models.SelectMany(m => Enumerable.Range(0, u.Trail.Count - 1)
+                    .Select(i => (u.Trail[i] + (m - u.Centre), u.Trail[i + 1] + (m - u.Centre))));
+            foreach (HoloUnit mover in units.Where(u => u.Trail.Count >= 2))
+            foreach (HoloUnit other in units.Where(u => u != mover))
+            {
+                float clear = mover.BaseRadius + other.BaseRadius;
+                foreach (var (a, c) in PathsOf(mover))
+                {
+                    if (other.Role != EHoloRole.Patrols)
+                        foreach (Vector2 m in other.Models)
+                            Assert.That(HoloGeometry.PointSegment(m, a, c), Is.GreaterThan(clear), $"seed {seed}: {mover.Label} walks through {other.Label}");
+                    foreach (var (p, q) in PathsOf(other))
+                        Assert.That(HoloGeometry.SegmentDistance(a, c, p, q), Is.GreaterThan(clear), $"seed {seed}: {mover.Label} crosses {other.Label}'s path");
+                }
+            }
+        }
+    }
+
+    [Test]
+    public void TitanLords_FieldOnlyBigSingleModels()
+    {
+        // Owner, 2026-10-30: "when it's TITAN, it should ONLY have big single-model units".
+        MenuArmy titan = MenuArmies.All.Single(a => a.Abbr == HoloSkirmish.BigModelsOnlyArmy);
+        var foes = MenuArmies.All.Where(a => MenuArmies.CanFace(titan, a)).ToList();
+        Assert.That(foes, Is.Not.Empty);
+        int seen = 0;
+        foreach (var (seed, b) in Battles())
+        foreach (HoloUnit u in b.Skirmish.Units.Where(u => u.Army == titan))
+        {
+            seen++;
+            Assert.That(u.Models, Has.Count.EqualTo(1), $"seed {seed}: {u.Label}");
+            Assert.That(u.BaseRadius, Is.GreaterThanOrEqualTo(1.7f), $"seed {seed}: {u.Label} is not big");
+        }
+        Assert.That(seen, Is.GreaterThan(0), "TITAN turned up in the sweep");
+
+        foreach (bool titanNear in new[] { true, false })
+        {
+            var fixedLayout = titanNear ? new HoloSkirmish(titan, foes[0]) : new HoloSkirmish(foes[0], titan);
+            Assert.That(fixedLayout.Units.Where(u => u.Army == titan).All(u => u.IsVehicle && u.BaseRadius >= 1.7f), Is.True);
+            Assert.That(fixedLayout.Units.Where(u => u.Army != titan).Any(u => !u.IsVehicle), Is.True, "only the Titan side changes");
+        }
+    }
+
+    [Test]
     public void FixedLayout_IsUnchanged_ForTheFallback()
     {
         // BuildDefault and the slot positions are the signed-off mockup; the random generator must not

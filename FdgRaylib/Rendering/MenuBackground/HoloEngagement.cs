@@ -3,10 +3,19 @@ using System.Numerics;
 namespace FdgRaylib.Rendering.MenuBackground;
 
 /// <summary>One line of fire on the menu's war table: a shooting model's base centre to a target model's.</summary>
-internal sealed record HoloShot(HoloUnit Shooter, HoloUnit Target, Vector2 From, Vector2 To);
+internal sealed record HoloShot(HoloUnit Shooter, HoloUnit Target, Vector2 From, Vector2 To)
+{
+    /// <summary>Battle time the shooting starts: once the table has faded in and both units have reached
+    /// their spots - a unit that advances moves first, then switches to shooting.</summary>
+    public float StartsAt => MathF.Max(HoloDirector.FightsFrom, MathF.Max(Shooter.ArriveAt, Target.ArriveAt));
+}
 
 /// <summary>A base-to-base measuring line and the distance it reads, in inches.</summary>
-internal sealed record HoloMeasure(HoloUnit A, HoloUnit B, Vector2 From, Vector2 To, float Inches);
+internal sealed record HoloMeasure(HoloUnit A, HoloUnit B, Vector2 From, Vector2 To, float Inches)
+{
+    /// <summary>Battle time the line starts to draw: a second after both units are standing still.</summary>
+    public float StartsAt => MathF.Max(HoloDirector.FightsFrom, MathF.Max(A.ArriveAt, B.ArriveAt)) + 1f;
+}
 
 /// <summary>
 /// What is happening on the menu's war table (#448 slice 3): who is shooting whom, which two units are
@@ -73,20 +82,20 @@ internal sealed class HoloEngagement
     /// <summary>Plans over any set of units (tests build their own; the menu passes a skirmish's).</summary>
     public static HoloEngagement Plan(IReadOnlyList<HoloUnit> units, IReadOnlyList<HoloFootprint> footprints)
     {
-        // Units that walk on along a trail are still moving when the shooting starts, so only units
-        // already in place fight (and the vehicles are kept for the measuring line).
-        var squads = units.Where(u => !u.IsVehicle && u.Trail.Count == 0).ToList();
+        // Patrollers never stop moving, so they never fight. Everyone else does - from where they end up;
+        // an advancer's shots wait until it (and its target) have arrived (HoloShot.StartsAt).
+        var squads = units.Where(u => u.Role != EHoloRole.Patrols).ToList();
 
-        // Every enemy pairing in range whose two lines of fire are both clear, nearest first; then the
-        // closest fights with a different shooter each (a unit fires at one target).
+        // Every enemy pairing in range where at least one model can see the target, nearest first; then
+        // the closest fights with a different shooter each (a unit fires at one target).
         var candidates = new List<(HoloUnit S, HoloUnit T, List<HoloShot> Lines, float Dist)>();
         foreach (HoloUnit s in squads)
         foreach (HoloUnit t in squads.Where(t => t.Side != s.Side))
         {
             float dist = Vector2.Distance(s.Centre, t.Centre);
             if (dist > MaxShotRange) continue;
-            List<HoloShot> lines = ShotLines(s, t);
-            if (lines.All(l => IsClear(l.From, l.To, footprints))) candidates.Add((s, t, lines, dist));
+            List<HoloShot> lines = ShotLines(s, t, footprints);
+            if (lines.Count > 0) candidates.Add((s, t, lines, dist));
         }
 
         var shots = new List<HoloShot>();
@@ -102,20 +111,17 @@ internal sealed class HoloEngagement
         return new HoloEngagement(shots, PlanMeasure(units, footprints, engaged));
     }
 
-    /// <summary>The two vehicles if their line is clear, else the closest clear pair of units not already
-    /// fighting; base edge to base edge, the way the rules measure.</summary>
+    /// <summary>A measuring line between two units that end up standing still (never a patroller):
+    /// preferably two not already fighting, else any; nearest clear pair first; base edge to base edge,
+    /// the way the rules measure.</summary>
     private static HoloMeasure? PlanMeasure(IReadOnlyList<HoloUnit> units, IReadOnlyList<HoloFootprint> footprints, IReadOnlyList<HoloUnit> engaged)
     {
-        var pairs = new List<(HoloUnit A, HoloUnit B)>();
-        var vehicles = units.Where(u => u.IsVehicle).ToList();
-        if (vehicles.Count(v => v.Side == 0) > 0 && vehicles.Count(v => v.Side == 1) > 0)
-            pairs.Add((vehicles.First(v => v.Side == 0), vehicles.First(v => v.Side == 1)));
-        var idle = units.Where(u => !engaged.Contains(u)).ToList();
-        pairs.AddRange(
-            from a in idle from b in idle
+        var still = units.Where(u => u.Role != EHoloRole.Patrols).ToList();
+        var pairs = (
+            from a in still from b in still
             where a.Side == 0 && b.Side == 1
-            orderby Vector2.Distance(a.Centre, b.Centre)
-            select (a, b));
+            orderby engaged.Contains(a) || engaged.Contains(b), Vector2.Distance(a.Centre, b.Centre)
+            select (a, b)).ToList();
 
         foreach (var (a, b) in pairs)
         {
@@ -133,13 +139,24 @@ internal sealed class HoloEngagement
         return new HoloMeasure(a, b, p + u * a.BaseRadius, q - u * b.BaseRadius, d - a.BaseRadius - b.BaseRadius);
     }
 
-    /// <summary>Two lines of fire: the shooter's two models nearest the target, each to one of the target's
-    /// two models nearest the shooter.</summary>
-    private static List<HoloShot> ShotLines(HoloUnit s, HoloUnit t)
+    /// <summary>
+    /// The unit's volley: EVERY living model that can see the target fires (owner, 2026-10-30 - not just
+    /// the front two), each at the nearest target model it has a clear line to. A model with no clear
+    /// line to any of them holds its fire.
+    /// </summary>
+    private static List<HoloShot> ShotLines(HoloUnit s, HoloUnit t, IReadOnlyList<HoloFootprint> footprints)
     {
-        var from = s.Alive.OrderBy(m => Vector2.DistanceSquared(m, t.Centre)).Take(2).ToList();
-        var to = t.Alive.OrderBy(m => Vector2.DistanceSquared(m, s.Centre)).Take(2).ToList();
-        return Enumerable.Range(0, 2).Select(i => new HoloShot(s, t, from[i % from.Count], to[i % to.Count])).ToList();
+        var lines = new List<HoloShot>();
+        foreach (Vector2 from in s.Alive)
+        {
+            foreach (Vector2 to in t.Alive.OrderBy(x => Vector2.DistanceSquared(x, from)))
+            {
+                if (!IsClear(from, to, footprints)) continue;
+                lines.Add(new HoloShot(s, t, from, to));
+                break;
+            }
+        }
+        return lines;
     }
 
     /// <summary>True when the segment a-b keeps at least <paramref name="pad"/> inches from every footprint

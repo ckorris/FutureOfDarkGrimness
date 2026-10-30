@@ -2,9 +2,10 @@ namespace FdgRaylib.Rendering.MenuBackground;
 
 /// <summary>
 /// The timeline of the main menu's war table (#448 slice 4). Each pairing plays one "battle" of
-/// <see cref="BattleLength"/> seconds: it flickers into being, the advancing units walk in along their
-/// trails, the fight starts, the measuring line appears once the vehicles have arrived, the camera
-/// glides in on the action and back out, and the whole thing dissolves before a new pairing is dealt.
+/// <see cref="BattleLength"/> seconds: it flickers into being, the fight starts, advancing units walk in
+/// and then join it, patrolling units keep moving throughout (see <see cref="HoloUnit.ProgressAt"/>), a
+/// measuring line appears between two units once both stand still, the camera glides in on a fight and
+/// back out, and the whole thing dissolves before a new battle is dealt.
 /// Underneath, the camera drifts slowly all the time on a much longer period, so no two battles are
 /// framed alike.
 ///
@@ -17,37 +18,13 @@ internal static class HoloDirector
     public const float FadeIn = 1f;
     public const float FadeOut = 2f;
 
-    /// <summary>Units with a trail have reached their spot by then.</summary>
-    public const float AdvanceTime = 8f;
-
-    /// <summary>Shooting, fire and the pulse start once the table has faded in.</summary>
+    /// <summary>Shooting starts once the table has faded in (and, for an advancing unit, once it has
+    /// arrived - see <see cref="HoloShot.StartsAt"/>).</summary>
     public const float FightsFrom = FadeIn;
 
-    /// <summary>The measuring line starts after the (advancing) vehicles have arrived.</summary>
-    public const float MeasureFrom = AdvanceTime + 1f;
-
-    /// <summary>Seconds for the scan line to cross the table once, short side to short side.</summary>
-    public const float SweepPeriod = 6f;
-
-    /// <summary>How far past each short edge the line starts and ends, so it slides on and off.</summary>
-    public const float SweepOvershoot = 3f;
-
-    /// <summary>
-    /// Where the scan line is along the table's long axis (inches, X), or null before the fight has
-    /// started. It runs from past the left short edge to past the right one, then starts again (owner,
-    /// 2026-10-30: a wave from one side to the other, long-wise, instead of the ripple).
-    /// </summary>
-    public static float? SweepX(float battleTime)
-    {
-        if (battleTime < FightsFrom) return null;
-        float phase = (battleTime - FightsFrom) % SweepPeriod / SweepPeriod;
-        float start = -HoloTableScene.HalfW - SweepOvershoot;
-        return start + phase * (HoloTableScene.TableW + 2f * SweepOvershoot);
-    }
-
-    /// <summary>The moment the "Still" setting shows: everyone has arrived, the fight and the measure are
-    /// on, and the camera is on the overview.</summary>
-    public const float StillMoment = 12f;
+    /// <summary>The moment the "Still" setting (and the preview's default) shows: every advancer has
+    /// arrived, the fights and the measure are on, the camera is on the overview.</summary>
+    public const float StillMoment = 13.5f;
 
     // The camera's one move per battle: overview until FocusIn, glide in, hold, glide back out.
     public const float FocusIn = 14f, FocusHeld = 18f, FocusOut = 24f, FocusBack = 28f;
@@ -65,9 +42,6 @@ internal static class HoloDirector
     /// <summary>How fully the battle is on the table, 0..1: fading in at the start, out at the end.</summary>
     public static float Presence(float battleTime) =>
         MathF.Min(Smooth(battleTime / FadeIn), Smooth((BattleLength - battleTime) / FadeOut));
-
-    /// <summary>How far along their trails the advancing units are, 0..1.</summary>
-    public static float Advance(float battleTime) => Smooth(battleTime / AdvanceTime);
 
     /// <summary>0 = whole-table overview, 1 = framed on the action.</summary>
     public static float FocusWeight(float battleTime)
