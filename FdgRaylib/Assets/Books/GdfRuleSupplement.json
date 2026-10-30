@@ -8666,4 +8666,37 @@
     "valence": "Positive",
     "description": "When a unit where most models have this rule is targeted by an enemy unit for shooting/charging, that enemy unit gets -4\"/-2\" range to a min. of 6\"."
   }
+,
+  {
+    "name": "Assault",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "enableMeleeUse"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "enableRangedUse"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Counts as both a ranged weapon and a melee weapon."
+  }
 ]
