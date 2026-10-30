@@ -1,6 +1,8 @@
 # 435 — AoF supplement sweep to 3.6 + book overrides + AoF-specific core rules
 
-**Status**: in-progress
+**Status**: done 2026-10-30 (Enhanced family -> #433, Assault -> #424, Parry -> #423; owner review asked on D2, D3,
+D7; owner notes D10). Engine commits `3e7bef04`, `094fa09a`, `a05b6f52`, `0921a0e0`, `a0594db9` (submodule
+`feature/opr-3.6`); superproject `435: AoF sweep batch 1` ... `batch 5` plus the records commit.
 **Related**: #415, #375/#376 (the 3.5 AoF rules work), #378, #381 (Retreating Strike), #422 (Brace), #423 (Parry), #431-#434, #438
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high. Run after #434 so shared names are already done.
 
@@ -60,6 +62,19 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30: **Done - coverage, verification, hand-offs.** Coverage (scratch imports in the session scratchpad
+  `435/`): all 90 entries before "Total references: 30839 / Dead: 4074 (4074 no-definition across 98 names)", after
+  "Dead: 4066 (4066 no-definition across 93 names)" = Assault 3503 + Parry 264 + Enhanced 299 refs / 91 names; AoF only
+  before "Total references: 10794 / Dead: 1160 (1160 no-definition across 65 names)", after "Dead: 1152 (1152
+  no-definition across 60 names)" = Assault 763 + Parry 252 + Enhanced 137 refs / 58 names. Shipped
+  `--rule-coverage FdgRaylib/Assets/Books` "Dead: 36 (36 no-definition across 2 names)" before and after every batch.
+  `--validate-rules GdfRuleSupplement.json AofRuleSupplement.json` "OK: 329" -> "OK: 334 definitions, no problems." (GDF
+  alone "OK: 282"; no override file left to append). Tests: engine 4085 -> 4112 passed (1 skipped), app 3326 -> 3377.
+  Headless smoke `printf "2\n2\n" | ... --headless` exit 0 with a "Game result:" line after every batch. Engine test
+  files new: `AofCommandGroup36RuleIntegrationTests`, `AofSweep36RuleIntegrationTests`, `AofSweep36Definitions`; extended:
+  `WeaponEffectAssignerTests`. App: new `AofSweep36ShippedDataTests` (61 cases); touched `GroundedAofShippedDataTests`,
+  `MeleeSlayerShippedDataTests`, `RangeConditional36ShippedDataTests` (absent override folder). No count-pinning
+  `*ShippedDataTests` changed. Hand-offs written to #433, #436, #438, #439, #442 (nothing found for #441).
 - 2026-10-30: **Batch 5 - smokes; Ethereal's "if you do" refined (engine).** The scratch smokes (below) showed the CLI
   and AI default answer to Ethereal's placement is "stay put", and the batch-2 gate (the cost's `AbilityUsed:Ethereal`
   marker) then charged -6" for a teleport that never moved anything. New catalog token `TokenType.TeleportedThisActivation`
@@ -121,9 +136,9 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
   AoF-file name a 3.6 AoF book defines now carries its book text except Retreating Strike (D9) and the dead 3.5 "AP"
   quirk (#436). Coverage after: all 90 "Dead: 4066 (4066 no-definition across 93 names)" (Assault 3503, Parry 264,
   Enhanced 299 / 91 names); AoF only "Dead: 1152 (1152 no-definition across 60 names)" (Assault 763, Parry 252, Enhanced
-  137 / 58). Tests: app `AofSweep36ShippedDataTests` +40 (21 texts + Piercing Fighter, five text-only twins, Cursed
+  137 / 58). Tests: app `AofSweep36ShippedDataTests` +35 (21 texts + Piercing Fighter, five text-only twins, Cursed
   Undead = Protected, the catalog Bane in Melee text, the three aliases, Surge on their weapons, Piercing Charge Buff,
-  every AoF grant resolves). Counts: engine 4107 (unchanged), app 3347 -> 3387.
+  every AoF grant resolves) and `RuleSupplementLintTests` +5 (the new entries). Counts: engine 4107 (unchanged), app 3347 -> 3387.
 - 2026-10-30: **Batch 2 - faction rules on existing primitives (data + an engine test).** Ossified / Warden: 3.6 "When
   units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)." - Guardian's
   (#434) unconditional shape, the 3.5 `attackedFromOverInches(9)` gate gone. Wave-Step: "you may move all models with
@@ -285,9 +300,67 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
   stays for a future book-specific text. The bundled 3.5 AoF books embed their old override definitions until #438
   re-bakes them from the 3.6 snapshots (which then need no override).
 
+## Ledger
+
+Every AoF name this sweep touched, checked or left dead. "Twin" = entry for entry another shipped rule's tested shape
+(pinned so by `AofSweep36ShippedDataTests`); every AoF-file row's 3.6 text is pinned there too, and every supplement entry
+by `RuleSupplementLintTests.EverySupplementRuleFires`.
+
+| Rule(s) | Definition | Test / tested shape / deferral |
+|---------|------------|--------------------------------|
+| Sergeant | GDF file (#434, shared) | `GdfSweep36RuleIntegrationTests.Sergeant_*`; AoF text = GDF text (`AofSweep36ShippedDataTests`) |
+| Banner | GDF file (re-authored, shared) | `AofCommandGroup36RuleIntegrationTests.Banner_*` (wound-driven, melee loser, Spell Drain, no cause) |
+| Musician | GDF file (text, shared) | `...Musician_EveryMoveAction_MovesPlusOne_Once` |
+| Great Sergeant | AoF (re-authored) | `AofSweep36RuleIntegrationTests.GreatSergeant_*` |
+| Great Banner | AoF (re-authored) | `...GreatBanner_*` (one-shot, spent by a rule-forced test - D3) |
+| Great Musician | AoF (text) | `...GreatMusician_GrantsMusicianOnce` |
+| Brace in Melee, Counter in Melee (+ Aura) | AoF / GDF (#422) | #422's tests (checked only) |
+| Parry (252 AoF refs) | none | deferred to #423 (design fork, Q11) |
+| Assault (763 AoF refs) | none | deferred to #424 (design fork, Q12) |
+| Ossified, Warden | AoF (re-authored) | twin: Guardian / catalog Fortified (`GdfSweep36RuleIntegrationTests.Guardian_*`) |
+| Wave-Step | AoF (move) | twin: Wolfborn (`ActivationMoveRuleIntegrationTests`) |
+| Ethereal | AoF (re-authored) | `AofSweep36RuleIntegrationTests.Ethereal_*` (4, through TeleportStage) |
+| Grounded Speed | AoF (terrain gate only) | `GroundedAofShippedDataTests`; `GroundedSpeedProtectionRuleIntegrationTests` |
+| Grounded Protection (+ Aura) | AoF (text) | `GroundedAofShippedDataTests`; `GroundedSpeedProtectionRuleIntegrationTests` |
+| Cursed Undead | AoF (text) | twin: catalog Protected |
+| Unmovable, Vale Oath | AoF (text) | twin: Steadfast (`ClearTokenOnRollTests`) |
+| Buccaneer | AoF (text) | twin: Precision Marksman / Targeting Visor |
+| Bestial | AoF (text) | twin: Mischievous |
+| Royal Warrior | AoF (text) | twin: Predator (#434 D7 approximation - D10) |
+| Reckless Piercing (+ Aura) | AoF (text) | #376 S4 tests (already most-models gated) |
+| Traversal, Good Fighter, Melee Evasion Buff, Takedown when Shooting, Bloodthirsty Fighter | AoF (text) | their existing #375 / #376 tests |
+| Piercing Feat, Precision Feat (+ Boosts) | AoF (text; activation-start offer kept) | existing Feat tests; deferred: needs sign-off (D7) |
+| Piercing Fighting Mark, Rapid Charge Mark, Surge Mark | AoF (text) | the mark tests (#100); the mark already waits for the next friendly attack |
+| Retreating Strike | AoF (unchanged) | `RetreatingStrike*` (#381); 3.6 text = 3.5 text (D9) |
+| AP(+1) / Bane / Unstoppable on its weapons in melee | AoF (new aliases) | twin: catalog AP(+1) / Bane / Unstoppable in melee (D8) |
+| Surge on their weapons | AoF (new alias) | catalog Surge + `isNotSpell` (D8) |
+| Piercing Charge Buff | AoF (new) | twin: Thrust in Melee Buff over Piercing Charge |
+| Piercing Fighter | GDF file (text) | its existing tests; only AoF Goblins defines it in 3.6 |
+| Bane in Melee | catalog (text) | `AofSweep36ShippedDataTests.TheCatalogBaneInMelee_CarriesThe36Text` |
+| Difficult Terrain Debuff, Fortified Growth, Melee Slayer | GDF file (AoF copies dropped, D6) | `TerrainDebuffShippedDataTests`, `GdfSweep36*.FortifiedGrowth_*`, `MeleeSlayerShippedDataTests` |
+| Defense Buff | AoF (#434's token form) | `GdfSweep36ShippedDataTests.AofDefenseBuff_*` (3.6 Human Empire text matches) |
+| Mind Control | GDF file (#434, shared) | `MindControlOncePerRoundRuleIntegrationTests`; the two AoF overrides were moot (D11) |
+| Versatile Defense (+ Aura) | GDF file (#434 interim, shared) | deferred: needs sign-off (#434 D3; AoF prints the same text) |
+| Protection Feat | GDF file (#434, shared) | deferred: needs sign-off (#434 D4; Saurians prints the same text) |
+| Spell Resistance (+ Aura), Dodge, Bravery Aura / Buff, Hazardous, Tag / Target, Rapid Rush Buff, Ravage (+ Aura), Piercing Charge (+ Aura), Piercing / Precision Marksman, Versatile Expert, Thrust in Melee family, Grounded Defense (+ Aura), Steadfast, Melee Evasion, Spell Drain, Quick Throw, Unique Hero | GDF file / catalog (shared) | #434 / #429 / #425 / #430 tests; the AoF 3.6 texts match (audit) - checked only |
+| Lucky, Destroyer, Vinci Tech, Empyrean Spirit, Angelic Blessing, Wild Veil, Royal Legion, Drakesworn | AoF (#432 / #426) | their items' tests (checked only) |
+| Override entries: Versatile Attack (Piercing / Precision) x4, Melee Slayer, Shatter, Mind Control x2 | deleted (D11) | `AofSweep36ShippedDataTests.NoPerBookOverrideShips` |
+| The 58 "Enhanced X" names (137 AoF refs) | none | deferred to #433 (design fork) |
+| Steadfast Buff, Piercing Assault Buff, Versatile Attack Buff, AP (unit-level quirk) | AoF (unused by 3.6 books) | left for #436 (no deletion here) |
+
 ## Outcome
 
-(open)
+Done 2026-10-30 on `feature/opr-3.6`. Every rule name the 41 AoF 3.6.0 snapshots reference resolves to a definition with
+its 3.6 behaviour and text, except the 58 "Enhanced X" names (#433) and the core forks Assault (#424) and Parry (#423):
+the AoF-only scratch import goes from 65 dead names (1160 refs) to 60 (1152), none of them this item's; all 90 entries
+from 98 names (4074) to 93 (4066). The AoF Command Groups are 3.6 (Banner on a new morale-test cause,
+`moraleTestFromShootingOrMelee`; Great Sergeant / Banner / Musician), Ossified / Warden / Wave-Step / Ethereal / Grounded
+Speed re-authored, the five AoF-only dead names authored, the AoF file text-parity with the 3.6 books (Retreating Strike
+excepted, D9) and disjoint from the GDF file, and no per-book override is needed any more (all six files deleted). New
+engine vocabulary, each tested with negative controls: `EMoraleTestCause` / `IHasMoraleTestCause` on the pre-morale
+context, the `moraleTestFromShootingOrMelee` condition, the `TeleportedThisActivation` token stamped by TeleportStage, and
+the AoF effect-set rows for the 3.6 Daemons book names. Open for the owner: D2, D3, D7 (review), D10 (note). Hand-offs
+recorded on #433, #436, #438, #439, #442.
 
 ## Rules for the agent (plan section 1, restated)
 

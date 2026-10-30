@@ -63,6 +63,15 @@ so trailing clauses (including "in line of sight") are silently ignored today; L
 
 ## Notes
 
+- 2026-10-30 (from #435): (1) the AoF spells' 3.6 phrases the parser emits today now resolve from the AoF file (#435 D8):
+  "AP(+1) on its weapons in melee" (Giant Tribes / Human Empire Elemental Form), "Bane on its weapons in melee" (High Elves
+  Magical Surge), "Unstoppable on its weapons in melee" (Ossified Undead Drain Spirit) - clones of the catalog's "... in
+  melee" rules - and "Surge on their weapons" (Chivalrous Kingdoms Curse of the Huntress, a mark; Surge + `isNotSpell`).
+  Emitting the canonical names instead is equally fine. (2) Vampiric Undead's Seductive Invocation reads "... If failed you
+  may move it by up to 6" in a straight line in any direction. Units may only be moved once per round in this way." but the
+  parsed spell's `triggeredMove` has `oncePerRoundKey: null` - the parser should emit a key (whether the spell shares Mind
+  Control's "Mind Control" key, i.e. one limit for the rule and the spell, is a reading call for you). (3) 38 AoF spells (29 names)
+  grant an "Enhanced X" once (#433).
 - 2026-10-30 (from #434): **names the parser may emit - both forms resolve today.** The GDF supplement now defines the
   3.6 phrases the current parser produces as exact clones of their canonical rules (#434 D5): "Unstoppable on their
   weapons when shooting" = "Unstoppable when shooting", "Shred on its weapons when shooting" = "Shred when shooting",

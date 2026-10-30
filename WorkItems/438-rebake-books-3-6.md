@@ -73,6 +73,19 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #435): the AoF re-bake must pick up: Banner's `moraleTestFromShootingOrMelee` condition (GDF file,
+  shared), Great Sergeant (AP(+2), weapon scope) and Great Banner (grants Banner), Ossified / Warden (no 9" gate), Wave-Step
+  `move: true`, Ethereal's `tokenPresent TeleportedThisActivation` gate, Grounded Speed (terrain gate only), the five new
+  AoF names ("AP(+1) / Bane / Unstoppable on its weapons in melee", "Surge on their weapons", Piercing Charge Buff) and the
+  AoF file's 3.6 texts. The AoF file no longer carries Difficult Terrain Debuff, Fortified Growth or Melee Slayer - AoF books
+  embed the GDF definitions. **No `AofBookOverrides` file exists any more** (#435 D11: every 3.5 entry was moot against the
+  3.6 books, so none was renamed to the 3.6 "Daemons of X" names); `scripts/bake-aof-books.sh` keeps the optional hook (keyed
+  by the OPR book name) and still defaults to the 3.5 snapshot folder - your generalised script should point at
+  `opr-json-snapshots-3.6.0`. Effect sets: the AoF table now has "Daemons of Change / Lust / Plague / War" (a 3.6 import of
+  those books had none); the GDF table has no rows for the 3.6 GDF renames ("Daemons of Change / Lust / Plague / War",
+  "Saurian Starhosts") or the new "Voidspace Stalkers" - a 3.6 GDF scratch import gives those books null default effect sets.
+  After the re-bake, #436 drops the AoF "Rift Daemons of X" rows; `BookRuleFireLintTests`' "Ethereal" allowlist entry stays
+  (the teleport ability still trips the lint, as in `RuleSupplementLintTests`).
 - 2026-10-30 (from #434): the bake must pick up: (1) the reposition family's `move: true` (Bounding, Dash, Nimble,
   Rapid Blink, Wolfborn) - the bundled 3.5 books embed the placement copies; (2) Regenerative Strength's 3.6 consumer (the
   3.5 "+X attacks" stage code is deleted, so the two bundled 3.5 copies place markers that never spend until re-baked,

@@ -73,6 +73,24 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Notes
 
+- 2026-10-30 (from #435): **the AoF view of your family.** The 41 AoF 3.6.0 imports leave exactly 58 Enhanced names /
+  137 refs dead (all 90 entries: 91 / 299), nothing else but Assault / Parry. AoF base rules whose shapes are now in place
+  for an Enhanced upgrade: Ossified / Warden (Guardian's unconditional AP(-1); Enhanced "AP(-2) from Ossified/Warden"),
+  Wave-Step (a move, `repositionAtActivation.move: true`; Enhanced 2D3 - #434 D8: a second D3 entry sums into the one
+  move), Vale Oath / Unmovable (Steadfast's `clearTokenOnRoll` 4+; Enhanced 3+ - #376 S2's `TokenClearRollSink` keeps the
+  best threshold, so a 3+ entry folds into one roll), Cursed Undead (Protected's 6+; Enhanced 5-6 - `ignoreWoundOnRoll`
+  folds as best), Bestial (Mischievous; Enhanced re-roll 5-6), Royal Warrior (Predator's one-extra-hit approximation of
+  "+1 attack", #434 D7 / #435 D10; Enhanced on 5-6), Buccaneer (Precision Marksman's 9" gate; Enhanced "always"), and the
+  #432 AoF rules (Lucky, Destroyer, Vinci Tech, Empyrean Spirit, Angelic Blessing, Wild Veil, Royal Legion). Book quirk:
+  Enhanced Vinci Tech's (and Enhanced Versatile Warrior's) 3.6 text says "If this model has Versatile Attack ... from
+  Versatile Attack" - read it as Vinci Tech / Versatile Warrior. 38 AoF spells (29 names) grant an Enhanced name once (e.g. Vampiric
+  Undead Vigorous Return, Chivalrous Kingdoms Great Hunt; the smokes log "Skipping unimplemented special rule 'Enhanced
+  Vale Oath' on spell 'Great Hunt'"). The AoF names: Primal Buff, Changebound (+ Aura), Cursed Undead (+ Buff),
+  Havocbound (+ Aura), Lustbound (+ Aura), Plaguebound (+ Aura), Shadowborn (+ Aura), Warbound (+ Aura), Bestial (+ Aura),
+  Ferocious (+ Aura), Angelic Blessing (+ Buff), Empyrean Spirit (+ Aura), Harassing (+ Aura), Ossified (+ Aura), Sturdy
+  (+ Aura), Wild Veil (+ Aura), Buccaneer (+ Aura), Destroyer (+ Aura), Highborn (+ Aura), Lucky (+ Aura), Royal Warrior
+  (+ Aura), Vale Oath (+ Aura), Warden (+ Aura), Wave-Step (+ Aura), Hold the Line (+ Buff), Mischievous (+ Aura), Primal,
+  Royal Legion (+ Aura), Scurry (+ Aura), Vinci Tech (+ Aura).
 - 2026-10-30 (from #434): **what is still dead is exactly your family.** A scratch import of the 49 GDF 3.6.0 books
   against the finished `GdfRuleSupplement.json` leaves 60 Enhanced names / 162 refs (all 90 entries: 91 names / 299 refs)
   and nothing else of #434's: Enhanced Bloodborn Aura 6, Darkborn Aura 6, Knightborn Aura 6, Primal Buff 6, Wolfborn Aura

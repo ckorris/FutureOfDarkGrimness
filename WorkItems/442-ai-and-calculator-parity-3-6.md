@@ -51,6 +51,14 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #435): (1) Banner now helps only a Morale Test triggered by shooting or melee (`PreMoraleTestContext.Cause`,
+  `EMoraleTestCause`); no AI / Combat Calculator code reads Banner or Courage today, but a morale estimate that adds Banner
+  should skip spell / rule-forced tests. (2) Ethereal: the AI and the CLI accept the teleport offer and answer the placement
+  with "stay put"; since #435 that costs nothing (the -6" needs `TeleportedThisActivation`, stamped only when a model moved),
+  but an AI that wants the teleport's 6" must actually place the models, and the movement budget sees the -6" only after the
+  teleport (the planner cannot price "teleport, then move 6" less" before choosing it). (3) Wave-Step now raises the
+  triggered-move request at activation start (#434's reposition family) - the AI already answers it. (4) Great Sergeant's
+  AP(+2) rides the champion's weapon copy like Sergeant's AP(+1); price it wherever CombatMath prices Sergeant.
 - 2026-10-30 (from #434): AI / calculator gaps the GDF sweep leaves: (1) Ravage is not priced by `CombatMath` at all
   (no `DealAutoWounds` reader); if you add it, use `ResolveImpactHitsStage.ChargerParticipant` (a joined hero's Ravage),
   respect the once-per-round `TokenType.StrikeDiceUsed` gate and the Fatigue condition, and price Regenerative Strength's

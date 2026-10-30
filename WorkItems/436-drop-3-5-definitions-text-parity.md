@@ -63,6 +63,36 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #435): (1) **AoF-file definitions no 3.6.0 AoF book or spell names** (not deleted - yours): Steadfast
+  Buff, Piercing Assault Buff, Versatile Attack Buff, and "AP" (the #375 C9a unit-level wargear quirk, ranged-gated
+  Save -1; only the bundled 3.5 Wood Elves book embeds it - a 3.6 book only carries weapon AP(X), which the importer reads
+  natively). (2) **AoF-removed names (census) that still have a definition**, none named by a 3.6 GDF book either unless
+  noted: Breath Attack, Casting Debuff, Courage Buff, Grounded Reinforcement Aura, Ignores Cover, Indirect when Shooting,
+  Mobile Artillery, Piercing Shooter, Quick Readjustment, Re-Position Artillery, Tear, Unique, Versatile Attack (GDF file);
+  Courage Aura, Crack, Piercing Assault (+ Aura), Piercing Hunter Aura, Resistance (+ Aura), Storm of Change / Lust /
+  Plague / War, Strafing (catalog); Shred in Melee (catalog) and Guarded (GDF file) - GDF 3.6 books still define them. Keep Courage itself
+  (Bravery Aura grants it, #434 D6). (3) **Overrides:** all six `AofBookOverrides/*.json` are deleted (every entry moot,
+  #435 D11); the bundled 3.5 AoF books keep their embedded copies until #438. `WeaponEffectAssigner`'s AoF "Rift Daemons
+  of X" rows stay beside the new "Daemons of X" rows for the bundled 3.5 books - drop them after the re-bake. (4) **Text
+  parity:** the AoF file now carries every 3.6 AoF book text except Retreating Strike (#435 D9 - its description keeps
+  #381's ruling: "or X dice in total for single-model units", "Cannot be used while Shaken"; decide whether those stay)
+  and "AP". Banner / Musician carry the AoF Core Rules PDF wording ("... triggered by shooting or melee.", "... move +1"
+  ...") rather than Army Forge's common-rules JSON ("shooting/melee", "moves") - #435 D2, owner review. AoF-defined names
+  whose GDF-file or catalog description is still a 3.5 paraphrase (3.5 text = 3.6 text): GDF file - Armor, Bounding Aura,
+  Caster Group, Casting Buff, Extended Buff Range, Furious Mark, Infiltrate, Instinctive, Melee Slayer Aura, Mischievous,
+  Precision Attacks Buff, Precision Charge Aura, Precision Fighter Aura / Buff, Precision Fighting Mark, Precision Shooter
+  Aura / Buff, Precision Shooting Mark, Predator Fighter, Primal, Quick Shot Mark, Ranged Slayer Aura, Regeneration Buff,
+  Relentless Mark, Slayer Mark, Speed Feat Aura, Spell Accumulator, Spell Conduit, Steadfast Aura, Strider Aura, Surprise
+  Attack, Swift (+ Aura), Unpredictable Fighter Mark, Versatile Defense Aura; catalog - Ambush / Evasive / Fast / Fearless
+  / Fortified / Furious / Hit & Run Fighter / Hit & Run Shooter / Melee Evasion / Melee Shrouding / Ranged Shrouding /
+  Rapid Advance / Rapid Charge / Rapid Rush / Regeneration / Relentless / Scout / Shielded / Stealth / Teleport /
+  Unpredictable Fighter / Unpredictable Shooter Aura, Crossing Attack, Deathstrike, Delayed Action, Furious Buff, Good
+  Shot, Mend, Precise, Quick, Rapid Advance / Charge / Rush, Re-Deployment, Retaliate, Unpredictable (+ Fighter /
+  Shooter), plus the core rules. Unstoppable: every GDF and AoF 3.6 book prints "This weapon ignores Regeneration, and
+  ignores all negative modifiers which are not from this model's special rules." (the catalog has the core PDF's). (5)
+  **Teleport is a behaviour gap, not only a paraphrase:** 3.6 (and 3.5) "within 3" of its position when using
+  Advance/Charge actions, or fully within 6" of its position when using Rush actions" - the catalog's Teleport is a flat
+  6" placement at action choice (Ethereal's own 3.6 text is the flat 6", #435 batch 2).
 - 2026-10-30 (from #434): (1) **Dead 3.5 names seen (no 3.6.0 GDF book names them):** "Unwieldy in melee" (kept for
   3.5 data; 3.6 grants "Unwieldy on its weapons in melee"), "Dangerous Terrain Debuff (Immediate)" (+ its Effect helper;
   the importer no longer renames to it), Courage Aura / Courage Buff (replaced by Bravery Aura / Buff - but KEEP the

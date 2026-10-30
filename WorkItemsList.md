@@ -42,7 +42,8 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [ ] 433 — "Enhanced X" family (~60 names replacing the Boost family): design fork, needs sign-off before building. ([WorkItems/433](WorkItems/433-enhanced-rule-family.md))
 - [x] 434 — GDF supplement sweep to 3.6: remaining reworded definitions, new unit/aura/buff rules, weapon-scoped grants, Voidspace Stalkers. ([WorkItems/434](WorkItems/434-gdf-supplement-3-6.md))
   Done 2026-10-30; Enhanced family -> #433; owner review asked on D2, D3, D4, D7, D12, D13.
-- [ ] 435 — AoF supplement sweep to 3.6 + book overrides (Daemons renames) + AoF core: Sergeant AP, Banner, Musician, Brace in Melee, Parry on hand weapons. ([WorkItems/435](WorkItems/435-aof-supplement-3-6.md))
+- [x] 435 — AoF supplement sweep to 3.6 + book overrides (all moot, deleted) + AoF core: Sergeant AP, Banner, Musician, Brace in Melee. ([WorkItems/435](WorkItems/435-aof-supplement-3-6.md))
+  Done 2026-10-30; Enhanced family -> #433, Parry -> #423; owner review asked on D2, D3, D7.
 - [ ] 436 — Remove dropped 3.5 definitions (catalog + supplements) and bring every kept description to 3.6 wording for the glossary. ([WorkItems/436](WorkItems/436-drop-3-5-definitions-text-parity.md))
 - [ ] 437 — Importer 3.6: snapshot shape, `OPR v3.6.0` stamp, renamed/parent books, share-link version gate, Assault weapon class. ([WorkItems/437](WorkItems/437-importer-3-6.md))
 - [ ] 438 — Re-bake all 88 books from the 3.6.0 snapshots: unified bake script, post-bake passes, effect-set keywords for new weapon names, bundle swap. ([WorkItems/438](WorkItems/438-rebake-books-3-6.md))
