@@ -46,6 +46,13 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #424): the Forge already prints an Assault weapon once, as its ranged line with "Assault" as a
+  hoverable rule segment (`5x Heavy Pistol (12\", A1, AP(1), Assault)` - pinned in `RuleTextFlowTests` /
+  `ArmyBuilderScreenTests`), and the glossary text is the 3.6 sentence once a book embeds the definition (#438). The
+  in-game surfaces changed instead: the table hover, the wound dialog and the unit picker print `12\"/melee` for a weapon
+  that is both (`WeaponStatFormatter.RangeLabel`), the melee weapon pick prints the melee line without the range, the
+  shoot panel keeps the full line. No Forge layout change was needed; if you want the Forge card to say "also melee"
+  explicitly, `WeaponRoleQueries.MeleeUseSource` gives the rule name to attribute it to.
 - 2026-10-30 (from #442): the Combat Calculator (main menu) gained a whole-inch "Charged from (in), 0 = not set"
   field in its melee row (shown while charging) and its shooting checkbox now reads "Attacker advanced (untick =
   Hold)"; a Ravage / Regenerative Strength unit gets its own pre-strike "Ravage" row. Nothing in the Forge or lobby

@@ -51,6 +51,14 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #424): the Assault half landed through the seam with one AI code change
+  (`TacticalAnalysis.RangedOutputWounds` / `MeleeOutputWounds` read `IsRanged()` / `IsMelee()`); `CombatMath.EstimateShooting`
+  and `EstimateMelee` both price an Assault pistol (pinned: 3 Heavy Pistols = 1.0 wounds as a shot at 10\" and as a swing),
+  `EnemyFacts.HasMelee` / `MacroActionGenerator`'s `CanFightInMelee` / `TacticianActionSpace` read an all-pistol unit as
+  melee-capable and shooting-capable. Pricing refinements left to you: (1) `AiUnitClassifier` ties an Assault-only unit to
+  `Shooting` (its melee and ranged scores are the same weapons; #424 D6) - decide whether a short-range (6-12\") pistol
+  unit should lean Hybrid; (2) a pistol unit now has `HasMelee` true, so the kite band keeps out of its charge reach -
+  check the bench does not over-respect 9\" pistoleers; (3) the bench was not re-run in #424.
 - 2026-10-30 (#442 batch 12 - the bench, goal item 6 / D): FdgLab `bench`, Release builds, pool of 8 armies compiled
   from the #435 3.6 scratch books (`scratchpad/442/pool/`: Wolf Brothers, Elven Jesters, Goblin Reclaimers, Alien
   Hives, Chivalrous Kingdoms, Ghostly Undead, Deep-Sea Elves, Ogres; 630-830 pts each, upgrade picks and joined heroes

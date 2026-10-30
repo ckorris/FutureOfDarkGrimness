@@ -146,6 +146,11 @@ with hand weapons parries a charge in the GUI.
 
 ## Notes
 
+- 2026-10-30 (from #424): the precedent you were pointed at exists now - `Rules/Dispatch/WeaponRoleQueries.cs` asks a
+  weapon's own rules for `Effect.EnableMeleeUse` / `EnableRangedUse` at `Lifecycle_OnCapabilityQuery` by effect type
+  (the `StrafingRules` structural read), never by the name "Assault". Parry counts "models with this rule" the same way:
+  by the attachment's effect, not `LimitedRules`'s name check. One Assault fact for Parry: the parrying unit's melee
+  weapons now include Assault pistols (`GetMeleeWeapons`), so a Parry weapon rule on a pistol would count its carrier.
 - 2026-10-30: Q11 signed off (Chris): always auto-resolve with a group-naming dice beat, no UI (a pick dialog was
   considered and withdrawn the same day), see "Signed-off design". Queued after #433.
 - 2026-10-30 (from #442): the AI / Combat Calculator half of Parry waits on this fork (Q11); nothing was built in

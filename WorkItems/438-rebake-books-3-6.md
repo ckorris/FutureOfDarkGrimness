@@ -73,6 +73,12 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #424): the re-bake needs nothing new for Assault - the supplement definition is embedded by
+  `BookRuleSupplement.Apply` like any other, and `WeaponEffectAssigner` keeps ONE key per weapon (an Assault pistol's
+  swing uses the army's melee default through `Weapon.MeleeEffectKey`, derived at load; no keyword-table entry). The
+  all-90 scratch re-import with the current supplements reads Assault 0 dead (was 3503). The shipped books' Dead 36
+  (Counter-Attack family) stays until this item. After the re-bake, run #424's GUI hand-verify: a Battle Brothers unit
+  with Heavy Pistols shoots at 9\"/12\" and then charges and strikes with the same pistols in one round.
 - 2026-10-30 (from the orchestrator, after #442): once the 88 books are re-baked, run the Strategist-vs-Tactician
   head-to-head at 2,000 points on the shipped books (recipe: #442 D11, `FdgLab bench`, same seeds both arms) and record
   the number in #191; it decides whether the Strategist leaf is re-trained on 3.6 (plan section 7, post-release

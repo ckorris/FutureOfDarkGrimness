@@ -65,6 +65,12 @@ refresh tools) so renamed books silently lose curation.
 
 ## Notes
 
+- 2026-10-30 (from #424): the Assault definition ships in `GdfRuleSupplement.json` (weapon scope, `enableMeleeUse` +
+  `enableRangedUse` at `Lifecycle_OnCapabilityQuery`), so a scratch import of a 3.6 snapshot now resolves every Assault
+  reference with NO importer change - both importers already map it to `SpecialRuleEntry_Core("Assault")` and keep one
+  entry per weapon (pinned in `Tests/AssaultImportCompileTests.cs`). Two things remain yours: (1) `OprListImporter`
+  refuses a 3.6.0 book (`OprVersionMismatchException`, "this game supports 3.5.x") - the share-link gate; the #424 pin
+  stubs a 3.5.3 book to get past it; (2) nothing in #424 touched the version stamp or the renamed/parent books.
 - 2026-10-30 (from #442): nothing for the importer from the AI side; the AI keys on rule effects, not names. If the
   importer starts emitting Assault weapons (#424 A1), see the AI notes in `WorkItems/424-assault-weapons.md`.
 - 2026-10-29: filed with the plan.

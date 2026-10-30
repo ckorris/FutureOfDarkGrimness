@@ -1,6 +1,6 @@
 # 424 — Assault weapons: one weapon counts as both ranged and melee
 
-**Status**: signed off 2026-10-30 (plan Q12; Chris): fork A1 with the name marker replaced by a capability operation, plus B1 with no per-weapon authoring. Build after #442.
+**Status**: done 2026-10-30 (built the same day the fork was signed off, plan Q12). Awaiting GUI hand-verify after the #438 re-bake; owner review asked on D2, D3.
 **Related**: #415, #209 (weapon option order), #239/#379 (effect sets), #336 (melee weapon rules display), #292 (shoot panel rules), #157 (Takedown per-shot picks), #437 (importer), #441 (Forge UI), #442 (AI/calculator)
 **Branch**: `feature/opr-3.6`. Model/effort: Fable 5.1 / xhigh. This is the most pervasive data change in 3.6.
 
@@ -163,6 +163,43 @@ absent everywhere ("Piercing Assault", "Twin Assault Blaster" are unrelated subs
 
 ## Notes
 
+- 2026-10-30 (G, acceptance): all-90 scratch re-import with the current supplements
+  (`scratchpad/424/all-after/`): Dead 563 = Parry 264 + Enhanced 299 (92 names), Assault 0 (was 3503 of 4066).
+  Shipped `--rule-coverage FdgRaylib/Assets/Books`: Dead 36 (unchanged, Counter-Attack family until #438).
+  `--validate-rules` GDF + AoF: OK, 335 definitions. Headless smokes (3.6 scratch armies via `--book-to-army`,
+  `--trace-rules`, exit 0, `Game result:` line each): Battle Brothers reordered so Assault Brothers lead (solo AI) -
+  the unit charges, "5 of 5 models in melee range", `Chose weapon: Heavy Pistol. Count: 5` in the melee, and later
+  the shoot menu lists `5x Heavy Pistol - 9", A1, AP1, Assault` with a shooter in range; Blessed Sisters (tactician AI)
+  - Constance's `Burst Blessed Flamer Pistol - 9", ..., Assault, ...` fires twice; AoF Havoc Warriors reordered so
+  Barbarian Hunters lead (solo AI) - strike-back menu `[1] 2x Javelins - A1, AP0, Assault` with the 3.6 sentence as its
+  description, `Chose weapon: Javelins. Count: 2` in melee, then `Shoot stage entered` / `Chose weapon: Javelins.
+  Count: 5`. Negative controls (each removed, pins failed, restored): the `|| grants melee use` term of `IsMelee` ->
+  17 failures across the three engine Assault fixtures; the melee label's `includeRange: false` -> 1 failure
+  (`Melee_OffersThePistol_WithoutItsRange_AndCarriesItsRules`); `RollToHitStage`'s key pick by attack kind -> 1 failure
+  (`AnAssaultPistolsSwing_EmitsTheMeleeKey_ItsShot_TheRangedKey`). Final gates: engine 4235 passed / 1 skipped (from
+  4194), app 3389 (from 3378), build 0 errors, default headless smoke exit 0.
+- 2026-10-30 (build, batches A-F; G follows): seven engine commits + their superproject bumps on `feature/opr-3.6`.
+  A: `RuleOperation.EnableMeleeUse` / `EnableRangedUse` (CapabilityOperation), `Effect.EnableMeleeUse` / `EnableRangedUse`
+  (JSON kinds `enableMeleeUse` / `enableRangedUse`), `Rules/Dispatch/WeaponRoleQueries.cs` (+ `EWeaponRoles` flags),
+  `Weapon.GrantedRoles` cached (lazy, reset on rule-list change, copied by the clone ctor), `IWeaponExtensions.IsRanged`
+  = "range > 0 or grants ranged use" / `IsMelee` = "range 0 or grants melee use", `RuleFireLint` consumes the two ops at
+  the capability hook, `Assault` appended to `GdfRuleSupplement.json` (335 definitions; AoF reads the GDF file).
+  B: `ChooseMeleeWeaponStage` labels print the melee line without the range (`GetWeaponNameAndStats(count,
+  includeRange: false)`); every other consumer already went through the two pools / the seam. C (B1):
+  `IWeapon.MeleeEffectKey`, set in `UnitData` from the army melee default, `RollToHitStage` picks by `IsMelee`.
+  D: `TacticalAnalysis.RangedOutputWounds` / `MeleeOutputWounds` read the seam (the only AI site that tested the range).
+  E: `WeaponStatFormatter.RangeLabel` ("12\"/melee" for a weapon that is both) in the table hover, the wound dialog
+  and the unit picker (`UnitOptionLabel.BuildWithRangeLabels`); `TacticalOverlayController` / `TableTooltipOverlay`
+  filter by `IsRanged()`. F: importers and compiler needed no change (pinned). Tests: engine `AssaultRuleIntegrationTests`
+  (seam), `AssaultConsumerIntegrationTests` (pools, gates, shoot-then-strike, Limited across phases, per-use rule),
+  `WeaponEffectKeyTests` (+5, B1), `AssaultAiIntegrationTests`, `CombatCalculatorTests` (+2), `AssaultImportCompileTests`;
+  app `AssaultShippedDataTests`, `AssaultLegacyArmyTests`, card/glossary/formatter/picker pins.
+- 2026-10-30 (survey corrections): the engine's split sites listed on 2026-10-29 were mostly already on the seam
+  (`GetMeleeWeapons` / `GetRangedWeapons` / `IsMelee()`), so the audit was smaller than feared: the only direct range
+  classifications were `TacticalAnalysis.cs:493/515` (AI) and the app's hover / overlay / picker labels. The rest of
+  the `RangeInches` reads are reach numbers (max range, effective-range overrides, the 18\" long-range heuristic) or
+  `WeaponFileEntry` display ("show the range when printed"), kept as they are (D9). `UnitCreationRules`, hero weapon
+  handling and `TransportUtilities` never classified by range.
 - 2026-10-30: Q12 signed off (Chris): capability-operation design + B1 without per-weapon authoring, see "Signed-off
   design". Implementation queued after #442.
 - 2026-10-30 (from #442): the AI / calculator half of Assault waits on this fork (Q12); nothing was built in #442.
@@ -181,10 +218,69 @@ absent everywhere ("Piercing Assault", "Twin Assault Blaster" are unrelated subs
 
 - D1 (signed off by Chris, 2026-10-30): the capability-operation design replaces fork A1's name marker; B1 as
   recommended, with no per-weapon effect-set authoring.
+- D2 (OWNER REVIEW): `WeaponRoleQueries` resolves a weapon's roles by a STRUCTURAL read of its own rule definitions
+  (an entry at `Lifecycle_OnCapabilityQuery` / Actor whose effect is `EnableMeleeUse` / `EnableRangedUse`), the
+  `StrafingRules` / `ChargeContactRules` shape, rather than through a `RuleEvaluator` pass: at build time there is no
+  unit, table or evaluator (the Forge card, the compiler, the importer, `UnitData`'s constructor), and the design says
+  the load-time answer is exact. Consequences, stated rather than hidden: an entry's `Condition` is not consulted (a
+  non-Always condition is granted anyway with a once-only warning), and token grants / suppression cannot reach a
+  role. It mirrors `CapabilityRuleQueries` in shape (ask for the operation type, `*Source` attribution, nothing tests
+  the name "Assault") but not in dispatch. Alternative: a stand-in `RuleInvocation` with a null bearer - rejected,
+  any effect reading its bearer would throw.
+- D3 (OWNER REVIEW): the Assault definition authors BOTH arms (`enableMeleeUse` and `enableRangedUse`) because the
+  rule says "both". Every 3.6.0 Assault weapon has a printed range, so the ranged arm restates the range for the whole
+  corpus; a hypothetical range-0 Assault weapon would be offered as a 0\" gun (no target ever in range). Alternative:
+  melee-only grant - no behavioural difference for the corpus, less literal.
+- D4: Limited on an Assault weapon is once per game regardless of phase - the per-model `LimitedSpent` token keys
+  on the weapon, so the melee stage reads the shooting stage's spend with no bridge. Pinned through the real stages.
+- D5: the role cache is a lazy memo on `Weapon` reset by `AttachRuleDefinition` / `RehydrateRules` (the
+  `ProfileKey` precedent in the same class), not a constructor computation - rules attach after construction in every
+  build path. The whole-store clone copies the resolved answer; a Newtonsoft hop rehydrates the rules then re-resolves.
+  Pinned (`RolesResolved`).
+- D6: `AiUnitClassifier` reads an Assault-only unit as both pools populated and archetype `Shooting` - its melee and
+  ranged scores are the SAME weapons, so the "melee outscores ranged" Hybrid test ties, and a tie keeps the
+  advance-and-fire policy. Pistol + sword is Hybrid. Whether a short-range pistol unit should lean Hybrid is pricing
+  work, handed to #442.
+- D7 (B1 detail): `MeleeEffectKey` is the army's melee default for a weapon with a printed range (an entry's explicit
+  `EffectSet` stays with the ranged use, as before) and coincides with `EffectKey` for a weapon with no printed range,
+  so an explicit set on a sword keeps applying to its swing. `UnitData` picks the ranged / melee DEFAULT by the printed
+  range on purpose (the keys describe the shot and the swing); it is not a classification and does not use the seam.
+- D8 (presentation): the melee weapon pick prints the melee line without the range (`Heavy Pistol - A1, AP1,
+  Assault`); the shoot panel keeps the full line with the range; the Forge card prints the weapon ONCE as its ranged
+  line with Assault among the rules (`5x Heavy Pistol (12\", A1, AP(1), Assault)` - `WeaponFileEntry` has no resolved
+  rules, and "show the range when printed" is display, not classification); the in-game hover, the wound dialog and
+  the unit picker print `12\"/melee` for a weapon that is both. No layout change anywhere.
+- D9: direct `RangeInches` reads that are REACH numbers, not classifications, stay: `PositionEncoder.CheapThreatReach`
+  / `TacticianPlaceObjectsResolver` (max range), `TacticianPlaceObjectiveResolver` (>= 18\" long-range heuristic),
+  the overlays' effective-range overrides, `Condition.TargetOverHalfWeaponRange`, `ListCompiler.SameProfile`
+  (equality), the importers' `RangeInches = w.Range ?? 0`, `WeaponEffectAssigner.Match` (authoring-time keyword
+  policy on a `WeaponFileEntry`; one key per weapon, unchanged).
+- D10: the share-link importer's 3.5.x version gate (`OprVersionMismatchException`) is #437's scope and untouched; the
+  list-import pin uses a 3.5.3 stub book so the weapon mapping is what is tested.
+- D11: no importer change - Army Forge stores Assault as an ordinary weapon special rule and both importers already
+  map it to `SpecialRuleEntry_Core("Assault")`; the 3.6 scratch import carries it as soon as the definition exists.
 
 ## Outcome
 
-(open)
+Done 2026-10-30. Assault is an ordinary supplement definition (`GdfRuleSupplement.json`, weapon scope, Positive, the
+3.6 sentence) whose two entries at `Lifecycle_OnCapabilityQuery` grant the weapon ROLES `EnableMeleeUse` /
+`EnableRangedUse`; `WeaponRoleQueries` reads them off a bare weapon's own rules, `Weapon.GrantedRoles` caches the
+answer, and the single seam `IWeaponExtensions.IsRanged` ("range > 0 or grants ranged use") / `IsMelee` ("range 0 or
+grants melee use") puts one `Weapon` object in both of a unit's pools. Every engine, AI and app consumer reaches it
+through the pools or the seam; the direct range tests that remained (two AI output estimators, the app's hover /
+overlay / picker labels) were migrated. B1: `Weapon.MeleeEffectKey` (army melee default, derived at load, no new field
+anywhere) and `RollToHitStage` picks the key by attack kind. Melee weapon picks print the melee line without the range;
+the in-game hover / wound dialog / unit picker print `12"/melee`; the Forge card prints the weapon once with Assault
+among its rules. Importers and compiler needed no change (pinned); a 3.5 army classifies exactly as before (pinned
+against the shipped Battle Brothers 2k file and the engine's example army). 41 new tests (engine 41 incl. 5 B1 + 2
+calculator; app 11). Acceptance: all-90 scratch import Assault 0 dead (Dead 563 = Parry + Enhanced), shipped Dead 36
+unchanged, three 3.6 smokes exit 0 with a pistol / javelin both fired and swung. Decisions D2-D11; owner review on D2
+(structural read instead of an evaluator pass) and D3 (Assault grants both arms). Deferred to: #437 (list importer's
+3.5.x version gate), #438 (re-bake, then the GUI hand-verify), #441 (nothing required; `MeleeUseSource` available for an
+explicit "also melee" card note), #442 (classifier tie-break and kite-band pricing for pistol units), #423 (follow
+`WeaponRoleQueries`'s by-effect read). GUI hand-verify (Chris, after #438): a Battle Brothers unit with Heavy Pistols
+shoots at 9" and then charges and strikes with the same pistols in one round; the melee menu shows the pistol without
+its range; the hover shows `9"/Melee`; the Forge card lists each pistol once.
 
 ## Rules for the agent (plan section 1, restated)
 
