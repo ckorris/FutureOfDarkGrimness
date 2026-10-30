@@ -11,6 +11,9 @@
 # Each book bakes against GDF + AoF supplements, with the per-book AofBookOverrides/<Name>.json LAST
 # so its redefinitions win (#375 C9). Output: FdgRaylib/Assets/Books/AoF-<CompactName>.fdgbook
 # (the AoF- prefix keeps the four Disciples books from colliding with their GDF namesakes).
+# #435: no override file ships since the OPR 3.6 sweep - every 3.6.0 AoF book prints the common texts the
+# supplements carry - so the folder is absent; the hook stays for a future book-specific redefinition (keyed by
+# the OPR book name, e.g. "Daemons of Lust", not the 3.5 "Rift Daemons of Lust").
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

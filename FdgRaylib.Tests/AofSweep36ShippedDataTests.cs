@@ -263,6 +263,28 @@ public class AofSweep36ShippedDataTests
         }
     }
 
+    // --- per-book overrides --------------------------------------------------------------------------------------
+
+    [Test]
+    public void NoPerBookOverrideShips()
+    {
+        // Every 3.5 entry was moot in 3.6: Versatile Attack's helpers (no 3.6 AoF book names Versatile Attack; the four
+        // Disciples books took Versatile Expert), Lust Disciples' Melee Slayer / Shatter (common text / not named) and
+        // the Mind Control of Rift Daemons of Lust and Vampiric Undead (the common 3.6 text, once per round).
+        string overrides = Path.Combine(BooksDirectory, "AofBookOverrides");
+        Assert.That(Directory.Exists(overrides) ? Directory.EnumerateFiles(overrides, "*.json") : Array.Empty<string>(),
+            Is.Empty);
+    }
+
+    [Test]
+    public void TheFormerlyOverriddenMindControl_IsThe36OncePerRoundMove()
+    {
+        // Daemons of Lust / Vampiric Undead bake against the merged universe: the GDF file's 3.6 Mind Control.
+        Effect effect = Shipped("Mind Control").Activated.Single().Effect;
+        Assert.That(((Effect.TriggeredMove)((Effect.MoraleTestThen)effect).OnFailure).OncePerRoundKey,
+            Is.EqualTo("Mind Control"));
+    }
+
     [Test]
     public void TheAofFile_ShadowsNoGdfDefinition()
     {

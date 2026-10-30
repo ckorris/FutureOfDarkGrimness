@@ -232,7 +232,10 @@ public class RangeConditional36ShippedDataTests
     {
         yield return Path.Combine(BooksDirectory, Gdf);
         yield return Path.Combine(BooksDirectory, Aof);
-        foreach (string file in Directory.EnumerateFiles(Path.Combine(BooksDirectory, "AofBookOverrides"), "*.json"))
+        // #435: no per-book override ships since the 3.6 sweep (every entry was moot), so the folder may be absent.
+        string overrides = Path.Combine(BooksDirectory, "AofBookOverrides");
+        if (!Directory.Exists(overrides)) yield break;
+        foreach (string file in Directory.EnumerateFiles(overrides, "*.json"))
             yield return file;
     }
 

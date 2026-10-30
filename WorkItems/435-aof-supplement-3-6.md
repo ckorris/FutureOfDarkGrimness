@@ -60,6 +60,24 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30: **Batch 4 - the per-book overrides are all moot in 3.6; the 3.6 Daemons book names (engine table).** Every
+  entry of the six `AofBookOverrides/*.json` re-checked against its 3.6.0 book: Change / Lust / Plague / War Disciples'
+  "Versatile Attack (Piercing)" / "(Precision)" - no 3.6 AoF book names Versatile Attack (census: removed; the four books
+  took Versatile Expert, whose own helpers live in the GDF file); Lust Disciples' Melee Slayer (3.6 prints the common
+  text) and Shatter (not in the 3.6 book; Kingdom of Angels / Ossified Undead print the GDF 3.6 text); Rift Daemons of
+  Lust's and Vampiric Undead's Mind Control (3.6 prints the common text, once-per-round clause included). Nothing is
+  left to override, so the six files are deleted (`git rm`) and the folder with them (D11) - which also settles the
+  rename: renaming "Rift Daemons of Lust.json" to "Daemons of Lust.json" would have made its 3.5 Mind Control (no
+  once-per-round key) shadow the 3.6 one on every 3.6 import. The mechanism stays (bake script, scratch import and the
+  three app tests tolerate an absent folder; `RangeConditional36ShippedDataTests` now checks). Engine:
+  `WeaponEffectAssigner`'s AoF table gains "Daemons of Change / Lust / Plague / War" (the 3.6 Faction strings; a 3.6
+  import of those books had no default effect sets), the "Rift Daemons of X" rows kept for the bundled 3.5 books until
+  #438. Scratch import after (all 90, the same supplements): unchanged "Dead: 4066 (4066 no-definition across 93 names)";
+  the 3.6 Daemons of Lust and Vampiric Undead books embed the GDF Mind Control with `oncePerRoundKey "Mind Control"`, and
+  the four Daemons books carry their effect sets. Tests: engine `WeaponEffectAssignerTests` +4 (each 3.6 Daemons name
+  has the Rift row's sets); app `AofSweep36ShippedDataTests` +2 (no override ships; Mind Control in the merged universe
+  is the 3.6 once-per-round move), minus the 12 `RuleSupplementLintTests` cases of the deleted entries. Counts: engine
+  4107 -> 4111, app 3387 -> 3377.
 - 2026-10-30: **Batch 3 - the five dead AoF names, 3.6 texts (data + a catalog text).** New in the AoF file (AoF-only
   names): the spell-phrase aliases "AP(+1) on its weapons in melee" (Giant Tribes / Human Empire Elemental Form), "Bane
   on its weapons in melee" (High Elves Magical Surge), "Unstoppable on its weapons in melee" (Ossified Undead Drain
@@ -235,6 +253,10 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
   hit when attacking, this model may roll +1 attack with that weapon" is #434 D7's family (Predator, Bloodborn, Primal,
   Clan Warrior); authored as Predator's entries (one extra hit on a 6) with the 3.6 text. A true bonus attack needs a
   hit-face `AddBonusAttack` sibling (pre-existing gap, #434 D7).
+- **D11 - No per-book override ships (2026-10-30).** All 14 entries across the six files were moot against the 3.6.0
+  books (Notes, batch 4), so the files are deleted rather than renamed; the `AofBookOverrides/<OPR book name>.json` hook
+  stays for a future book-specific text. The bundled 3.5 AoF books embed their old override definitions until #438
+  re-bakes them from the 3.6 snapshots (which then need no override).
 
 ## Outcome
 
