@@ -4790,7 +4790,8 @@
           "distance": {
             "kind": "d3"
           },
-          "plusInches": 0
+          "plusInches": 0,
+          "move": true
         },
         "lifetime": "ThisActivation",
         "seat": "Actor"
@@ -4800,7 +4801,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When this unit is activated, it may place all its models anywhere fully within D3 inches of their position."
+    "description": "When this unit is activated, you may move all models with this rule in it by up to D3\"."
   },
   {
     "name": "Nimble",
@@ -4815,7 +4816,8 @@
           "distance": {
             "kind": "d3"
           },
-          "plusInches": 0
+          "plusInches": 0,
+          "move": true
         },
         "lifetime": "ThisActivation",
         "seat": "Actor"
@@ -4840,7 +4842,8 @@
           "distance": {
             "kind": "d3"
           },
-          "plusInches": 0
+          "plusInches": 0,
+          "move": true
         },
         "lifetime": "ThisActivation",
         "seat": "Actor"
@@ -4850,7 +4853,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When this unit is activated, it may place all its models anywhere fully within D3 inches of their position."
+    "description": "When this unit is activated, you may move all models with this rule in it by up to D3\"."
   },
   {
     "name": "Bounding",
@@ -4865,7 +4868,8 @@
           "distance": {
             "kind": "d3"
           },
-          "plusInches": 1
+          "plusInches": 1,
+          "move": true
         },
         "lifetime": "ThisActivation",
         "seat": "Actor"
@@ -4875,7 +4879,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When this unit is activated, it may place all its models anywhere fully within D3+1 inches of their position."
+    "description": "When this unit is activated, you may move all models with this rule in it by up to D3+1\"."
   },
   {
     "name": "Bounding Aura",
@@ -7048,17 +7052,37 @@
     "activated": [
       {
         "triggerHook": "Activation_OnEndOfActivation",
-        "cost": { "kind": "oncePerRound" },
-        "targetSelector": { "rangeInches": 0, "minCount": 1, "maxCount": 1, "targetAffinity": "Self", "requireLineOfSight": false, "requiredToken": null, "singleModel": false, "requiredRule": null },
-        "effect": { "kind": "repositionAtActivation", "distance": { "kind": "d3" }, "plusInches": 1 },
-        "availableWhen": { "kind": "mostModelsHaveThisRule" },
+        "cost": {
+          "kind": "oncePerRound"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "repositionAtActivation",
+          "distance": {
+            "kind": "d3"
+          },
+          "plusInches": 1,
+          "move": true
+        },
+        "availableWhen": {
+          "kind": "mostModelsHaveThisRule"
+        },
         "label": "Dash"
       }
     ],
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per round, when a unit where all models have this rule ends its activation, it may place all its models anywhere fully within D3+1 inches of their position."
+    "description": "Once per round, at the end of this unit's activation, you may move all models with this rule in it by up to D3+1\"."
   },
   {
     "name": "Dash Aura",

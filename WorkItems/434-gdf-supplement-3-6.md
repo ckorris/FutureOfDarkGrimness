@@ -66,6 +66,26 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30: **Batch 2 - the activation-time reposition family is a real move (engine).** 3.6 Bounding / Dash "you may
+  move all models with this rule in it by up to D3+1"", Nimble / Rapid Blink / Wolfborn "by up to D3"" (3.5: "place ...
+  anywhere fully within"). `Effect.RepositionAtActivation` gained `Move` (JSON `move`, default false - an old book or
+  saved list parses to the 3.5 placement); the op `RepositionModels` carries `AsMove`; `RepositionPlacement.
+  OfferFromOperations` turns a fold containing a move into ONE optional triggered move for the summed distance through
+  `GameOperationServices.MoveUnit` - the movement request the post-combat family (Harassing / Hit & Run) already raises,
+  so terrain, other units, coherency and the Dangerous terrain test apply, and Cancel / an over-budget path declines.
+  Both folding stages (ActivationStartStage, ReconcileEndOfActivationStage for Dash) needed no change; Dash keeps its
+  "no Yes/No in front of a cancellable reposition" (`IsCancellablePlacement` covers the move form). The supplement's
+  Bounding, Rapid Blink, Wolfborn, Nimble and Dash carry `move: true` and the 3.6 text. No resolver changed: CLI, GUI and
+  AI already answer that movement request (GUI glance below). Tests: engine `ActivationMoveRuleIntegrationTests` (8:
+  move not placement, budget D3(+1), over-budget path declined, cancel, the placement form unchanged, a move + placement
+  fold sums into one move, Dash at activation end with no Yes/No, JSON round trip + legacy parse, Describe); app
+  `GdfSweep36ShippedDataTests` +9 (the family's shapes and texts). Negative control: the fold's move branch disabled
+  fails 5 of the 8. Headless: a 3.6 Wolf Brothers scratch army (`--import-opr` + `--book-to-army`, `--trace-rules`,
+  seed 7) exits 0 and logs "Wolf Master Destroyer's Wolfborn at Activation_OnActivationStart/Actor: fired ->
+  RepositionModels" / "Wolf Master Destroyer may move up to 3"." Counts: engine 4041 -> 4049, app 3255 -> 3264.
+  **GUI glance (Chris):** a Wolfborn / Bounding unit's activation now opens the ordinary move tool with one ring of the
+  rolled D3(+1)" instead of the "Repositioning" placement panel; Cancel declines.
+
 - 2026-10-30: **Batch 1 - new names and re-authors on existing primitives (data + tests, no engine code).**
   - **Coverage baseline (scratch import of the 49 GDF 3.6.0 snapshots against HEAD's `GdfRuleSupplement.json`,
     `--rule-coverage`):** "Total references: 20045 / Dead: 3163 (3163 no-definition across 92 names)": Enhanced 162 refs

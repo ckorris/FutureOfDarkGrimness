@@ -109,6 +109,10 @@ public class GdfSweep36ShippedDataTests
         yield return new TestCaseData("Nimble", "When this unit is activated, you may move all models with this rule in it by up to D3\".").SetArgDisplayNames("Nimble");
         yield return new TestCaseData("Vicious", "When attacking, targets must re-roll unmodified Defense results of 6 when blocking hits from this model's weapons.").SetArgDisplayNames("Vicious");
         yield return new TestCaseData("Infiltrating Precision Strike", "Counts as having Infiltrate, and gets +1 to hit rolls in melee on the round in which it deploys via this rule.").SetArgDisplayNames("Infiltrating Precision Strike");
+        yield return new TestCaseData("Bounding", "When this unit is activated, you may move all models with this rule in it by up to D3+1\".").SetArgDisplayNames("Bounding");
+        yield return new TestCaseData("Dash", "Once per round, at the end of this unit's activation, you may move all models with this rule in it by up to D3+1\".").SetArgDisplayNames("Dash");
+        yield return new TestCaseData("Rapid Blink", "When this unit is activated, you may move all models with this rule in it by up to D3\".").SetArgDisplayNames("Rapid Blink");
+        yield return new TestCaseData("Wolfborn", "When this unit is activated, you may move all models with this rule in it by up to D3\".").SetArgDisplayNames("Wolfborn");
     }
 
     [TestCaseSource(nameof(Texts))]
@@ -118,6 +122,27 @@ public class GdfSweep36ShippedDataTests
     }
 
     // --- the new / re-authored shapes ----------------------------------------------------------------------------
+
+    // 3.6: "you may MOVE all models with this rule in it by up to D3(+1)"" - the move form of the activation reposition.
+    [TestCase("Bounding", 1)]
+    [TestCase("Rapid Blink", 0)]
+    [TestCase("Wolfborn", 0)]
+    [TestCase("Nimble", 0)]
+    public void TheActivationRepositionFamily_IsAMove(string name, int plusInches)
+    {
+        Assert.That(Shipped(name).Passive.Single(), Is.EqualTo(new HookEntry(EHookID.Activation_OnActivationStart,
+            MostModels, new Effect.RepositionAtActivation(new DiceExpression.D3(), plusInches, Move: true),
+            ELifetime.ThisActivation)));
+    }
+
+    [Test]
+    public void Dash_IsTheEndOfActivationMove()
+    {
+        ActivatedAbility dash = Shipped("Dash").Activated.Single();
+        Assert.That(dash.TriggerHook, Is.EqualTo(EHookID.Activation_OnEndOfActivation));
+        Assert.That(dash.Cost, Is.InstanceOf<Cost.OncePerRound>());
+        Assert.That(dash.Effect, Is.EqualTo(new Effect.RepositionAtActivation(new DiceExpression.D3(), 1, Move: true)));
+    }
 
     [Test]
     public void SpellResistance_IsTheTwoArmWoundIgnore_WithNoRangeGate()
