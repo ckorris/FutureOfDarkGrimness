@@ -795,3 +795,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `origin/master` at `c5c7ebf`: index + archive max **445** (the 415-445 block above), no `44x` branch on either
 > remote. **446 = units activating in Dangerous terrain take the test** (surfaced by #420). Reserved on `master`
 > alongside the block; the detail file lives on `feature/opr-3.6`.
+
+> **2026-10-29 - number 447 filed clean (OPR 3.6 upgrade sub-item).** `git fetch origin` before filing, from
+> `origin/master` at `19b1f9a`: index + archive max **446**, no `44x` branch on either remote beyond the upgrade's.
+> **447 = Impact(X) rolled per unit instead of per model** (surfaced by #422). Reserved on `master`; detail file on
+> `feature/opr-3.6`.
