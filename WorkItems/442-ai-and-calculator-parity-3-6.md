@@ -51,6 +51,24 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 2 - goal item 5, Versatile picks): new `TacticianAbilityEffectResolver` answers the
+  activation-start "pick one effect" (Versatile Attack / Warrior / Expert, Watchborn, Vinci Tech) by pricing each
+  option's helper rule against the best target the unit can shoot (advancing if it must) or charge this activation;
+  solo's first option otherwise (D2). Pricing is exact by construction: `CombatMath.EstimateShooting / EstimateMelee /
+  EstimateVolley` take an optional hypothetical attacker rule, carried on a rule-only stand-in weapon added as an extra
+  Actor participant of the same unit (the evaluator's per-event dedup keeps the unit's own rules firing once), and the
+  helper definitions come from a new `TacticianRuleLookup` (core catalog + every army's persisted rule data - what the
+  game's own resolver is built from). Pins: `CombatMathPinTests.HypotheticalRule_PricesExactlyLikeTheGrantedRule`
+  (x4: Versatile Warrior's Piercing / Precision helpers at 10" and 8", engine stages with the helper attached vs the
+  estimate on a bare twin) + the melee no-leak case; `TacticianAbilityEffectResolverTests` (7: AP(+1) into Defense 2+,
+  +1 to hit for Quality 5+ into Defense 6+ - options ordered so the old first-option answer fails both - no target,
+  wrong bearer, and the #066 legality case). Negative control: with the carrier dropped inside `EstimateVolleyCore`, 4
+  of those fail (both 10" pins, both pick tests). Smoke (Wolf Brothers vs Blessed Sisters, tactician mirror): the log
+  narrates `pick Versatile Expert for ... -> AP(+1) (AP(+1)=0.125, +1 to hit=0.083)`. Known, pre-existing, not 3.6:
+  after the pick the Tactician's bare evaluator cannot read the GRANTED helper (no rule resolver - the #191 gap), so
+  its target choice later in the activation prices the attack without the pick (C, deferred: giving the planner's
+  evaluator the `TacticianRuleLookup` resolver would price every aura and buff, a behaviour change worth its own
+  bench).
 - 2026-10-30 (#442 batch 1 - legality, A): 3.6 legality smokes. 14 scratch armies compiled from the #435 scratch books
   (`scratchpad/442/armies/`, built with a throwaway BuilderList compiler so upgrade picks and joined heroes are in:
   Wolf Brothers, Elven Jesters, Goblin Reclaimers (Hazardous picks), Blessed Sisters (Precision Target, Spell Drain),
@@ -220,6 +238,12 @@ with no illegal-action retries in the log.
   either throws (the game faults) or, for an OPTIONAL triggered move, is silently treated as a decline
   (`GameOperationServices.MoveUnit`, with a "resolver path invalid" debug line). So the gate counts faults, that debug
   line, and the stages' "re-prompting" lines; G3 solo-fallbacks are legal and reported separately as a rate.
+- **D2 - the Versatile pick's currency (2026-10-30).** Each option is worth the best single-target value fraction
+  (expected wounds / remaining wounds x UnitValue, the planner's `ValueFraction`) the unit can deal this activation
+  with the helper hypothetically granted: a shot from here, or after an Advance when out of range, and a charge when
+  inside its threat reach. The max over targets, not a sum: the unit attacks one target. Ties (within 0.0001) keep
+  the authored first option, so Versatile Reach / Versatile Defense, whose helpers never change an attack estimate at a
+  fixed distance, behave exactly as before.
 
 ## Outcome
 
