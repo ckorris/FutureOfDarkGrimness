@@ -243,8 +243,8 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 420 | Dangerous terrain dice = wounds to destroy the unit | 2 | - | S | medium | done 2026-10-29 (open: D5 "activates in it") |
 | 421 | Hero morale: Tough(9+) 6" Quality aura; not-Shaken gate | 2 | #428 | O | high | todo |
 | 422 | Impact before attacks + Fatigue gate; Counter split; new Brace(X) | 2 | - | O | high | done 2026-10-29 (awaiting GUI hand-verify; owner: D1, D4, D8) |
-| 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | F | xhigh | todo |
-| 424 | Assault weapons count as ranged and melee | 2 | - | F | xhigh | todo |
+| 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | F | xhigh | todo (fork written up 2026-10-29; Q11 pending) |
+| 424 | Assault weapons count as ranged and melee | 2 | - | F | xhigh | todo (fork written up 2026-10-29; Q12 pending) |
 | 425 | Cumbersome; Artillery and Indirect 3.6; Quick Throw | 2 | - | O | medium | todo |
 | 426 | Deployment distances: Scout, Vanguard, Fanatic, Reinforcement, Ambush objectives | 2 | - | O | medium | todo |
 | 427 | Core small batch: Unstoppable, Aircraft, Flying, Transport contact, Spell Amplifier, Immobile | 2 | - | S | medium | done 2026-10-29 (owner review: D1, D2, D3, D5, D6) |
@@ -303,6 +303,15 @@ and remain open for his review; each item file lists its own.
   its own item above #445 once Q1 is settled (so the number is reserved on master too), implement after phase 2.
 - **Q9 Parallel sessions.** How many sessions do you want running at once on phase 2/3? The plan assumes up
   to three in parallel (one per independent item), each on its own files.
+
+- **Q11 Parry (#423) design fork - PENDING.** Written up in `WorkItems/423-parry.md` ("The fork"). Default:
+  A1 (auto-resolve the "defender picks which" because hits in one swing differ only by save threshold, so
+  no new request/resolvers) + B1 (one Parry dice budget per enemy melee attack, not per weapon swing);
+  Impact hits parryable. Nothing is built until you answer.
+- **Q12 Assault (#424) design fork - PENDING.** Written up in `WorkItems/424-assault-weapons.md` ("The
+  fork"). Default: A1 (Assault is a weapon-scoped marker rule and `IsMelee` becomes "range 0 or Assault",
+  one weapon object in both lists, every direct range test migrated to the seam) + B1 (two presentation
+  effect keys resolved at load). Gates #437/#438. Nothing is built until you answer.
 
 ---
 

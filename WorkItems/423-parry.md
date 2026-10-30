@@ -1,6 +1,6 @@
 # 423 — Parry(X): new melee hit-ignore step with a defender pick
 
-**Status**: todo
+**Status**: todo (design fork written up 2026-10-29; pending Chris's sign-off, plan Q11)
 **Related**: #415, #042 (rules architecture), #286 (assign-wounds dialog, nearest GUI pattern), #435 (AoF hand weapons carry Parry), #442
 **Branch**: `feature/opr-3.6`. Model/effort: Fable 5.1 / xhigh. Read `docs/ResolverGuide.md` before touching resolvers.
 
@@ -33,6 +33,69 @@ text says "when this unit takes hits in melee", so Impact hits ARE parryable; re
    request appears only for mixed hits; strike-back path; histogram mode run.
 4. Presentation: a dice beat "Parry" with the ignored count; combat calculator (#442) expected-hit reduction.
 
+## The fork (written up 2026-10-29; pending Chris's sign-off, nothing built)
+
+Facts from the 3.6.0 snapshots and the engine survey that shape the choice:
+
+- Parry is weapon-scoped everywhere: 254 weapon references in 35 AoF books and the 4 GDF Daemons books
+  (Parry(1) x101, Parry(3) x151, Parry(6) x2). No unit-scoped Parry exists, no unit carries two Parry
+  weapons, and no model mixes ratings, so "X per model with this rule" never has to add or choose.
+- Inside one melee swing the hits differ in exactly one way: their save threshold. `PerHitApSplitter`
+  peels the Rending/Crack-style natural-6 group off the base-AP group; Blast overflow and Furious-style
+  extra hits share the base threshold; `SuccessfulHitInfo` carries nothing else per hit (`SaveModifier`
+  + presentational `Source`). Melee weapons in 3.6.0 base units that create a second group: Rending
+  (112). Bane (3.6: "ignores Regeneration ... re-roll unmodified Defense results of 6") is weapon-level,
+  so it never splits a volley.
+- Pipeline: `SwingMeleeWeaponStage` runs buildTargetList -> determineHitRollNeeded -> rollToHit ->
+  determineSaveRollsNeeded -> rollToSave -> assignWounds -> applyWounds, once per weapon profile the
+  attacker swings (`ChooseMeleeWeaponStage` / `DetermineCanKeepSwingingStage` loop). Impact hits enter the
+  same save chain from `ResolveImpactHitsStage` (starts at determineSaveRollsNeeded). A Parry step sits
+  between rollToHit and determineSaveRollsNeeded on the Subject seat and edits
+  `RollToHitResults.SuccessfulHitList`.
+
+### Fork A - the defender's pick
+
+- **A1 (recommended): auto-resolve, no new request.** Because hits differ only by save threshold,
+  ignoring the highest-threshold hit first is strictly better for the defender; there is no second
+  dimension to trade off, so a pick dialog would have one right answer. The engine removes hits from the
+  worst group first and the dice beat reads "Parry: 2 of 5 hits ignored (Rending hits first)". Zero new
+  resolvers, no network catalogue entry, nothing for the AI to decide. Revisit the day a per-hit
+  dimension other than save threshold exists (none is planned in 3.6).
+- **A2: full defender pick** as this file's "What changes" first wrote it: a `ChooseParriedHitsRequest`,
+  CLI + GUI + AI resolvers, serialization test, `docs/ResolverGuide.md` inventory row. About a day of
+  work for a choice the player can never get wrong; keeps the rule's "(defender picks which)" visible as a
+  UI moment.
+- Recommendation: **A1**, with the ruling recorded in Decisions so the text's "defender picks" is
+  accounted for.
+
+### Fork B - the dice budget: per enemy attack or per swing
+
+- **B1 (recommended): one budget per enemy melee attack.** X x (living Parry carriers when the first
+  hits land), spent across every swing of that attack, capped by hits as they arrive ("up to as many dice
+  as hits taken"). OPR resolves all of a unit's melee attacks together, so one Parry roll per attack is the
+  table reading. A strike-back is a new attack (roles flip), so the original attacker's Parry gets its own
+  budget then. State: a counter on `ICombatActionContext`, which already lives per attack.
+- **B2: per swing.** Each weapon profile's volley gets a fresh min(X x carriers, hits) roll. No cross-swing
+  state, but a two-profile attacker hands the defender twice the Parry dice.
+- Recommendation: **B1**.
+
+### Rulings to pin as D entries when built
+
+- Impact hits ARE parryable ("takes hits in melee"; they come through the same save chain). Ravage deals
+  wounds, not hits, so it is not.
+- Carriers = living models with at least one Parry weapon at the moment the hits land; a model with two
+  Parry weapons would use the highest X (no such unit exists in 3.6.0).
+- Parry dice are the defender's own roll, not hit rolls, so #418's fatigued-6 gate does not touch them.
+- Catalog entry `Parry` with `engineArgumentCount 1`, weapon scope (plus unit scope for generality);
+  carrier detection by name like `LimitedRules` so an army's embedded copy is recognised.
+- Combat Calculator and Tactician: expected-hit reduction = sum over hits of P(6+) with the min() cap;
+  handed to #442 with the integration test's numbers.
+
+### Hand-verify (Chris, GUI)
+
+An AoF infantry unit with Hand Weapons (Parry(1)) is charged; the dice beat shows the Parry roll and the
+ignored hits, and the save roll shows fewer dice than hits.
+
 ## Acceptance
 
 Tests green; network round-trip test for the new request green; hand-verify (Chris): an AoF infantry unit
@@ -54,6 +117,7 @@ with hand weapons parries a charge in the GUI.
 
 ## Notes
 
+- 2026-10-29: fork options written up ("The fork" above); nothing built until sign-off (plan Q11).
 - 2026-10-29: filed with the plan.
 
 ## Decisions
