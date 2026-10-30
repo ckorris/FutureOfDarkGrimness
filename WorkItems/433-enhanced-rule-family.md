@@ -1,6 +1,6 @@
 # 433 — "Enhanced X" family (~60 names replacing the Boost family) - design fork
 
-**Status**: todo (DESIGN FORK: present options + recommendation, get Chris's sign-off, then build)
+**Status**: signed off 2026-10-30 (plan Q6; Chris): Option B everywhere (additive deltas, keep-best thresholds, complementary arms); Option A not used; C rejected. Build after #424.
 **Related**: #415, #432 (the base rules Enhanced lifts), #197, #434/#435
 **Branch**: `feature/opr-3.6`. Model/effort: Fable 5.1 / xhigh.
 
@@ -34,7 +34,36 @@ only <base parameter>)". Representative 3.6 texts:
 
 Every Enhanced rule is inert unless the bearer (or most models, for unit-gated bases) also has X.
 
-## The fork (write both up with examples from the catalog before choosing)
+## Signed-off design (2026-10-30, Chris)
+
+- Chris accepted the mixed A/B recommendation and asked whether Reliable sets a "replace the value, then apply
+  modifiers" precedent that would avoid A. It does: Reliable is `Effect.QualityFloor(2)` at the hit-roll modifier hook,
+  "before other modifiers" (Reliable + a -1 = 3+). The same keep-best-then-modifiers shape is already what the threshold
+  sinks do (`TokenClearRollSink` keeps the best clear threshold; `ignoreWoundOnRoll` folds as best; range ops sum with
+  the largest floor). So every threshold family is a B entry with the better value, folded as best, and ordinary
+  modifiers still apply after the fold. Pin that ordering for one family (an Enhanced Steadfast unit with a -1 to its
+  roll still needs 4+).
+- The "always ... (instead of only when over 9"/6")" families use B's COMPLEMENTARY ARM: the same effect gated on
+  `Not(attackedFromOver {9, 6})` / `Not(attackingFromOver ...)` beside the base's own gate. The base definition is never
+  edited (A's `Not(HasRule "Enhanced X")` on the base is what made A brittle), and the two gates are disjoint, so the
+  pair cannot stack by construction.
+- The "5-6 instead of 6" extra-attack families are a second entry on the natural 5, gated on a SUCCESSFUL hit
+  (#418 D2: read `IHasUnmodifiedHitRolls.SpecialRuleHitRolls`, never the raw roll); a Fatigued Enhanced unit gets
+  nothing from 5s or 6s (pin it). The Bloodborn family's one-extra-hit approximation of "+1 attack" (#434 D7) is
+  inherited; building a bonus-attack primitive is a separate OWNER REVIEW decision, not part of this item.
+- The Defense re-roll 5-6 family (Mischievous / Scrapper / Vicious / Bestial) needs the re-roll op to take a face set
+  or a threshold; a second entry "re-roll successful unmodified 5" is the B shape.
+- Movement / AP / range / dice-count / move-distance families: a second delta entry exactly as the #432 and #434 notes
+  describe (ranges and movement sum, reposition D3 entries sum into one move, `reduceArmorPenetration 1` twice).
+- Every Enhanced rule stays inert without X: condition `HasRule(X)` (unit-gated bases: most models) on every entry.
+- Re-establish the no-stack guard that #432 deleted with the Boost family (`BoostRuleCompositionTests`): for every
+  family shape, base + Enhanced applies exactly the Enhanced value once.
+- Aura and Buff variants follow the supplement's existing `aura` / `addRule ... NextTrigger` grant shapes; the LAT-1
+  arity gate in `RuleEvaluator.CollectGrantedRules` must be checked for any Enhanced name that carries an argument.
+- Acceptance unchanged: the family's 91 names / 299 refs resolve (scratch 90-book `--rule-coverage` 0 for the family),
+  one integration test per family shape plus the no-stack test, Aura and Buff grant.
+
+## The fork (written up 2026-10-29; decided above)
 
 - **Option A - per-rule redefinition.** Each `Enhanced X` is authored as a full definition that carries the
   upgraded effect and a condition `HasRule(X)`, while X's own definition gets `Not(HasRule("Enhanced X"))`
@@ -73,6 +102,7 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Notes
 
+- 2026-10-30: Q6 signed off (Chris): Option B everywhere, see "Signed-off design". Queued after #424.
 - 2026-10-30 (from #442): AI / calculator notes for whichever option is chosen (Q6); nothing was built in #442.
   (1) `CombatMath` prices every rule through the evaluator, so an Enhanced variant authored as DATA (its own
   definition, or a parameterised base rule) prices for the AI and the calculator with no AI change; a per-name engine
@@ -149,7 +179,8 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Decisions
 
-(fork pending)
+- D1 (signed off by Chris, 2026-10-30): Option B for every family, complementary arm for the "always" families;
+  Option A dropped (base rules never edited); Option C rejected. Reliable's `QualityFloor` is the ordering precedent.
 
 ## Outcome
 

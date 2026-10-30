@@ -1,6 +1,6 @@
 # 423 — Parry(X): new melee hit-ignore step with a defender pick
 
-**Status**: todo (design fork written up 2026-10-29; pending Chris's sign-off, plan Q11)
+**Status**: signed off 2026-10-30 (plan Q11; Chris): always auto-resolve (worst hits first), NO new request or UI; Parry is a visible dice beat that names the parried groups; B1 budget. Build after #433.
 **Related**: #415, #042 (rules architecture), #286 (assign-wounds dialog, nearest GUI pattern), #435 (AoF hand weapons carry Parry), #442
 **Branch**: `feature/opr-3.6`. Model/effort: Fable 5.1 / xhigh. Read `docs/ResolverGuide.md` before touching resolvers.
 
@@ -18,7 +18,7 @@ all equivalent and otherwise auto-resolves; works for strike-backs and Counter s
 unit takes in melee); not against Impact hits? - Impact hits are hits taken in melee during a charge: the
 text says "when this unit takes hits in melee", so Impact hits ARE parryable; record the ruling in Decisions.
 
-## What changes
+## What changes (as first written; items 1-2's request / resolvers are DROPPED by the signed-off design)
 
 1. Engine: a `ParryStage` (or a sink in the existing hit->save pipeline) between hit resolution and
    `RollSaves`, Subject seat, per-model count from weapon-scoped Parry carriers alive at that moment; a
@@ -33,7 +33,36 @@ text says "when this unit takes hits in melee", so Impact hits ARE parryable; re
    request appears only for mixed hits; strike-back path; histogram mode run.
 4. Presentation: a dice beat "Parry" with the ignored count; combat calculator (#442) expected-hit reduction.
 
-## The fork (written up 2026-10-29; pending Chris's sign-off, nothing built)
+## Signed-off design (2026-10-30, Chris)
+
+- Fork A: A1, always auto-resolve, no new request type. `SuccessfulHitInfo` carries exactly (count, SaveModifier,
+  Source), so hits in one swing differ in ONE dimension, the save threshold (the base-AP group plus the natural-6
+  group(s) that `PerHitApSplitter` peels for Rending / Crack). Deadly, Blast, Lacerate, Bane are whole-weapon and
+  never split a volley. The "best" pick is therefore a total order (highest save penalty first), auto-resolving is
+  always correct, and the engine removes hits from the worst group first. Chris first asked for a pick dialog when
+  groups differ, then withdrew it: the dialog's only purpose would have been visibility, and the dice beat below
+  carries that. No CLI / GUI / AI resolver, no network catalogue entry, nothing in `docs/ResolverGuide.md`.
+  - Chris's reconsider trigger: if a second per-hit dimension ever appears (a per-hit wound multiplier, a per-hit
+    rule), stop and re-present the pick question; today none exists and none is planned in 3.6.
+- VISIBILITY is the point (Chris): "a log message is usually ignored". The Parry roll is a DICE BEAT in the combat
+  presentation, the same channel as the hit and save rolls: the dice shown with 6+ highlighted, then a per-group result
+  line, worst group first, naming the rule that made the group worse - "Parry: ignored 2 Rending hits, 1 base hit",
+  "Parry: 3 dice, one 6+ - ignored 1 Rending hit", "Parry: 3 dice, no 6+". The save-roll beat that follows reads fewer
+  dice than hits and is labelled "(after Parry)" so the reduction is attributable. The log line carries the same
+  per-group text. Acceptance for this facet: a GUI hand-verify by Chris that a Rending charge against a Hand Weapons
+  unit shows which group Parry removed. ASCII only.
+- Fork B: B1. One budget per enemy melee attack: X x living Parry carriers when the first hits land, spent across
+  every swing of that attack, capped by the hits of each swing as they arrive ("up to as many dice as hits taken" is a
+  cap, not a choice - no withholding). A strike-back is a new attack with its own budget. Counter on
+  `ICombatActionContext`.
+- Rulings: Impact hits ARE parryable (same save chain, "takes hits in melee"); Ravage deals wounds, not hits, so it is
+  not; carriers = living models with at least one Parry weapon when the hits land (two Parry weapons on a model would
+  use the highest X; none exists in 3.6.0); Parry dice are the defender's own roll, untouched by #418's fatigued-6
+  gate; catalog entry `Parry` with `engineArgumentCount 1`, weapon scope plus unit scope. Carrier detection is NOT a
+  name check like `LimitedRules`: ask the rule graph, consistent with #424's `WeaponRoleQueries` (Chris prefers
+  asked-for capabilities over name checks).
+
+## The fork (written up 2026-10-29; decided above)
 
 Facts from the 3.6.0 snapshots and the engine survey that shape the choice:
 
@@ -117,6 +146,8 @@ with hand weapons parries a charge in the GUI.
 
 ## Notes
 
+- 2026-10-30: Q11 signed off (Chris): always auto-resolve with a group-naming dice beat, no UI (a pick dialog was
+  considered and withdrawn the same day), see "Signed-off design". Queued after #433.
 - 2026-10-30 (from #442): the AI / Combat Calculator half of Parry waits on this fork (Q11); nothing was built in
   #442. Once the stage lands: (1) `CombatMath.EstimateVolley` must mirror the new hit-ignore step - expected melee
   hits less Parry's 6+ fraction - by folding the stage's own operation through the evaluator (as Impact / Brace /
@@ -131,7 +162,8 @@ with hand weapons parries a charge in the GUI.
 
 ## Decisions
 
-(none yet)
+- D1 (signed off by Chris, 2026-10-30): A1 always auto-resolve (worst hits first), no new request or UI, Parry as a
+  visible dice beat naming the parried groups + B1; Impact parryable.
 
 ## Outcome
 

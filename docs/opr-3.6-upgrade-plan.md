@@ -243,8 +243,8 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 420 | Dangerous terrain dice = wounds to destroy the unit | 2 | - | S | medium | done 2026-10-29 (D5 resolved by #446) |
 | 421 | Hero morale: Tough(9+) 6" Quality aura; not-Shaken gate | 2 | #428 | O | high | done 2026-10-30 (owner review: D3, D4) |
 | 422 | Impact before attacks + Fatigue gate; Counter split; new Brace(X) | 2 | - | O | high | done 2026-10-29 (awaiting GUI hand-verify; owner: D1, D4; D8 resolved by #447) |
-| 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | F | xhigh | todo (fork written up 2026-10-29; Q11 pending) |
-| 424 | Assault weapons count as ranged and melee | 2 | - | F | xhigh | todo (fork written up 2026-10-29; Q12 pending) |
+| 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | O | high | todo (Q11 signed off 2026-10-30: always auto-resolve, group-naming dice beat, no UI, B1) |
+| 424 | Assault weapons count as ranged and melee | 2 | - | O | xhigh | todo (Q12 signed off 2026-10-30: capability-operation design + B1) |
 | 425 | Cumbersome; Artillery and Indirect 3.6; Quick Throw | 2 | - | O | medium | done 2026-10-30 (owner review: D1, D3, D4, D5) |
 | 426 | Deployment distances: Scout, Vanguard, Fanatic, Reinforcement, Ambush objectives | 2 | - | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4, D5, D6) |
 | 427 | Core small batch: Unstoppable, Aircraft, Flying, Transport contact, Spell Amplifier, Immobile | 2 | - | S | medium | done 2026-10-29 (owner review: D1, D2, D3, D5, D6) |
@@ -253,7 +253,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 430 | Force org and points validation 3.6 (GDF + AoF levels, Unique Hero once per army) | 2 | - | S | medium | done 2026-10-30 (owner review: D1, D2, D3, D4, D6) |
 | 431 | New weapon-rule family (Anti-Cover ... Crossing Strike) | 3 | #418 | O | high | done 2026-10-29 (owner review: D2, D3, D5, D8) |
 | 432 | Range-conditional army-wide rules (9"/6" family) | 3 | #428 | O | high | done 2026-10-29 (owner review: D1, D2, D4, D5) |
-| 433 | "Enhanced X" family (design fork) | 3 | #432 | F | xhigh | todo |
+| 433 | "Enhanced X" family | 3 | #432 | O | xhigh | todo (Q6 signed off 2026-10-30: Option B everywhere) |
 | 434 | GDF supplement sweep: remaining reworded + new rules | 3 | #431 #432 #433 | O | high | done 2026-10-30 (Enhanced family deferred to #433; owner review: D2, D3, D4, D7, D12, D13) |
 | 435 | AoF supplement sweep + book overrides + AoF-specific core (Sergeant/Banner/Musician/Brace in Melee) | 3 | #422 #431 #432 #433 | O | high | done 2026-10-30 (Enhanced family deferred to #433; overrides all moot, deleted; owner review: D2, D3, D7) |
 | 436 | Remove dropped 3.5 definitions; catalog/supplement text parity with 3.6 wording | 3 | #434 #435 | S | medium | todo |
@@ -292,7 +292,10 @@ and remain open for his review; each item file lists its own.
   4" vertical (the vertical figure was our convention, not OPR's). Default: horizontal 3", vertical stays 4".
 - **Q5 Legacy army files.** 3.5 `.fdgarmy` files load unchanged (embedded definitions). Default: the lobby
   shows a one-line amber notice when a list stamped `OPR v3.5.x` is fielded; it does not block.
-- **Q6 "Enhanced X" mechanism (#433).** Two options are written up in the item; it stops for sign-off.
+- **Q6 "Enhanced X" mechanism (#433) - SIGNED OFF 2026-10-30.** Option B everywhere: additive deltas and keep-best
+  thresholds (the Reliable `QualityFloor` ordering precedent: better value first, modifiers after), the complementary
+  range arm for the "always" families so base rules are never edited and base + Enhanced cannot stack. Details in
+  `WorkItems/433-enhanced-rule-family.md` "Signed-off design".
 - **Q7 App version.** `Directory.Build.props` is 0.3.0. Default: 0.4.0 for the 3.6 release (pre-1.0 minor
   bump for a breaking ruleset change), `RULES_VERSION=OPR_3_6_0`, tag `v0.4.0`, title "... v0.4.0 (OPR 3.6.0)".
 - **Q8 Bundled roster.** Default: bundle Voidspace Stalkers; skip the two 0-unit parent entries; rename the
@@ -304,14 +307,16 @@ and remain open for his review; each item file lists its own.
 - **Q9 Parallel sessions.** How many sessions do you want running at once on phase 2/3? The plan assumes up
   to three in parallel (one per independent item), each on its own files.
 
-- **Q11 Parry (#423) design fork - PENDING.** Written up in `WorkItems/423-parry.md` ("The fork"). Default:
-  A1 (auto-resolve the "defender picks which" because hits in one swing differ only by save threshold, so
-  no new request/resolvers) + B1 (one Parry dice budget per enemy melee attack, not per weapon swing);
-  Impact hits parryable. Nothing is built until you answer.
-- **Q12 Assault (#424) design fork - PENDING.** Written up in `WorkItems/424-assault-weapons.md` ("The
-  fork"). Default: A1 (Assault is a weapon-scoped marker rule and `IsMelee` becomes "range 0 or Assault",
-  one weapon object in both lists, every direct range test migrated to the seam) + B1 (two presentation
-  effect keys resolved at load). Gates #437/#438. Nothing is built until you answer.
+- **Q11 Parry (#423) design fork - SIGNED OFF 2026-10-30.** Chris chose A1: always auto-resolve, removing the
+  worst hits first (hits in one swing differ only by save threshold, so the pick has one right answer), with NO new
+  request or UI; a pick dialog for mixed groups was considered and withdrawn because its only purpose was visibility,
+  and that is carried by a Parry dice beat that names the parried groups ("ignored 2 Rending hits, 1 base hit") plus a
+  "(after Parry)" label on the save beat. B1 (one dice budget per enemy melee attack). Impact hits parryable. Details in
+  `WorkItems/423-parry.md` "Signed-off design".
+- **Q12 Assault (#424) design fork - SIGNED OFF 2026-10-30.** Chris chose A1 with the name marker replaced by a
+  capability operation (`EnableMeleeUse` / `EnableRangedUse` answered by a `WeaponRoleQueries`, roles are grants only,
+  resolved once at weapon build and cached) plus B1 (two presentation effect keys derived from the army defaults at
+  load, no per-weapon authoring). Details in `WorkItems/424-assault-weapons.md` "Signed-off design". Unblocks #437/#438.
 
 ---
 

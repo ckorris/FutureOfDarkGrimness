@@ -1,6 +1,6 @@
 # 424 — Assault weapons: one weapon counts as both ranged and melee
 
-**Status**: todo (design fork written up 2026-10-29; pending Chris's sign-off, plan Q12)
+**Status**: signed off 2026-10-30 (plan Q12; Chris): fork A1 with the name marker replaced by a capability operation, plus B1 with no per-weapon authoring. Build after #442.
 **Related**: #415, #209 (weapon option order), #239/#379 (effect sets), #336 (melee weapon rules display), #292 (shoot panel rules), #157 (Takedown per-shot picks), #437 (importer), #441 (Forge UI), #442 (AI/calculator)
 **Branch**: `feature/opr-3.6`. Model/effort: Fable 5.1 / xhigh. This is the most pervasive data change in 3.6.
 
@@ -35,7 +35,34 @@ estimates all see one weapon in both roles with no duplication in point costs.
    only Assault weapons passes the "can charge" and "can shoot" gates; Limited Assault weapon decision pinned;
    effect-set resolution per phase; Forge compile of a 3.6 book with Assault pistols.
 
-## The fork (written up 2026-10-29; pending Chris's sign-off, nothing built)
+## Signed-off design (2026-10-30, Chris)
+
+- Assault is NOT a name-based marker (the `LimitedRules` shape). It is an ordinary supplement JSON definition whose
+  effect grants a weapon ROLE through the capability-query convention (`CapabilityRuleQueries`: "capabilities are
+  asked for, not tested for"). Two new operations, `EnableMeleeUse` and `EnableRangedUse`, answered by a new
+  `WeaponRoleQueries` mirroring `SightRuleQueries` / `CapabilityRuleQueries`.
+- Seam: `IsMelee = RangeInches == 0 || grants EnableMeleeUse`; `IsRanged = RangeInches > 0 || grants EnableRangedUse`.
+  Roles are grants only, never negations, so two rules can only widen the set (Chris's conflict concern is closed by
+  construction). A future "may not be used in melee" is an ACTION restriction beside `ActionRestrictionQueries`, not a
+  classification.
+- Rejected: a range-override-to-zero for the melee check (re-encodes melee as range 0, cannot say "also ranged", and
+  needs a synthetic hook context for a question with no target or distance).
+- Roles are resolved ONCE when the weapon is built and cached on it (the `EffectKey`-at-load precedent, #239), because
+  the seam runs in hot paths (AI, per-frame UI) and from places with no table (Forge card, list compiler, importer).
+  No 3.6 rule grants Assault mid-game, so the load-time answer is exact; record that as a D entry. The query must
+  accept a bare weapon (no unit on a table).
+- B1 stands, with Chris's constraint: NO per-weapon authoring. Today `UnitData` resolves one key at load: the entry's
+  optional `EffectSet`, else the army's `DefaultRangedEffectSet` / `DefaultMeleeEffectSet` picked by range. B1 adds only
+  the second DERIVED key: every weapon gets `MeleeEffectKey = DefaultMeleeEffectSet` computed from the army defaults
+  exactly like the first; no new field in `WeaponFileEntry` / `.fdgarmy` / `.fdgbook`, no entry in any effect-set table
+  for plasma rifles or any other non-Assault weapon. A non-Assault ranged weapon carries the key and never reads it (it
+  never swings). An explicit `EffectSet` on an entry applies to the ranged use only, as today. `RollToHitStage` picks by
+  attack kind. Pin: an army file with no per-weapon effect sets compiles, and an Assault pistol's swing emits the melee
+  default while its shot emits the ranged default.
+- Everything else in "The fork" below (the audit of every direct `RangeInches` test, the rulings to pin, the order
+  before #437/#438) stands as written.
+
+## The fork (written up 2026-10-29; superseded by the signed-off design above where they differ)
 
 Facts from the 3.6.0 snapshots and the engine survey that shape the choice:
 
@@ -136,6 +163,8 @@ absent everywhere ("Piercing Assault", "Twin Assault Blaster" are unrelated subs
 
 ## Notes
 
+- 2026-10-30: Q12 signed off (Chris): capability-operation design + B1 without per-weapon authoring, see "Signed-off
+  design". Implementation queued after #442.
 - 2026-10-30 (from #442): the AI / calculator half of Assault waits on this fork (Q12); nothing was built in #442.
   Once the seam lands: (1) `CombatMath.EstimateMelee` batches `GetMeleeWeapons()` and `EstimateShooting` batches
   `GetRangedWeapons()` - under A1 ("IsMelee = range 0 or Assault", one weapon object in both lists) both pick an Assault
@@ -150,7 +179,8 @@ absent everywhere ("Piercing Assault", "Twin Assault Blaster" are unrelated subs
 
 ## Decisions
 
-(none yet)
+- D1 (signed off by Chris, 2026-10-30): the capability-operation design replaces fork A1's name marker; B1 as
+  recommended, with no per-weapon effect-set authoring.
 
 ## Outcome
 
