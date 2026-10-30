@@ -27,7 +27,7 @@ submodule-first cadence, ASCII-only game text, one vertical slice at a time, nev
    `git push origin feature/opr-3.6` in each repo (set upstream on first push). Do not force-push.
 3. **Picking up master.** Fixes keep landing on `master` meanwhile. Only the #415 owner merges `master`
    into `feature/opr-3.6` (both repos, submodule first), and does so after each phase. Do not rebase.
-4. **Numbers.** Items #415-#446 are reserved in `WorkItemsList.md` (section "OPR 3.6 upgrade") and the
+4. **Numbers.** Items #415-#447 are reserved in `WorkItemsList.md` (section "OPR 3.6 upgrade") and the
    reservation is recorded in `WorkItems/Reconciliations.md`. A new sub-item needs a fresh number:
    `git fetch origin` first and take max(origin/master index + archive, this plan) + 1, per
    `WorkItems/README.md`.
@@ -209,7 +209,7 @@ folder outside the repo and run `--rule-coverage` on it.
 
 ```
 Phase 1  Intake (done): #416
-Phase 2  Engine core rules: #417 #418 #419 #420 #421 #422 #423 #424 #425 #426 #427 #428 #429 #430 #446
+Phase 2  Engine core rules: #417 #418 #419 #420 #421 #422 #423 #424 #425 #426 #427 #428 #429 #430 #446 #447
 Phase 3  Faction rules: #431 #432 #433 (fork) #434 #435 #436
 Phase 4  Data pipeline: #437 -> #438 -> #439 -> #440
 Phase 5  App: #441 #442 #443 (fork)
@@ -267,6 +267,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | todo |
 | 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | todo |
 | 446 | Units that activate in Dangerous terrain take the test (pre-existing gap found by #420) | 2 | #420 | O | medium | todo |
+| 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | todo |
 
 Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, the code anchors
 (Appendix A), the acceptance test, and the branch rules restated.
