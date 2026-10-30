@@ -63,6 +63,10 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #421): `CoreRuleCatalog.Hero`'s description is now the Core Rules v3.6.0 Hero text verbatim (ASCII;
+  pinned by `HeroMoraleAuraRuleIntegrationTests.HeroDescription_IsTheCore360Wording`), so the description sweep can
+  skip it. No Hero definition exists in either supplement.
+
 - 2026-10-30 (from #430): the 3.5 `Unique` definition. Still shipped and still handled: `GdfRuleSupplement.json` "Unique"
   ("Your army may only include one copy of this unit."), the `Unique` branch beside Unique Hero in
   `ListValidator.Validate` (`uniqueRule`), the lint exemptions `["Unique"]` in `RuleSupplementLintTests.cs:23` and

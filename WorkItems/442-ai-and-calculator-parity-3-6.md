@@ -51,6 +51,18 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #421): Hero morale 3.6 (Tough(9)+ Hero aura: friendly units within 6" may test morale at the Hero's
+  Quality while the Hero isn't Shaken; a joined hero's Quality is now also only lent while not Shaken, and only when
+  better). Parity: nothing to rewire - no AI or Calculator code estimates morale Quality (no reader of
+  `HeroStatRules.GetMoraleQuality`; checked `Ai/`, `Calculator/`, `Simulation/`), and the search's rollouts run the real
+  morale stages, which now read `MoraleUtilities.ResolveMoraleQuality`. Pricing gaps for you, none changed in #421:
+  (1) `TacticianRangedAttackResolver.cs:79` applies the flat `TacticianWeights.MoraleBreakBonus` to a target that
+  would reach half strength without asking how likely it is to fail - discounting by the pass chance at
+  `MoraleUtilities.ResolveMoraleQuality(ctx, target)` would make a target sheltered by a Tough(9)+ Hero (or its joined
+  hero) correctly less attractive to break; (2) positioning: nothing values keeping own units within 6" of a friendly
+  Tough(9)+ Hero, or prefers to shoot/charge enemy units outside their Hero's 6" (or to kill/Shake the aura Hero
+  first). Both are optional value terms, not legality.
+
 - 2026-10-30 (from #426): deployment placement parity. Done (pinned): every AI placement honours the new keep-out
   discs through `PlacementDistanceRules` - Scout's "over 9" from non-Scout enemies" (`AiPlacement_FindsTheLegalStrip_
   BehindAnEnemyLine`), Reinforcement's 9" band + 9" enemy minimum (`TheCopy_AiPlacement_StaysInTheNineInchBand_...`),
