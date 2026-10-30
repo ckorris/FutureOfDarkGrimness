@@ -53,6 +53,11 @@ public class AofSweep36ShippedDataTests
         yield return Case("Great Sergeant", "This model gets AP(+2) when attacking.");
         yield return Case("Great Banner", "Once per activation, before attacking, pick one friendly unit within 12\", which gets +1 to Morale Test rolls triggered by shooting/melee once (next time the effect would apply).");
         yield return Case("Great Musician", "Once per activation, before attacking, pick one friendly unit within 12\", which moves +1\" when using move actions once (next time the effect would apply).");
+        yield return Case("Ossified", "When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0).");
+        yield return Case("Warden", "When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0).");
+        yield return Case("Wave-Step", "When this unit is activated, you may move all models with this rule in it by up to D3\".");
+        yield return Case("Ethereal", "Once per activation, before attacking, you may place this model anywhere fully within 6\" of its position. If you do, this model moves -6\" when using Advance, and -6\" when using Rush/Charge until the end of that activation.");
+        yield return Case("Grounded Speed", "If most models in this unit are within 1\" of terrain when activated, this model may move +2\" on Advance, and +4\" on Rush/Charge during this activation.");
     }
 
     private static TestCaseData Case(string name, string text) => new TestCaseData(name, text).SetArgDisplayNames(name);
@@ -108,6 +113,65 @@ public class AofSweep36ShippedDataTests
         Assert.That(buff.TargetSelector, Is.EqualTo(new TargetSelector(12f, 1, 1, ETargetAffinity.Friend,
             RequireLineOfSight: false)));
         Assert.That(buff.Effect, Is.EqualTo(new Effect.AddRule(granted, ELifetime.NextTrigger)));
+    }
+
+    // --- re-authored faction rules ------------------------------------------------------------------------------
+
+    // A 3.6 AoF name that is another shipped rule's twin, entry for entry (the text is pinned above).
+    [TestCase("Ossified", "Guardian")]
+    [TestCase("Warden", "Guardian")]
+    [TestCase("Wave-Step", "Wolfborn")]
+    public void TheTwin_HasItsSiblingsEntries(string name, string sibling)
+    {
+        Assert.That(AofShipped(name).Passive, Is.EqualTo(Shipped(sibling).Passive));
+        Assert.That(AofShipped(name).Scope, Is.EqualTo(Shipped(sibling).Scope));
+    }
+
+    [Test]
+    public void OssifiedAndWarden_AreUnconditional_FortifiedsShape()
+    {
+        // 3.6 dropped the 3.5 "from over 9 inches away" gate (attackedFromOverInches).
+        foreach (string name in new[] { "Ossified", "Warden" })
+            Assert.That(AofShipped(name).Passive, Is.EqualTo(Catalog("Fortified").Passive), name);
+    }
+
+    [Test]
+    public void WaveStep_IsAMove_NotAPlacement()
+    {
+        Assert.That(AofShipped("Wave-Step").Passive.Single(), Is.EqualTo(new HookEntry(EHookID.Activation_OnActivationStart,
+            new Condition.MostModelsHaveThisRule(), new Effect.RepositionAtActivation(new DiceExpression.D3(), 0, Move: true),
+            ELifetime.ThisActivation)));
+    }
+
+    [Test]
+    public void Ethereal_MovesMinusSix_OnlyAfterItsTeleport()
+    {
+        SpecialRuleDefinition ethereal = AofShipped("Ethereal");
+        var used = new TokenType("AbilityUsed:Ethereal");
+        Assert.That(ethereal.Passive, Is.EqualTo(new[] { EActionType.Advance, EActionType.Rush, EActionType.Charge }
+            .Select(a => new HookEntry(EHookID.Movement_OnMoveActionDeclared,
+                new Condition.And(new Condition.ActionTypeIs(a), new Condition.TokenPresent(used)),
+                new Effect.MovementBonus(a, -6f), ELifetime.ThisActivation))),
+            "'if you do' - the ability's own once-per-activation marker (activation-end clear)");
+
+        ActivatedAbility teleport = ethereal.Activated.Single();
+        Assert.That(teleport.TriggerHook, Is.EqualTo(EHookID.Activation_OnActionChoice));
+        Assert.That(teleport.Cost, Is.InstanceOf<Cost.OncePerActivation>());
+        Assert.That(teleport.Effect, Is.InstanceOf<Effect.Teleport>(), "TeleportStage routes on the effect");
+        Assert.That(teleport.AvailableWhen, Is.InstanceOf<Condition.MostModelsHaveThisRule>());
+    }
+
+    [Test]
+    public void TheAofFile_ShadowsNoGdfDefinition()
+    {
+        // 3.6 prints Difficult Terrain Debuff, Fortified Growth and Melee Slayer word for word in both games, so the AoF
+        // copies left (the GDF file's #434 versions serve AoF books too). A future AoF-only divergence of a shared name
+        // is the #375 C9 mechanism and belongs here as a named exception.
+        HashSet<string> gdf = Gdf().Select(r => r.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Assert.That(Aof().Select(r => r.Name).Where(gdf.Contains), Is.Empty);
+
+        foreach (string name in new[] { "Difficult Terrain Debuff", "Fortified Growth", "Melee Slayer" })
+            Assert.That(Shipped(name).Passive, Is.EqualTo(Gdf().Single(r => r.Name == name).Passive), name);
     }
 
     [Test]

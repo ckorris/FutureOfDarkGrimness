@@ -24,8 +24,12 @@ public class MeleeSlayerShippedDataTests
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
+    // #435: AoF books bake against GDF + AoF merged (later wins); the AoF file's identical copy was dropped (3.6 prints
+    // one text in both games), so the AoF case reads the merged universe - the definition an AoF book embeds.
     private static SpecialRuleDefinition Supplement(string file) =>
-        BookRuleSupplement.LoadDefinitions(File.ReadAllText(Path.Combine(BooksDirectory, file)))
+        FdgRaylib.Import.RuleSupplementSet.LoadMerged(file == "AofRuleSupplement.json"
+                ? new[] { Path.Combine(BooksDirectory, "GdfRuleSupplement.json"), Path.Combine(BooksDirectory, file) }
+                : new[] { Path.Combine(BooksDirectory, file) })
             .Single(r => r.Name == RuleName);
 
     [TestCase("GdfRuleSupplement.json")]

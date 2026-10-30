@@ -60,6 +60,23 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30: **Batch 2 - faction rules on existing primitives (data + an engine test).** Ossified / Warden: 3.6 "When
+  units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)." - Guardian's
+  (#434) unconditional shape, the 3.5 `attackedFromOverInches(9)` gate gone. Wave-Step: "you may move all models with
+  this rule in it by up to D3"" - Wolfborn's `repositionAtActivation.move` entry (#434 D8: a real move through the
+  triggered-move request). Ethereal: "... If you do, this model moves -6" when using Advance, and -6" when using
+  Rush/Charge until the end of that activation." (3.5 moved -6" always) - each penalty entry now also gates on the
+  ability's own once-per-activation marker `AbilityUsed:Ethereal`, which TeleportStage stamps only when the placement is
+  accepted and which clears at activation end (D4). Grounded Speed: "If most models in this unit are within 1" of terrain
+  when activated, this model may move +2" ..." - the terrain gate alone (D5). Shadow copies dropped from the AoF file
+  (3.6 prints the same text in both games, so the GDF file's #434 definitions serve AoF books): Difficult Terrain Debuff
+  and Melee Slayer (shape-identical), Fortified Growth (the AoF copy was the 3.5 clock without the most-models gate) -
+  D6. Tests: engine `AofSweep36RuleIntegrationTests` +5 (Ethereal through the real TeleportStage: -6" on each move
+  action after an accepted teleport with an activation-end marker, nothing without a teleport, nothing after a
+  backed-out one); app `AofSweep36ShippedDataTests` +12 (texts, Guardian / Wolfborn twins, Fortified's shape, the
+  Ethereal shape, no AoF name shadows a GDF one), `GroundedAofShippedDataTests` (no carrier gate),
+  `MeleeSlayerShippedDataTests` (the AoF case reads the merged universe). Negative control: the hand-built Ethereal
+  without its marker gate fails 2 of the 3 Ethereal cases (the 3.5 always-on penalty).
 - 2026-10-30: **Batch 1 - the AoF Command Groups (engine).** AoF Core Rules v3.6.0: "Sergeant: This model gets AP(+1)
   when attacking." (= the GDF file's #434 Sergeant, text and shape), "Musician: This model and its unit move +1" when
   using move actions." (shape unchanged: +1" on Advance / Rush / Charge, one entry per action), "Banner: This model and
@@ -161,6 +178,21 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
   and helps nothing. Alternatives: (a) spend a grant only when its condition passes (an engine-wide change to #101's
   policy); (b) a one-shot +1 Morale token (Bravery Buff's shape), which would wrongly help spell / rule tests.
   Recommendation: keep (the case is rare and #101's policy is deliberate).
+- **D4 - Ethereal's "if you do" reads the ability's used marker (2026-10-30) - OWNER NOTE.** The penalty entries gate on
+  `tokenPresent AbilityUsed:Ethereal`, the marker `RuleEvaluator` stamps when a once-per-activation cost is paid
+  (TeleportStage pays it only on an accepted placement; it clears at activation end, the text's "until the end of that
+  activation"). It ties the data to the engine's marker id, which saved games already persist and the engine tests
+  already name. An accepted placement that leaves every model where it stood still counts as "you do". Alternative: a
+  dedicated `thisRuleAbilityUsed` condition (no string coupling, one new kind).
+- **D5 - Grounded Speed loses its carrier gate (2026-10-30).** 3.6 has no "where most models have this rule" clause
+  ("If most models in this unit are within 1" of terrain when activated, this model may move ..."), so only the terrain
+  gate stays - #434 D15's Grounded Precision / Speed Feat reading. The unit-level move evaluation never sees a joined
+  hero's own copy, so nothing leaks.
+- **D6 - Shadow copies leave the AoF file (2026-10-30).** A name whose 3.6 text is identical in both games keeps one
+  definition, in the GDF file (AoF merges it first) - #422 / #434's moves of Counter in Melee, Rapid Rush Buff and Ravage
+  Aura. Dropped from the AoF file: Difficult Terrain Debuff, Fortified Growth, Melee Slayer (the names still resolve, to
+  the GDF definitions; nothing is deleted from the rule universe). `AofSweep36ShippedDataTests.TheAofFile_ShadowsNoGdfDefinition`
+  keeps the two files disjoint.
 
 ## Outcome
 

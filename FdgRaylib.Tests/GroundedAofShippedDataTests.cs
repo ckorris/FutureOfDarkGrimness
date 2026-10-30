@@ -49,10 +49,9 @@ public class GroundedAofShippedDataTests
         Assert.That(and.Left, Is.InstanceOf<Condition.ActionTypeIs>(),
             "without the per-action gate, the three-action budget fold counts the entry three times.");
         Assert.That(((Condition.ActionTypeIs)and.Left).ActionType, Is.EqualTo(action));
-        var gate = (Condition.And)and.Right;
-        Assert.That(gate.Left, Is.TypeOf<Condition.MostModelsHaveThisRule>());
-        Assert.That(gate.Right, Is.InstanceOf<Condition.MostModelsWithinInchesOfTerrain>());
-        Assert.That(((Condition.MostModelsWithinInchesOfTerrain)gate.Right).DistanceInches, Is.EqualTo(1f));
+        // #435: 3.6 "If most models in this unit are within 1" of terrain when activated, this model may move +2"..."
+        // - the terrain gate alone, no "where most models have this rule" (Grounded Precision's #434 reading).
+        Assert.That(and.Right, Is.EqualTo(new Condition.MostModelsWithinInchesOfTerrain(1f)));
     }
 
     [Test]
