@@ -60,12 +60,17 @@ internal sealed record HoloUnit(
 /// the army abbreviation plus a per-side number with a space between, since several abbreviations
 /// already contain hyphens.
 ///
-/// <para>The slots sit clear of every terrain footprint in <see cref="HoloTableScene.BuildDefault"/>
-/// (a test checks it); formations come from a fixed seed per slot so a layout is stable for a pairing.</para>
+/// <para>The constructor uses the mockup's fixed positions, which sit clear of every footprint in
+/// <see cref="HoloTableScene.BuildDefault"/> (a test checks it). <see cref="Generate"/> keeps the same
+/// roster but places every unit at random on a given table (owner, 2026-10-30: randomise positions and
+/// movement each battle).</para>
 /// </summary>
 internal sealed class HoloSkirmish
 {
     private sealed record Slot(int Side, Vector2 Centre, int Count, float BaseRadius, int Dead, Vector2[] Trail);
+
+    /// <summary>The roster: the mockup's slots (their positions are the fixed layout's; their counts,
+    /// base sizes, casualties and whether they walk in are kept for random battles too).</summary>
 
     private static readonly Slot[] Slots =
     {
@@ -83,28 +88,97 @@ internal sealed class HoloSkirmish
     public MenuArmy Far { get; }
     public IReadOnlyList<HoloUnit> Units { get; }
 
+    /// <summary>The mockup's layout: every unit in its signed-off spot.</summary>
     public HoloSkirmish(MenuArmy near, MenuArmy far)
+        : this(near, far, Slots.Select((slot, i) => MakeUnit(slot, near, far, Formation(slot, seed: 100 + i))).ToList())
+    {
+    }
+
+    private HoloSkirmish(MenuArmy near, MenuArmy far, IReadOnlyList<HoloUnit> units)
     {
         Near = near;
         Far = far;
-        var units = new List<HoloUnit>();
+        // Number each side's units in roster order: the label is the army plus its place on its side.
         var numberBySide = new int[2];
-        for (int i = 0; i < Slots.Length; i++)
-        {
-            Slot slot = Slots[i];
-            MenuArmy army = slot.Side == 0 ? near : far;
-            string label = $"{army.Abbr} {++numberBySide[slot.Side]}";
-            var trail = slot.Trail.Length == 0 ? Array.Empty<Vector2>() : slot.Trail.Append(slot.Centre).ToArray();
-            units.Add(new HoloUnit(label, slot.Side, army, slot.Centre, slot.BaseRadius, slot.Dead,
-                Formation(slot, seed: 100 + i), trail));
-        }
-        Units = units;
+        Units = units.Select(u => u with { Label = $"{(u.Side == 0 ? near : far).Abbr} {++numberBySide[u.Side]}" }).ToList();
     }
 
-    public static HoloSkirmish Random(Random rng)
+    private static HoloUnit MakeUnit(Slot slot, MenuArmy near, MenuArmy far, IReadOnlyList<Vector2> models)
     {
-        var (near, far) = MenuArmies.PickPair(rng);
-        return new HoloSkirmish(near, far);
+        var trail = slot.Trail.Length == 0 ? Array.Empty<Vector2>() : slot.Trail.Append(slot.Centre).ToArray();
+        return new HoloUnit("", slot.Side, slot.Side == 0 ? near : far, slot.Centre, slot.BaseRadius, slot.Dead, models, trail);
+    }
+
+    // Random placement rules, inches.
+    private const float TerrainClearance = 0.6f;   // base edge to terrain
+    private const float UnitGap = 4f;              // base edge to another unit's: room for both flags' labels
+    private const float EdgeMargin = 0.5f;         // base edge to the table edge
+
+    /// <summary>
+    /// The same roster placed at random on <paramref name="scene"/>, or null if some unit found no room
+    /// (the caller tries another table). Each side keeps to its own half; units that stay put stand in
+    /// the middle band so the two sides are within shooting range, while walkers and vehicles can be
+    /// anywhere in their half. A walker gets a two-leg route in from behind (toward its own table edge),
+    /// and every model's path must keep clear of terrain. Bases keep off all terrain - craters included -
+    /// and apart from other units.
+    /// </summary>
+    public static HoloSkirmish? Generate(MenuArmy near, MenuArmy far, HoloTableScene scene, Random rng)
+    {
+        var obstacles = scene.Obstacles.ToList();
+        var placed = new List<(Vector2 At, float Radius)>();
+        var units = new List<HoloUnit>();
+        float U(float lo, float hi) => lo + rng.NextSingle() * (hi - lo);
+
+        foreach (Slot template in Slots)
+        {
+            bool walks = template.Trail.Length > 0;
+            float face = template.Side == 0 ? 1f : -1f;
+            var (yLo, yHi) = walks || template.Count == 1 ? (5f, 21f) : (4f, 14f);
+            HoloUnit? unit = null;
+            for (int attempt = 0; attempt < 300 && unit is null; attempt++)
+            {
+                var centre = new Vector2(U(-31f, 31f), -face * U(yLo, yHi));
+                Vector2[] trail = Array.Empty<Vector2>();
+                if (walks)
+                {
+                    var start = centre + new Vector2(U(-4f, 4f), -face * U(6f, 10f));
+                    var mid = Vector2.Lerp(start, centre, 0.5f) + new Vector2(U(-1.5f, 1.5f), 0f);
+                    trail = new[] { start, mid };
+                }
+                Slot slot = template with { Centre = centre, Trail = trail };
+                IReadOnlyList<Vector2> models = Formation(slot, rng.Next());
+                if (!BasesFit(models, template.BaseRadius, obstacles, placed)) continue;
+                if (walks && !RouteClear(models, centre, trail, template.BaseRadius, obstacles)) continue;
+                unit = MakeUnit(slot, near, far, models);
+            }
+            if (unit is null) return null;
+            units.Add(unit);
+            placed.AddRange(unit.Models.Select(m => (m, unit.BaseRadius)));
+        }
+        return new HoloSkirmish(near, far, units);
+    }
+
+    private static bool OnTable(Vector2 p, float r) =>
+        MathF.Abs(p.X) + r < HoloTableScene.HalfW - EdgeMargin && MathF.Abs(p.Y) + r < HoloTableScene.HalfD - EdgeMargin;
+
+    private static bool BasesFit(IReadOnlyList<Vector2> models, float r, List<HoloFootprint> obstacles, List<(Vector2 At, float Radius)> placed) =>
+        models.All(m => OnTable(m, r)
+                        && obstacles.All(o => HoloGeometry.PointPolygon(m, o.Polygon) > r + TerrainClearance)
+                        && placed.All(p => Vector2.Distance(m, p.At) > r + p.Radius + UnitGap));
+
+    /// <summary>Every model walks the route offset by where it stands in the formation; each of those
+    /// paths has to start on the table and keep a base's width clear of terrain.</summary>
+    private static bool RouteClear(IReadOnlyList<Vector2> models, Vector2 centre, Vector2[] trail, float r, List<HoloFootprint> obstacles)
+    {
+        foreach (Vector2 m in models)
+        {
+            Vector2 o = m - centre;
+            var path = trail.Select(t => t + o).Append(m).ToList();
+            if (!OnTable(path[0], r)) return false;
+            for (int i = 0; i + 1 < path.Count; i++)
+                if (!HoloGeometry.IsClear(path[i], path[i + 1], obstacles, r + 0.3f)) return false;
+        }
+        return true;
     }
 
     /// <summary>

@@ -60,8 +60,8 @@ void main()
     /// and only terrain, rim and labels bloom.</summary>
     private const float BloomThreshold = 0.16f;
 
-    private readonly HoloTableScene _scene = HoloTableScene.BuildDefault();
     private readonly Random _rng;
+    private HoloTableScene _scene;
     private HoloSkirmish _skirmish;
     private HoloEngagement _engagement;
     private readonly HoloClock _clock = new();
@@ -90,8 +90,7 @@ void main()
     public MenuBackgroundRenderer(int? seed = null)
     {
         _rng = seed is { } s ? new Random(s) : new Random();
-        _skirmish = HoloSkirmish.Random(_rng);
-        _engagement = HoloEngagement.Plan(_skirmish, _scene.Footprints);
+        (_scene, _skirmish, _engagement, _) = HoloBattle.Generate(_rng);
     }
 
     /// <summary>Freezes the animation clock at this many seconds (the offscreen preview); null = live.</summary>
@@ -104,7 +103,7 @@ void main()
     /// <summary>The armies currently on the table.</summary>
     public HoloSkirmish Skirmish => _skirmish;
 
-    /// <summary>Deals a new pair of armies onto the table and starts their battle from the top. The
+    /// <summary>Deals a new battle onto the table and starts it from the top. The
     /// renderer calls this each time the menu comes back into view; a battle that runs its full length
     /// deals the next one itself.</summary>
     public void Reshuffle()
@@ -113,10 +112,10 @@ void main()
         _clock.RestartBattle();
     }
 
+    /// <summary>A whole new battle: fresh terrain, pairing, positions, routes and shooting.</summary>
     private void DealNewPairing()
     {
-        _skirmish = HoloSkirmish.Random(_rng);
-        _engagement = HoloEngagement.Plan(_skirmish, _scene.Footprints);
+        (_scene, _skirmish, _engagement, _) = HoloBattle.Generate(_rng);
         _battleIndex++;
         _stale = true;
     }

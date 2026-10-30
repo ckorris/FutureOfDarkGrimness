@@ -144,42 +144,6 @@ internal sealed class HoloEngagement
 
     /// <summary>True when the segment a-b keeps at least <paramref name="pad"/> inches from every footprint
     /// (neither end inside one, no edge within the pad).</summary>
-    public static bool IsClear(Vector2 a, Vector2 b, IReadOnlyList<HoloFootprint> footprints, float pad = ClearancePad)
-    {
-        foreach (HoloFootprint fp in footprints)
-        {
-            IReadOnlyList<Vector2> poly = fp.Polygon;
-            if (Contains(poly, a) || Contains(poly, b)) return false;
-            for (int i = 0; i < poly.Count; i++)
-                if (SegmentDistance(a, b, poly[i], poly[(i + 1) % poly.Count]) < pad) return false;
-        }
-        return true;
-    }
-
-    private static bool Contains(IReadOnlyList<Vector2> poly, Vector2 p)
-    {
-        bool inside = false;
-        for (int i = 0, j = poly.Count - 1; i < poly.Count; j = i++)
-            if ((poly[i].Y > p.Y) != (poly[j].Y > p.Y) &&
-                p.X < (poly[j].X - poly[i].X) * (p.Y - poly[i].Y) / (poly[j].Y - poly[i].Y) + poly[i].X)
-                inside = !inside;
-        return inside;
-    }
-
-    private static float PointSegment(Vector2 p, Vector2 a, Vector2 b)
-    {
-        Vector2 ab = b - a;
-        float len2 = ab.LengthSquared();
-        float t = len2 == 0f ? 0f : Math.Clamp(Vector2.Dot(p - a, ab) / len2, 0f, 1f);
-        return Vector2.Distance(p, a + ab * t);
-    }
-
-    private static float SegmentDistance(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
-    {
-        static float Cross(Vector2 o, Vector2 p, Vector2 q) => (p.X - o.X) * (q.Y - o.Y) - (p.Y - o.Y) * (q.X - o.X);
-        float d1 = Cross(c, d, a), d2 = Cross(c, d, b), d3 = Cross(a, b, c), d4 = Cross(a, b, d);
-        if ((d1 > 0) != (d2 > 0) && (d3 > 0) != (d4 > 0)) return 0f;   // they cross
-        return MathF.Min(MathF.Min(PointSegment(a, c, d), PointSegment(b, c, d)),
-                         MathF.Min(PointSegment(c, a, b), PointSegment(d, a, b)));
-    }
+    public static bool IsClear(Vector2 a, Vector2 b, IReadOnlyList<HoloFootprint> footprints, float pad = ClearancePad) =>
+        HoloGeometry.IsClear(a, b, footprints, pad);
 }

@@ -103,6 +103,40 @@ re-run the script after any colour or group change.
    `--menu-preview out.png privacy`.)
 
 ## Notes
+- 2026-10-30: **Owner feedback round 1, item (1): every battle is a fresh layout.** `HoloBattle.Generate`:
+  random terrain (`HoloTableScene.BuildRandom` - 3 ruins (straight or L, random lengths/heights), 2
+  forests (random radius, 4-5 scattered trees), a bunker, 3 containers, a crater, 2 barricades; random
+  rotation; rejection-sampled at least 2.5" apart and 1" inside the table, largest first), a random
+  allowed pairing, the same unit roster placed at random (`HoloSkirmish.Generate` - each side in its own
+  half; squads that stay put in the 4-14" band so fights are in range, walkers and vehicles anywhere in
+  their half; bases 0.6" off all terrain incl. the crater, 4" from other units so flags/labels never
+  collide (first cut was 1.5" and labels overlapped in the previews), 0.5" inside the edge; walkers get
+  a two-leg route in from behind and every model's path must clear terrain by its base width), then the
+  shooting planned from that. A layout is kept only if it is worth watching (>= 2 fights, both sides
+  firing, a measure); otherwise another is dealt; after 60 tries the signed-off fixed layout is the
+  fallback (0 of 300 test seeds need it). Footprint outlines moved into static helpers shared by drawing
+  and placement (`BoxFootprint`, `RuinFootprints`, `BunkerRing`, `Ring`); craters now record an
+  `AreaFootprints` outline (blocks nothing, but no base may stand on it); `HoloGeometry` holds the shared
+  point/segment/polygon distances (the engagement's clearance check now delegates to it).
+  `BuildDefault` and the fixed slots are unchanged (pinned by a test).
+  Tests: `MainMenuRandomBattleTests` (8, over 300 seeds, generated once per run): fallback <= 1%, terrain
+  1" inside and 2.5" apart, bases on table / off terrain / apart, sides in their own halves, every
+  model's walk-in route clear, every shot + measure clear and every battle worth watching with a
+  close-up, layouts/positions/armies vary and a seed repeats exactly, fixed layout unchanged.
+  Mutation-checked: crowding pieces, bases on terrain, routes through terrain, wrong half, dull battles
+  accepted each redden their test. Removing the table-bounds check alone stayed green, which exposed that
+  the ruin placement budgeted 6.5" reach while an L's far corner reaches ~8.6" (the bounds check was
+  quietly catching it): reach is now computed from the legs, the test asserts the generator's 1" margin,
+  and removing the bounds check together with an underestimated reach reddens it.
+  **Process slip:** the previous commit (`6adfa5b`) was made in a command chain that did not gate on
+  the engine suite, and that run had 1 failure. Re-runs: 6 of 7 green; the failing test is
+  `Broadcast_UnauthenticatedConnection_ReceivesNothing` (engine networking, a 2s timing window) - an
+  intermittent engine test unrelated to this app-only work (submodule untouched). Commits since are gated
+  on a green build + both suites + smoke.
+  **Warnings, corrected:** the "0 warnings" reported after each slice came from incremental builds that
+  did not recompile untouched files. A `--no-incremental` build shows the repo's existing baseline - 208
+  warnings across 102 files, none in a file #448 touched and none naming a type or member it added or
+  changed - so the honest claim is "#448 adds no warnings", not "the build has none".
 - 2026-10-30: **Owner feedback round 1** (running it live: "it's so cool!") - four requests:
   (1) randomise terrain, unit positions, movement and shooting every battle; (2) the pulse becomes a wave
   crossing the table lengthwise instead of the ripple; (3) the camera's close-up always on fighting;
