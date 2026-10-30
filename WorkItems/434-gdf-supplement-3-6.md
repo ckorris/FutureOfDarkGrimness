@@ -66,6 +66,27 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30: **Batch 8 - the "X on its weapons" grants are weapons only; catalog 3.6 texts; Versatile Defense interim
+  (engine).** 3.6 words every grant "gets X ON ITS WEAPONS when shooting / in melee / when attacking"; the engine has no
+  separate weapon-scoped grant path (D2) - a token grant (aura / buff / mark) is evaluated for every attack the unit
+  makes, and the spell-damage pipeline fires the CASTER's rules at the hit/save hooks with `IsMelee` false, so "AP(+1)
+  when shooting" / "Bane when attacking" reached a caster's spell hits. The catalog's "when shooting" / "when attacking"
+  phrase rules (Unstoppable / Shred / Bane when shooting, AP(1) when shooting, Bane / Shred when attacking) now also gate
+  on `isNotSpell` at those hooks (the melee ones already excluded spells); the supplement twins (Rending when shooting,
+  Piercing Shooter / Shooting, Piercing Frenzy / Growth, Piercing Debuff Effect, Ambushing Piercing Shot) likewise, and
+  the batch-1 spell-phrase aliases were re-synced to the catalog. `SpellPhraseCloneTests` records the conscious
+  divergence (the "when attacking" clones gate on IsNotSpell, the weapon-borne Bane / Shred - which a spell's own "with
+  Bane" weapon carries - stay Always). Catalog texts (C#; the census changed-definition names the catalog holds that
+  are not core rules): Guerrilla, Harassing, Hit & Run (+ Fighter / Shooter), Lacerate, Martial Prowess, Evasive, Melee
+  Evasion, Fortified, Protected, Shielded, Increased Shooting Range (+ Aura), Unstoppable / Bane / Shred when Shooting,
+  Shred / Rending / Unstoppable in Melee, and the seven "in Melee / when Shooting" Auras (`UnitAura` gained an optional
+  description). Versatile Defense: OWNER REVIEW (D3); interim helpers on `attackedFromOver {9, 6}` (#432 D8's advice)
+  with an honest description of the interim pick. Tests: engine `GdfSweep36RuleIntegrationTests` +3 (a caster's "AP(1)
+  when shooting" misses its spell hits; "Shred when attacking" is weapons only, both ways), `SpellPhraseCloneTests`
+  updated; app `GdfSweep36ShippedDataTests` +38 (29 catalog texts, 9 weapons-only twins, the Versatile Defense interim
+  gate). Negative control: the AP / Shred gates reverted fail both new engine cases. Counts: engine 4082 -> 4085, app
+  3284 -> 3324.
+
 - 2026-10-30: **Batch 7 - Piercing / Precision Tag and Target 3.6 (engine).** Tag(X): "place X tokens on one enemy unit
   within 24" and in line of sight, or one token on X enemy units ... When attacking, friendly units may remove ONE
   token from their target ... to get AP(+1) / +1 to hit." Target(X): "pick X enemy units within 18" ... and place one

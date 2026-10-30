@@ -370,6 +370,79 @@ public class GdfSweep36ShippedDataTests
             Assert.That(names, Does.Contain(target), $"'{name}' grants '{target}'");
     }
 
+    // --- catalog rules the 3.6 GDF books define (census "changed definitions") carry the 3.6 text ----------------
+
+    [TestCase("Guerrilla", "Once per round, this model may move by up to 3\" after shooting or being in melee.")]
+    [TestCase("Harassing", "Once per round, this model may move by up to 3\" after shooting or being in melee.")]
+    [TestCase("Hit & Run", "Once per round, this model may move by up to 3\" after shooting or being in melee.")]
+    [TestCase("Hit & Run Fighter", "Once per round, this model may move by up to 3\" after being in melee.")]
+    [TestCase("Hit & Run Shooter", "Once per round, this model may move by up to 3\" after shooting.")]
+    [TestCase("Lacerate", "When attacking, the target must re-roll unmodified Defense results of 6.")]
+    [TestCase("Martial Prowess", "Once per game, if all models in this unit have this rule, it may be activated even if it had already activated this round (stops being Fatigued when activated again). Only up to one third of the units in the army with this rule at the beginning of the game (rounding up) may use it in a single round.")]
+    [TestCase("Evasive", "Enemies get -1 to hit rolls when attacking units where most models have this rule.")]
+    [TestCase("Melee Evasion", "Enemies get -1 to hit rolls in melee when attacking units where most models have this rule.")]
+    [TestCase("Fortified", "When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0).")]
+    [TestCase("Protected", "When a unit where most models have this rule takes wounds, roll one die for each. On a 6+ it is ignored.")]
+    [TestCase("Shielded", "Units where most models have this rule get +1 to Defense rolls against hits that are not from spells.")]
+    [TestCase("Increased Shooting Range", "This model gets +6\" range on its weapons when shooting.")]
+    [TestCase("Increased Shooting Range Aura", "This model and its unit get +6\" range on its weapons when shooting.")]
+    [TestCase("Unstoppable when Shooting", "This model gets Unstoppable on its weapons when shooting.")]
+    [TestCase("Bane when Shooting", "This model gets Bane on its weapons when shooting.")]
+    [TestCase("Shred when Shooting", "This model gets Shred on its weapons when shooting.")]
+    [TestCase("Shred in Melee", "This model gets Shred on its weapons in melee.")]
+    [TestCase("Rending in Melee", "This model gets Rending on its weapons in melee.")]
+    [TestCase("Unstoppable in Melee", "This model gets Unstoppable on its weapons in melee.")]
+    [TestCase("Bane in Melee Aura", "This model and its unit get Bane on its weapons in melee.")]
+    [TestCase("Bane when Shooting Aura", "This model and its unit get Bane on its weapons when shooting.")]
+    [TestCase("Rending in Melee Aura", "This model and its unit get Rending on its weapons in melee.")]
+    [TestCase("Shred in Melee Aura", "This model and its unit get Shred on its weapons in melee.")]
+    [TestCase("Shred when Shooting Aura", "This model and its unit get Shred on its weapons when shooting.")]
+    [TestCase("Unstoppable in Melee Aura", "This model and its unit get Unstoppable on its weapons in melee.")]
+    [TestCase("Unstoppable when Shooting Aura", "This model and its unit get Unstoppable on its weapons when shooting.")]
+    [TestCase("Ravage", "Once per round, when it's this model's turn to strike in melee, roll X dice before attacking, unless this unit is Fatigued. For each 6+ the target takes one wound.")]
+    [TestCase("Slayer", "When using Hold actions and shooting, or when charging, this model's weapons get AP(+2) if most models in the target have Tough(3) or higher.")]
+    public void TheCatalogDefinition_CarriesThe36Text(string name, string text)
+    {
+        Assert.That(Catalog(name).Description, Is.EqualTo(text));
+    }
+
+    // --- the "X on its weapons" grants are weapons only: a caster's spell hits are not its weapons -------------
+
+    [TestCase("Rending when shooting")]
+    [TestCase("Piercing Shooter")]
+    [TestCase("Piercing Shooting")]
+    [TestCase("Piercing Frenzy")]
+    [TestCase("Piercing Growth")]
+    [TestCase("Piercing Debuff Effect")]
+    [TestCase("Ambushing Piercing Shot")]
+    [TestCase("Piercing Marksman")]
+    [TestCase("Versatile Expert (Piercing)")]
+    public void TheWeaponGrant_GatesOutSpellHits(string name)
+    {
+        IEnumerable<HookEntry> attackEntries = Shipped(name).Passive.Where(e => e.Seat == ERuleSeat.Actor
+            && e.HookID is EHookID.Shooting_OnHitRollComplete or EHookID.Shooting_OnSaveRollComplete);
+        Assert.That(attackEntries, Is.Not.Empty);
+        foreach (HookEntry entry in attackEntries)
+            Assert.That(Mentions(entry.Condition), Is.True, $"'{name}' at {entry.HookID}: no isNotSpell");
+
+        static bool Mentions(Condition c) => c switch
+        {
+            Condition.IsNotSpell => true,
+            Condition.And and => Mentions(and.Left) || Mentions(and.Right),
+            _ => false,
+        };
+    }
+
+    // Versatile Defense (OWNER REVIEW, D3): 3.6 picks the effect per attack - a new defender decision this sweep does
+    // not build. Interim: the 3.5 deploy/activation pick, its helpers on the 3.6 9"/6" gate (#432 D8's advice).
+    [TestCase("Versatile Defense (Guard)")]
+    [TestCase("Versatile Defense (Evasion)")]
+    public void VersatileDefense_Interim_HelpersReadTheNineSixGate(string helper)
+    {
+        Assert.That(Shipped(helper).Passive.Single().Condition, Is.EqualTo(
+            new Condition.And(new Condition.AttackedFromOver(9f, 6f), MostModels)));
+    }
+
     // --- spell-phrase aliases ----------------------------------------------------------------------------------
 
     // The 3.6 spell text says "gets Shred on its weapons when shooting" where 3.5 said "gets Shred when shooting"; the

@@ -2295,9 +2295,15 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "isMelee"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -2643,14 +2649,20 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
             }
           },
           "right": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -2664,9 +2676,15 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "isMelee"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -2849,9 +2867,15 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "isMelee"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -4283,8 +4307,9 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "right": {
             "kind": "mostModelsHaveThisRule"
@@ -4303,7 +4328,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This unit gets +1 to defense rolls when shot or charged from over 9 inches away."
+    "description": "+1 to Defense rolls when shot/charged from over 9\"/6\" away."
   },
   {
     "name": "Versatile Defense (Evasion)",
@@ -4313,8 +4338,9 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "right": {
             "kind": "mostModelsHaveThisRule"
@@ -4333,7 +4359,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+    "description": "Enemy units shooting/charging it from over 9\"/6\" away get -1 to hit rolls."
   },
   {
     "name": "Versatile Defense",
@@ -4443,7 +4469,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When a unit where all models have this rule is deployed or activated, pick one effect until the unit's next activation: when shot or charged from over 9 inches away, it either gets +1 to defense rolls, or enemies get -1 to hit rolls against it."
+    "description": "When a unit where most models have this rule is deployed or activated, pick one effect until its next activation: when shot/charged from over 9\"/6\" away, it either gets +1 to Defense rolls, or enemy units get -1 to hit rolls against it."
   },
   {
     "name": "Versatile Defense Aura",
@@ -5072,11 +5098,17 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "tokenPresent",
-          "tType": {
-            "id": "PiercingFrenzyMarker"
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "PiercingFrenzyMarker"
+            },
+            "minCount": 1
           },
-          "minCount": 1
+          "right": {
+            "kind": "isNotSpell"
+          }
         },
         "effect": {
           "kind": "tokenScaledRollModifier",
@@ -5283,11 +5315,17 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "tokenPresent",
-          "tType": {
-            "id": "PiercingGrowthMarker"
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "PiercingGrowthMarker"
+            },
+            "minCount": 2
           },
-          "minCount": 2
+          "right": {
+            "kind": "isNotSpell"
+          }
         },
         "effect": {
           "kind": "tokenScaledRollModifier",
@@ -6052,7 +6090,7 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "always"
+          "kind": "isNotSpell"
         },
         "effect": {
           "kind": "reduceArmorPenetration",
@@ -7043,8 +7081,14 @@
     "passive": [
       {
         "hookID": "Deployment_OnPreDeploymentSelect",
-        "condition": { "kind": "always" },
-        "effect": { "kind": "deferDeployment", "timing": "LaterRound", "placementRangeInches": 9.0 },
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "deferDeployment",
+          "timing": "LaterRound",
+          "placementRangeInches": 9.0
+        },
         "lifetime": "UntilEndOfGame",
         "seat": "Actor"
       },
@@ -7052,10 +7096,31 @@
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
           "kind": "and",
-          "left": { "kind": "not", "inner": { "kind": "isMelee" } },
-          "right": { "kind": "tokenPresent", "tType": { "id": "ArrivedFromReserve" }, "minCount": 1 }
+          "left": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "ArrivedFromReserve"
+              },
+              "minCount": 1
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
+          }
         },
-        "effect": { "kind": "rollModifier", "rollKind": "Save", "delta": -1 },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
         "lifetime": "ThisAttack",
         "seat": "Actor"
       }
@@ -7425,9 +7490,15 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "isMelee"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -7454,9 +7525,15 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "isMelee"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -7478,9 +7555,15 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "isMelee"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -7504,9 +7587,15 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "isMelee"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "isNotSpell"
           }
         },
         "effect": {
@@ -7658,7 +7747,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "always"
+          "kind": "isNotSpell"
         },
         "effect": {
           "kind": "reroll",
@@ -7674,7 +7763,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "always"
+          "kind": "isNotSpell"
         },
         "effect": {
           "kind": "ignoreRule",
@@ -7719,7 +7808,7 @@
       {
         "hookID": "Shooting_OnSaveRollComplete",
         "condition": {
-          "kind": "always"
+          "kind": "isNotSpell"
         },
         "effect": {
           "kind": "addExtraWound",
