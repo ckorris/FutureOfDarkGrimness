@@ -27,7 +27,9 @@ campaigns re-base.)*
 3.6 rules (charge-origin and save-side range arms, Ravage / Hazardous / Scourge / granted tokens / markers, morale
 pass chance, Versatile picks, Spell Drain, the activation-start reposition move, Dangerous end positions). Small-game
 bench on 3.6 scratch armies (8 armies, 600-800 pts, 6,400 games): tactician vs solorules 85.9% (#442) vs 85.6% (the
-#435 head); Strategist leaf check 69.4% (shipped net) vs 66.6% (hand) against the Tactician, N = 160 each. Full record,
+#435 head); Strategist leaf check 69.4% (shipped net) vs 66.6% (hand) against the Tactician, N = 160 each (vs 78.3% on
+the 3.5 2k panel, not comparable - see the plan's post-release follow-up: re-measure at 2k after #438, then re-train on
+3.6 self-play if the figure is not recovered; Chris 2026-10-30: on the to-do list, too early now). Full record,
 hashes and seeds in `WorkItems/442-ai-and-calculator-parity-3-6.md` (D10, D11); the shipped leaf is kept as-is.
 
 **2026-09-09 (18:45, Opus 5) - CLOSING THE PERF STRAND. THE HONEST READ: WE BANKED A REAL 21-29% AND

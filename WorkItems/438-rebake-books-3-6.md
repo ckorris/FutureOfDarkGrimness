@@ -73,6 +73,11 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from the orchestrator, after #442): once the 88 books are re-baked, run the Strategist-vs-Tactician
+  head-to-head at 2,000 points on the shipped books (recipe: #442 D11, `FdgLab bench`, same seeds both arms) and record
+  the number in #191; it decides whether the Strategist leaf is re-trained on 3.6 (plan section 7, post-release
+  follow-up). Not a gate for this item.
+
 - 2026-10-30 (from #442): after the re-bake, re-run #442's bench with armies compiled from the SHIPPED 3.6 books (it
   ran on the #435 scratch imports): `FdgLab bench --pool <dir> --profile-a tactician --profile-b solorules`, recipe and
   baseline numbers in `WorkItems/442-ai-and-calculator-parity-3-6.md` (D10/D11). The AI reads Spell Drain /

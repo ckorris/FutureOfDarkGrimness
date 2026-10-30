@@ -333,6 +333,16 @@ and remain open for his review; each item file lists its own.
    CLAUDE.md examples, `docs/EngineNotes.md`, `docs/ResolverGuide.md` carry 3.6 numbers.
 7. Feature branch merged to `master` in the submodule first, then the superproject; `v0.4.0` tagged.
 
+Post-release follow-up (recorded here so it is not lost; NOT a gate for the 3.6 release):
+
+- **Re-train the Strategist leaf on 3.6.** `BuiltInAssets/StrategistLeafV1.json` was trained on 3.5 armies and its
+  inputs drifted at #417 (3" melee reach). On small 3.6 scratch armies it scores 69.4% vs the Tactician (#442 D11, N =
+  160) against 78.3% on the 3.5 2k panel (#191); the two runs are not comparable (stronger Tactician after #442,
+  different pool and points, small N). Step 1, after #438: repeat the #191 head-to-head at 2,000 points on the re-baked
+  shipped books with the #442 D11 recipe. Step 2, if the 3.5 figure is not recovered: re-train on 3.6 self-play under
+  #191's promotion rule (beats the incumbent on the benchmark, G4). Chris, 2026-10-30: "Retraining should definitely be
+  on the to-do list, but it seems like now is too early."
+
 ---
 
 ## Appendix A - code anchors for the core changes
