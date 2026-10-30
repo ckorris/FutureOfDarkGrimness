@@ -1,6 +1,9 @@
 # 434 — GDF supplement sweep to 3.6
 
-**Status**: in-progress (batch 1 of the burn-down landed 2026-10-30; see Notes)
+**Status**: done 2026-10-30 (Enhanced family deferred to #433; Assault / Parry are #424 / #423; owner review asked on
+D2, D3, D4, D7, D12, D13). Engine commits `98a005ec`, `7ae790c8`, `f1dffde5`, `087157b8`, `c6e28725`, `f856ec1f`,
+`b29a5fa4`, `d885d3cb` (submodule `feature/opr-3.6`); superproject batch commits `434: GDF sweep batch 1` ... `batch 8`
+plus the records commit.
 **Related**: #415, #431/#432/#433 (families, land first), #197 (the 3.5 sweep this mirrors), #436 (drops + text parity), #438 (bake)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high. Work book-family by book-family and commit per batch.
 
@@ -65,6 +68,42 @@ Deferred names also get a player-visible diagnostic (#168 path).
 - The ~45 `FutureOfDarkGrimness/Tests/*ShippedDataTests.cs` pin 3.5 rule counts and unit names (see #440).
 
 ## Notes
+
+- 2026-10-30: **Done - coverage, verification, hand-offs.**
+  - **Coverage (scratch imports outside the repo, the #431 / #432 recipe).** GDF only (the 49 GDF 3.6.0 snapshots, GDF
+    supplement): before "Total references: 20045 / Dead: 3163 (3163 no-definition across 92 names)" - Enhanced 162
+    refs / 60 names, other 3001 refs / 32 names (Assault 2740, Parry 12, this item's 249 across 30 names); after
+    "Total references: 20045 / Dead: 2914 (2914 no-definition across 62 names)" - Enhanced 162 / 60, other 2752 / 2
+    (Assault 2740 -> #424, Parry 12 -> #423). **Dead excluding Enhanced = 0 for this item's names.** All 90 entries (GDF
+    books with the GDF supplement, AoF books with GDF + AoF + override): before (the parent commit's supplements, today's
+    engine) "Total references: 30839 / Dead: 4439 (4439 no-definition across 128 names)" - Enhanced 299 / 91, other
+    4140 / 37; after "Total references: 30839 / Dead: 4074 (4074 no-definition across 98 names)" - Enhanced 299 / 91,
+    other 3775 / 7: Assault 3503, Parry 264, and five AoF-only names handed to #435 (Piercing Charge Buff 3, "AP(+1) on
+    its weapons in melee" 2, "Bane on its weapons in melee" 1, "Surge on their weapons" 1, "Unstoppable on its weapons
+    in melee" 1).
+  - **Bundled 3.5 books** `--rule-coverage FdgRaylib/Assets/Books`: "Total references: 22079 / Dead: 36 (36 no-definition
+    across 2 names)" before and after every batch (unchanged - the Counter-Attack family, #438).
+  - **`--validate-rules GdfRuleSupplement.json AofRuleSupplement.json`**: "OK: 294 definitions" -> "OK: 329 definitions,
+    no problems." (GDF alone "OK: 282"; each AofBookOverrides file on top also OK).
+  - **Tests.** Engine 4004 -> 4085 passed (1 skipped before and after). FdgRaylib.Tests 3107 -> 3326.
+  - **Smokes.** `printf "2\n2\n" | ... --headless` exit 0 after every batch. 3.6 scratch armies (`--import-opr` +
+    `--book-to-army`, units reordered so the rule carriers are the first four, `--headless --army ... --trace-rules`), all
+    exit 0: Wolf Brothers ("Wolf Master Destroyer's Wolfborn at Activation_OnActivationStart/Actor: fired ->
+    RepositionModels" / "... may move up to 3""), Voidspace Stalkers ("Butchers: Ravage 3 dice at 6+ dealt ...", "Butcher
+    Champion already rolled its once-per-round strike dice this round."), Ratmen Clans ("Quiprie's Hazardous at
+    Shooting_OnHitRollComplete/Actor: fired -> InflictSelfWounds"), Custodian Brothers ("Veteran Master Custodian's
+    Guardian at Shooting_OnHitRollComplete/Subject: fired -> ReduceArmorPenetration", "Versatile Expert - chose AP(+1)."),
+    Alien Hives ("Synapse Beasts's Spell Resistance at Shooting_OnSaveRollComplete/Subject: fired -> IgnoreWound").
+  - **App tests touched and why:** `GdfSweep36ShippedDataTests` (new, 180 cases), `GroundedShippedDataTests` (Grounded
+    Precision lost its carrier gate; Defense / Evasion twins), `QuickShotAndUnwieldyShippedDataTests` (the Debuff's 3.6 grant
+    target), `SergeantShippedDataTests` (AP body), `SpeedFeatShippedDataTests` (no gate), `TerrainDebuffShippedDataTests`
+    (Difficult in line of sight), `RavageAuraShippedDataTests` (GDF file, aura + helper), `RegenerativeStrengthShippedDataTests`
+    (the 3.6 consumer), `HazardousShippedDataTests` (Blast/Deadly flag + text), `MoraleTestThenShippedDataTests` (Mind
+    Control's key). No count-pinning `*ShippedDataTests` needed a change.
+  - **Engine tests touched:** new `GdfSweep36RuleIntegrationTests` / `GdfSweep36Definitions`, `ActivationMoveRuleIntegrationTests`,
+    `MindControlOncePerRoundRuleIntegrationTests`, `TagTarget36RuleIntegrationTests`; extended `RavageRuleIntegrationTests`,
+    `HazardousRuleIntegrationTests`, `RuleFireLintSelfTests`; re-pinned to 3.6 `RegenerativeStrengthRuleIntegrationTests`
+    (consumer half), `ThrustRuleIntegrationTests` (Slayer), `OprBookImporterTests` (no rename), `SpellPhraseCloneTests`.
 
 - 2026-10-30: **Batch 8 - the "X on its weapons" grants are weapons only; catalog 3.6 texts; Versatile Defense interim
   (engine).** 3.6 words every grant "gets X ON ITS WEAPONS when shooting / in melee / when attacking"; the engine has no
@@ -308,11 +347,148 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Decisions
 
-(none yet)
+- **D1 - Which texts change (2026-10-30).** Every name on the census's GDF "changed definitions" list that this
+  supplement or the catalog holds (core rules excepted - their items own them), every new 3.6 name, and every
+  definition re-authored here carries its 3.6.0 book text verbatim (ASCII-folded). Definitions whose 3.6 text equals
+  their 3.5 text but whose shipped description is a paraphrase are left for #436's text parity (52 GDF / 57 catalog
+  names, listed there).
+- **D2 - "gets X on its weapons ..." (2026-10-30) - OWNER REVIEW.** The engine has no separate weapon-scoped grant path:
+  a token grant (aura / buff / mark) is evaluated for every attack the unit makes, and a Weapon-scope rule named at unit
+  level is re-homed onto the unit's weapons. "This model gets X on its weapons" rules therefore stay Unit scope (a model
+  grant can only carry unit-scoped rules) - Sergeant keeps Weapon scope for its champion marking. The one observable
+  3.6 difference is a caster's SPELL hits, which the spell pipeline evaluates with the caster's rules at the same hooks
+  (IsMelee false): the "when shooting" / "when attacking" grants (catalog and supplement twins) now gate on
+  `isNotSpell`. Alternative: leave spells as before (one condition per entry to revert).
+- **D3 - Versatile Defense's per-attack pick (2026-10-30) - OWNER REVIEW, deferred: needs sign-off.** 3.6: "When a unit
+  where most models have this rule is shot/charged from over 9"/6" away, pick one effect: +1 to Defense rolls, or enemy
+  units get -1 to hit rolls against it. Note that you may pick a different effect each time the unit is attacked."
+  That is a DEFENDER decision inside every attack (#432 D8). Options: (a) a new defender request at the hit step (the
+  #423 Parry kind: new `IStageTaskRequest`, CLI/GUI/AI resolvers, a GUI prompt in the attacker's turn); (b) no prompt -
+  the engine picks the better effect per attack (the expected-wounds comparison is exact: -1 to hit vs +1 Defense given
+  Quality, Defense and AP); (c) keep the interim. Recommendation: (b) - it is a pure optimisation with no information
+  the defender has and the engine lacks, so a prompt per attack would only slow play; (a) if Chris wants the agency.
+  Shipped now: the interim (c) - the 3.5 deploy / activation pick, helpers on `attackedFromOver {9, 6}`, an honest
+  description of the interim. 0 unit refs in the 3.6 books; 5 via Versatile Defense Aura.
+- **D4 - Protection Feat's "you may use this rule" when wounds arrive (2026-10-30) - OWNER REVIEW, deferred: needs
+  sign-off.** 3.6 only changed all -> most models (already the gate). The #197 shape is an approximation: the unit
+  "braces" at activation start until its next activation, because "when this unit takes wounds ... you may use this rule"
+  is a defender decision mid-attack. Options: (a) a Yes/No (the existing YesNoRequest) raised inside AssignWoundsStage
+  when wounds land, defender's player, AI accepting at 2+ wounds; (b) auto-use on the first wounds taken; (c) keep.
+  Recommendation: (a) - the request type already exists on every resolver, only the seam is new. Shipped: (c), unchanged
+  description.
+- **D5 - Spell-phrase aliases are duplicate definitions (2026-10-30).** The 3.6 spell text produces names like "Shred on
+  its weapons when shooting"; there is no data-level alias, so each is authored as its canonical rule under the 3.6 name
+  (entries pinned equal to the canonical's). #439 may emit either name.
+- **D6 - Bravery and the AoF Defense Buff (2026-10-30).** Bravery Aura grants the catalog's Courage ("+1 to this unit's
+  morale test rolls" - #436 must keep Courage); Bravery Buff places a one-shot +1 Morale token (Morale Debuff's mirror).
+  AoF Defense Buff granted "Entrenched", whose old GDF copy was a plain +1 Defense; with Entrenched re-authored it now
+  places a one-shot +1 Defense token (Defense Debuff's mirror) - the one AoF definition touched, recorded for #435.
+- **D7 - Predator shares Bloodborn's shape (2026-10-30) - OWNER NOTE.** 3.6 Predator, Bloodborn, Clan Warrior, Primal and
+  Predator Shooter all read "For each unmodified roll of 6 to hit ..., this model may roll +1 attack with that weapon";
+  the 3.5 copies (unchanged text) approximate it as one extra HIT on a 6. Predator is authored on the same shape so the
+  family stays consistent; a true bonus attack needs a hit-face `AddBonusAttack` sibling (pre-existing gap).
+- **D8 - The reposition family moves (2026-10-30).** Bounding / Dash / Nimble / Rapid Blink / Wolfborn use the
+  triggered-move machinery Harassing uses (path, terrain, coherency, Dangerous terrain, optional); the most-models gate
+  stays as the 3.5 copies' reading of "all models with this rule in it". The move does not stamp MovedThisRound (it is
+  not the unit's action move), so a Hold after Wolfborn is still a Hold. Enhanced 2D3 (#433) sums with a second D3 entry.
+- **D9 - Regenerative Strength's 3.5 read side deleted (2026-10-30).** No dual paths (plan rule 6): the +X attacks stage
+  code is gone; old lists and the bundled 3.5 books still place markers but no longer spend them until #438 re-bakes /
+  the list is rebuilt.
+- **D10 - Ravage's "once per round" is the stage's gate (2026-10-30).** Every rule `ResolveRavageWoundsStage` resolves
+  says it, so one token per striking unit (rolled once per round; a strike that rolls nothing spends nothing). Ravage
+  Aura is a real aura of a one-die helper because the per-model count reads a token grant as "this model and its unit".
+- **D11 - Takedown Shot / Strike keep one attack (2026-10-30).** The 3.6 text says X, and X is 1 in every 3.6.0 book (3 /
+  5 GDF and 8 AoF refs); making the count argument-driven would drop rating-less 3.5 references. Revisit if a book prints
+  X > 1.
+- **D12 - Hazardous: which model takes it (2026-10-30) - OWNER REVIEW.** The dice of a volley are pooled, so "the model
+  that rolled the 1" is unknowable; each natural 1's wounds land on a carrier of the fired profile in turn (an
+  already-wounded carrier first, then unit order), overflow on that model lost (a Deadly clump's rule), never spilled
+  onto a model that did not fire. Alternatives: let the attacking player pick the carrier per 1 (a prompt), or pour into
+  the carriers like a unit pool.
+- **D13 - Tag's two modes in one selector (2026-10-30) - OWNER REVIEW.** "Place X tokens on one enemy unit, or one token
+  on X enemy units": the player picks 1..X units; one pick gets X tokens, more get one each. Picking 2..X-1 units is
+  allowed and only costs the player tokens. Tag tokens are claimed one per attack ("remove ONE token"); the Spotters
+  keep spend-any-number. Alternative: two labelled abilities (needs the action menu to show labels for same-rule offers).
+- **D14 - Mind Control's once per round (2026-10-30).** Keyed per rule on the moved unit; a refused move still takes the
+  Morale Test (the text limits the move, not the test); a declined or zero-length move is not "moved".
+- **D15 - Smaller calls (2026-10-30).** Entrenched = Artillery's defensive facet (same 3.6 sentence); Grounded Precision
+  gates on terrain only (no carrier clause in 3.6); Speed Feat lost its ownership gate (3.6 text); Guardian / Primeborn
+  are Fortified's shape; Fortified Growth re-authored to its text (the 3.5 copy ticked at round end per token and
+  cleared on Shaken - it did not match its 3.5 text either); Speed Debuff's "enemy model" uses Spell Drain's selector
+  convention (the model's unit); Vengeance keeps the owner-signed literal 1 token (#197); the importer's Lust / War
+  Disciples rename is gone (3.6 prints one Dangerous Terrain Debuff); Slayer / Ranged Slayer read "Hold" as not after
+  moving (Artillery / Indirect's convention), which needed `HitRollCompleteContext.AttackerMoved`.
+
+## Ledger
+
+Every GDF name this sweep touched or left dead. "Engine test" names the pinning case(s); "shape" means the definition is
+entry-for-entry another rule's tested shape (pinned so by `GdfSweep36ShippedDataTests`). App side, every GDF row: the
+3.6 text / shape in `GdfSweep36ShippedDataTests` and `RuleSupplementLintTests.EverySupplementRuleFires`.
+
+| Rule(s) | Definition | Test / tested shape / deferral |
+|---------|------------|--------------------------------|
+| Spell Resistance (+ Aura) | GDF supplement (new) | `GdfSweep36RuleIntegrationTests.SpellResistance_*` (spell 2+, other 6+ at any range and in melee, minority) |
+| Dodge | GDF (new) | `...Dodge_*` (melee -1, shooting / Fatigued / Shaken / minority nothing) |
+| Bravery Aura, Bravery Buff | GDF (new) | Courage's tested aura; the Buff = Morale Debuff's StatModifier mirror (shape) |
+| Grounded Defense (+ Aura), Grounded Evasion | GDF (new) | shape: Grounded Reinforcement / Grounded Stealth (`GroundedTerrainRuleIntegrationTests`) |
+| Grounded Precision | GDF (re-authored) | `...GroundedPrecision_AModelCarriedCopy_*` |
+| Piercing Charge (+ Aura) | GDF (new) | `...PiercingCharge_ApPlusOne_OnlyWhenCharging` |
+| Piercing Marksman (+ Aura) | GDF (new) | `...PiercingMarksman_*` (10" / 8" / melee, spell excluded) |
+| Precision Marksman | GDF (new) | shape: Targeting Visor |
+| Predator (+ Aura) | GDF (new) | shape: Bloodborn (D7) |
+| Thrust in Melee (+ Buff), Thrust in Melee Aura | GDF (new / re-authored) | shape: catalog Thrust (`ThrustRuleIntegrationTests`) |
+| Versatile Expert (+ helpers) | GDF (new) | `...VersatileExpert_*` (two labelled picks, AP ungated, +1 to hit) |
+| Nimble | GDF (new) | shape: Wolfborn (move) |
+| Vicious | GDF (new) | shape: Mischievous |
+| Infiltrating Precision Strike | GDF (new) | `...InfiltratingPrecisionStrike_*` |
+| Unwieldy on its weapons in melee; Unwieldy Debuff | GDF (new / re-authored) | shape: Unwieldy in melee (`UnwieldyRuleIntegrationTests`) |
+| Rapid Rush Buff | GDF (moved from AoF) | shape: Rapid Advance Buff |
+| 10 spell-phrase aliases (D5) | GDF (new) | shape: their catalog / supplement canonical rules |
+| Entrenched | GDF (re-authored) | `...Entrenched_*` (13" unmoved, 11", moved) |
+| Fortified Growth | GDF (re-authored) | `...FortifiedGrowth_*` (round-start clock, max 4, Shaken; AP per two tokens) |
+| Guardian, Primeborn | GDF (re-authored) | `...Guardian_*` (2" and 20", control) |
+| Sergeant | GDF (re-authored) | `...Sergeant_TheCarryingWeapon_*`; champion marking `SergeantRuleIntegrationTests` |
+| Shatter | GDF (re-authored) | `...Shatter_*` |
+| Speed Feat | GDF (re-authored) | `SpeedFeatShippedDataTests` (offer shape) |
+| Difficult Terrain Debuff | GDF (LoS) | `TerrainDebuffShippedDataTests` |
+| Bounding, Dash, Rapid Blink, Wolfborn, Nimble | GDF (move) | `ActivationMoveRuleIntegrationTests` (8) |
+| Ravage | catalog (C#) | `RavageRuleIntegrationTests` (+6: hero, host, grant, once per round, Fatigue, text) |
+| Regenerative Strength | GDF (re-authored) | `RegenerativeStrengthRuleIntegrationTests` (consumer half, 8) |
+| Ravage Aura, Ravage (Aura) | GDF (moved from AoF, re-authored) | `RavageAuraShippedDataTests`; `RavageRuleIntegrationTests.AGrantedCopy_*` |
+| Slayer | catalog | `ThrustRuleIntegrationTests.Slayer_*` (re-pinned) |
+| Ranged Slayer | GDF | `GdfSweep36RuleIntegrationTests.RangedSlayer_*` |
+| Hazardous | GDF | `HazardousRuleIntegrationTests` (+6) |
+| Mind Control | GDF | `MindControlOncePerRoundRuleIntegrationTests` (5) |
+| Piercing Tag, Precision Tag, Piercing Target, Precision Target | GDF | `TagTarget36RuleIntegrationTests` (10) |
+| Rending when shooting, Piercing Shooter / Shooting, Piercing Frenzy / Growth, Piercing Debuff Effect, Ambushing Piercing Shot (spell gate) | GDF | `GdfSweep36RuleIntegrationTests.AnApWhenShootingGrant_*` / `AShredWhenAttackingGrant_*` (the catalog twins), shape pinned |
+| Unstoppable / Shred / Bane when shooting, AP(1) when shooting, Bane / Shred when attacking (spell gate) | catalog | same two cases; `SpellPhraseCloneTests` |
+| Takedown Shot, Takedown Strike, Vengeance, Versatile Reach | GDF (text) | existing `ExtraAttack` / `Vengeance` / `VersatileReach` tests (D11, D15) |
+| Text only (behaviour already 3.6): Battleborn, Honor Code, Steadfast, Dangerous / Defense / Fatigue / Morale / Piercing Debuff, Defensive Frenzy / Growth, Inquisitorial Agent, Melee Slayer, No Retreat, Piercing / Precision Frenzy / Growth / Spotter, Plaguebound, Self-Repair, Rending / Shred / Unstoppable / Bane / Indirect / Piercing Shooting Mark, Increased Shooting Range Buff / Mark, Bane in Melee Buff, Rending when Shooting Aura, Indirect when Shooting Aura, Piercing Fighter / Shooter Aura, Targeting Visor, Speed Debuff, Precision Charge, Precision Fighter | GDF | their existing #197 tests |
+| Text only, catalog: Guerrilla, Harassing, Hit & Run (+ Fighter / Shooter), Lacerate, Martial Prowess, Evasive, Melee Evasion, Fortified, Protected, Shielded, Increased Shooting Range (+ Aura), Unstoppable / Bane / Shred when Shooting, Shred / Rending / Unstoppable in Melee, Bane / Rending / Shred / Unstoppable in Melee Aura, Bane / Shred / Unstoppable when Shooting Aura | catalog (C#) | existing tests; text pinned in `GdfSweep36ShippedDataTests.TheCatalogDefinition_CarriesThe36Text` |
+| Versatile Defense (+ helpers, Aura) | GDF (interim) | deferred: needs sign-off (D3); interim helpers pinned (`VersatileDefense_Interim_*`, `VersatileDefenseRuleIntegrationTests`) |
+| Protection Feat (+ Aura) | GDF (unchanged approximation) | deferred: needs sign-off (D4) |
+| The 60 "Enhanced X" names (162 refs in the GDF books) | none | deferred to #433 (design fork) |
+| Assault (2740 refs) | none | deferred to #424 (design fork, Q12) |
+| Parry (12 refs) | none | deferred to #423 (design fork, Q11) |
+
+Already finished by other items and only checked here: the #431 weapon family, the #432 range family (Changebound,
+Darkborn, Devout, Ferocious, Guarded, Havocbound, Highborn, Hive Bond, Hold the Line, Infected, Knightborn, Lustbound,
+Machine-Fog, Screened, Scurry, Sturdy, Warbound, Watchborn, Brutal, Piercing Warrior, Violent, Valiant, Shrouded,
+Shadowborn, Extra Reach, Warding, Versatile Warrior), Counter in Melee (+ Aura / Buff, #422), Quick Throw (#425),
+Vanguard / Fanatic / Spawn / Split / Reinforcement (#426), Spell Drain (#429), Unique Hero (#430).
 
 ## Outcome
 
-(open)
+Done 2026-10-30 on `feature/opr-3.6`. Every rule name the 49 GDF 3.6.0 books reference now resolves to a definition with
+its 3.6 text and behaviour, except the 60 "Enhanced X" names (#433's design fork) and the core forks Assault (#424) and
+Parry (#423): a scratch import goes from 92 dead names (3163 refs) to 62 (2914 refs), none of them this item's. New
+engine vocabulary, each with JSON round trips, lint awareness and integration tests: the reposition family as a real
+move (`repositionAtActivation.move`), per-model Ravage on #447's template with a once-per-round strike-dice gate
+(`tokenTotal`, `dealAutoWounds.perModel`), `HitRollCompleteContext.AttackerMoved` (Hold at the AP hook), Hazardous on the
+firing model (`countFromBlastOrDeadly`), Mind Control's per-target once-per-round (`triggeredMove.oncePerRoundKey`),
+Tag / Target (`maxCountFromArgument`, `argIfSoleTarget`, single-spend Tag tokens), and the spell exclusion on the "X on
+its weapons" grants. Open for the owner: D2, D3, D4, D7, D12, D13. Hand-offs recorded on #433, #435, #436, #438, #439,
+#442.
 
 ## Rules for the agent (plan section 1, restated)
 

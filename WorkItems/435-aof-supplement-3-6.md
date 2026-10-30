@@ -60,6 +60,21 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30 (from #434): (1) **Moved from the AoF file to the GDF file** (AoF merges GDF first, so AoF keeps them):
+  Rapid Rush Buff (3.6 text) and Ravage Aura (re-authored: an aura granting the one-die helper "Ravage (Aura)", with
+  Ravage's 3.6 Fatigue gate; see #434 D10). (2) **Touched in the AoF file:** Defense Buff granted "Entrenched", whose old
+  GDF copy was a plain +1 Defense; 3.6 Entrenched is Artillery's 12" shooting facet, so the Buff now places a one-shot +1
+  Defense token (`statModifier Save +1 NextTrigger`, Defense Debuff's mirror) with the 3.6 text - check the AoF books
+  agree. (3) **Shareable GDF definitions** (AoF inherits them by name): Spell Resistance (+ Aura), Dodge, Bravery Aura /
+  Buff, Piercing Charge (+ Aura), Piercing / Precision Marksman, Thrust in Melee (+ Buff), Versatile Expert, Nimble,
+  Vicious, Predator (+ Aura), Grounded Defense / Evasion, the reposition family as a move (Bounding, Rapid Blink,
+  Wolfborn, Dash; AoF Wave-Step and its kin should take `move: true` too), Hazardous (model takes X for Blast/Deadly),
+  Mind Control's `oncePerRoundKey`, Tag / Target, the weapons-only `isNotSpell` gate on "X on its weapons" grants, the
+  catalog's Slayer on a Hold and Ravage 3.6. (4) **AoF-only names still dead** in the 90-entry scratch import after #434:
+  Piercing Charge Buff 3 (Thrust in Melee Buff's shape over "Piercing Charge"), and four spell phrases the AoF spells
+  produce - "AP(+1) on its weapons in melee" 2, "Bane on its weapons in melee" 1, "Unstoppable on its weapons in melee" 1,
+  "Surge on their weapons" 1 - author them like #434's spell-phrase aliases (the canonical rule's entries under the 3.6
+  phrase) or let #439 emit the canonical names. Takedown Strike's X is 1 in all 8 AoF refs (#434 D11).
 - 2026-10-30 (from #426): Drakesworn is DONE - its 3.6 text is Vanguard's word for word ("...over 9" away from
   non-Vanguard enemy units"), so `AofRuleSupplement.json` now carries Vanguard's exact effect (`repositionOnDeploy`,
   `maxInches` 9, `enemyClearanceInches` 9, `exemptEnemyRule` "Vanguard", most models), pinned by

@@ -126,6 +126,8 @@ public class GdfSweep36ShippedDataTests
         yield return new TestCaseData("Precision Tag", "Once per game, during this model's activation, before attacking, place X tokens on one enemy unit within 24\" and in line of sight, or one token on X enemy units within 24\" and in line of sight. When attacking, friendly units may remove one token from their target before rolling to hit to get +1 to hit rolls.").SetArgDisplayNames("Precision Tag");
         yield return new TestCaseData("Piercing Target", "Once per game, during this model's activation, before attacking, pick X enemy units within 18\" and in line of sight of it, and place one token on them. Friendly units get AP(+1) on their weapons when attacking them.").SetArgDisplayNames("Piercing Target");
         yield return new TestCaseData("Precision Target", "Once per game, during this model's activation, before attacking, pick X enemy units within 18\" and in line of sight of it, and place one token on them. Friendly units get +1 to hit rolls when attacking them.").SetArgDisplayNames("Precision Target");
+        yield return new TestCaseData("Precision Charge", "This model gets +1 to hit rolls when charging.").SetArgDisplayNames("Precision Charge");
+        yield return new TestCaseData("Precision Fighter", "This model gets +1 to hit rolls in melee.").SetArgDisplayNames("Precision Fighter");
     }
 
     [TestCaseSource(nameof(Texts))]

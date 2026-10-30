@@ -2744,7 +2744,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "+1 to hit rolls in melee."
+    "description": "This model gets +1 to hit rolls in melee."
   },
   {
     "name": "Precision Fighter Aura",
@@ -3046,7 +3046,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When charging, +1 to hit rolls in melee."
+    "description": "This model gets +1 to hit rolls when charging."
   },
   {
     "name": "Precision Charge Aura",

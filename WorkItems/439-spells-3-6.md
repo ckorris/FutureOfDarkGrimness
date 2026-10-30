@@ -63,6 +63,19 @@ so trailing clauses (including "in line of sight") are silently ignored today; L
 
 ## Notes
 
+- 2026-10-30 (from #434): **names the parser may emit - both forms resolve today.** The GDF supplement now defines the
+  3.6 phrases the current parser produces as exact clones of their canonical rules (#434 D5): "Unstoppable on their
+  weapons when shooting" = "Unstoppable when shooting", "Shred on its weapons when shooting" = "Shred when shooting",
+  "AP(1) on their weapons when shooting" = "AP(1) when shooting", "Indirect on their weapons" = "Indirect when shooting",
+  "Rending on their weapons in melee" = "Rending in melee", "+6" range on its weapons when shooting" / "+6" range on their
+  weapons when shooting" = "+6" range when shooting", "Bane on their weapons when attacking" = "Bane when attacking",
+  "Shred on its weapons in melee" = "Shred in melee", "Shred on their weapons when attacking" = "Shred when attacking",
+  "Unwieldy on its weapons in melee" (the 3.6 Unwieldy Debuff's own grant; "Unwieldy in melee" is the 3.5 name). If the
+  parser learns the suffix, emit the CANONICAL names (they are the catalog rules the auras and buffs grant); the clones
+  can then go (#436). Still undefined (AoF spells, #435): "AP(+1) on its weapons in melee" (= "AP(+1) in melee"), "Bane on
+  its weapons in melee" (= "Bane in melee"), "Unstoppable on its weapons in melee" (= "Unstoppable in melee"), "Surge on
+  their weapons" (= "Surge"). Note also (#434 D2): the "when shooting" / "when attacking" grants now skip spell hits
+  (`isNotSpell`), so a buffed caster's damage spells no longer pick them up.
 - 2026-10-30 (from #429): **the LoS clause -> flag is done in the importer; you only re-import.** Rule implemented:
   `OprBookImporter.SpellTextRequiresLineOfSight(text)` = `\bin line of sight\b`, case-insensitive, anywhere in the
   effect text, and `TryParseSpell` feeds it to EVERY shape's `TargetSelector.RequireLineOfSight` (damage, mark, grant,

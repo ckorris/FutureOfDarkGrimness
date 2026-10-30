@@ -73,6 +73,15 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #434): the bake must pick up: (1) the reposition family's `move: true` (Bounding, Dash, Nimble,
+  Rapid Blink, Wolfborn) - the bundled 3.5 books embed the placement copies; (2) Regenerative Strength's 3.6 consumer (the
+  3.5 "+X attacks" stage code is deleted, so the two bundled 3.5 copies place markers that never spend until re-baked,
+  #434 D9); (3) Ravage Aura now lives in the GDF supplement (aura + "Ravage (Aura)" helper) - Daemons of Plague (GDF) and
+  the AoF books naming it embed it from there; (4) the importer no longer renames Lust / War Disciples' "Dangerous Terrain
+  Debuff" to "(Immediate)" - re-baked books carry the bare name; (5) new JSON fields the baked definitions may carry:
+  `repositionAtActivation.move`, `dealAutoWounds.perModel`, value sources `tokenTotal` / `argIfSoleTarget`,
+  `selfWoundOnUnmodifiedRoll.countFromBlastOrDeadly`, `triggeredMove.oncePerRoundKey`, `targetSelector.maxCountFromArgument`
+  (all optional; old data parses with the 3.5 meaning). Bundled `--rule-coverage` stayed "Dead: 36" through #434.
 - 2026-10-30 (from #447): Impact / Heavy Impact are per model, and a one-model Impact item now compiles to a #407 model
   grant (`ListCompiler.ModelPersonalRuleNames`) unless every model still holds the item after the purchase. The
   re-bake brings 42 multi-model profile carriers (3.6.0 snapshots; today's bundled books have 73), 23 more multi-model

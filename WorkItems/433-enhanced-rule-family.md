@@ -73,6 +73,26 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Notes
 
+- 2026-10-30 (from #434): **what is still dead is exactly your family.** A scratch import of the 49 GDF 3.6.0 books
+  against the finished `GdfRuleSupplement.json` leaves 60 Enhanced names / 162 refs (all 90 entries: 91 names / 299 refs)
+  and nothing else of #434's: Enhanced Bloodborn Aura 6, Darkborn Aura 6, Knightborn Aura 6, Primal Buff 6, Wolfborn Aura
+  6, Changebound 5, Changebound Aura 5, Lustbound 5, Lustbound Aura 5, Plaguebound 5, Plaguebound Aura 5, Self-Repair
+  Buff 5, Warbound 5, Warbound Aura 5, Devout Aura 4, Watchborn Aura 4, Ferocious / Guardian / Guerrilla / Havocbound /
+  Hold the Line / Infected / Scurry / Sturdy Aura 3 each, Shadowborn 3, Shadowborn Buff 3, Bloodborn / Clan Warrior Aura /
+  Darkborn / Devout / Guardian / Harassing Aura / Knightborn / Machine-Fog Aura / Mischievous Aura / Rapid Blink Aura /
+  Scrapper Aura / Shadowborn Aura / Targeting Visor Aura / Watchborn / Wolfborn 2 each, and 1 each Clan Warrior,
+  Ferocious, Harassing, Havocbound, Highborn (+ Aura), Hive Bond (+ Aura), Hold the Line, Infected, Machine-Fog,
+  Mischievous, Primal, Rapid Blink, Scrapper, Scurry, Self-Repair, Sturdy, Targeting Visor. Base-rule shapes you build on
+  that #434 changed: (1) Bounding / Dash / Nimble / Rapid Blink / Wolfborn are a real MOVE now -
+  `repositionAtActivation {distance: d3, plusInches, move: true}`; the fold SUMS entries into one move, so "2D3 instead of
+  D3" is a second `{d3, 0, move: true}` entry (an old placement-shaped copy summed with it widens the same move).
+  (2) Guardian / Primeborn are unconditional (Fortified's `reduceArmorPenetration 1` gated on most models): "AP(-2)
+  instead of AP(-1)" is a second `reduceArmorPenetration 1`. (3) Targeting Visor / Precision Marksman: `not(isMelee) and
+  distanceGreaterThan 9` +1 to hit; Piercing Marksman adds `isNotSpell`. (4) Plaguebound / Self-Repair / Protected:
+  `ignoreWoundOnRoll 6` on most models. (5) The Bloodborn family (Bloodborn, Clan Warrior, Primal, Predator, Predator
+  Shooter) is still one extra HIT on a 6, not "+1 attack" (#434 D7) - your 5-6 variants inherit that approximation unless
+  you build the bonus-attack primitive. (6) The "X Buff" grants (`addRule ... NextTrigger`) and "X Aura" grants
+  (`aura`) follow the supplement's existing shapes.
 - 2026-10-29 (from #432): the base rules Enhanced X lifts are now authored on two conditions and one effect - name
   them in whichever option you take. Conditions: `attackingFromOver {shootInches: 9, chargeInches: 6}` (Actor seat:
   Devout, Ferocious, Brutal, Lucky, Havocbound, Piercing Warrior, Infected, Violent, Warbound, Destroyer, and the

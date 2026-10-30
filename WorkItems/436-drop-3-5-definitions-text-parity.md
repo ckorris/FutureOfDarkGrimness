@@ -63,6 +63,29 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #434): (1) **Dead 3.5 names seen (no 3.6.0 GDF book names them):** "Unwieldy in melee" (kept for
+  3.5 data; 3.6 grants "Unwieldy on its weapons in melee"), "Dangerous Terrain Debuff (Immediate)" (+ its Effect helper;
+  the importer no longer renames to it), Courage Aura / Courage Buff (replaced by Bravery Aura / Buff - but KEEP the
+  catalog's "Courage": Bravery Aura grants it), Grounded Reinforcement / Grounded Stealth (3.6 renamed them Grounded
+  Defense / Grounded Evasion, same shapes), Predator Fighter, Piercing Assault (+ Aura) and Piercing Hunter (+ Aura) in
+  the catalog (3.6 names them Piercing Charge / Piercing Marksman, authored in the GDF file), Versatile Attack (+ helpers,
+  Buff), the Feat helpers only if their Feats go (Piercing / Precision Shooting and Precision Fighting stay: the 3.6
+  Marks still grant them), `TokenType.RegenerativeStrengthSpent` (its stage code is deleted, #434
+  D9). (2) **Paraphrased descriptions left for you** (3.6 text equals 3.5 text, shipped copy paraphrases it): GDF supplement
+  Armor, Bloodborn, Bounding Aura, Caster Group, Casting Buff, Clan Warrior, Defensive Growth Aura, Entrenched Buff,
+  Extended Buff Range, Furious Mark, Grounded Precision Aura, Guarded Buff, Infiltrate (+ Aura), Instinctive, Melee Slayer
+  Aura, Mischievous, Precision Attacks Buff, Precision Charge / Fighter Aura, Precision Fighter Buff, Precision Fighting /
+  Shooting Mark, Precision Shooter Aura / Buff, Predator Shooter (+ Aura), Primal, Protection Feat (+ Aura; see #434 D4),
+  Quick Shot Mark, Ranged Slayer Aura, Rapid Advance Buff, Regeneration Buff, Relentless Mark, Scrapper, Screened Aura,
+  Slayer Mark, Speed Feat Aura, Spell Accumulator, Spell Conduit, Steadfast Aura, Strider Aura, Surprise Attack, Swift (+
+  Aura, Buff), Unpredictable Fighter / Shooter Mark, Versatile Defense (+ Aura; interim, #434 D3), Versatile Reach Aura;
+  catalog (core and auras) Bane, Blast, Deadly, Fearless, Furious, Regeneration, Relentless, Rending, Shred, Stealth,
+  Surge, Takedown, Tough, Unstoppable, Thrust, Slow, Precise, Good Shot, Quick, Rapid Advance / Charge / Rush (+ Auras),
+  Teleport (+ Aura), Mend, Delayed Action, Re-Deployment, Crossing Attack, Retaliate, Deathstrike, Self-Destruct, the
+  Unpredictable family and the remaining "X Aura"s ("gain" vs 3.6 "get"). #434 put the 3.6 text on every census
+  "changed definition" it holds and on the catalog's non-core changed names (pinned by `GdfSweep36ShippedDataTests`).
+  (3) The "Defense" rule (48 books define "This model gets +X to Defense rolls.", 0 unit refs) has no definition - the
+  importer folds it into the stat; nothing to do unless #438 finds a reference.
 - 2026-10-30 (from #421): `CoreRuleCatalog.Hero`'s description is now the Core Rules v3.6.0 Hero text verbatim (ASCII;
   pinned by `HeroMoraleAuraRuleIntegrationTests.HeroDescription_IsTheCore360Wording`), so the description sweep can
   skip it. No Hero definition exists in either supplement.

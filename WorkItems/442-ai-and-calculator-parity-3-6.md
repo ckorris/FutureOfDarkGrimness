@@ -51,6 +51,18 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #434): AI / calculator gaps the GDF sweep leaves: (1) Ravage is not priced by `CombatMath` at all
+  (no `DealAutoWounds` reader); if you add it, use `ResolveImpactHitsStage.ChargerParticipant` (a joined hero's Ravage),
+  respect the once-per-round `TokenType.StrikeDiceUsed` gate and the Fatigue condition, and price Regenerative Strength's
+  4+ token pool. (2) Hazardous: the self-wounds now land on the models that fired (one die's worth each, overflow lost)
+  and are worth Blast(X) / Deadly(X) - the AI does not weigh losing the gunner. (3) The activation-time reposition family
+  (Wolfborn / Bounding / Rapid Blink / Nimble / Dash) raises the ordinary movement request at activation start; the AI
+  answers it like a Harassing move with no plan for it. (4) Tag tokens (`SingleSpendHitBonus` / `SingleSpendApBonus`) are
+  claimed one per attack; the AI takes the spend-first default; `CombatMath` does not read them (nor the Spotters'). Tag /
+  Target target picking is the generic loop. (5) Mind Control's per-target once-per-round gate is invisible to the AI, which
+  may spend it on a unit that cannot be moved again. (6) Slayer / Ranged Slayer now need a Hold: `CombatMath` passes its
+  context's `AttackerMoved` into the hit-complete context (done), but its move-then-shoot planning should value the Hold.
+  (7) Dodge / Spell Resistance / Entrenched / Guardian price through the shared evaluator already.
 - 2026-10-30 (from #447): Impact(X) is per model now (X dice per living model carrying it; a joined hero's own Impact
   adds; Brace subtracts from the total). Done (pinned): `CombatMath.EstimateMelee` and the calculator's read-only
   pre-check take the charge-contact participants from the stage (`ResolveImpactHitsStage.ChargerParticipant` /
