@@ -7948,17 +7948,100 @@
     "passive": [
       {
         "hookID": "Lifecycle_OnWoundIgnored",
-        "condition": { "kind": "always" },
-        "effect": { "kind": "grantIgnoredWoundMarker", "tType": { "id": "RegenerativeStrengthMarker" }, "clear": { "kind": "manualOnly" } },
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "grantIgnoredWoundMarker",
+          "tType": {
+            "id": "RegenerativeStrengthMarker"
+          },
+          "clear": {
+            "kind": "manualOnly"
+          }
+        },
         "lifetime": "UntilEndOfGame",
         "seat": "Subject"
+      },
+      {
+        "hookID": "Melee_OnChargeContact",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "countsAsFatiguedInMelee"
+          }
+        },
+        "effect": {
+          "kind": "dealAutoWounds",
+          "diceCountPerModel": {
+            "kind": "tokenTotal",
+            "tType": {
+              "id": "RegenerativeStrengthMarker"
+            }
+          },
+          "successThreshold": 4,
+          "perModel": false
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
       }
     ],
     "activated": [],
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Place one marker on this model when it ignores a wound. When in melee, pick one of its weapons to get +X attacks, where X is the number of markers on it."
+    "description": "Place one token on this model when it ignores a wound. Once per round, when it's this model's turn to strike in melee, roll as many dice as tokens on it before attacking, unless this unit is Fatigued. For each 4+ the target takes one wound."
+  },
+  {
+    "name": "Ravage Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Ravage (Aura)"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Ravage(+1)."
+  },
+  {
+    "name": "Ravage (Aura)",
+    "passive": [
+      {
+        "hookID": "Melee_OnChargeContact",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "countsAsFatiguedInMelee"
+          }
+        },
+        "effect": {
+          "kind": "dealAutoWounds",
+          "diceCountPerModel": {
+            "kind": "literal",
+            "value": 1
+          },
+          "successThreshold": 6
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Ravage(+1) from Ravage Aura: once per round, when it's this model's turn to strike in melee, roll 1 more die before attacking, unless this unit is Fatigued. For each 6+ the target takes one wound."
   },
   {
     "name": "Anti-Cover",

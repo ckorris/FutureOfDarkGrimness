@@ -54,7 +54,7 @@ public class RegenerativeStrengthShippedDataTests
         SpecialRuleDefinition rule = Supplement();
 
         Assert.That(rule.Activated, Is.Empty);
-        HookEntry entry = rule.Passive.Single();
+        HookEntry entry = rule.Passive.Single(e => e.HookID == EHookID.Lifecycle_OnWoundIgnored);
 
         Assert.That(entry.HookID, Is.EqualTo(EHookID.Lifecycle_OnWoundIgnored),
             "the hook was declared since #042 but had no context and no fire site until this slice - a " +
@@ -75,7 +75,8 @@ public class RegenerativeStrengthShippedDataTests
     [Test]
     public void TheMarker_IsAManualOnlyAccumulator_OfItsOwnTokenType()
     {
-        var effect = (Effect.GrantIgnoredWoundMarker)Supplement().Passive.Single().Effect;
+        var effect = (Effect.GrantIgnoredWoundMarker)Supplement().Passive
+            .Single(e => e.HookID == EHookID.Lifecycle_OnWoundIgnored).Effect;
 
         Assert.That(effect.TType.Id, Is.EqualTo(MarkerTokenId),
             "its own type, not the shared AccumulatorTokens pool that Spell Accumulator lends from");
@@ -83,6 +84,24 @@ public class RegenerativeStrengthShippedDataTests
             "and the engine constant the read side looks up must be the same type the data grants");
         Assert.That(effect.Clear, Is.InstanceOf<TokenClearTrigger.ManualOnly>(),
             "markers are never spent and last the whole game - a RoundEnd sweep would erase them nightly");
+    }
+
+    // #434: the 3.6 consumer - "Once per round, when it's this model's turn to strike in melee, roll as many dice as
+    // tokens on it before attacking, unless this unit is Fatigued. For each 4+ the target takes one wound." Rule data
+    // now (the 3.5 "+X attacks on one weapon" stage code is gone): the token total as one pool at 4+, rolled by
+    // ResolveRavageWoundsStage with Ravage's once-per-round gate.
+    [Test]
+    public void The36Consumer_IsATokenSizedFourPlusWoundPool_BeforeStriking()
+    {
+        SpecialRuleDefinition rule = Supplement();
+        HookEntry strike = rule.Passive.Single(e => e.HookID == EHookID.Melee_OnChargeContact);
+
+        Assert.That(strike.Condition, Is.EqualTo(new Condition.Not(new Condition.CountsAsFatiguedInMelee())));
+        Assert.That(strike.Effect, Is.EqualTo(new Effect.DealAutoWounds(
+            new ValueSource.TokenTotal(TokenType.RegenerativeStrengthMarker), SuccessThreshold: 4, PerModel: false)));
+        Assert.That(rule.Description, Is.EqualTo("Place one token on this model when it ignores a wound. Once per " +
+            "round, when it's this model's turn to strike in melee, roll as many dice as tokens on it before attacking, " +
+            "unless this unit is Fatigued. For each 4+ the target takes one wound."));
     }
 
     // ---- The corpus census -----------------------------------------------------------------------------

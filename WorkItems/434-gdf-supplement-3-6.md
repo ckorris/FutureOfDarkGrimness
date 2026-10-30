@@ -66,6 +66,48 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30: **Batch 3 - Ravage per model and 3.6; Regenerative Strength 3.6; Ravage Aura (engine).** 3.6 Ravage: "Once
+  per round, when it's this model's turn to strike in melee, roll X dice before attacking, unless this unit is Fatigued.
+  For each 6+ the target takes one wound." Regenerative Strength: "... Once per round, when it's this model's turn to
+  strike in melee, roll as many dice as tokens on it before attacking, unless this unit is Fatigued. For each 4+ the
+  target takes one wound." Ravage Aura: "This model and its unit get Ravage(+1)."
+  - **#447's per-model gaps fixed** with its template: `ResolveRavageWoundsStage` now evaluates the striker WITH its
+    living models (`ResolveImpactHitsStage.ChargerParticipant`), so a joined hero's own Ravage fires; `Effect.
+    DealAutoWounds` counts carriers per ATTACHMENT through #447's `ChargeImpactHits.CountCarriers` (now `internal
+    static`, shared): the host's copy counts its native models, the hero's copy the hero, a token grant every living
+    model, a weapon copy the wielders of THAT attachment (no multiplication on a resumed game).
+  - **Once per round** is the stage's gate (every rule it resolves says it): a unit whose pre-strike pool was rolled is
+    stamped `TokenType.StrikeDiceUsed` (catalog token, RoundEnd clear) and skipped at its next strike this round; a
+    strike that rolls nothing (no tokens yet, Fatigued) spends nothing. **Fatigue** is each rule's condition
+    (`not(countsAsFatiguedInMelee)`): catalog Ravage (C#) with the 3.6 text, Regenerative Strength and the aura helper.
+    Each rule rolls and is named on its own pool ("Butchers: Ravage 3 dice at 6+ dealt ..."), the "(Aura)" helper
+    folding into the Ravage pool.
+  - **New JSON vocabulary:** value source `tokenTotal {tType}` (the bearer's token magnitude, else count, rounded to a
+    whole die count); `dealAutoWounds.perModel` (default true = the old meaning; false for a pool the bearer holds as a
+    whole). `RuleFireLint` seeds the tokens a `tokenTotal` pool reads (`SatisfyEffectInputs`).
+  - **Regenerative Strength:** the 3.5 read side (`RegenerativeStrengthAttacks`, stage code that offered +X attacks on
+    one melee weapon from `DetermineHitRollStage`) is DELETED - no dual paths (plan rule 6); the 3.6 consumer is the
+    supplement entry `Melee_OnChargeContact: not(Fatigued) -> dealAutoWounds(tokenTotal(RegenerativeStrengthMarker), 4,
+    perModel false)` beside the unchanged marker producer. D9 (bundled 3.5 books / old lists keep the marker but lose
+    the +X attacks until #438 re-bakes).
+  - **Ravage Aura** moved from the AoF file to the GDF file (Daemons of Plague names it; AoF merges GDF first) and became
+    a real aura granting "Ravage (Aura)" (a literal one-die Ravage with the Fatigue gate) - a token grant is the one
+    attachment the per-model count reads as "this model and its unit".
+  - **Tests.** Engine: `RavageRuleIntegrationTests` +6 (a joined hero's own Ravage fires and counts the hero; the host's
+    counts its native models; a granted copy counts every model; once per round; Fatigued rolls nothing; the catalog
+    text and gate), `RegenerativeStrengthRuleIntegrationTests` consumer half rewritten for 3.6 (8: dice = tokens at 4+,
+    3s miss, fractional total rounds, no tokens = no roll and no use spent, once per round, Fatigued, no extra attacks
+    any more, JSON round trip + legacy `dealAutoWounds` parses per-model), `RuleFireLintSelfTests` +1 (token-sized pool
+    lints clean). App: `RavageAuraShippedDataTests` (aura + helper, GDF file, dice through the charger participant),
+    `RegenerativeStrengthShippedDataTests` (+ the 3.6 consumer). Negative controls (each reverted): the striker without
+    its models fails the two hero cases; the once-per-round check off fails both once-per-round cases; the old
+    all-living carrier count fails the host case; the lint seeding off fails its self-test.
+  - **Smoke.** Voidspace Stalkers scratch army (Butchers + Butcher Champion first), seeds 3/5/8, `--trace-rules`: exit 0,
+    "Butchers: Ravage 3 dice at 6+ dealt 0 unsaveable wound(s) to Butchers." and "Butcher Champion already rolled its
+    once-per-round strike dice this round."
+  - **Coverage after batch 3:** "Total references: 20045 / Dead: 2914 (2914 no-definition across 62 names)" - only the
+    60 Enhanced names (#433), Assault (#424) and Parry (#423) remain.
+
 - 2026-10-30: **Batch 2 - the activation-time reposition family is a real move (engine).** 3.6 Bounding / Dash "you may
   move all models with this rule in it by up to D3+1"", Nimble / Rapid Blink / Wolfborn "by up to D3"" (3.5: "place ...
   anywhere fully within"). `Effect.RepositionAtActivation` gained `Move` (JSON `move`, default false - an old book or
