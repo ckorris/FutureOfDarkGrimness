@@ -29,6 +29,7 @@ public class CombatReportViewTests
         public int ArmorPenetration { get; init; }
         public IReadOnlyList<ResolvedRule> RuleDefinitions { get; init; } = new List<ResolvedRule>();
         public string? EffectKey => null;
+        public string? MeleeEffectKey => null;
     }
 
     private static VolleyReport Volley(
