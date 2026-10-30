@@ -43,6 +43,19 @@ public class RuleTextFlowTests
             Assert.That(Flatten(WeaponLine(weapon)), Is.EqualTo(ArmyBuilderScreen.WeaponSummary(weapon)));
     }
 
+    // #424: the Forge prints an Assault pistol once, range and all, with "Assault" as a hoverable rule segment.
+    [Test]
+    public void WeaponLine_AssaultPistol_PrintsOnce_WithAHoverableAssaultSegment()
+    {
+        WeaponFileEntry pistol = Weapon("Heavy Pistol", 5, 12, 1, 1, "Assault");
+        IReadOnlyList<RuleSegment> line = WeaponLine(pistol);
+
+        Assert.That(Flatten(line), Is.EqualTo("5x Heavy Pistol (12\", A1, AP(1), Assault)"));
+        Assert.That(Flatten(line), Is.EqualTo(ArmyBuilderScreen.WeaponSummary(pistol)));
+        Assert.That(line.Count(segment => segment.Rule is not null && segment.Rule.PrintableName == "Assault"), Is.EqualTo(1),
+            "one hoverable Assault segment, carrying the rule entry for the glossary tooltip");
+    }
+
     [Test]
     public void ItemLine_FlattensToTheSameTextAsItemSummary()
     {

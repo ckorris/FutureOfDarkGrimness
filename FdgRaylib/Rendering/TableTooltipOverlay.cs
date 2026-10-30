@@ -192,7 +192,7 @@ public class TableTooltipOverlay
             {
                 var w = grp.First();
                 string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
-                string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
+                string range = WeaponStatFormatter.RangeLabel(w, "Melee");
                 string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
                 string wRules = WeaponStatFormatter.RuleList(w);
                 string wRuleSuffix = wRules.Length > 0 ? $"  {wRules}" : "";
@@ -275,7 +275,7 @@ public class TableTooltipOverlay
         {
             var w = grp.First();
             string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
-            string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
+            string range = WeaponStatFormatter.RangeLabel(w, "Melee");
             string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
             string rules = WeaponStatFormatter.RuleList(w);
             string ruleSuffix = rules.Length > 0 ? $"  {rules}" : "";
@@ -520,8 +520,9 @@ public class TableTooltipOverlay
             float cy = _originY + (_tableH - p.z) * _scale;
 
             // Attack radii: one circle per distinct weapon range this model carries (melee weapons have no
-            // shooting radius -- the charge circle covers that reach).
-            foreach (var grp in m.Weapons.Where(w => w.RangeInches > 0f)
+            // shooting radius -- the charge circle covers that reach). #424: the seam, so an Assault pistol
+            // draws its shooting ring like any gun and its swing rides the charge circle.
+            foreach (var grp in m.Weapons.Where(w => w.IsRanged())
                                          .GroupBy(w => w.RangeInches)
                                          .OrderBy(g => g.Key))
             {

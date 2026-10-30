@@ -27,6 +27,17 @@ public class RuleGlossaryTests
         Assert.That(glossary.Describe("Stealth"), Is.Not.Empty);
     }
 
+    // #424: a re-baked 3.6 book embeds the supplement's Assault, so the hover text is the 3.6 sentence.
+    [Test]
+    public void Describe_Assault_IsThe36Sentence_FromTheShippedSupplement()
+    {
+        string path = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "GdfRuleSupplement.json");
+        RuleGlossary glossary = RuleGlossary.Build(BookRuleSupplement.LoadDefinitions(System.IO.File.ReadAllText(path)));
+
+        Assert.That(glossary.Describe("Assault"), Is.EqualTo("Counts as both a ranged weapon and a melee weapon."));
+        Assert.That(glossary.Tooltip(new SpecialRuleEntry_Core("Assault")), Does.Contain("Counts as both"));
+    }
+
     [Test]
     public void Describe_BookDefinition_OverridesCoreByName()
     {

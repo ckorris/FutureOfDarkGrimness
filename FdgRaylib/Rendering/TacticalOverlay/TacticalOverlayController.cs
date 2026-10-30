@@ -388,7 +388,7 @@ public class TacticalOverlayController
 
             foreach (Weapon w in m.Weapons)
             {
-                if (w.RangeInches <= 0f) continue;
+                if (!w.IsRanged()) continue; // #424: the seam, not the range
                 float eff = rangeTarget != null
                     ? EffectiveRange(req!, w.Name, rangeTarget.ID, w.RangeInches)
                     : w.RangeInches;
@@ -1024,7 +1024,7 @@ public class TacticalOverlayController
         foreach (IModel m in movingUnit.Models)
             if (m.GetIsAlive())
                 foreach (Weapon w in m.Weapons)
-                    if (w.RangeInches > 0f) weaponNames.Add(w.Name);
+                    if (w.IsRanged()) weaponNames.Add(w.Name);
 
         foreach (string wname in weaponNames)
         {
@@ -1034,7 +1034,7 @@ public class TacticalOverlayController
                 if (!m.GetIsAlive()) continue;
                 Weapon? w = null;
                 foreach (Weapon cand in m.Weapons)
-                    if (cand.RangeInches > 0f && cand.Name == wname) { w = cand; break; }
+                    if (cand.IsRanged() && cand.Name == wname) { w = cand; break; }
                 if (w == null) continue;
 
                 float eff = EffectiveRange(req, wname, targetUnit.ID, w.RangeInches);
@@ -1160,7 +1160,7 @@ public class TacticalOverlayController
             if (!m.GetIsAlive()) continue;
             foreach (Weapon w in m.Weapons)
             {
-                if (w.RangeInches <= 0f) continue;
+                if (!w.IsRanged()) continue; // #424: the seam, not the range
                 float eff = overrideTarget != null
                     ? EffectiveRange(req, w.Name, overrideTarget.ID, w.RangeInches)
                     : w.RangeInches;
@@ -1292,7 +1292,7 @@ public class TacticalOverlayController
             if (!m.GetIsAlive()) continue;
             foreach (Weapon w in m.Weapons)
             {
-                if (w.RangeInches <= 0f) continue;
+                if (!w.IsRanged()) continue; // #424: the seam, not the range
                 float eff = EffectiveRange(req, w.Name, target.ID, w.RangeInches);
                 if (eff > longest) longest = eff;
             }
@@ -1527,7 +1527,7 @@ public class TacticalOverlayController
             if (!ghosts.TryGetValue(m, out Position gp)) continue;
             if (gp.x == 0f && gp.z == 0f) continue;
 
-            var weaponGroups = m.Weapons.Where(w => w.RangeInches > 0f).GroupBy(w => w.Name).ToList();
+            var weaponGroups = m.Weapons.Where(w => w.IsRanged()).GroupBy(w => w.Name).ToList();
             if (weaponGroups.Count == 0) continue;
 
             var pips = new List<(int accent, PipState state)>();
