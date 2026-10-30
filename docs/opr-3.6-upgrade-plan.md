@@ -276,8 +276,8 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418) are a separate set
-and remain open for his review.
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417) are a separate set
+and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file
   numbers from `origin/master`, so until the reservation is visible there every new master item will
