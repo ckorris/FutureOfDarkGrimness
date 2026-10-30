@@ -26,6 +26,25 @@ internal static class HoloDirector
     /// <summary>The measuring line starts after the (advancing) vehicles have arrived.</summary>
     public const float MeasureFrom = AdvanceTime + 1f;
 
+    /// <summary>Seconds for the scan line to cross the table once, short side to short side.</summary>
+    public const float SweepPeriod = 6f;
+
+    /// <summary>How far past each short edge the line starts and ends, so it slides on and off.</summary>
+    public const float SweepOvershoot = 3f;
+
+    /// <summary>
+    /// Where the scan line is along the table's long axis (inches, X), or null before the fight has
+    /// started. It runs from past the left short edge to past the right one, then starts again (owner,
+    /// 2026-10-30: a wave from one side to the other, long-wise, instead of the ripple).
+    /// </summary>
+    public static float? SweepX(float battleTime)
+    {
+        if (battleTime < FightsFrom) return null;
+        float phase = (battleTime - FightsFrom) % SweepPeriod / SweepPeriod;
+        float start = -HoloTableScene.HalfW - SweepOvershoot;
+        return start + phase * (HoloTableScene.TableW + 2f * SweepOvershoot);
+    }
+
     /// <summary>The moment the "Still" setting shows: everyone has arrived, the fight and the measure are
     /// on, and the camera is on the overview.</summary>
     public const float StillMoment = 12f;

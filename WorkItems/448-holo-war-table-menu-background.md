@@ -103,6 +103,20 @@ re-run the script after any colour or group change.
    `--menu-preview out.png privacy`.)
 
 ## Notes
+- 2026-10-30: **Owner feedback round 1** (running it live: "it's so cool!") - four requests:
+  (1) randomise terrain, unit positions, movement and shooting every battle; (2) the pulse becomes a wave
+  crossing the table lengthwise instead of the ripple; (3) the camera's close-up always on fighting;
+  (4) remove the little fire. **(2)-(4) done** in one commit: `DrawFire`, `Burning`/`FireAt` deleted
+  (casualties stay as dashed bases); `HoloDirector.SweepX` - a scan line from 3" past the left short
+  edge to 3" past the right every 6s, drawn across the table's width with two echoes, lighting terrain
+  (per line midpoint / fill centroid) and the cross-table grid lines and ticks as it passes;
+  `HoloEngagement.Clashes` (unordered shooter/target pairs - a pair trading fire both ways is one) +
+  `FocusBox(index)` (box round both units' models, 4" margin, min 24"x18") drive the close-up, cycling
+  through the clashes battle by battle; the vehicle-measure close-up is gone. Tests: scan line runs one
+  way along X from past one short edge to past the other and repeats; close-up boxes cover the clash's
+  models and differ between clashes (first version keyed on Fights and the test caught two battles
+  framing the same pair); nothing to frame with no fights. Mutation-checked (sweep reversed, always the
+  first clash). (1) is the next commit.
 - 2026-10-30: **Slice 5 implemented.** `EMenuBackground` (Animated default / Still / Off) saved in
   `SavedViewSettings.MenuBackground`, loaded through `ViewSettings` (a hand-edited out-of-range number
   reads as Animated; an unknown NAME fails the whole file to defaults, the existing policy for every

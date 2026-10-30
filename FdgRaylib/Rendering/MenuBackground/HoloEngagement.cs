@@ -9,9 +9,10 @@ internal sealed record HoloShot(HoloUnit Shooter, HoloUnit Target, Vector2 From,
 internal sealed record HoloMeasure(HoloUnit A, HoloUnit B, Vector2 From, Vector2 To, float Inches);
 
 /// <summary>
-/// What is happening on the menu's war table (#448 slice 3): who is shooting whom, where the fire is,
-/// which two units are being measured between, and where the radar pulse starts. Pure geometry over a
-/// <see cref="HoloSkirmish"/> and the terrain footprints; the renderer animates it.
+/// What is happening on the menu's war table (#448 slice 3): who is shooting whom, which two units are
+/// being measured between, and where the camera's close-up goes. Pure geometry over a
+/// <see cref="HoloSkirmish"/> and the terrain footprints; the renderer animates it. (The flames on the
+/// stricken unit were taken out at the owner's request, 2026-10-30.)
 ///
 /// <para>Line of fire is the simple local check the owner chose (2026-10-30): a shot or measure is
 /// allowed only if its 2D segment stays at least <see cref="ClearancePad"/> from every blocking piece's
@@ -28,18 +29,42 @@ internal sealed class HoloEngagement
     private const int MaxFights = 3;
 
     public IReadOnlyList<HoloShot> Shots { get; }
-    public HoloUnit? Burning { get; }
-    public Vector2 FireAt { get; }
-    public HoloMeasure? Measure { get; }
-    public Vector2 PulseCentre { get; }
 
-    private HoloEngagement(IReadOnlyList<HoloShot> shots, HoloUnit? burning, Vector2 fireAt, HoloMeasure? measure, Vector2 pulseCentre)
+    /// <summary>Each fight once: a shooting unit and the unit it fires at.</summary>
+    public IReadOnlyList<(HoloUnit Shooter, HoloUnit Target)> Fights { get; }
+
+    /// <summary>Each pair of units trading fire, once however many ways they shoot - the close-ups.</summary>
+    public IReadOnlyList<(HoloUnit A, HoloUnit B)> Clashes { get; }
+
+    public HoloMeasure? Measure { get; }
+
+    private HoloEngagement(IReadOnlyList<HoloShot> shots, HoloMeasure? measure)
     {
         Shots = shots;
-        Burning = burning;
-        FireAt = fireAt;
+        Fights = shots.Select(s => (s.Shooter, s.Target)).Distinct().ToList();
+        Clashes = Fights.Where(f => !Fights.Any(g => g.Shooter == f.Target && g.Target == f.Shooter)
+                                    || string.CompareOrdinal(f.Shooter.Label, f.Target.Label) < 0).ToList();
         Measure = measure;
-        PulseCentre = pulseCentre;
+    }
+
+    /// <summary>Margin round a fight's models in the camera's close-up, and the smallest close-up, inches.</summary>
+    private const float FocusMargin = 4f;
+    private static readonly Vector2 MinFocusHalf = new(12f, 9f);
+
+    /// <summary>
+    /// Where the camera's close-up looks (owner, 2026-10-30: "always zoom somewhere where there's
+    /// fighting"): a box round every model of one clash - clash <paramref name="index"/>, wrapping, so
+    /// successive battles look at different fights - with a margin, never smaller than a dozen inches
+    /// across. Null when nothing is fighting.
+    /// </summary>
+    public (Vector2 Centre, Vector2 Half)? FocusBox(int index)
+    {
+        if (Clashes.Count == 0) return null;
+        var (a, b) = Clashes[((index % Clashes.Count) + Clashes.Count) % Clashes.Count];
+        var pts = a.Models.Concat(b.Models).ToList();
+        var min = new Vector2(pts.Min(p => p.X), pts.Min(p => p.Y)) - new Vector2(FocusMargin);
+        var max = new Vector2(pts.Max(p => p.X), pts.Max(p => p.Y)) + new Vector2(FocusMargin);
+        return ((min + max) * 0.5f, Vector2.Max((max - min) * 0.5f, MinFocusHalf));
     }
 
     public static HoloEngagement Plan(HoloSkirmish skirmish, IReadOnlyList<HoloFootprint> footprints) =>
@@ -73,16 +98,8 @@ internal sealed class HoloEngagement
             shots.AddRange(c.Lines);
         }
 
-        // The fire goes on a target that has already lost models, if one is under fire; else the first.
-        var targets = shots.Select(s => s.Target).Distinct().ToList();
-        HoloUnit? burning = targets.FirstOrDefault(t => t.Dead > 0) ?? targets.FirstOrDefault();
-        Vector2 fireAt = burning is null ? Vector2.Zero
-            : burning.Dead > 0 ? Mean(burning.Models.Take(burning.Dead)) : burning.Alive.First();
-
         var engaged = shots.SelectMany(s => new[] { s.Shooter, s.Target }).Distinct().ToList();
-        Vector2 pulse = engaged.Count > 0 ? Mean(engaged.Select(u => u.Centre)) : Vector2.Zero;
-
-        return new HoloEngagement(shots, burning, fireAt, PlanMeasure(units, footprints, engaged), pulse);
+        return new HoloEngagement(shots, PlanMeasure(units, footprints, engaged));
     }
 
     /// <summary>The two vehicles if their line is clear, else the closest clear pair of units not already
@@ -137,12 +154,6 @@ internal sealed class HoloEngagement
                 if (SegmentDistance(a, b, poly[i], poly[(i + 1) % poly.Count]) < pad) return false;
         }
         return true;
-    }
-
-    private static Vector2 Mean(IEnumerable<Vector2> pts)
-    {
-        var list = pts.ToList();
-        return list.Aggregate(Vector2.Zero, (s, p) => s + p) / list.Count;
     }
 
     private static bool Contains(IReadOnlyList<Vector2> poly, Vector2 p)

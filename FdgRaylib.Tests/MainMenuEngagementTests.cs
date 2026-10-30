@@ -74,7 +74,7 @@ public class MainMenuEngagementTests
     }
 
     [Test]
-    public void Plan_HasAFight_FireOnACasualty_AndAMeasure()
+    public void Plan_HasAFight_AndAMeasure()
     {
         var plan = HoloEngagement.Plan(new HoloSkirmish(MenuArmies.All[0], MenuArmies.All[1]), Scene.Footprints);
 
@@ -85,9 +85,8 @@ public class MainMenuEngagementTests
         Assert.That(plan.Shots.All(s => !s.Shooter.IsVehicle && !s.Target.IsVehicle), Is.True,
             "the vehicles are kept for the measuring line");
 
-        Assert.That(plan.Burning, Is.Not.Null);
-        Assert.That(plan.Burning!.Dead, Is.GreaterThan(0), "the fire is on the unit that has already lost models");
-        Assert.That(plan.Shots.Any(s => s.Target == plan.Burning), Is.True, "and it is under fire");
+        Assert.That(plan.Fights, Is.EquivalentTo(plan.Shots.Select(s => (s.Shooter, s.Target)).Distinct()),
+            "Fights lists each shooter/target pair once");
 
         Assert.That(plan.Measure, Is.Not.Null);
         Assert.That(plan.Measure!.A.IsVehicle && plan.Measure.B.IsVehicle, Is.True, "vehicle to vehicle");
@@ -119,10 +118,33 @@ public class MainMenuEngagementTests
     }
 
     [Test]
-    public void PulseCentre_IsOnTheTable()
+    public void CameraCloseUp_AlwaysFramesAFight()
     {
+        // Owner, 2026-10-30: "when the camera zooms, make it always zoom somewhere where there's fighting".
         var plan = HoloEngagement.Plan(new HoloSkirmish(MenuArmies.All[0], MenuArmies.All[1]), Scene.Footprints);
-        Assert.That(MathF.Abs(plan.PulseCentre.X), Is.LessThan(HoloTableScene.HalfW));
-        Assert.That(MathF.Abs(plan.PulseCentre.Y), Is.LessThan(HoloTableScene.HalfD));
+        Assert.That(plan.Clashes, Is.Not.Empty);
+        foreach (var (a, b) in plan.Clashes)
+            Assert.That(plan.Fights.Any(f => (f.Shooter == a && f.Target == b) || (f.Shooter == b && f.Target == a)), Is.True);
+        for (int battle = 0; battle < 6; battle++)
+        {
+            var (centre, half) = plan.FocusBox(battle)!.Value;
+            var (shooter, target) = plan.Clashes[battle % plan.Clashes.Count];
+            foreach (Vector2 m in shooter.Models.Concat(target.Models))
+            {
+                Assert.That(MathF.Abs(m.X - centre.X), Is.LessThanOrEqualTo(half.X), $"battle {battle}: {shooter.Label}/{target.Label}");
+                Assert.That(MathF.Abs(m.Y - centre.Y), Is.LessThanOrEqualTo(half.Y), $"battle {battle}: {shooter.Label}/{target.Label}");
+            }
+            Assert.That(half.X, Is.LessThan(HoloTableScene.HalfW), "a close-up, not the whole table");
+        }
+        Assert.That(Enumerable.Range(0, plan.Clashes.Count).Select(i => plan.FocusBox(i)!.Value.Centre).Distinct().Count(),
+            Is.EqualTo(plan.Clashes.Count), "successive battles look at different fights (a pair firing both ways is one)");
+        Assert.That(plan.Clashes.Count, Is.LessThan(plan.Fights.Count), "this layout has a pair trading fire both ways");
+    }
+
+    [Test]
+    public void CameraCloseUp_HasNothingToFrame_WhenNobodyFights()
+    {
+        var plan = HoloEngagement.Plan(Array.Empty<HoloUnit>(), Array.Empty<HoloFootprint>());
+        Assert.That(plan.FocusBox(0), Is.Null);
     }
 }

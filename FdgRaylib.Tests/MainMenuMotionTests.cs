@@ -186,6 +186,27 @@ public class MainMenuMotionTests
     }
 
     [Test]
+    public void ScanLine_CrossesTheTableLengthwise_ThenStartsAgain()
+    {
+        // Owner, 2026-10-30: a wave from one table side to the other, long-wise, instead of the ripple.
+        Assert.That(HoloDirector.SweepX(0f), Is.Null, "nothing before the fight starts");
+        float start = HoloDirector.SweepX(HoloDirector.FightsFrom)!.Value;
+        float end = HoloDirector.SweepX(HoloDirector.FightsFrom + HoloDirector.SweepPeriod - 0.001f)!.Value;
+        Assert.That(start, Is.LessThan(-HoloTableScene.HalfW), "starts beyond the left short edge");
+        Assert.That(end, Is.GreaterThan(HoloTableScene.HalfW), "ends beyond the right one");
+
+        float last = start;
+        for (float t = HoloDirector.FightsFrom + 0.05f; t < HoloDirector.FightsFrom + HoloDirector.SweepPeriod - 0.05f; t += 0.05f)
+        {
+            float x = HoloDirector.SweepX(t)!.Value;
+            Assert.That(x, Is.GreaterThan(last), "always moving the same way along the long axis");
+            last = x;
+        }
+        Assert.That(HoloDirector.SweepX(HoloDirector.FightsFrom + HoloDirector.SweepPeriod)!.Value, Is.EqualTo(start).Within(1e-3f),
+            "and goes round again");
+    }
+
+    [Test]
     public void StillMoment_ShowsTheWholeFight()
     {
         float t = HoloDirector.StillMoment;
