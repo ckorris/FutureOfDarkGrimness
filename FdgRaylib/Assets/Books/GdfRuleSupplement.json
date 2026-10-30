@@ -8698,5 +8698,376 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Counts as both a ranged weapon and a melee weapon."
+  },
+  {
+    "name": "Enhanced Lustbound",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Advance"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Lustbound"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Advance",
+          "distanceInches": 1,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Rush"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Lustbound"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Rush",
+          "distanceInches": 2,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Charge"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Lustbound"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": 2,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Lustbound, it moves +2\" on Advance and +4\" on Rush/Charge from Lustbound (instead of only +1\" and +2\")."
+  },
+  {
+    "name": "Enhanced Scurry",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Advance"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Scurry"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Advance",
+          "distanceInches": 1,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Rush"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Scurry"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Rush",
+          "distanceInches": 2,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Charge"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Scurry"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": 2,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Scurry, it moves +2\" on Advance and +4\" on Rush/Charge from Scurry (instead of only +1\" and +2\")."
+  },
+  {
+    "name": "Enhanced Agile",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Advance"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Agile"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Advance",
+          "distanceInches": 1,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Rush"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Agile"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Rush",
+          "distanceInches": 2,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Charge"
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Agile"
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": 2,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Agile, it moves +2\" on Advance and +4\" on Rush/Charge from Agile (instead of only +1\" and +2\")."
+  },
+  {
+    "name": "Enhanced Darkborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Darkborn"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Darkborn, enemy units shooting/charging it get -8\"/-4\" range to a min. of 6\" from Darkborn (instead of only -4\"/-2\")."
+  },
+  {
+    "name": "Enhanced Shadowborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Shadowborn"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Shadowborn, enemy units shooting/charging it get -8\"/-4\" range to a min. of 6\" from Shadowborn (instead of only -4\"/-2\")."
+  },
+  {
+    "name": "Enhanced Shrouded",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Shrouded"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Shrouded, enemy units shooting/charging it get -8\"/-4\" range to a min. of 6\" from Shrouded (instead of only -4\"/-2\")."
+  },
+  {
+    "name": "Enhanced Highborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "unitHasRule",
+          "ruleName": "Highborn"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": 4,
+          "minResultInches": 0,
+          "chargeDelta": 2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Highborn, it gets +8\"/+4\" range when shooting/charging from Highborn (instead of only +4\"/+2\")."
+  },
+  {
+    "name": "Enhanced Extra Reach",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "unitHasRule",
+          "ruleName": "Extra Reach"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": 4,
+          "minResultInches": 0,
+          "chargeDelta": 2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Extra Reach, it gets +8\"/+4\" range when shooting/charging from Extra Reach (instead of only +4\"/+2\")."
   }
 ]

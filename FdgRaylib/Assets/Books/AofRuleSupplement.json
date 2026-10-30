@@ -1775,5 +1775,61 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Gets Surge on its weapons."
+  },
+  {
+    "name": "Enhanced Wild Veil",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Wild Veil"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Wild Veil, enemy units shooting/charging it get -8\"/-4\" range to a min. of 6\" from Wild Veil (instead of only -4\"/-2\")."
+  },
+  {
+    "name": "Enhanced Royal Legion",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "unitHasRule",
+          "ruleName": "Royal Legion"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": 4,
+          "minResultInches": 0,
+          "chargeDelta": 2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Royal Legion, it gets +8\"/+4\" range when shooting/charging from Royal Legion (instead of only +4\"/+2\")."
   }
 ]
