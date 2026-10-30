@@ -1,6 +1,6 @@
 # 450 — Engine: replay format + host-side ReplayRecorder
 
-**Status**: todo
+**Status**: in progress (2026-10-30)
 **Related**: plan `docs/replay-plan.md` sections 4.1, 4.2, 5; umbrella #449; consumers #451 (client), #452 (auto-write), #453 (save embedding), #454 (playback)
 
 ## Goal
@@ -94,11 +94,28 @@ Engine suite green; `dotnet build`; headless smoke exits 0; a GUI local game sti
 user-visible changes in this ticket). Commit on `feature/replay` (engine first, then bump).
 
 ## Notes
-- (none yet)
+- 2026-10-30 - Slice 1 (format): `FutureOfDarkGrimness/Replay/` gains `ReplayFormat` (version 1, build/engine
+  stamps, the container's JSON settings), `ReplayFile` (extension), `ReplayFormatException`, `ReplayHeader` +
+  `ReplaySlot`, the ten event records, `ReplayWriter.WriteGzip` and the minimal `ReplayReader.ReadGzip`.
+  `Tests/ReplayFormatTests.cs` (11): header and every kind round-trip with Seq/T, a guard that the fixture
+  covers every registered Kind, line shape (Kind right after Seq/T, no CLR type names, enums by name, nulls
+  omitted), verbatim embedded JSON and date-shaped strings, refusal of FormatVersion+1 (exact message), of
+  non-gzip, of an empty file, and of unknown/missing Kinds. Engine suite 3401 passed, 1 skipped.
 
 ## Decisions
 - (record here: where exactly `ActivationStart` is emitted; where the first snapshot is taken; the
   serializer settings used for beats and whether `WireJsonSettings.For(store)` is needed for requests)
+- **Kind discriminator.** `ReplayEvent.Kind` is a computed property serialized right after `Seq`/`T`
+  (`JsonProperty(Order)`), so every line starts `{"Seq":n,"T":ms,"Kind":"..."`. The reader resolves Kind
+  through a fixed table (`ReplayEventKinds`); the container's settings have NO `TypeNameHandling`, because a
+  replay file is untrusted input. The embedded payload strings stay opaque here and are deserialized later
+  through the store's / wire's allowlist binder.
+- **Payload JSON stays an escaped string**, not a nested raw object: a string round-trips byte-exact (raw
+  embedding would re-format floats on read). Costs some escaping; gzip absorbs most of it.
+- **Container JSON settings:** enums by name, nulls omitted (marker lines stay short), dates UTC, and
+  `DateParseHandling.None` so a date-shaped log line is not re-formatted by the Kind converter's JObject.
+- **`LogEvent.Debug`** (omitted when false) is one field beyond plan 4.1's `Line`: the live log hides
+  Debug-category lines unless the toggle is on, and the viewer needs the same flag to do likewise.
 
 ## Outcome
 (open)
