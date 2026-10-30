@@ -68,6 +68,17 @@ the final store equals the live final store", and `ReplayPlayer` is usable from 
 Engine suite green; `dotnet build`. No app change in this ticket.
 
 ## Notes
+- 2026-10-30 - Slice 2 (reader warnings, timeline, step filter): `ReplayDocument.Warnings` (a `BuildVersion`
+  mismatch is a warning naming both builds, never an error; dev builds all stamp `-dev`). The reader was
+  already a line-at-a-time read off the gzip stream, so "streaming" needed no change. `Replay/ReplayTimeline.cs`:
+  `ReplayTimeline` (snapshots, markers, requests joined to replies/errors by TaskId, steps, `IndexOfSeq`,
+  `SnapshotFor(seq)` = the plan 4.3 seek rule), `ReplayRequest` (with the Round / Activation / activating
+  unit open when it was asked), `ReplayStep` (Index, Decision, Folded, Controller, Summary; RequestSeq,
+  ReplySeq, Round, Activation, PlayerId, RequestType, DisplayName derived), `IStepFilter` /
+  `DefaultStepFilter`. Refuses out-of-order Seq and a task requested twice; ignores a reply to a task it
+  never saw requested. `Tests/ReplayTimelineTests.cs` (7). Engine 3434 passed / 1 skipped; build clean.
+  On a 2-unit test game, every "Choosing a Unit to Activate" folds (one unit left to pick) and every
+  "Choosing an Action" is a step (Move/Pass at least).
 - 2026-10-30 - Slice 1 (`StoreDeltaApplier`): `Data/StoreDeltaApplier.cs` - `ApplyAdd` / `ApplyUpdate` /
   `ApplyRemove` plus `Apply(store, ReplayEvent)` (true for the three Store* kinds, false otherwise), with an
   `EDeltaGenerationPolicy` (`Sequential` for the live client stream, `Adopt` for playback - see Decisions).
@@ -79,7 +90,22 @@ Engine suite green; `dotnet build`. No app change in this ticket.
   `Tests/StoreDeltaApplierTests.cs` (4). Engine 3427 passed / 1 skipped; build clean; headless smoke exit 0.
 
 ## Decisions
-- (still to record: the option-count detection choice and the seek timing)
+- (still to record: the seek timing)
+- **Option count: parse the request JSON as a plain token tree** (`JObject`), not a regex and not a bind to
+  the CLR type. A regex for `"Options":[` would have missed every real list: the wire writes interface-typed
+  lists as `{"$type":...,"$values":[...]}` wrappers, and the field is `ValidOptions`. Binding to the type
+  would mean resolving `$type` from an untrusted file and needs a store for the DataBinding converters
+  (the timeline has none). The rule: a request with a top-level `ValidOptions` list offers its entries plus
+  one for Back - when it says `AllowCancel` or its reply type is a `CancellableResult` (the
+  `CancellableSelectionRequest` family always offers Back); it folds at <= 1. No `ValidOptions` (yes/no,
+  movement, wounds, placement) = always a step. Back counts because choosing NOT to back out of a lone
+  charge target is still a decision the player made.
+- **Folded requests belong to the step before them** (`ReplayStep.Folded` = the requests after its decision,
+  up to the next step): they are that decision's consequences, and they play in the span that arrives at
+  the next step. Folded requests before the first step are `Timeline.FoldedBeforeFirstStep`.
+- **Summary lives on the step but is filled by the player.** The timeline is store-free (plan 4.3) and the
+  describer needs the store at the step for names, so `ReplayStep.Summary` reads as the DisplayName until a
+  `ReplayPlayer` describes every step in its constructor (one forward walk).
 - **Generation policy for adds.** A snapshot (any whole-store save) carries no generation for an EMPTY
   slot, so after loading one, an add that refills a slot the game recycled BEFORE the snapshot carries
   generation g+1 against a rebuilt slot at 0 - the live stream's "exactly one ahead" check throws
