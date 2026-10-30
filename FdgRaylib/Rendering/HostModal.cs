@@ -40,6 +40,10 @@ public class HostModal : IAppScreen
     // else), so the fields are re-read from the config every time it opens, not just at construction.
     public void OnShown() => Reset();
 
+    /// <summary>#448: the dialog opens over the main menu, so the war table stays visible behind its
+    /// dimmed backdrop.</summary>
+    public bool ShowsMenuBackground => true;
+
     public void Draw(int screenW, int screenH)
     {
         // Dark translucent backdrop

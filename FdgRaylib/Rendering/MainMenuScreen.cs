@@ -23,71 +23,77 @@ public class MainMenuScreen : IAppScreen
 
     public void SetModalOpen(bool open) => _modalOpen = open;
 
+    /// <summary>#448: the holographic war table plays behind the menu.</summary>
+    public bool ShowsMenuBackground => true;
+
+    /// <summary>Opens the privacy notice or the Options popup without a click, for the offscreen
+    /// <c>--menu-preview</c> render (#448). Never called in a normal run.</summary>
+    internal void OpenForPreview(string which)
+    {
+        if (which == "options") _optionsOpen = true;
+        else if (which == "privacy") _privacy.ForceOpen();
+    }
+
     public void Draw(int screenW, int screenH)
     {
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.11f, 0.11f, 0.11f, 1f));
+        // #448: no window background - the war table (MenuBackgroundRenderer) is already on screen
+        // underneath; this window only carries the title, the command panel and the disclaimer.
+        var layout = MainMenuLayout.Compute(screenW, screenH);
+        float s = layout.Scale;
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
-
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
         ImGui.Begin("##MainMenu",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
-            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar |
+            ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.PopStyleVar();
 
-        // The button column shares out the band between the title and the disclaimer, so adding a
-        // button shrinks them all a little instead of pushing Quit off the bottom. Capped at the
-        // original size (0.08 tall, 0.03 gap), which is what six buttons got.
-        const int buttonCount = 7;
-        const float columnTop = 0.24f, columnBottom = 0.90f;
-        float slot        = screenH * (columnBottom - columnTop) / buttonCount;
-        float btnW        = screenW * 0.40f;
-        float btnH        = MathF.Min(screenH * 0.08f, slot * 0.75f);
-        float gapY        = MathF.Min(screenH * 0.03f, slot - btnH);
+        // Prefer the large baked menu font (bold, #448) and scale DOWN from it (crisp); fall back to
+        // stretching the body font if the font atlas didn't load.
+        bool useMenuFont = RaylibRenderer.MenuFontPx > 0f;
+        if (useMenuFont) ImGui.PushFont(RaylibRenderer.MenuBoldFont);
+        float bakedPx = useMenuFont ? RaylibRenderer.MenuFontPx : ImGui.GetFontSize();
+        void FontPx(float px) => ImGui.SetWindowFontScale(px / bakedPx);
 
-        // Prefer the large baked menu font and scale DOWN from it (crisp); fall back to stretching the
-        // body font if the font atlas didn't load. Factors are chosen to match the previous on-screen sizes.
-        bool  useMenuFont = RaylibRenderer.MenuFontPx > 0f;
-        if (useMenuFont) ImGui.PushFont(RaylibRenderer.MenuFont);
-        float titleScale   = useMenuFont ? (screenH * 0.072f) / RaylibRenderer.MenuFontPx : screenH * 0.004f;
-        float btnFontScale = useMenuFont ? (btnH * 0.55f)     / RaylibRenderer.MenuFontPx : btnH / 26f;
+        // Title: both lines the same size, left-aligned over the panel, underlined.
+        var dl = ImGui.GetWindowDrawList();
+        FontPx(layout.TitlePx);
+        ImGui.PushStyleColor(ImGuiCol.Text, HoloUi.TitleText);
+        ImGui.SetCursorPos(new Vector2(layout.TitleX, layout.TitleLine1Y));
+        ImGui.TextUnformatted("FUTURE of");
+        ImGui.SetCursorPos(new Vector2(layout.TitleX, layout.TitleLine2Y));
+        ImGui.TextUnformatted("DARK GRIMNESS");
+        ImGui.PopStyleColor();
+        dl.AddLine(new Vector2(layout.TitleX + 4f * s, layout.UnderlineY), new Vector2(layout.UnderlineRight, layout.UnderlineY),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(HoloUi.Cyan.X, HoloUi.Cyan.Y, HoloUi.Cyan.Z, 0.8f)), MathF.Max(1f, 2f * s));
 
-        ImGui.SetWindowFontScale(titleScale);
-        string title = "FUTURE of DARK GRIMNESS";
-        Vector2 titleSize = ImGui.CalcTextSize(title);
-        ImGui.SetCursorPos(new Vector2((screenW - titleSize.X) * 0.5f, screenH * 0.10f));
-        ImGui.Text(title);
-        ImGui.SetWindowFontScale(1.0f);
+        ScreenRect panel = layout.Panel;
+        HoloUi.DrawPanel(dl, new Vector2(panel.X, panel.Y), new Vector2(panel.Right, panel.Bottom), s);
 
-        float centerX = (screenW - btnW) * 0.5f;
-        float startY  = screenH * columnTop;
-
-        // Navigation buttons click with the neutral Navigate tone; Quit recedes with the Back tone - but
-        // every entry keeps the SAME colour: these are seven peers in a list, not an action beside its
-        // cancel, so #398's action-class tint is asked to sit this one out.
-        void DrawButton(string label, Action? action, int order, bool back = false)
+        // Every entry clicks with the neutral Navigate tone except Quit, which recedes with the Back tone.
+        // The tiers carry the hierarchy instead of #398's action-class tint: the two ways into a game,
+        // then the tools, then housekeeping.
+        bool Entry(ScreenRect r, string label, EHoloTier tier, float fontPx, UiButton.EClass sound = UiButton.EClass.Go)
         {
-            ImGui.SetCursorPos(new Vector2(centerX, startY + order * (btnH + gapY)));
-            ImGui.SetWindowFontScale(btnFontScale);
-            bool clicked = back
-                ? UiButton.BackInList(label, new Vector2(btnW, btnH))
-                : UiButton.Navigate(label, new Vector2(btnW, btnH));
-            if (clicked) action?.Invoke();
-            ImGui.SetWindowFontScale(1.0f);
+            ImGui.SetCursorPos(new Vector2(r.X, r.Y));
+            FontPx(fontPx);
+            return HoloUi.Button(label, new Vector2(r.W, r.H), tier, sound, s);
         }
 
         ImGui.BeginDisabled(_modalOpen || _privacy.IsOpen || _optionsOpen);
-        DrawButton("Host",         OnHostClicked,        0);
-        DrawButton("Client",       OnClientClicked,      1);
-        // Army Builder button temporarily hidden - re-enable by uncommenting this line and bumping the
-        // order arguments below back up by one (Army Forge -> 3, Combat Calculator -> 4, Load Game -> 5,
-        // Options -> 6, Quit -> 7) and buttonCount above to 8.
-        // DrawButton("Army Builder", OnArmyBuilderClicked, 2);
-        DrawButton("Army Forge",        OnArmyForgeClicked,        2);
-        DrawButton("Combat Calculator", OnCombatCalculatorClicked, 3);
-        DrawButton("Load Game",         OnLoadGameClicked,         4);
-        DrawButton("Options",           () => _optionsOpen = true, 5);
-        DrawButton("Quit",              OnQuitClicked,             6, back: true);
+        if (Entry(layout.Primary[0], "HOST/SOLO", EHoloTier.Primary, layout.PrimaryFontPx)) OnHostClicked?.Invoke();
+        if (Entry(layout.Primary[1], "JOIN", EHoloTier.Primary, layout.PrimaryFontPx)) OnClientClicked?.Invoke();
+        // Army Builder stays hidden (OnArmyBuilderClicked is still wired): bringing it back means a
+        // fourth Secondary slot in MainMenuLayout and an Entry call here.
+        if (Entry(layout.Secondary[0], "Army Forge", EHoloTier.Secondary, layout.SecondaryFontPx)) OnArmyForgeClicked?.Invoke();
+        if (Entry(layout.Secondary[1], "Combat Calculator", EHoloTier.Secondary, layout.SecondaryFontPx)) OnCombatCalculatorClicked?.Invoke();
+        if (Entry(layout.Secondary[2], "Load Game", EHoloTier.Secondary, layout.SecondaryFontPx)) OnLoadGameClicked?.Invoke();
+        if (Entry(layout.Tertiary[0], "Options", EHoloTier.Tertiary, layout.TertiaryFontPx)) _optionsOpen = true;
+        if (Entry(layout.Tertiary[1], "Quit", EHoloTier.Tertiary, layout.TertiaryFontPx, UiButton.EClass.Back)) OnQuitClicked?.Invoke();
         ImGui.EndDisabled();
 
+        ImGui.SetWindowFontScale(1.0f);
         if (useMenuFont) ImGui.PopFont();
 
         // Fan-project disclaimer, small but legible, centered along the bottom edge. Drawn in the body
@@ -101,7 +107,6 @@ public class MainMenuScreen : IAppScreen
         ImGui.PopStyleColor();
 
         ImGui.End();
-        ImGui.PopStyleColor();
 
         // Drawn outside the menu window so its modal sits over everything (and blocks the menu) on its own.
         if (!_modalOpen) _privacy.Draw(screenW, screenH);
@@ -123,14 +128,19 @@ public class MainMenuScreen : IAppScreen
         bool useMenuFont = RaylibRenderer.MenuFontPx > 0f;
         if (useMenuFont) ImGui.PushFont(RaylibRenderer.MenuFont);
         // No title bar: Begin draws it before the font scale below can apply, so it would come out at
-        // the menu font's full baked size. The heading is drawn inside instead.
+        // the menu font's full baked size. The heading is drawn inside instead. #448: wears the command
+        // panel's look (HoloUi) like the menu behind it.
+        float holoScale = HoloUi.ScaleFor(screenW, screenH);
+        HoloUi.PushModalStyle(holoScale);
         bool open = ImGui.BeginPopupModal(popupId,
             ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar);
+        HoloUi.PopModalStyle();
         if (!open)
         {
             if (useMenuFont) ImGui.PopFont();
             return;
         }
+        HoloUi.DrawWindowBrackets(holoScale);
         float bodyPx = MathF.Max(18f, screenH * 0.026f);
         if (useMenuFont) ImGui.SetWindowFontScale(bodyPx * 1.5f / RaylibRenderer.MenuFontPx);
         float headingW = ImGui.CalcTextSize("Options").X;
@@ -143,7 +153,8 @@ public class MainMenuScreen : IAppScreen
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
-        if (UiButton.Back("Back", new Vector2(ImGui.GetContentRegionAvail().X, 0f))
+        if (HoloUi.Button("Back", new Vector2(ImGui.GetContentRegionAvail().X, 0f), EHoloTier.Secondary,
+                UiButton.EClass.Back, holoScale, centered: true)
             || ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false))
         {
             ViewSettings.Persist();

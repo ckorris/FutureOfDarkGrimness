@@ -6,6 +6,7 @@ using FDG.Presentation.Beats;
 using FDG.StageResolution.Requests;
 using FdgRaylib.Audio;
 using FdgRaylib.Config;
+using FdgRaylib.Rendering.MenuBackground;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
@@ -24,6 +25,11 @@ public class RaylibRenderer
     // fonts failed to load -- callers fall back to the old body-font scaling in that case.
     public static ImGuiNET.ImFontPtr MenuFont;
     public static float MenuFontPx;
+    // #448: the bold face at the same baked size, for the main menu's title and buttons. Printable ASCII
+    // only (all game text is ASCII), which keeps this second big atlas entry small. Valid whenever
+    // MenuFontPx > 0.
+    public static ImGuiNET.ImFontPtr MenuBoldFont;
+    private static System.Runtime.InteropServices.GCHandle _asciiRanges;
 
     private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
@@ -79,6 +85,9 @@ public class RaylibRenderer
     private Previews.RemotePreviewOverlay? _remotePreviews;
     private PresentationPlayer? _presentationPlayer;
     private AudioManager? _audio;
+
+    // #448: the main menu's animated war table; created on first use (it needs the GL context).
+    private MenuBackgroundRenderer? _menuBackground;
     private readonly TableTooltipOverlay _tooltipOverlay = new();
     private readonly TableHitTester      _hitTester      = new();
     private readonly MeasurementOverlay  _measurementOverlay = new();
@@ -435,6 +444,50 @@ public class RaylibRenderer
         return Math.Clamp(scaled, 1.0f, ReferenceUiScale);
     }
 
+    /// <summary>
+    /// rlImGui + the app theme + the UI fonts, scaled for a display <paramref name="monitorH"/> pixels
+    /// tall. Needs a GL context (call after InitWindow). Shared by <see cref="Run"/> and the offscreen
+    /// <c>--menu-preview</c> render (#448), so the preview uses exactly the fonts and style the game does.
+    /// </summary>
+    internal static void SetUpImGui(int monitorH)
+    {
+        float uiScale = ComputeUiScale(monitorH);
+
+        rlImGui.Setup(true);
+        // Apply the app-wide "Dark Grimness" theme BEFORE scaling, so its rounding/border sizes scale
+        // with the display too (colors are unaffected by ScaleAllSizes).
+        ImGuiTheme.Apply();
+        // Enlarge every widget's padding/spacing/frame sizes (fonts are scaled at load below).
+        ImGui.GetStyle().ScaleAllSizes(uiScale);
+
+        // Replace the default 13px bitmap font with DejaVuSans TTF.
+        // Must clear the atlas first — Setup already added the pixel font at index 0;
+        // adding without clearing would leave it as the default and push ours to index 1.
+        string fontPath = Path.Combine(AppContext.BaseDirectory, "Assets", "DejaVuSans.ttf");
+        if (File.Exists(fontPath))
+        {
+            var fonts = ImGui.GetIO().Fonts;
+            fonts.Clear();
+            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f * uiScale);
+            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f * uiScale);
+            // Baked near the largest on-screen menu text (title ~7% of display height) so the menu never
+            // upscales the atlas. Clamped so it stays a sane texture size on tiny and 4K displays alike.
+            MenuFontPx = Math.Clamp(monitorH * 0.075f, 48f, 220f);
+            MenuFont   = fonts.AddFontFromFileTTF(fontPath, MenuFontPx);
+            string boldPath = Path.Combine(AppContext.BaseDirectory, "Assets", "DejaVuSans-Bold.ttf");
+            MenuBoldFont = MenuFont;
+            if (File.Exists(boldPath))
+            {
+                // ImGui keeps the range pointer until the atlas is rebuilt, so the array stays pinned.
+                if (!_asciiRanges.IsAllocated)
+                    _asciiRanges = System.Runtime.InteropServices.GCHandle.Alloc(new ushort[] { 0x20, 0x7E, 0 },
+                        System.Runtime.InteropServices.GCHandleType.Pinned);
+                MenuBoldFont = fonts.AddFontFromFileTTF(boldPath, MenuFontPx, null, _asciiRanges.AddrOfPinnedObject());
+            }
+            rlImGui.ReloadFonts();
+        }
+    }
+
     public void Run()
     {
         // Window mode is a remembered per-user setting (#310): borderless-windowed fullscreen by
@@ -462,14 +515,7 @@ public class RaylibRenderer
         int monitor   = Raylib.GetCurrentMonitor();
         int monitorH  = Raylib.GetMonitorHeight(monitor);
 
-        float uiScale = ComputeUiScale(monitorH);
-
-        rlImGui.Setup(true);
-        // Apply the app-wide "Dark Grimness" theme BEFORE scaling, so its rounding/border sizes scale
-        // with the display too (colors are unaffected by ScaleAllSizes).
-        ImGuiTheme.Apply();
-        // Enlarge every widget's padding/spacing/frame sizes (fonts are scaled at load below).
-        ImGui.GetStyle().ScaleAllSizes(uiScale);
+        SetUpImGui(monitorH);
 
         // App-wide audio device + presentation cue bank (placeholder until real assets land in
         // Assets/Sounds/). No-ops gracefully if no audio device is available.
@@ -479,23 +525,6 @@ public class RaylibRenderer
         // UI chrome cues (button clicks, toggles, canvas commits) share the same device; the static
         // UiSound facade lets any screen/resolver voice one without being handed the AudioManager.
         UiSound.Attach(_audio);
-
-        // Replace the default 13px bitmap font with DejaVuSans TTF.
-        // Must clear the atlas first — Setup already added the pixel font at index 0;
-        // adding without clearing would leave it as the default and push ours to index 1.
-        string fontPath = Path.Combine(AppContext.BaseDirectory, "Assets", "DejaVuSans.ttf");
-        if (File.Exists(fontPath))
-        {
-            var fonts = ImGui.GetIO().Fonts;
-            fonts.Clear();
-            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f * uiScale);
-            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f * uiScale);
-            // Baked near the largest on-screen menu text (title ~7% of display height) so the menu never
-            // upscales the atlas. Clamped so it stays a sane texture size on tiny and 4K displays alike.
-            MenuFontPx = Math.Clamp(monitorH * 0.075f, 48f, 220f);
-            MenuFont   = fonts.AddFontFromFileTTF(fontPath, MenuFontPx);
-            rlImGui.ReloadFonts();
-        }
 
         OnWindowReady?.Invoke();
 
@@ -705,6 +734,13 @@ public class RaylibRenderer
             }
             else
             {
+                // #448: the main menu (and the Host/Join dialogs over it) sit on the holographic war table.
+                if (_currentScreen.ShowsMenuBackground)
+                {
+                    _menuBackground ??= new MenuBackgroundRenderer();
+                    _menuBackground.Draw(screenW, screenH, MainMenuLayout.Compute(screenW, screenH));
+                }
+
                 rlImGui.Begin();
                 _currentScreen.Draw(screenW, screenH);
                 // A networked client can lose the host while still in the lobby (before any game exists);
@@ -718,6 +754,7 @@ public class RaylibRenderer
         }
 
         rlImGui.Shutdown();
+        _menuBackground?.Dispose();
         if (_exclusionRTReady) Raylib.UnloadRenderTexture(_exclusionRT);
         if (_mottleReady) Raylib.UnloadTexture(_mottleTex);
         _audio?.Dispose();

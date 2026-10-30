@@ -51,7 +51,7 @@ internal static class UiButton
         return clicked;
     }
 
-    private enum EClass
+    internal enum EClass
     {
         Back,
         Go,
@@ -67,16 +67,35 @@ internal static class UiButton
         bool clicked = size is { } s ? ImGui.Button(label, s) : ImGui.Button(label);
         ImGui.PopStyleColor(3);
 
-        if (clicked)
-        {
-            switch (sound)
-            {
-                case EClass.Back: UiSound.Back(); break;
-                case EClass.Commit: UiSound.Confirm(); break;
-                default: UiSound.Navigate(); break;
-            }
-        }
+        if (clicked) Voice(sound);
         return clicked;
+    }
+
+    /// <summary>
+    /// A button wearing caller-chosen colours instead of its action class's, voiced by class as usual.
+    /// For the main menu's holographic command panel (#448, <see cref="HoloUi"/>), whose palette is its
+    /// own - the click cues stay consistent with every other screen.
+    /// </summary>
+    public static bool Tinted(string label, Vector2 size, EClass sound, Vector4 idle, Vector4 hovered, Vector4 active)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Button, idle);
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, hovered);
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, active);
+        bool clicked = ImGui.Button(label, size);
+        ImGui.PopStyleColor(3);
+
+        if (clicked) Voice(sound);
+        return clicked;
+    }
+
+    private static void Voice(EClass sound)
+    {
+        switch (sound)
+        {
+            case EClass.Back: UiSound.Back(); break;
+            case EClass.Commit: UiSound.Confirm(); break;
+            default: UiSound.Navigate(); break;
+        }
     }
 
     private static void PushClass(EClass cls)

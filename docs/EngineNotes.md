@@ -86,6 +86,10 @@ FdgRaylib/
     IAppScreen.cs                          Screen interface used by the screen stack
     MainMenuScreen.cs / ArmyBuilderScreen.cs / ArmyForgeScreen.cs
     HostModal.cs / ClientModal.cs / LobbyScreen.cs
+    MainMenuLayout.cs / HoloUi.cs          #448 menu command-panel layout + holographic styling
+    MenuBackground/                        #448 war-table background (scene, camera, bloom renderer);
+                                           `--menu-preview out.png [WxH] [menu|privacy|options]` renders
+                                           the menu offscreen from a hidden window
     Resolvers/
       IGuiResolver.cs                      Has-pending + Draw
       IGuiCanvasOverlay.cs                 Optional layout receiver for table interactions

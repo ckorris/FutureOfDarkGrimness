@@ -10,4 +10,10 @@ public interface IAppScreen
     /// host/join dialogs and the saved player name, #310) re-read it here; everything else ignores it.
     /// </summary>
     void OnShown() { }
+
+    /// <summary>
+    /// True for screens drawn over the main menu's holographic war table (#448): the menu itself and the
+    /// Host/Join dialogs that open from it. The renderer paints the table before the screen's ImGui pass.
+    /// </summary>
+    bool ShowsMenuBackground => false;
 }

@@ -1,6 +1,6 @@
 # 448 — Holographic war-table main menu background
 
-**Status**: todo (design signed off 2026-10-30)
+**Status**: in-progress (slice 1 done 2026-10-30; awaiting GUI hand-verify)
 **Related**: `docs/menu-background/` (mockup, army colour sheet, generators, pairing check)
 
 ## Goal
@@ -74,7 +74,7 @@ and no mirror matches. The script asserts every allowed pair is >= 35 delta-E ap
 re-run the script after any colour or group change.
 
 ## Slice plan
-1. **Static scene + menu layout.** Camera3D-rendered table (rim, grid, ticks, labels) + terrain wireframes
+1. **[done 2026-10-30] Static scene + menu layout.** Projected table (rim, grid, ticks, labels) + terrain wireframes
    into a render texture, bloom/scanline/vignette post-process; `MainMenuScreen` window made transparent,
    layout A + C, new labels (HOST/SOLO, JOIN), same-size title; privacy popup + Options modal restyled
    to match the panel.
@@ -89,12 +89,36 @@ re-run the script after any colour or group change.
 5. **Options toggle** (Animated / Static / Off) + perf check on a weak GPU; pause/dim while a modal is open.
 
 ## Notes
+- 2026-10-30: **Slice 1 implemented.** `Rendering/MenuBackground/` (`HoloCamera` fit + lens shift,
+  `HoloTableScene` table/grid/ticks/labels + the 13 mockup terrain pieces with tagged footprints,
+  `MenuBackgroundRenderer` 2x-supersampled additive scene -> bright-pass + half/quarter Gaussian bloom ->
+  scanlines/vignette/panel shade, cached until resize), `MainMenuLayout` (shared by menu + background),
+  `HoloUi` (panel, brackets, 3 button tiers, modal style; `UiButton.Tinted` keeps the click cues),
+  `IAppScreen.ShowsMenuBackground` (menu + Host/Join dialogs). Privacy notice + Options modal restyled.
+  `MenuBoldFont` (bundled `DejaVuSans-Bold.ttf`, ASCII-only atlas) for title + buttons.
+  `--menu-preview out.png [WxH] [menu|privacy|options]` renders offscreen (hidden window) - checked at
+  1280x720, 1280x1024, 1920x1080, 2560x1080, 3840x2160. Tests: `MainMenuBackgroundTests` (29: fit inside
+  region on 8 screen shapes, tight fit, buttons inside panel/no overlap, tiers, footprints on table, no
+  overlap, piece lines over table, ASCII labels); mutation-checked (region under panel, no lens shift,
+  camera too far, box on forest - each reddens only its test).
+  **GUI hand-verify:** launch the game - menu shows the war table right of the panel; hover each button
+  (frame lights, chevron on the solid tiers); Host/Solo and Join dialogs show the dimmed table behind;
+  Options opens the restyled modal; F11 / resize re-fits the table; Quit still exits.
 - 2026-10-30: Design iterated with the owner over five mockup rounds (topographic planet section ->
   6'x4' topo table -> terrain-piece table chosen). Army abbreviations/colours chosen by the owner;
   clash groups added at their request and verified by the pairing script (it caught D-ELF/ROBOT and
   DAO/TITAN, which were added to groups). Number 448 filed clean (see Reconciliations).
 
 ## Decisions
+- **Projected 2D lines, not Camera3D/GL lines** (slice 1): wide GL lines are not portable (core profile caps
+  them at 1px), and projecting every point through one camera function means text, flags and later
+  overlays line up with the terrain for free. Depth sorting isn't needed - a hologram is see-through.
+- **Bloom bright-pass at ~0.16**: without it the dense 1" grid and the projector pool blurred into a solid
+  blue haze over the table (first real render); with it only terrain, rim and labels glow, as in the mockup.
+- **Bold title/buttons via a bundled `DejaVuSans-Bold.ttf`** (same family and licence as the existing
+  `DejaVuSans.ttf`), baked for printable ASCII only to keep the second large atlas entry small.
+- The Host/Join dialogs also opt into the background (behind their existing 60% backdrop) - they open
+  from the menu, and a flash to flat grey between them looked broken.
 - Terrain pieces over topography: reads as a real tabletop game; topography can't be "carved out" of a table.
 - Tracers white-hot instead of yellow so gold/amber/yellow armies (TITAN, RAT, E-DYN) don't blend with fire.
 - Labels use a space before the number because several abbreviations contain hyphens.
