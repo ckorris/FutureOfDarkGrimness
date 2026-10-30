@@ -40,7 +40,8 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [x] 430 — Force org 3.6: 1 unit/200pts, 1 model-or-Tough/20pts, AoF levels (375/750/1500), Unique Hero once per army. Done 2026-10-30; owner review asked on D1-D4/D6. ([WorkItems/430](WorkItems/430-force-org-3-6.md))
 - [x] 431 — New weapon-rule family: Anti-Cover, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate, Destructive, Disintegrate, Demolish, Purge, Reap, Scourge, Unwieldy, Imprecise, Crossing Strike. Done 2026-10-29; owner review asked on D2/D3/D5/D8. ([WorkItems/431](WorkItems/431-new-weapon-rules-3-6.md))
 - [x] 432 — Range-conditional army-wide rules: the "over 9"/6" when shooting/charging (or shot/charged)" family + range debuffs/buffs; Boosts deleted. Done 2026-10-29; owner review asked on D1/D2/D4/D5. ([WorkItems/432](WorkItems/432-range-conditional-army-rules.md))
-- [ ] 433 — "Enhanced X" family (~60 names replacing the Boost family): design fork, needs sign-off before building. ([WorkItems/433](WorkItems/433-enhanced-rule-family.md))
+- [x] 433 — "Enhanced X" family (112 names replacing the Boost family) as Option B deltas on untouched bases. ([WorkItems/433](WorkItems/433-enhanced-rule-family.md))
+  Done 2026-10-30; all-90 scratch import Enhanced 0 dead; owner review asked on D4, D5.
 - [x] 434 — GDF supplement sweep to 3.6: remaining reworded definitions, new unit/aura/buff rules, weapon-scoped grants, Voidspace Stalkers. ([WorkItems/434](WorkItems/434-gdf-supplement-3-6.md))
   Done 2026-10-30; Enhanced family -> #433; owner review asked on D2, D3, D4, D7, D12, D13.
 - [x] 435 — AoF supplement sweep to 3.6 + book overrides (all moot, deleted) + AoF core: Sergeant AP, Banner, Musician, Brace in Melee. ([WorkItems/435](WorkItems/435-aof-supplement-3-6.md))

@@ -73,6 +73,16 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #433): the Enhanced family is data in both supplements (112 definitions: 64 `Enhanced X`, 42
+  `Enhanced X Aura`, 6 `Enhanced X Buff`), so the re-bake needs nothing new - a scratch import of all 90 3.6.0
+  snapshots against the finished supplements leaves Enhanced 0 dead (Dead 264 = Parry alone, #423); the shipped books
+  stay at Dead 36 until you re-bake. `--validate-rules` on both files: 447 definitions, no problems. The app test
+  `Enhanced36ShippedDataTests.TheFamily_IsExactlyThe36Inventory` pins the 112 names, so a book that names a new
+  Enhanced X fails loudly rather than baking dead. Book shape worth knowing: in every 3.6.0 book an Enhanced name is an
+  UPGRADE option (or a spell grant), never a unit's base rule, so `--book-to-army` base-size compiles never field one;
+  the #433 smokes hand-added `Enhanced Lustbound` / `Enhanced Changebound` (+ Aura) and `Enhanced Cursed Undead` (+ Buff)
+  to compiled armies (`scratchpad/433/*.fdgarmy`). Post-bake pass: the `.fdgbook` embeds the Enhanced definitions
+  alongside their bases (seen in the import logs: "embedded 8 rule definitions (Lustbound, ..., Enhanced Lustbound)").
 - 2026-10-30 (from #424): the re-bake needs nothing new for Assault - the supplement definition is embedded by
   `BookRuleSupplement.Apply` like any other, and `WeaponEffectAssigner` keeps ONE key per weapon (an Assault pistol's
   swing uses the army's melee default through `Weapon.MeleeEffectKey`, derived at load; no keyword-table entry). The

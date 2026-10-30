@@ -63,6 +63,17 @@ so trailing clauses (including "in line of sight") are silently ignored today; L
 
 ## Notes
 
+- 2026-10-30 (from #433): the 45 spells that grant an Enhanced name once (29 AoF names / the GDF Boon family and
+  friends: Lust / Change / Plague / War Boon, Litanies of War, Blessed Ammo, Righteous Fury, Banishing Sigil, Blessed
+  Shroud, Burst of Rage, ..., Vigorous Return, Great Hunt) now resolve at import - none of the 90 import logs prints
+  "Skipping unimplemented special rule 'Enhanced ..." any more, and the Vampiric Undead smoke loaded Vigorous Return
+  ("get Enhanced Cursed Undead once") clean. Two semantics to carry into the per-book parity check: (1) a NextTrigger
+  grant is spent at the FIRST hook+seat occurrence the Enhanced rule listens on, whether or not its `has X` gate passed
+  (the #101 "entering a situation you can't benefit from wastes the buff" rule) - a Lust Boon on a unit without Lustbound
+  is a wasted cast, correctly; (2) `Condition.UnitHasRule` now reads grant tokens, so a spell that grants BOTH X and
+  Enhanced X (none does today) would compose. The supplement wrappers' grant targets are pinned
+  (`Enhanced36ShippedDataTests.EveryWrapper_GrantsAnEnhancedRule_DefinedInTheSameUniverse_ThatReadsNoArgument`); the
+  spells' grant targets are yours to pin per book.
 - 2026-10-30 (from #435): (1) the AoF spells' 3.6 phrases the parser emits today now resolve from the AoF file (#435 D8):
   "AP(+1) on its weapons in melee" (Giant Tribes / Human Empire Elemental Form), "Bane on its weapons in melee" (High Elves
   Magical Surge), "Unstoppable on its weapons in melee" (Ossified Undead Drain Spirit) - clones of the catalog's "... in

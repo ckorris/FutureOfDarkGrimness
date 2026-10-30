@@ -63,6 +63,17 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #433): the Enhanced family is authored (112 definitions, both files). Text-parity items it leaves
+  you: (1) two 3.6.0 Aura texts are OPR's own typo, kept verbatim like #432 D12 - "This model and its unit Enhanced
+  Brutal." / "... Enhanced Ferocious." (no "get"); (2) "they stops being Shaken" in Enhanced Steadfast / Vale Oath
+  (OPR's grammar, verbatim); (3) Enhanced Versatile Warrior / Watchborn / Vinci Tech read "If this model has Versatile
+  Attack ... from Versatile Attack" (OPR names the mechanic, not the rule); all three pinned verbatim by
+  `Enhanced36ShippedDataTests`, so a normalisation re-pins there. (4) The catalog still carries the 3.5 `Harassing
+  Boost` and `Guerrilla Boost` definitions (`CoreRuleCatalog.cs`, the "Boost variants" block before the auras) - the
+  last Boost survivors after #432 D9; `Enhanced Harassing` / `Enhanced Guerrilla` in the GDF file replace them, so
+  delete them with the other dropped 3.5 definitions. (5) Comment-only: `RerollCondition.cs`, `RerollSink.cs`,
+  `ITokenClearRollSink.cs`, `TokenClearRollSink.cs` and `Effect.ClearTokenOnRoll`'s doc still describe "Boost
+  variants" (the min-threshold convention they document is exactly what the Enhanced 5-6 / 3+ entries rely on).
 - 2026-10-30 (from #442): two user-facing log strings seen in the 3.6 smokes, neither AI-side: (1)
   `RuleOperation.ClearTokenOnRoll.Describe()` (`Rules/Definitions/RuleOperation.cs:522`) interpolates the `TokenType`
   record, so the log reads "Peasant Levy's Vale Oath clears TokenType { Id = Shaken } on a 4+." - wants the token's

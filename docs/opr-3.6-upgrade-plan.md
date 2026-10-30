@@ -253,7 +253,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 430 | Force org and points validation 3.6 (GDF + AoF levels, Unique Hero once per army) | 2 | - | S | medium | done 2026-10-30 (owner review: D1, D2, D3, D4, D6) |
 | 431 | New weapon-rule family (Anti-Cover ... Crossing Strike) | 3 | #418 | O | high | done 2026-10-29 (owner review: D2, D3, D5, D8) |
 | 432 | Range-conditional army-wide rules (9"/6" family) | 3 | #428 | O | high | done 2026-10-29 (owner review: D1, D2, D4, D5) |
-| 433 | "Enhanced X" family | 3 | #432 | O | xhigh | todo (Q6 signed off 2026-10-30: Option B everywhere) |
+| 433 | "Enhanced X" family | 3 | #432 | O | xhigh | done 2026-10-30 (Option B everywhere: 112 definitions as deltas on untouched bases, two engine primitives; all-90 scratch import Enhanced 0 dead; owner review: D4, D5) |
 | 434 | GDF supplement sweep: remaining reworded + new rules | 3 | #431 #432 #433 | O | high | done 2026-10-30 (Enhanced family deferred to #433; owner review: D2, D3, D4, D7, D12, D13) |
 | 435 | AoF supplement sweep + book overrides + AoF-specific core (Sergeant/Banner/Musician/Brace in Melee) | 3 | #422 #431 #432 #433 | O | high | done 2026-10-30 (Enhanced family deferred to #433; overrides all moot, deleted; owner review: D2, D3, D7) |
 | 436 | Remove dropped 3.5 definitions; catalog/supplement text parity with 3.6 wording | 3 | #434 #435 | S | medium | todo |
@@ -277,7 +277,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file

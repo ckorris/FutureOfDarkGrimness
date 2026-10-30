@@ -46,6 +46,12 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #433): the Enhanced family needs no Forge code - each name is an ordinary supplement rule whose
+  description is the 3.6.0 sentence verbatim (so the glossary prints OPR's "they stops being Shaken" and the Versatile
+  Warrior family's "If this model has Versatile Attack ..." until #436 normalises). One display consideration: a list
+  that takes `Enhanced X` (or its Aura / Buff) on a unit without X is legal data and loads silently inert (the gate is
+  `unitHasRule X`); the Forge could flag "Enhanced X without X" as a warning. Army Forge itself only offers the
+  upgrades where X is present, so this only arises from hand-edited lists.
 - 2026-10-30 (from #424): the Forge already prints an Assault weapon once, as its ranged line with "Assault" as a
   hoverable rule segment (`5x Heavy Pistol (12\", A1, AP(1), Assault)` - pinned in `RuleTextFlowTests` /
   `ArmyBuilderScreenTests`), and the glossary text is the 3.6 sentence once a book embeds the definition (#438). The

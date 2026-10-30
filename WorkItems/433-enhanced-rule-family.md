@@ -1,6 +1,6 @@
 # 433 — "Enhanced X" family (~60 names replacing the Boost family) - design fork
 
-**Status**: signed off 2026-10-30 (plan Q6; Chris): Option B everywhere (additive deltas, keep-best thresholds, complementary arms); Option A not used; C rejected. Build after #424.
+**Status**: done 2026-10-30 (Option B everywhere, signed off plan Q6; 112 definitions, 97 engine + 234 app tests; all-90 scratch import Enhanced 0 dead; owner review: D4, D5). Hand-offs in #436 #438 #439 #441 #442 #423.
 **Related**: #415, #432 (the base rules Enhanced lifts), #197, #434/#435
 **Branch**: `feature/opr-3.6`. Model/effort: Fable 5.1 / xhigh.
 
@@ -102,6 +102,75 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Notes
 
+- 2026-10-30: **done.** Six engine commits (18b2ad03 primitives, 467ee0db B1 tests, 6bda32ac B2/B3 tests, 8c976fa2 C
+  tests, 5ba41f40 D tests, 8a71a697 E tests) and six superproject commits (c053f92, ffdf10d, 70ace28, 12fd18f, 45dec8f,
+  23cac1e) plus this ledger commit. Gates: engine 4235 -> 4332 passed (1 skipped, unchanged), app 3389 -> 3623, build 0
+  errors, `--validate-rules` 335 -> 447 definitions OK, shipped `--rule-coverage` Dead 36 (Counter-Attack, until #438),
+  all-90 scratch import Dead 563 (Enhanced 299 / 91 names + Parry 264) -> 264 (Parry alone; Enhanced 0). Smokes exit 0:
+  default `printf "2\n2\n"` army; Daemons of Lust with hand-added Enhanced Lustbound (+ Aura; trace: "Ascended
+  Harbinger of Lust's Enhanced Lustbound Aura ... fired -> GrantTokenToUnit"); Daemons of Change with Enhanced
+  Changebound (+ Aura; trace: "Avatar of Change's Enhanced Changebound at Shooting_OnHitRollModifier/Subject: fired ->
+  ApplyRollModifier" / "added -1 to Hit rolls"); Vampiric Undead (AoF) with Enhanced Cursed Undead (+ Buff; trace:
+  "Gremyir & Milyazha's Enhanced Cursed Undead at Shooting_OnSaveRollComplete/Subject: fired -> IgnoreWound" / "ignored
+  wounds on a 5+"). Negative controls (each mutation made its pin fail, then restored): (1) Enhanced Bloodborn's 5 face
+  on `unmodifiedRollEquals` instead of `unmodifiedRollHits` -> `EnhancedBloodborn_AFiveThatMissed_ScoresNothing` and the
+  Fatigue pin fail; (2) Enhanced Darkborn authored as the total {-8, 6, -4} -> the 24"->16" pin fails (reads 12"); (3)
+  Enhanced Changebound without `not(attackedFromOver)` -> the "always, once" pin fails at 10" and on a 7" charge (-2).
+  Scratch: `scratchpad/433/` (generator `gen_enhanced.py`, `negative_controls.sh`, smoke logs, compiled armies).
+- 2026-10-30: **surprising findings.** (a) `--trace-rules` prints no `Movement_On*` hook lines at all - the movement
+  budgets are read through the non-logging named queries, so Lustbound / Enhanced Lustbound firing is invisible in a
+  trace even when the unit moves (pinned engine-side instead; a trace gap, not an Enhanced bug - candidate small item).
+  (b) `FixedDiceRoller` cannot represent a miss (its `TotalRolls` is always 1, so `SubsetAtOrAbove(6)` of a fixed 5
+  still counts one hit); the miss pins use `FixedFaceDiceRoller`. (c) `RollToHitStage` hard-codes `IsSpell: false` on
+  its hit context (spells never roll to hit), so a spell-exclusion pin on the hit side must go through
+  `SyntheticHitResolution.Resolve(..., isSpell: true)`, the real spell path. (d) Every 3.6.0 book carries its Enhanced
+  names as UPGRADE options or spell grants - no unit has one as a base rule - so `--book-to-army` base-size armies never
+  field one; the smokes hand-added them to the compiled `.fdgarmy` (whose `ruleDefinitions` already embed the Enhanced
+  definitions from the book). (e) The item's "ordering pin" for Enhanced Steadfast (a -1 to the recovery roll still
+  needs 4+) has no modifier to apply: `GameOperationServices.ClearTokenOnRoll` compares the raw face to the folded
+  threshold and nothing in the engine modifies that die (D7).
+- 2026-10-30: **inventory** (112 definitions: 64 `Enhanced X`, 42 `Enhanced X Aura`, 6 `Enhanced X Buff`; the 91 dead
+  names / 299 refs of the worklist plus the 21 names the 3.6.0 snapshots define without a unit reference - D8). Every
+  entry is gated on `unitHasRule X` (plus `mostModelsHaveThisRule` where the base has it); X is never edited. "GDF"
+  names live in `GdfRuleSupplement.json` (an AoF book reads it too), "AoF" in `AofRuleSupplement.json`.
+
+  | Shape (recipe) | GDF | AoF |
+  |---|---|---|
+  | B1 movement: 3 x `movementBonus` +1/+2/+2 (the sink sums -> +2/+4) | Lustbound, Scurry, Agile (catalog base) | - |
+  | B1 range shrink: `rangeModifier {-4, 6, -2}` Subject (ops sum, floor = largest) | Darkborn, Shadowborn, Shrouded | Wild Veil |
+  | B1 range grow: `rangeModifier {4, 0, 2}` | Highborn, Extra Reach | Royal Legion |
+  | B2 AP(-2): `reduceArmorPenetration 1` Subject (the save stage sums) | Guardian, Fortified (catalog base) | Ossified, Warden |
+  | B2 ignore 5-6: `ignoreWoundOnRoll 5` Subject (fold keeps best) | Plaguebound, Self-Repair, Protected (catalog base) | Cursed Undead |
+  | B2 Shaken 3+: `clearTokenOnRoll Shaken 3` (fold keeps best, one roll) | Steadfast | Vale Oath |
+  | B2 re-roll 5-6: `reroll Save onUnmodifiedValue 5` Actor, Unit scope (sink keeps widest) | Mischievous, Scrapper, Vicious | Bestial |
+  | B2 post-combat 6": `triggeredMove 6` x2 (PostCombatMoveGate keeps the max) | Harassing, Guerrilla, Hit & Run (catalog bases) | - |
+  | B3 2D3: `repositionAtActivation d3 move` (ActivationStartStage sums into one move) | Wolfborn, Nimble, Rapid Blink | Wave-Step |
+  | C -1 to hit always: `not(attackedFromOver 9/6)` Subject | Changebound, Machine-Fog, Screened | Empyrean Spirit |
+  | C +1 Defense always: `not(attackedFromOver)` Subject | Guarded, Sturdy | - |
+  | C ignore 6+ always: `attackedFromOver {0,0} and not(attackedFromOver 9/6)` Subject | Knightborn, Warding | Angelic Blessing |
+  | C +1 Morale always: `not(attackedFromOver)` at Morale_OnPreMoraleTest | Hive Bond, Hold the Line, Valiant | - |
+  | C extra hit on 6 always: `not(attackingFromOver) and isNotSpell and unmodifiedRollEquals 6` | Devout, Ferocious, Brutal | Lucky |
+  | C AP(+1) always: `not(attackingFromOver) and isNotSpell` | Havocbound, Piercing Warrior | - |
+  | C extra wound on 1 always: `not(attackingFromOver) and isNotSpell`, Unit scope | Infected, Warbound, Violent | Destroyer |
+  | C pick always: two entries on `unitHasRule "X (Piercing)" / "X (Precision)"` + `not(attackingFromOver)` | Versatile Warrior, Watchborn | Vinci Tech |
+  | C +1 to hit always: `not(and(not(isMelee), distanceGreaterThan 9))` | Targeting Visor, Precision Marksman | Buccaneer |
+  | D extra hit on successful 5: `unmodifiedRollHits 5` -> `addExtraHit 5` | Bloodborn, Clan Warrior, Primal, Predator | Royal Warrior |
+  | E Aura: `aura "Enhanced X"` at Lifecycle_OnUnitCreated | 29 (Bloodborn, Brutal, Changebound, Clan Warrior, Darkborn, Devout, Ferocious, Guardian, Guerrilla, Harassing, Havocbound, Highborn, Hive Bond, Hold the Line, Infected, Knightborn, Lustbound, Machine-Fog, Mischievous, Plaguebound, Rapid Blink, Scrapper, Scurry, Shadowborn, Sturdy, Targeting Visor, Warbound, Watchborn, Wolfborn) | 13 (Bestial, Buccaneer, Destroyer, Empyrean Spirit, Lucky, Ossified, Royal Legion, Royal Warrior, Vale Oath, Vinci Tech, Warden, Wave-Step, Wild Veil) |
+  | E Buff: before-attack `addRule "Enhanced X" NextTrigger`, Friend 12" | Hold the Line, Primal, Self-Repair, Shadowborn | Angelic Blessing, Cursed Undead |
+
+  Primitives (engine commit 18b2ad03): `Condition.UnmodifiedRollHits(dieValue)` (a natural face that also HIT) reading the
+  new `IHasHitRollNeeded` capability - `HitRollCompleteContext.HitRollNeeded`, threaded from `RollToHitStage`, the AI's
+  `CombatMath` and the shooting forecast (0 = every rolled die is a hit, the synthetic-hit pipeline's case); and
+  `Condition.UnitHasRule` broadened to grants, living models and their weapons (D2). No other engine change; everything
+  else is data.
+- 2026-10-30: **tests.** Engine: `Enhanced36ConditionTests` (15: the two primitives), `Enhanced36Definitions` (one shape
+  per family, the engine-side twin of the JSON), `EnhancedRuleIntegrationTests` (14: sums through the movement budgets and
+  the range / charge queries; `EveryEnhancedShape_LintsClean`), `EnhancedCombatRuleIntegrationTests` (67: the folds, the
+  complements, the 5-6 family incl. the Fatigue pin, the wrappers, the arity gate - through the real stages),
+  `CombatMathPinTests.EnhancedBloodborn_SuccessfulFives_MatchesEngine`. App: `Enhanced36ShippedDataTests` (every one of
+  the 112 definitions entry-for-entry with its 3.6.0 text, the gate names resolve in the right universe, the wrappers'
+  grant targets read no argument, the inventory is exactly 112, five shipped pairs through the evaluator);
+  `RuleSupplementLintTests.EverySupplementRuleFires` covers all 112.
 - 2026-10-30: Q6 signed off (Chris): Option B everywhere, see "Signed-off design". Queued after #424.
 - 2026-10-30 (from #442): AI / calculator notes for whichever option is chosen (Q6); nothing was built in #442.
   (1) `CombatMath` prices every rule through the evaluator, so an Enhanced variant authored as DATA (its own
@@ -181,10 +250,83 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 - D1 (signed off by Chris, 2026-10-30): Option B for every family, complementary arm for the "always" families;
   Option A dropped (base rules never edited); Option C rejected. Reliable's `QualityFloor` is the ordering precedent.
+- **D2 - `UnitHasRule` reads every carrier (2026-10-30) - OWNER NOTE.** "If this model has X" is `unitHasRule X`, and
+  before this item that condition read only the unit's own list, which would have left Enhanced X inert in three book
+  shapes: X arriving by aura as a RuleGrant token (Lustbound Aura on a hero), X re-homed onto the weapons (Infected,
+  Mischievous - a Weapon-scope rule named at unit level is attached to every weapon and NOT kept on the unit list,
+  `GameBootstrap.AttachRulesFromArmyList`), and X relocated onto a joined hero's model. It now reads the unit list, grant
+  tokens, living models and their weapons (`Condition.UnitHasRule.Holds`). The only pre-existing users are the catalog's
+  3.5 `Harassing Boost` / `Guerrilla Boost`, which now also see an aura-granted base - strictly more correct. Pinned by
+  `Enhanced36ConditionTests` and `EnhancedLustbound_ReadsALustboundThatArrivedByAura`.
+- **D3 - the 5-6 family's success gate (2026-10-30).** "Extra attacks on SUCCESSFUL unmodified hit results of 5-6": the
+  hit-complete context did not know what a hit needed, so it gained `HitRollNeeded` (`IHasHitRollNeeded`), set by
+  `RollToHitStage` to the clamped threshold it split the successes with, mirrored in `CombatMath` and the forecast, 0 on
+  the synthetic-hit pipeline (every rolled die is a hit there by construction). `Condition.UnmodifiedRollHits(5)` is true
+  when a 5 was rolled (as special rules see it - #418's view) and 5 >= needed; a 6 always hits so the base rules keep
+  `unmodifiedRollEquals 6`. A Fatigued melee swing needs 6s (the 5s miss) and its 6s do not count for special rules, so
+  such a unit gets nothing from either face - pinned through the real DetermineHitRollStage. The base family's
+  one-extra-HIT approximation of "+1 attack" (#434 D7) is inherited unchanged; a bonus-attack primitive stays an owner
+  decision outside this item.
+- **D4 - what "always" covers, per seat (2026-10-30) - OWNER REVIEW.** The complementary arm is the base's effect under
+  `not(<the base's range gate>)`, so base + Enhanced are disjoint by construction. Actor-seat complements (Devout /
+  Havocbound / Infected families, the Versatile pick's AP half) also carry `isNotSpell`: their base texts describe weapon
+  attacks ("its weapons get AP(+1)", "hits from weapons", "results of 6 to hit") and the base's `attackingFromOver` was
+  already false for a caster's spell hits (no shooting distance), so a complement without the exclusion would have given
+  spells AP(+1), an extra hit per rolled 6 and an extra wound per 1 to block - pinned through `SyntheticHitResolution`.
+  Subject-seat complements are literal: Enhanced Guarded / Sturdy's "+1 to Defense rolls always" applies to every save,
+  spell wounds included (alternative: add `isNotSpell`, one conjunct); Enhanced Changebound's -1 and the morale +1 apply
+  to every attack / every Morale Test, strike-backs and rule-driven tests included. Enhanced Knightborn / Warding /
+  Angelic Blessing keep "shooting/charging wounds": `attackedFromOver {0, 0}` ("shot or charged at all") beside
+  `not(attackedFromOver {9, 6})`, so a strike-back's wound and a spell's are left to the base (the spell arm's 2+).
+- **D5 - Targeting Visor / Precision Marksman / Buccaneer: "always" means melee too (2026-10-30) - OWNER REVIEW.**
+  "It always gets +1 to hit rolls from Targeting Visor (instead of only when shooting over 9" away)" - OPR's template
+  removes the base's whole condition, as it does for Havocbound (whose "always" covers strike-backs the base never did),
+  so the complement is `not(and(not(isMelee), distanceGreaterThan 9))`: +1 to hit in melee and at any shooting range.
+  The 3.5 `Targeting Visor Boost` read it as shooting-only ("+1 to hit when shooting, not only over 9""). Alternative: one
+  condition change to `and(not(isMelee), not(distanceGreaterThan 9))` (shooting within 9" only); the melee case is pinned
+  (`EnhancedTargetingVisor_WithTargetingVisor_PlusOneToHit_Always(0.5, true)`) so the flip is one assertion.
+- **D6 - the post-combat 6" family is a keep-best, not a sum (2026-10-30).** `PostCombatMoveGate` coalesces the family's
+  `InvokeTriggeredMove` ops into ONE move at the largest budget, so Enhanced Harassing / Guerrilla / Hit & Run are a 6"
+  entry beside the base's 3" (a 3" "delta" would give max(3, 3) = 3) - the catalog Boost's shape, the same keep-best
+  class as the threshold families. The 3.6 text says "If most models in this unit have Harassing" (the base Harassing has
+  no ownership gate), so the Enhanced entries carry `mostModelsHaveThisRule` too.
+- **D7 - the Steadfast "ordering pin" is moot (2026-10-30).** The design asked to pin that an Enhanced Steadfast unit
+  with a -1 to its recovery roll still needs 4+ (keep-best first, modifiers after). Nothing in the engine modifies the
+  Shaken recovery die: `GameOperationServices.ClearTokenOnRoll` rolls a decisive face and compares it to the folded
+  threshold, and no rule emits a modifier for it. Pinned instead: base + Enhanced fold to ONE roll at 3+ (never a second
+  chance) and a rolled 3 recovers. The Reliable `QualityFloor` precedent stands where modifiers exist (hit rolls).
+- **D8 - 112 names, not 91 (2026-10-30).** The worklist is the 91 names units reference (299 refs). The 3.6.0 snapshots
+  define 21 more under the same templates with no unit reference today (Enhanced Agile, Brutal (+ Aura), Extra Reach,
+  Fortified, Guarded, Hit & Run, Nimble, Piercing Warrior, Precision Marksman, Predator, Protected, Screened, Shrouded,
+  Steadfast, Valiant, Versatile Warrior, Vicious, Violent, Warding) - the same shapes, one JSON entry each, and a future
+  book or spell may name them - so all 112 are authored and the inventory is pinned at exactly 112.
+- **D9 - texts verbatim, OPR typos included (2026-10-30).** As #432 D12 / #434 D1: "This model and its unit Enhanced
+  Brutal." / "... Enhanced Ferocious." (no "get"), "they stops being Shaken", and the Versatile Warrior / Watchborn /
+  Vinci Tech texts' "If this model has Versatile Attack ... from Versatile Attack" (OPR names the mechanic). Handed to
+  #436's parity pass; the shipped-data test pins them, so a normalisation re-pins there.
+- **D10 - the weapon-rule bases' Enhanced copies are Unit scope (2026-10-30) - OWNER NOTE.** Mischievous / Scrapper /
+  Vicious / Bestial and Infected / Warbound / Violent / Destroyer are Weapon-scope rules ("on its weapons", re-homed onto
+  every weapon). Their Enhanced copies are Unit scope with `unitHasRule X` (reading the weapons, D2) because the Aura
+  and Buff wrappers grant at unit level and a granted rule is walked with no carrying weapon, so a `weaponHasRule` gate
+  could never see a grant. Consequence: a unit with Mischievous on SOME weapons would get the 5-6 band on every weapon's
+  hits; no 3.6.0 book builds that (the rules are army-wide "on its weapons" grants).
+- **D11 - the catalog Boosts stay for #436 (2026-10-30).** `Harassing Boost` / `Guerrilla Boost` in `CoreRuleCatalog`
+  are 3.5 definitions outside this item's data; deleting catalog definitions is #436's job (noted there).
 
 ## Outcome
 
-(open)
+Done 2026-10-30. The OPR 3.6 "Enhanced X" family (112 definitions: 64 Enhanced X, 42 Auras, 6 Buffs) is authored in
+the two supplements as Option B deltas on untouched base rules: summed deltas (movement, range), keep-best entries
+(AP, wound ignore, Shaken recovery, save re-roll, post-combat move), a second D3 move, complementary "always" arms on
+the 9"/6" family, a success-gated 5 face for the extra-attack family, and the Aura / Buff grant wrappers. Two engine
+primitives (`UnmodifiedRollHits` + `HitRollNeeded` on the hit context; `UnitHasRule` reading grants, models and
+weapons), no base rule edited. Acceptance met: all-90 scratch import Enhanced 0 dead (Dead 264 = Parry, #423), shipped
+Dead 36 unchanged (#438), one integration test per family shape with the no-stack and inert pins, the Fatigue pin,
+Aura and Buff grant tests, four smokes exit 0 with Enhanced rules firing in the trace. Owner review: D4 (what "always"
+covers per seat; Guarded / Sturdy vs spells), D5 (Targeting Visor family "always" includes melee). GUI hand-verify list:
+a Daemons of Lust list with a Lust Favour (Enhanced Lustbound) hero shows +2"/+4" move rings; an Enhanced Changebound
+unit shows -1 to hit on the forecast at 8"; an Enhanced Bloodborn unit's save beat shows "+1 (Enhanced Bloodborn)" on a
+successful 5.
 
 ## Rules for the agent (plan section 1, restated)
 

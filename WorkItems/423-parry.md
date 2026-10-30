@@ -146,6 +146,13 @@ with hand weapons parries a charge in the GUI.
 
 ## Notes
 
+- 2026-10-30 (from #433): the Enhanced family touched the save pipeline only as data - a second `ignoreWoundOnRoll 5`
+  (Enhanced Plaguebound family) and a `reroll Save onUnmodifiedValue 5` (Enhanced Mischievous family) folded by the
+  existing sinks - so the Parry hit-ignore step before saves is untouched. One engine seam you may build on:
+  `HitRollCompleteContext` gained a trailing `HitRollNeeded` parameter (0 = every rolled die is a hit) and the
+  `IHasHitRollNeeded` capability; if Parry constructs that context anywhere (a synthetic re-resolution), pass the
+  stage's threshold so the 5-6 extra-attack rules keep reading successes. The `--rule-coverage` worklist after #433 is
+  Parry alone: 264 refs across the 90 snapshots.
 - 2026-10-30 (from #424): the precedent you were pointed at exists now - `Rules/Dispatch/WeaponRoleQueries.cs` asks a
   weapon's own rules for `Effect.EnableMeleeUse` / `EnableRangedUse` at `Lifecycle_OnCapabilityQuery` by effect type
   (the `StrafingRules` structural read), never by the name "Assault". Parry counts "models with this rule" the same way:

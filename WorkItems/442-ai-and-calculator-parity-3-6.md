@@ -51,6 +51,16 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #433): the Enhanced half landed as DATA (112 definitions) plus one AI code change: `CombatMath`
+  threads the clamped hit threshold onto its mirrored `HitRollCompleteContext` (`HitRollNeeded`), which
+  `Condition.UnmodifiedRollHits` reads for "extra attacks on SUCCESSFUL unmodified 5-6" - pinned by
+  `CombatMathPinTests.EnhancedBloodborn_SuccessfulFives_MatchesEngine` (a 4+ charge and a Fatigued one). Everything
+  else prices through the evaluator: sums (movement, range), keep-best folds (AP, wound ignore, re-roll, Shaken
+  recovery), the complementary "always" arms (two disjoint gates, so the calculator sees -1 at every distance). Still
+  open from your D-notes: the Tactician's bare evaluator cannot read RuleGrant tokens (#191), so `Enhanced X Aura` /
+  `Enhanced X Buff` grants (and the Boon spells) are invisible to its search until `TacticianRuleLookup`; and
+  `Condition.UnitHasRule` now reads the unit list + grants + living models + their weapons - any AI-side "does this unit
+  have rule X" shortcut should call `Condition.UnitHasRule.Holds(unit, name)` rather than re-derive it.
 - 2026-10-30 (from #424): the Assault half landed through the seam with one AI code change
   (`TacticalAnalysis.RangedOutputWounds` / `MeleeOutputWounds` read `IsRanged()` / `IsMelee()`); `CombatMath.EstimateShooting`
   and `EstimateMelee` both price an Assault pistol (pinned: 3 Heavy Pistols = 1.0 wounds as a shot at 10\" and as a swing),
