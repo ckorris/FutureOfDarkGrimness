@@ -51,6 +51,19 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 8 - #419 / #431 / #435 melee-result and strike-order parity, B): `MeleeEstimate.
+  ExpectedWoundsMargin` is now `DetermineMeleeWinnerStage`'s comparison: each side's taken total adds the wounds it
+  only COUNTS as taken (Scourge - `AttackEstimate.ExpectedCountedWounds`, folded from the same save-complete
+  `AddCountedWoundsTaken` ops `AssignWoundsStage` banks) and what it took earlier in the activation
+  (`WoundsTakenThisActivation.Peek` on both units, new `MeleeEstimate.Attacker/DefenderWoundsTakenBefore`). No planner
+  term reads the margin today (the planner prices melee by value-fraction trades, pre-existing - #419's note), so this
+  is estimator parity for the next reader; the shooting resolver's half-strength "breaks" check DOES now allocate
+  Scourge's counted wounds virtually (`CombatMath.EstimateVolleyWithCounted`), as the morale check does. The strike
+  order fans the CHARGER out with its melee weapons too (`DetermineStrikeOrderStage.ActorWithMeleeWeapons`) and reads
+  StrikeLast as well as StrikeFirst, so a 3.6 weapon-scoped Unwieldy (or the unit-scoped grant) swaps the order as
+  the stage does. Great Sergeant's AP(+2) needed no change (it rides the champion's weapon copy like Sergeant) - now
+  pinned. Pins (`CombatMathPinTests`): Scourge counted wounds vs the engine's bank, the margin with Scourge and with
+  2 wounds taken earlier, the Unwieldy charger (and the cannot-swing guard), Great Sergeant's copy vs the stages.
 - 2026-10-30 (#442 batch 7 - #429's casting gaps, B): `SpellValuation.CastThreshold / CastSuccessChance` are the
   engine's own number (4+ less `CastRollRules.Net` read-only, less the caster's granted cast tokens peeked, less a
   relay's bonus, clamped 2-6; `CastSpellStage.CastSuccessThreshold` is a new public alias of its private constant),
