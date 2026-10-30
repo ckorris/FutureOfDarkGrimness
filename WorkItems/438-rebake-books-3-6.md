@@ -73,6 +73,12 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-29 (from #420): the two Dangerous Terrain Debuff descriptions in `GdfRuleSupplement.json` ("Dangerous
+  Terrain Debuff Effect" and "... (Immediate)") now describe the 3.6 test ("it rolls a die per wound it would
+  take to destroy it, taking a wound on each 1"). The baked `.fdgbook` copies (11 books, including the
+  spell-synthesized counts-as rules such as Cursed Stride; `OprBookImporter`'s synthesized text is already
+  updated) still say "each moving model rolls a die" / "each of its models rolls a die" until this re-bake; after it,
+  `grep -lE "each moving model rolls|each of its models rolls" FdgRaylib/Assets/Books/*.fdgbook` should be empty.
 - 2026-10-29 (from #428): the bundled books still embed the pre-3.6 `allModelsHaveThisRule` kind (228 uses).
   It parses as the most-models gate, so the books already behave per 3.6, but `HumanInquisition.fdgbook`'s
   Inquisitorial Agent (a 3.6 "all models" holdout) also reads as "most" until this re-bake copies the swept

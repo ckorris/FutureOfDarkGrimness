@@ -240,7 +240,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 417 | Melee ranges: 3" strike, 3" pile-in/consolidate, vertical convention | 2 | - | O | medium | todo |
 | 418 | Fatigue: fatigued 6s do not trigger "unmodified 6" rules | 2 | - | O | high | todo |
 | 419 | Melee result = wounds taken this activation; Fear(X) rewording | 2 | - | O | medium | todo |
-| 420 | Dangerous terrain dice = wounds to destroy the unit | 2 | - | S | medium | todo |
+| 420 | Dangerous terrain dice = wounds to destroy the unit | 2 | - | S | medium | done 2026-10-29 (open: D5 "activates in it") |
 | 421 | Hero morale: Tough(9+) 6" Quality aura; not-Shaken gate | 2 | #428 | O | high | todo |
 | 422 | Impact before attacks + Fatigue gate; Counter split; new Brace(X) | 2 | - | O | high | todo |
 | 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | F | xhigh | todo |

@@ -1517,9 +1517,12 @@ public class GuiDefineMovementResolver
         if (dangerousCrossers > 0)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.00f, 0.40f, 0.35f, 1f));
-            ImGui.TextWrapped(dangerousCrossers == 1
-                ? "Dangerous terrain: 1 model's path crosses - it rolls a d6 on commit, a 1 deals 1 wound"
-                : $"Dangerous terrain: {dangerousCrossers} models' paths cross - each rolls a d6 on commit, a 1 deals 1 wound");
+            // 3.6 (#420): any one crossing model puts the whole unit to the test, and the unit rolls one die
+            // per wound it would take to destroy it - so the panel quotes that pool, not a die per crosser.
+            int dangerDice = request.UnitDataBinding.GetValue().GetWoundsToDestroy();
+            string crossers = dangerousCrossers == 1 ? "1 model's path crosses" : $"{dangerousCrossers} models' paths cross";
+            ImGui.TextWrapped($"Dangerous terrain: {crossers} - the unit rolls {dangerDice} {(dangerDice == 1 ? "die" : "dice")} " +
+                "on commit (wounds to destroy it), each 1 deals 1 wound");
             ImGui.PopStyleColor();
         }
         if (difficultCrossing)

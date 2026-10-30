@@ -61,7 +61,7 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 **Round/turn machinery placeholders**
 - `ReconcileNewRoundStage` — transitions with no work
 - `StartOfRoundExtraActionStage` — implemented: from round 2 it brings reserve (Ambush) units onto the table, offering each owner a Yes/No then placing it >9" from enemies (#042 deploy primitive)
-- `ApplyNonMovementTerrainEffectsStage` — implemented: rolls d6 per model whose path crosses `Dangerous` terrain; deals 1 wound on a roll of 1
+- `ApplyNonMovementTerrainEffectsStage` — implemented (3.6, #420): when any model's path crosses `Dangerous` terrain, the whole unit rolls one d6 per wound it would take to fully destroy it (`IUnit.GetWoundsToDestroy()`, Tough-aware, living models only, floored), each 1 a wound to the UNIT assigned in the normal order (already-wounded first, joined hero last; `AssignWoundsResults.AutoAssign`). The roll lives in `Rules/Dispatch/DangerousTerrainBatch` and is shared by the movement crossing, the forced Dangerous Terrain Debuff (`RollForcedDangerousTerrain`) and a destroyed transport's spillout (`TransportUtilities.ApplySpilloutEffects`); No Retreat's self-wound pool uses the same `GetWoundsToDestroy()` count. Probabilistic mode spreads the fractional expected wounds across the living models by their share of the unit's wounds. Not implemented: the "or that activate in it" clause (a unit that holds/shoots standing in `Dangerous` terrain without moving takes no test)
 - `ChooseActionStage` — custom-action branch is real (#010): rules with an `ActivatedAbility` at `Activation_OnActionChoice` surface as selectable actions
 
 **Half-built**

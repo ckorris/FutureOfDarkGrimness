@@ -26,7 +26,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [ ] 417 — Melee ranges 3.6: 3" strike range, 3" pile-in/consolidate, vertical convention (Q4). ([WorkItems/417](WorkItems/417-melee-range-3-inches.md))
 - [ ] 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" special rules. ([WorkItems/418](WorkItems/418-fatigue-no-special-sixes.md))
 - [ ] 419 — Melee result 3.6: loser = most wounds TAKEN this activation; Fear(X) adds to the enemy's taken count. ([WorkItems/419](WorkItems/419-melee-result-wounds-taken.md))
-- [ ] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))
+- [x] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. Done 2026-10-29; "or that activate in it" not built (D5, owner question). ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))
 - [ ] 421 — Hero 3.6: Tough(9+) heroes lend Quality for morale within 6"; both lends gated on the hero not being Shaken. ([WorkItems/421](WorkItems/421-hero-morale-aura-3-6.md))
 - [ ] 422 — Impact before either unit attacks + Fatigue gate; Counter = strike-first only; new core Brace(X) (+ Counter/Brace in Melee grants). ([WorkItems/422](WorkItems/422-impact-counter-brace.md))
 - [ ] 423 — Parry(X): new melee step (X dice per Parry model, 6+ ignores a hit, defender picks) with CLI/GUI/AI resolvers. ([WorkItems/423](WorkItems/423-parry.md))

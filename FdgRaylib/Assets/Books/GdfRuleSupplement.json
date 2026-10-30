@@ -7216,7 +7216,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Negative",
-    "description": "This unit counts as being in Dangerous Terrain on its next move - each moving model rolls a die, taking a wound on a 1."
+    "description": "This unit counts as being in Dangerous Terrain on its next move - it rolls a die per wound it would take to destroy it, taking a wound on each 1."
   },
   {
     "name": "Dangerous Terrain Debuff",
@@ -7250,7 +7250,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18\", which must immediately take a Dangerous Terrain test - each of its models rolls a die, taking a wound on a 1."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\", which must immediately take a Dangerous Terrain test - it rolls a die per wound it would take to destroy it, taking a wound on each 1."
   },
   {
     "name": "Difficult Terrain Debuff Effect",
