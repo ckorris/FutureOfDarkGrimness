@@ -51,6 +51,26 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 9 - #434 / #425 / #427 estimator terms, B): `CombatMath` now prices (1) Hazardous - each
+  unmodified 1 to hit worth one wound or the weapon's Blast(X) / Deadly(X), capped at a model's wounds per die (the
+  excess is lost), as `AttackEstimate.ExpectedSelfWounds`; the planner's shooting offense and the shooting resolver
+  subtract the shooters' own loss; (2) Ravage and Regenerative Strength - every `InvokeDealAutoWounds` pool from the
+  charge-contact evaluation the stage runs, for the charger before its swings and for the struck-back defender (the
+  StrikeBackStage twin), once per round (`StrikeDiceUsed`), not while Fatigued (the rules' own condition),
+  unsaveable (pre-failed saves into the wound-side mirror); (3) granted roll modifiers (`GrantedRollModifiers.PeekNet`:
+  the attacker's "+X to hit", the defender's "+X to defense", Unstoppable / Pierce filters) and the attacker-bonus
+  markers (persistent Target, spendable Spotter, one Tag token - the AI's own spend answers) on every save pipeline
+  - the #427 "granted hit tokens" gap and #434's Tag/Spotter note; (4) Pierce now drops cover's +1 too, as
+  `DetermineSaveRollsNeededStage` does. The shooting resolver prices the shot as held or moved from the unit's
+  `MovedThisRound` (it assumed "moved" always), so Slayer / Ranged Slayer's Hold AP(+2), Indirect's and Artillery's
+  arms reach target choice, and the activation urgency's kill term adds the Hold volley from where the unit stands
+  (#425 (3): a wall no longer hides an Indirect gun's shot; #434 (6) Slayer). Pins: `CombatMathPinTests` (Hazardous
+  vs the engine's 1s at Blast(3) on 1- and 3-wound crews; Ravage vs the real `ResolveRavageWoundsStage` with and
+  without Regeneration, once-per-round, Fatigue, the defender's twin; granted hit + defense buffs vs the stages, a
+  one-shot grant priced unspent, persistent Target markers vs the stages, a Tag token = one marker, Pierce + cover),
+  `TacticianPhantomVolleyTests.Urgency_IndirectGunBehindAWall_PricesTheHoldVolley`, `TacticianTargetChoiceTests.
+  Shooting_HoldOnlyAp_IsPricedOnlyOnAHold` (x2). Approximation recorded in `CombatMath.MarkerNet`: spendable markers
+  are given to every volley of a multi-weapon attack (the engine spends them on the first); the AI places none.
 - 2026-10-30 (#442 batch 8 - #419 / #431 / #435 melee-result and strike-order parity, B): `MeleeEstimate.
   ExpectedWoundsMargin` is now `DetermineMeleeWinnerStage`'s comparison: each side's taken total adds the wounds it
   only COUNTS as taken (Scourge - `AttackEstimate.ExpectedCountedWounds`, folded from the same save-complete
