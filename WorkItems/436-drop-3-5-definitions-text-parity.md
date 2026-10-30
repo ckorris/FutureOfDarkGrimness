@@ -63,6 +63,16 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-29 (from #427): text changed to the Core Rules v3.6.0 wording, so the parity pass can skip these:
+  `CoreRuleCatalog` Unstoppable (and "Unstoppable when shooting" / "Unstoppable in melee": "Ignores Regeneration, and
+  ignores all negative modifiers to this weapon which are not from this model's special rules." with the combat-kind
+  prefix on the variants), Aircraft, Flying, Strider, Immobile, Transport, Embark, Disembark (Embark / Disembark are
+  engine-internal: "Use a move action to ..."), and the new Spell Amplifier ("Gets +1 to casting rolls."). All
+  ASCII-folded; Aircraft's "adding 30" to its total move" is the 3.6 text while the forced-move code still flies a
+  30-36" band (#029, untouched). NOT changed: the supplement's "Unstoppable Mark" description ("...gets Unstoppable.",
+  still true), the AoF-only wording of the same core rules (identical in the AoF PDF), and the Army Forge common-rules
+  JSON's Transport entry, which still says "getting within 2" to enter" (3.5) against the core PDF's "getting in
+  contact to enter" (427 D7) - do not copy that line when reconciling.
 - 2026-10-29 (from #432): yours to delete once nothing old needs them: the catalog's "Darkborn (Offensive)" / "Darkborn
   (Defensive)" (3.6 has one bare "Darkborn", defined in the GDF supplement; the importer no longer rewrites to them),
   and - with the bundled books re-baked - the dropped 3.5 rules still on `attackedFromOverInches` (Mobile Artillery,

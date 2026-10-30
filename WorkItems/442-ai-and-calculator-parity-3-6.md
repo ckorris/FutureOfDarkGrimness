@@ -51,6 +51,16 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-29 (from #427): parity status. **Unstoppable's modifier immunity needs nothing here**: it lives in the
+  evaluator's first pass (`RuleEvaluator.ApplyNegativeModifierImmunity`), and `CombatMath` / the calculator run the same
+  evaluation with the weapon as an Actor participant, so a Stealth / Fortified / Evasive target is priced away for an
+  Unstoppable weapon and the weapon's own Imprecise still bites; pinned against the real stage chain in
+  `CombatMathPinTests.UnstoppableWeapon_*`. Known gap that stays: `CombatMath` never prices GRANTED hit tokens at all
+  ("Not mirrored" in `EstimateVolley`), so an enemy "-1 to hit once" spell is invisible to the estimate whether or not the
+  weapon is Unstoppable (the engine stage and `ShootingForecast` do honour it). **Spell Amplifier**: the AI's boost
+  sizing reads `ChooseSpellRequest.BaseThreshold`, which now includes the passive bonus; the Tactician does not plan
+  around WHICH spell to cast for the odds, unchanged. **Aircraft**: pile-in is engine-automatic (no AI choice); the AI's
+  own consolidation and movement resolvers already tag Aircraft footprints uncontactable.
 - 2026-10-29 (from #432): pricing of the range conditions (`attackingFromOver` / `attackedFromOver {9, 6}`). Done: the
   shooting forecast (`ShootingForecast`) and every real stage read the shooting distance; `CombatMath`'s hit contexts
   carry `DistanceInches`, so the shooting arm of the hit-side rules (Devout's extra hit, Havocbound's AP, Changebound's

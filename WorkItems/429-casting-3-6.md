@@ -66,6 +66,20 @@ line of sight" clause instead (#439's parser), confirm boosters are not LoS-filt
 
 ## Notes
 
+- 2026-10-29 (from #427): **Spell Amplifier is in, and the hook is yours to extend.** Rules author
+  `Effect.RollModifier(ERollKind.Cast, +N)` at `EHookID.Casting_OnSpellCastAttempt` (previously declared but unwired;
+  context `SpellCastAttemptContext(IUnit Caster)` in `Rules/Dispatch/Contexts/` - widen the record, e.g. with the spell
+  name, if one of your "+1 to casting rolls" rules needs it). `CastRollRules.Net(caster, evaluator, live)`
+  (`Rules/Dispatch/CastRollRules.cs`) folds them over the unit, its living models AND every living model's weapon
+  (Spell Amplifier is a weapon-scoped catalog rule, `CoreRuleCatalog.SpellAmplifier`; an argument-less rule fires once
+  per bearer, so two staffs are +1). Wired in `CastSpellStage`: `int rules = CastRollRules.Net(..., live: true)` is
+  added into `netModifier` beside boost / assist / granted / relay (line ~211), the roll breakdown prints "rules +N",
+  and the spell picker reads `CastRollRules.Net(..., live: false)` into `ChooseSpellRequest.BaseThreshold` (4+ less
+  the bonus - so GUI "Roll needed", the CLI boost cap and AI boost sizing already agree). The 2+..6+ clamp still
+  applies to the sum (`DiceUtilities.ClampSuccessRollNeeded`). Not touched: the booster scan, per-spell LoS, once per
+  activation, Spell Drain; `Casting_OnSpellAssistOffered` / `_OnSpellResolved` remain unwired. Tests:
+  `SpellAmplifierRuleIntegrationTests` is the template for yours (RecordingCastRequester + a fixed die + a debuff spell
+  whose landing is the observable).
 - 2026-10-29: filed with the plan.
 
 ## Decisions
