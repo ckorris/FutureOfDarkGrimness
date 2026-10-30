@@ -1,7 +1,7 @@
 # 452 — App: auto-write the replay on every game exit
 
 **Status**: todo
-**Related**: plan `docs/replay-plan.md` section 4.5 and fork F3; depends on #450, #451; model: `FdgRaylib/SaveLoad/RecoverySave.cs` (#187)
+**Related**: plan `docs/replay-plan.md` section 4.5 and fork F3 (answered: no cap); depends on #450, #451; model: `FdgRaylib/SaveLoad/RecoverySave.cs` (#187)
 
 ## Goal
 Every game that reached at least one decision leaves a `.fdgreplay` in `Replays/` beside the executable,
@@ -13,8 +13,8 @@ per game.
 
 ## Scope
 - `FdgRaylib/SaveLoad/ReplaySave.cs` mirroring `RecoverySave`: `DirectoryName = "Replays"`,
-  `KeepNewest` from `UserConfig` (default 30, fork F3), `TryWrite(IReplaySource?, DateTime utc, string
-  armyA, string armyB) -> string?`, `List()` newest-first (name-sorted: UTC timestamp first), `PruneOldest`.
+  NO pruning and no `KeepNewest` (F3: the files are small, keep them all), `TryWrite(IReplaySource?,
+  DateTime utc, string armyA, string armyB) -> string?`, `List()` newest-first (name-sorted: UTC timestamp first).
   File name `replay-<yyyyMMdd-HHmmss>-<armyA>-vs-<armyB>.fdgreplay` with army names sanitised to
   `[A-Za-z0-9-]` and truncated to 24 chars each; FFA/2v2: `-<n>p`. Every failure swallowed and reported
   via the return value and a `[replay]` console line, exactly like #187.
@@ -43,7 +43,7 @@ per game.
   CLAUDE.md's smoke instructions once it exists.
 
 ## Tests (`FdgRaylib.Tests/ReplaySaveTests.cs`)
-- File naming (sanitising, truncation, FFA suffix), pruning keeps newest N by name, `TryWrite(null)`
+- File naming (sanitising, truncation, FFA suffix), `TryWrite(null)`
   returns null, a failing directory returns null and does not throw.
 - Idempotence: two writes for one `GameId` produce one file whose content is the later export.
 
@@ -57,7 +57,8 @@ each time; a client-side file from one networked game (two processes on one mach
 - (none yet)
 
 ## Decisions
-- (record F3's answer and where the window-close path actually runs the writer)
+- F3 (Chris, 2026-10-30): no cap on `Replays/`; a game with zero decisions writes nothing.
+- (record where the window-close path actually runs the writer)
 
 ## Outcome
 (open)

@@ -1,6 +1,6 @@
 # 456 — GUI replay viewer
 
-**Status**: todo (forks F1, F2 need Chris's answer before building - see plan section 7)
+**Status**: todo (forks F1, F2 answered 2026-10-30 - see Decisions)
 **Related**: plan `docs/replay-plan.md` sections 4.3, 4.4, 7; depends on #454, #452; reuses the in-game canvas (`RaylibRenderer.TransitionToGame`), `PresentationPlayer`, `GameLog`
 
 ## Goal
@@ -17,8 +17,7 @@ game, and the acceptance list below is ticked.
   decompress every file on open: #450's header is the first JSONL line, read just that). `Open file...`
   (`TinyDialogs`, filter `*.fdgreplay;*.fdgsave`), `Delete`, `Back`. Parsing failures show the
   `ReplayFormatException` message inline, never a crash.
-- `ReplayScreen`: F2's answer decides whether it is a new `IAppScreen` that calls the same wiring
-  `TransitionToGame` uses (recommended) or a mode of the in-game screen. Either way it needs:
+- `ReplayScreen`: a new `IAppScreen` (F2) that calls the same wiring `TransitionToGame` uses. It needs:
   - A `ReplayPlayer` (from #454); the renderer draws `player.TableState`; on `OnStoreReplaced` the
     screen re-runs the table-state subscription setup (`TransitionToGame`'s model subscription code; the
     #052 note about seeding `_placedModels` from already-positioned models applies - restored stores do
@@ -38,7 +37,7 @@ game, and the acceptance list below is ticked.
   separator rows.
 - Details (below the list, for the current step): request `DisplayName`, who answered (controller), the
   describer summary, and a `Raw` toggle printing the reply JSON trimmed to ~20 lines.
-- Autoplay (F1): recommended - after a step's span beats finish (`PresentationPlayer` idle) plus a dwell
+- Autoplay (F1, decided): after a step's span beats finish (`PresentationPlayer` idle) plus a dwell
   of 0.75 s / speed; `Instant` = no beats, 0.1 s dwell. Autoplay stops at the end and at a `Resumed`
   marker (shows a one-line banner "Game was saved and resumed here; the unfinished activation was
   replayed").
@@ -69,7 +68,8 @@ game, and the acceptance list below is ticked.
 - (none yet)
 
 ## Decisions
-- (record F1/F2 answers, the subscription re-seeding approach on `OnStoreReplaced`, any overlay left off)
+- F1 (Chris, 2026-10-30): beat-paced autoplay + 0.75 s dwell. F2: new `ReplayScreen` + main-menu `Replays` button.
+- (record the subscription re-seeding approach on `OnStoreReplaced`, any overlay left off)
 
 ## Outcome
 (open)

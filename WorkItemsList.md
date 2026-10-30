@@ -67,7 +67,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [ ] 453 — Replay embedded in `.fdgsave`: save carries it, resume continues it (`Saved`/`Resumed` markers), clients of a resumed game receive the history. ([WorkItems/453](WorkItems/453-replay-in-save.md))
 - [ ] 454 — Engine: playback - `ReplayTimeline` (steps = decisions, one-option requests fold), `ReplayPlayer` (seek via snapshot + deltas, step fwd/back), shared `StoreDeltaApplier`, decision describer. ([WorkItems/454](WorkItems/454-replay-playback-engine.md))
 - [ ] 455 — Headless `--replay FILE --dump | --events | --stats | --verify | --export | --at N --make-save` so an agent can read a replay and cut a repro save from it. ([WorkItems/455](WorkItems/455-replay-cli-tools.md))
-- [ ] 456 — GUI replay viewer: browser screen over `Replays/`, table view with real beats, play/pause/step/seek/speed, decision list + details. Forks F1/F2 need Chris first. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
+- [ ] 456 — GUI replay viewer: browser screen over `Replays/`, table view with real beats, play/pause/step/seek/speed, decision list + details. Forks F1/F2 answered. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
 - [ ] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
 
 ## Movement

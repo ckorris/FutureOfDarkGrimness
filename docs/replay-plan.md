@@ -4,7 +4,7 @@
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
-**Owner:** Chris. **Decisions already taken (2026-10-30, Chris):** see section 2. **Open forks:** section 7.
+**Owner:** Chris. **Decisions already taken (2026-10-30, Chris):** see section 2. **Forks:** section 7 (all answered 2026-10-30).
 
 A modern-strategy-game replay: every game is recorded as it is played, on the host AND on remote clients,
 auto-saved when the game ends (however it ends), carried inside `.fdgsave` files so a saved-then-resumed
@@ -70,6 +70,8 @@ scope, surface design forks before building).
   embedded in `.fdgsave` so a resumed game continues the replay.
 - **D4 - AI decisions are steps.** Every request/reply pair is a step, whoever answered it, except
   requests with at most one option, which fold into the previous step (section 4.4).
+- **D6 - Forks F1-F3 answered** (section 7): beat-paced autoplay; a new `ReplayScreen` behind a main-menu
+  button; no cap on `Replays/`.
 - **D5 - Every game has a concrete seed.** When `GameSettings.DiceSeed` is null at launch the host picks
   one and stores it, so a replay can always say which seed produced it (ticket #450).
 
@@ -189,9 +191,8 @@ step. The filter is one class (`DefaultStepFilter`) so the viewer can offer "sho
 
 ### 4.5 Files on disk
 
-- `Replays/` beside the executable (same policy as `RecoverySave`'s `Saves/`): `replay-<UTC
-  yyyyMMdd-HHmmss>-<armyA>-vs-<armyB>.fdgreplay`, newest `KeepNewest` kept (default 30; `UserConfig`
-  setting), written by host and client alike.
+- `Replays/` beside the executable (same location policy as `RecoverySave`'s `Saves/`): `replay-<UTC
+  yyyyMMdd-HHmmss>-<armyA>-vs-<armyB>.fdgreplay`, never pruned (F3), written by host and client alike.
 - `.fdgsave` gains `Replay` (base64 gzip of the container as of the save) - #453.
 
 ---
@@ -245,14 +246,15 @@ Suggested order: 450 -> 454 -> 455 (an agent can now debug from a replay) -> 451
 
 ---
 
-## 7. Open forks (need Chris before the ticket that depends on them)
+## 7. Forks (answered by Chris, 2026-10-30)
 
-- **F1 (#456)** Viewer autoplay pacing: advance when the span's beats finish + a fixed dwell (recommended,
-  default 0.75 s), or a fixed interval per step regardless of beats.
-- **F2 (#456)** Where the viewer lives: a new `ReplayScreen` that reuses the in-game canvas via
-  `RaylibRenderer.TransitionToGame`-style wiring (recommended), or a mode flag inside the in-game screen.
-- **F3 (#452)** Keep count for `Replays/` (30 recommended) and whether a replay is also written when a
-  game is abandoned before deployment finished (recommended: yes, anything with >= 1 step).
+- **F1 (#456) - ANSWERED:** autoplay advances when the span's beats finish + a 0.75 s dwell (scaled by
+  speed); `Instant` skips beats.
+- **F2 (#456) - ANSWERED:** a new `ReplayScreen` reusing the in-game canvas via
+  `RaylibRenderer.TransitionToGame`-style wiring, reached from a `Replays` button on the main menu.
+- **F3 (#452) - ANSWERED:** no cap on `Replays/` - files are small (section 5), keep everything; no
+  pruning code, no `KeepNewest`. A game abandoned before any decision writes nothing; anything with >= 1
+  step is written.
 
 ---
 
