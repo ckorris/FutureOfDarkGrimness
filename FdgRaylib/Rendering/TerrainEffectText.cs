@@ -30,7 +30,8 @@ internal static class TerrainEffectText
         if (type.HasFlag(ETerrainType.Difficult))
             lines.Add("Difficult - moving through it cuts the move short.");
         if (type.HasFlag(ETerrainType.Dangerous))
-            lines.Add("Dangerous - a unit moving through it rolls one die per wound it would take to destroy it; each 1 is a wound.");
+            lines.Add("Dangerous - a unit moving through it, or activating in it, rolls one die per wound it would take " +
+                "to destroy it (once per activation); each 1 is a wound.");
         // Declared but read by nothing in the rules today (see DefaultTerrainPool). Only a hand-authored
         // layout can set it, and a piece that silently does nothing is worse than one that says so.
         if (type.HasFlag(ETerrainType.Elevated))

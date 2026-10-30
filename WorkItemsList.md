@@ -52,7 +52,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [ ] 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed). Design fork; blocked on Q3. ([WorkItems/443](WorkItems/443-terrain-3-6.md))
 - [ ] 444 — Version, docs, release: RULES_VERSION OPR_3_6_0, app version (Q7), README/CLAUDE.md/EngineNotes/ResolverGuide, merge to master, tag. ([WorkItems/444](WorkItems/444-version-docs-release-3-6.md))
 - [ ] 445 — Final verification: coverage Dead 0, per-book smokes, share-link gate, hand-verify checklist. ([WorkItems/445](WorkItems/445-final-verification-3-6.md))
-- [ ] 446 — Dangerous terrain: a unit that activates in Dangerous terrain without moving (Hold/shoot in place) never tests; the "or that activate in it" clause (3.5 and 3.6) is unbuilt. Found by #420 (Q10). ([WorkItems/446](WorkItems/446-activate-in-dangerous-terrain.md))
+- [x] 446 — Dangerous terrain: a unit that activates in Dangerous terrain takes the test first thing in its activation; one test per activation on either trigger. Done 2026-10-30; owner review asked on D1, D2, D3, D4. ([WorkItems/446](WorkItems/446-activate-in-dangerous-terrain.md))
 - [ ] 447 — Impact(X) is rolled once per UNIT, but the rule is per model: a 5-model unit with Impact(1) rolls 1 die, not 5 (42 multi-model 3.6 units carry Impact). Pre-existing engine bug found by #422. ([WorkItems/447](WorkItems/447-impact-per-model.md))
 
 ---

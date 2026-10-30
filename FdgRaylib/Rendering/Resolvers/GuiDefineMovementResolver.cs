@@ -1519,10 +1519,21 @@ public class GuiDefineMovementResolver
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.00f, 0.40f, 0.35f, 1f));
             // 3.6 (#420): any one crossing model puts the whole unit to the test, and the unit rolls one die
             // per wound it would take to destroy it - so the panel quotes that pool, not a die per crosser.
-            int dangerDice = request.UnitDataBinding.GetValue().GetWoundsToDestroy();
+            // #446: one test per activation - a unit that already tested (it activated standing in Dangerous
+            // terrain, or crossed it on an earlier move) rolls nothing for this move, and the panel says so.
+            UnitData mover = request.UnitDataBinding.GetValue();
             string crossers = dangerousCrossers == 1 ? "1 model's path crosses" : $"{dangerousCrossers} models' paths cross";
-            ImGui.TextWrapped($"Dangerous terrain: {crossers} - the unit rolls {dangerDice} {(dangerDice == 1 ? "die" : "dice")} " +
-                "on commit (wounds to destroy it), each 1 deals 1 wound");
+            if (FDG.Rules.Dispatch.DangerousTerrainTestedThisActivation.Has(mover))
+            {
+                ImGui.TextWrapped($"Dangerous terrain: {crossers} - no test on commit, the unit already took its " +
+                    "Dangerous terrain test this activation");
+            }
+            else
+            {
+                int dangerDice = mover.GetWoundsToDestroy();
+                ImGui.TextWrapped($"Dangerous terrain: {crossers} - the unit rolls {dangerDice} {(dangerDice == 1 ? "die" : "dice")} " +
+                    "on commit (wounds to destroy it), each 1 deals 1 wound");
+            }
             ImGui.PopStyleColor();
         }
         if (difficultCrossing)

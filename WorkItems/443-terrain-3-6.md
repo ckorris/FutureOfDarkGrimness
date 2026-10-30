@@ -65,6 +65,17 @@ needs a JSON alias or it breaks every save/scenario that uses it. Climbable, Den
 
 ## Notes
 
+- 2026-10-30 (from #446): Dangerous terrain now also tests a unit that ACTIVATES in it
+  (`ActivatedInDangerousTerrainStage` -> `MovementExecutor.RollActivationDangerousTerrain`, any living model's base
+  overlapping a piece flagged `ETerrainType.Dangerous`, via `MovementUtilities.IsModelInDangerousTerrain`), with one
+  test per activation shared with the move trigger (`Rules/Dispatch/DangerousTerrainTestedThisActivation`, read and
+  set by `MovementExecutor.RollDangerousTerrain` too). For this item: (1) Unstable ("if any model in a unit moves
+  over 6" when moving into or through unstable terrain, then it counts as Dangerous terrain") is a MOVE trigger only -
+  do NOT model it by giving the piece the `Dangerous` flag, or every unit standing in it would take the activation
+  test; route it through the move path (the `countsAsInDangerousTerrain` argument of `RollDangerousTerrain`, which
+  already obeys the one-test-per-activation marker). (2) Steep's "count it as being in Difficult terrain" moving onto
+  it is likewise move-only. (3) Any new "in terrain" footprint test should reuse `IsModelInDangerousTerrain`'s shape
+  (static swept-base pose, base overlap counts - #446 D3) so standing-in and crossing agree.
 - 2026-10-29: filed with the plan; blocked on Q3.
 
 ## Decisions

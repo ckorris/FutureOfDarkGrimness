@@ -51,6 +51,19 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #446): Dangerous terrain "or that activate in it". A unit with any living model's base in a
+  `Dangerous` piece now takes the #420 test (one d6 per wound to destroy it, each 1 a wound) FIRST THING in its
+  activation (`ActivatedInDangerousTerrainStage`), and one test per activation covers both triggers (a move out
+  across the piece afterwards does not test again; `DangerousTerrainTestedThisActivation`). Parity: nothing to
+  rewire - no estimator prices Dangerous terrain at all (no `ETerrainType.Dangerous` reader in `Ai/`, `Calculator/`,
+  `FdgRaylib/Rendering/CombatCalc/`), and the search's rollouts run the real stages, so searched lines include the
+  activation test. Pricing gaps for you, none changed in #446: (1) move scoring (`MovementPlanner`,
+  `TacticianMovementResolver`, the solo `AiDefineMovementResolver`) neither avoids Dangerous pieces on the way nor
+  values ENDING a move outside one - a unit that stops in lava now pays a full-pool test at its next activation, so
+  an end-position penalty of about (wounds to destroy) / 6 expected wounds (scaled by the unit's value) would be the
+  cheapest term; (2) activation order: a unit already standing in Dangerous terrain could be activated early to move
+  out (it tests once either way this activation, but leaving stops the next one), or late if it is about to die
+  anyway; (3) Flying/Aircraft are exempt (`MovementRuleQueries.IgnoresAllTerrain`), Strider is not.
 - 2026-10-30 (from #421): Hero morale 3.6 (Tough(9)+ Hero aura: friendly units within 6" may test morale at the Hero's
   Quality while the Hero isn't Shaken; a joined hero's Quality is now also only lent while not Shaken, and only when
   better). Parity: nothing to rewire - no AI or Calculator code estimates morale Quality (no reader of
