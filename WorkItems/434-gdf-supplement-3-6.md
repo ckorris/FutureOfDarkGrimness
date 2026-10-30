@@ -66,6 +66,20 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-29 (from #431): the weapon-rule family is DONE in `GdfRuleSupplement.json` (Anti-Cover + its three
+  variants, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate, Demolish, Purge, Reap,
+  Scourge, Unwieldy, Imprecise, Crossing Strike; Destructive and Disintegrate re-authored to 3.6). Left for you: the
+  reworded "Unwieldy Debuff" ("... which gets Unwieldy on its weapons in melee once") and its new grant target
+  "Unwieldy on its weapons in melee" (2 dead refs in a full 3.6 scratch import; also granted by the High Elf Fleets
+  Creator of Illusions spell) - a unit-scoped clone of today's "Unwieldy in melee" works, since `DetermineStrikeOrderStage`
+  reads both the charger's unit and its melee weapons. New kinds available: Conditions: `targetOverHalfWeaponRange` (shooting distance > half the FIRING weapon's printed range; false in melee,
+  for range 0, or with no weapon), `targetMostModelsDefenseInRange {minDefense, maxDefense}` (strict majority of the
+  target's living models, per-model Defense incl. a joined hero), `targetAboveHalfStrength` (complement of the morale
+  "half or less"), `targetShakenOrFatigued`, `targetMostModelsWithinInchesOfTerrain {distanceInches}` (the target-side
+  twin of `mostModelsWithinInchesOfTerrain`). Effects: `ignorePositiveDefenseModifiers` (author at
+  `Shooting_OnHitRollComplete`), `countsAsWoundsTaken {onRollValue, woundsPerDie}` (at `Shooting_OnSaveRollComplete`;
+  counted, not dealt - melee result + shooting morale trigger). Reuse rather than re-mint: "re-roll successful 5-6" is
+  `reroll Save onUnmodifiedValue minValue 5`, "most models Tough(X)+" is `targetMajorityHasTough`.
 - 2026-10-29 (from #422): "Counter in Melee", "Counter in Melee Aura" and "Counter in Melee Buff" are DONE in
   `GdfRuleSupplement.json` (3.6 text; Counter in Melee moved here from the AoF file because GDF books name it too).
   The Buff grants "Counter in Melee" NextTrigger - its 3.6 text omits the usual "once (next time ...)"; owner

@@ -1,6 +1,7 @@
 # 431 — New weapon-rule family: Anti-Cover ... Crossing Strike
 
-**Status**: todo
+**Status**: done 2026-10-29 (engine `3b92c54e`; superproject commit `431: ...` bumps it with the supplement data, app
+tests and docs). Owner review asked on D2, D3, D5 and D8.
 **Related**: #415, #418 (Fatigue 6s), #032 (weapon rules), #100 (primitives), #164 (DealHits.WithRules), #434/#435 (consumers)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high.
 
@@ -71,6 +72,103 @@ scratch 3.6 import drops every name above to 0.
 
 ## Notes
 
+- 2026-10-29: **Landed.** Engine commit `3b92c54e` (submodule, `feature/opr-3.6`); the superproject commit bumps it
+  with `GdfRuleSupplement.json`, the app tests, `docs/EngineNotes.md` and this ledger.
+  - **Texts.** All 18 names read from the 3.6.0 snapshots' `specialRules` (identical across books). Unwieldy is
+    "Strikes last when charging." (6 books: Dwarf Guilds, Alien Hives, High Elf Fleets, Eternal Wardens, Ogres,
+    Dwarves) - the existing #197 P20 `StrikeLast`, now printed on WEAPONS. Crossing Strike's text is word for word
+    3.5 Strafing's. Every definition carries the 3.6 text verbatim (ASCII).
+  - **Engine vocabulary (new JSON kinds).** Conditions: `targetOverHalfWeaponRange`,
+    `targetMostModelsDefenseInRange {minDefense, maxDefense}`, `targetAboveHalfStrength`, `targetShakenOrFatigued`,
+    `targetMostModelsWithinInchesOfTerrain {distanceInches}`. Effects: `ignorePositiveDefenseModifiers`,
+    `countsAsWoundsTaken {onRollValue = 1, woundsPerDie = 2}`. Reused, not rebuilt (D1): the "re-roll successful 5-6"
+    effect is `reroll Save onUnmodifiedValue minValue 5`, and "most models Tough(3)+" is `targetMajorityHasTough 3`.
+  - **Engine plumbing.** Pierce: `RollToHitStage.WholeAttackSaveModifier` drops positive Save deltas when the op is
+    present and flags `RollToHitResults.IgnoresPositiveDefenseModifiers`, which `DetermineSaveRollsNeededStage` reads
+    to drop cover's +1 and positive granted Defense buffs (`GrantedRollModifiers.ConsumeNet/PeekNet(ignorePositive)`);
+    `ShootingForecast` and the AI's `CombatMath` share the same fold (D3). Scourge: `AssignWoundsStage` banks
+    `AddCountedWoundsTaken` on the struck unit as a `TokenType.CountedWoundsTaken` magnitude (`CountedWounds`);
+    `DetermineMeleeWinnerStage` and the wound-driven morale check (`ResolveRangedMoraleStage`,
+    `ResolveStrafeMoraleStage`, `MoraleUtilities.ResolveWoundDrivenMorale(..., countedWounds)`) take it; a new
+    `IUnitExtensions.GetIsAtHalfStrength(unit, countedWounds)` allocates it virtually; `ReconcileEndOfActivationStage`
+    sweeps it off every unit (D4). Unwieldy: `DetermineStrikeOrderStage` now fans the charger out over its melee
+    weapons (`ActorWithMeleeWeapons`), the mirror of the defender's Counter fan-out (D5). `HeroStatRules.
+    GetModelDefense` (per-model Defense, joined hero included) backs the Defense gate. `RuleFireLint`: the two new
+    ops are mapped as consumed, the Defense and Shaken/Fatigued gates are seeded, and a Tough-majority defender was
+    added on the save side (Obliterate is the first save-side Tough gate - the lint failed it until then).
+    Presentation: the re-roll beat says "Defense Re-roll" (was "Bane Re-roll" for every re-roll rule) and the cover
+    log names the ignoring rule (was hard-coded "(Blast)").
+  - **Data.** `GdfRuleSupplement.json`: 19 new definitions (Anti-Cover, Anti-Cover when Shooting, Anti-Cover Aura,
+    Anti-Cover when Shooting Aura, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate,
+    Demolish, Purge, Reap, Scourge, Unwieldy, Imprecise, Crossing Strike) and Destructive / Disintegrate re-authored
+    in place to 3.6. The AoF file defines none of these names (it inherits them). Old "Ignores Cover / Ignores
+    Regeneration" definitions left for #436 (D7). `.fdgbook` files untouched (#438).
+  - **Tests.** Engine (new): `WeaponRules36SaveRuleIntegrationTests` (real `AssignWoundsStage`, histogram mode),
+    `WeaponRules36ApRuleIntegrationTests` (real `RollToHitStage` -> `DetermineSaveRollsNeededStage`, `CoverCheckStage`,
+    `DetermineHitRollStage`), `ScourgeRuleIntegrationTests` (save -> token, real `DetermineMeleeWinnerStage`, real
+    `ResolveRangedMoraleStage`, real `ReconcileEndOfActivationStage` sweep, virtual allocation),
+    `CrossingStrikeRuleIntegrationTests` (real `StrafingStage`, incl. a Scourge strike feeding the strafe morale test),
+    `WeaponRules36ConditionTests` (JSON round-trips, edges), +2 weapon-scoped cases in `UnwieldyRuleIntegrationTests`;
+    shapes shared via `WeaponRules36Definitions`. App (new): `WeaponRules36ShippedDataTests` (each shipped definition
+    equals the tested shape entry for entry, with the 3.6 text; Crossing Strike = Strafing's ability and is
+    strafe-only; Anti-Cover auras; AoF inherits). `RuleSupplementLintTests` gained the 19 new names automatically.
+  - **Negative controls run by hand** (each reverted): over-half gate forced true fails 6 tests; the Pierce fold
+    disabled fails 1; above-half gate forced true fails 4; counted wounds left out of the melee result fails 1, out of
+    the morale check fails 3; the activation-end sweep removed fails 1; the charger's weapon carriers removed fails 1;
+    a wrong `minValue` in the shipped Fragment fails its shape test.
+  - **Counts.** Engine 3513 -> 3597 passed (1 skipped before and after). FdgRaylib.Tests 3075 -> 3118.
+  - **Verification.** Engine suite green; FdgRaylib.Tests green; full `dotnet build` 0 errors / 0 warnings;
+    headless smoke `printf "2\n2\n" | ... --headless` exit 0 ("Game result: outcome=Tie winner=none rounds=4
+    scores=[0, 0]"); `--validate-rules GdfRuleSupplement.json AofRuleSupplement.json` "OK: 356 definitions, no
+    problems." (each AofBookOverrides file on top also OK); `--rule-coverage FdgRaylib/Assets/Books` "Total
+    references: 22079 / Dead: 36 (36 no-definition across 2 names)" (unchanged - the Counter-Attack family, #438).
+  - **Acceptance (scratch 3.6 import, outside the repo).** Battle Brothers + Human Defense Force + High Elf Fleets
+    (GDF supplement) + Dwarves (GDF + AoF supplements): before (HEAD supplements) "Total references: 1882 / Dead: 440
+    (440 no-definition across 25 names)" with Anti-Cover 72, Fracture 62, Smash 24, Scourge 9, Anti-Regen 5,
+    Unwieldy 3, Crossing Strike 1; after "Total references: 1882 / Dead: 264 (264 no-definition across 18 names)",
+    none of this item's names left. Also all 90 snapshot entries (88 books + the 2 empty parents): before "Total
+    references: 30839 / Dead: 6603 (6603 no-definition across 156 names)" (Anti-Cover 850, Smash 132, Pierce 116,
+    Scourge 107, Anti-Regen 94, Fracture 85, Purge 78, Demolish 60, Fragment 54, Reap 52, Decimate 44, Obliterate 43,
+    Puncture 41, Crossing Strike 32, Unwieldy 17, Imprecise 9, the three Anti-Cover variants 2 each); after "Total
+    references: 30839 / Dead: 4783 (4783 no-definition across 137 names)" with none of the 18 names (nor the
+    Anti-Cover variants) left. The one related name still dead is "Unwieldy on its weapons in melee" (2), the grant
+    target of the reworded Unwieldy Debuff - handed to #434/#435 (D7).
+  - **Deferred / handed on, named.** (1) D8: spell hits "with Smash / Pierce" never get the over-half facet (the
+    spell's synthetic weapon has range 0) - #439. (2) The AI's `CombatMath` and the Combat Calculator do not model
+    Scourge's counted wounds or either Unwieldy (pre-existing for the unit-scoped one) - #442. (3) "Unwieldy on its
+    weapons in melee" + the Unwieldy Debuff reword - #434/#435. (4) The Strafing catalog entry, its UI strings
+    ("Choosing a Strafing Target", "carries a Strafing weapon") and the old Ignores Cover / Ignores Regeneration
+    definitions - #436. (5) `WeaponEffectAssigner.CarriesStrafing` keys the aerial-bomb effect set on the name
+    "Strafing"; 3.6 bombs say "Crossing Strike" - #438 (effect-set keywords). (6) #419 rewrites the melee result; it
+    must keep reading `CountedWounds` (noted there). No GUI resolver changed (the targeting overlays already read
+    `SightRuleQueries.CoverIgnoreSource`, which now names Anti-Cover / Demolish / Pierce), so nothing awaits GUI
+    hand-verify beyond a glance at the save-beat chips (Pierce's "no +Def" chip, the "Defense Re-roll" beat).
+
+### Ledger
+
+| Rule | Definition | Engine test (case + control) |
+|------|------------|------------------------------|
+| Anti-Cover (+ when Shooting, Aura, when Shooting Aura) | `GdfRuleSupplement.json` | `WeaponRules36ApRuleIntegrationTests.TheCoverIgnorers_DropTheCoverBonus` (control inside) |
+| Anti-Regen | `GdfRuleSupplement.json` | `WeaponRules36SaveRuleIntegrationTests.TheRegenerationIgnorers_LandEveryWound` / `WithoutAnIgnorer_...` |
+| Smash | `GdfRuleSupplement.json` | `...Save...Smash_At13InchesOfA24InchGun_RerollsTheSix` / `Smash_At11Inches..._RerollsNothing`, `Smash_InMelee_...` |
+| Pierce | `GdfRuleSupplement.json` | `...Ap...Pierce_OverHalfRange_GetsApPlusOne` / `Pierce_InsideHalfRange_NoExtraAp`, `Pierce_IgnoresTheTargetsOwnDefenseBonus`, `Pierce_IgnoresCoverAndGrantedDefenseBuffs`, `Pierce_KeepsNegativeModifiers` |
+| Fracture | `GdfRuleSupplement.json` | `...Ap...Fracture_OnANaturalSix_HitsGetApPlusTwo` / `Fracture_FromAFatiguedStriker_AddsNothing`, `Fracture_OffASix_AddsNothing` |
+| Fragment | `GdfRuleSupplement.json` | `...Save...Fragment_VersusDefense5_...` / `Fragment_VersusDefense4_...`, `Fragment_OnlyRerollsSuccessfulFives` |
+| Puncture | `GdfRuleSupplement.json` | `...Ap...Puncture_VersusDefense3_GetsApPlusTwo` / `Puncture_VersusDefense4_NoExtraAp`; Regen-ignore case |
+| Obliterate | `GdfRuleSupplement.json` | `...Save...Obliterate_VersusToughThree_...` / `Obliterate_VersusToughOne_...`; Regen-ignore case |
+| Decimate | `GdfRuleSupplement.json` | `...Save...Decimate_VersusAFullStrengthUnit_...` / `Decimate_VersusAUnitAtHalfStrength_...`, `Decimate_VersusASingleToughModel_ReadsItsToughValue` |
+| Destructive (re-authored) | `GdfRuleSupplement.json` | `...Ap...Destructive_AboveHalfStrength_GetsApPlusOne` / `Destructive_AtHalfStrength_NoExtraAp`, `Destructive_NoLongerRendsOnSixes` |
+| Disintegrate (re-authored) | `GdfRuleSupplement.json` | `...Ap...Disintegrate_VersusToughThree_...` / `Disintegrate_VersusToughOne_...`; Regen-ignore case |
+| Demolish | `GdfRuleSupplement.json` | `...Ap...Demolish_VersusMostModelsNearTerrain_...` / `Demolish_VersusATargetInTheOpen_...`; cover case |
+| Purge | `GdfRuleSupplement.json` | `...Ap...Purge_VersusAShakenOrFatiguedUnit_GetsApPlusTwo` (x2) / `Purge_VersusAFreshUnit_NoExtraAp` |
+| Reap | `GdfRuleSupplement.json` | `...Save...Reap_VersusAShakenOrFatiguedUnit_...` (x2) / `Reap_VersusAFreshUnit_RerollsNothing` |
+| Scourge | `GdfRuleSupplement.json` | `ScourgeRuleIntegrationTests` (16: save -> 4 counted, melee loser flips, morale without real wounds, sweep, histogram) |
+| Unwieldy | `GdfRuleSupplement.json` | `UnwieldyRuleIntegrationTests.AChargerWhoseMeleeWeaponIsUnwieldy_...` / `AnUnwieldyWeaponOnTheDefender_DoesNothing` |
+| Imprecise | `GdfRuleSupplement.json` | `...Ap...Imprecise_IsMinusOneToHit` (control inside) |
+| Crossing Strike | `GdfRuleSupplement.json` | `CrossingStrikeRuleIntegrationTests` (7, incl. `Declined_NoAttack`, `ThePlainStrike_SameDice_NoMoraleTest`) |
+
+App side, every row: `WeaponRules36ShippedDataTests` (shape + 3.6 text) and `RuleSupplementLintTests.EverySupplementRuleFires`.
+
 - 2026-10-29 (from #418): Fatigue's "those hits don't count as rolls of 6 for special rules" is now enforced
   once, on the hit context: `UnmodifiedRollEquals`, `AddExtraHit`, `SelfWoundOnUnmodifiedRoll`,
   `PerHitSaveModifier` and `PerHitApSplitter` read `IHasUnmodifiedHitRolls.SpecialRuleHitRolls`. Fracture
@@ -81,11 +179,71 @@ scratch 3.6 import drops every name above to 0.
 
 ## Decisions
 
-(none yet)
+- **D1 - two of the requested primitives already existed (2026-10-29).** "re-roll-successful-5-6-saves" is
+  `Effect.Reroll(Save, RerollCondition.OnUnmodifiedValue(MinValue: 5))` (#197's Boost band): `AssignWoundsStage`
+  re-rolls only the SUCCESSFUL save groups, so a natural 5 that already failed (Defense 6+, or under AP) is never
+  re-rolled - exactly "successful unmodified results of 5-6" (pinned: `Fragment_OnlyRerollsSuccessfulFives`). A
+  general face set was not added: no 3.6 rule names a non-contiguous set. "target-most-models-Tough-at-least" is
+  `Condition.TargetMajorityHasTough` (#377), strict majority of living models. No duplicate kinds were minted.
+- **D2 - "this weapon's range" (2026-10-29) - OWNER REVIEW.** `TargetOverHalfWeaponRange` compares the shooting
+  distance (closest living models, base to base - the distance every other range gate reads) with HALF the weapon's
+  PRINTED range, strictly over. Not the effective range after modifiers (Increased Shooting Range +6", a target's
+  Aircraft -12"): those change what may be targeted, not the weapon's profile. False in melee (an Assault weapon
+  swung in contact is never "over half its range away"), for a range-0 weapon, and for a weaponless (granted)
+  copy. Alternative: halve the effective range from `RangeRuleQueries.EffectiveRange` - one call in the condition.
+- **D3 - what Pierce's "positive Defense modifiers" are (2026-10-29) - OWNER REVIEW.** Ignored: the target's own
+  positive Save deltas (every one in the corpus is a Subject-seat `rollModifier Save +X` at hit-roll-complete -
+  Shielded, Grounded Protection, ...), cover's +1, and positive granted "+X to Defense rolls" buffs. Kept: every
+  negative modifier, and AP reduction (Fortified "AP(-1)"), which modifies the attacker's AP rather than the target's
+  Defense. An ignored one-shot "+1 to Defense once" is still SPENT by the attack it was ignored on (this roll is its
+  "next time"); the other reading (it carries over) needs payload-precise token removal. Pierce also carries an
+  `ignoreCover` entry purely so the targeting overlays, the shooting forecast, the AI and the calculator (which ask
+  `SightRuleQueries.IgnoresCover`) price it the way the save stage resolves it.
+- **D4 - Scourge's counted wounds (2026-10-29).** Banked as a magnitude token on the STRUCK unit (the save-roll stage
+  cannot reach the action context, and the charger's swings and the strike-back run under different contexts),
+  read-and-removed by the two checks the text names, swept off every unit at the end of each activation (the text's
+  scope is "this activation"; a wipe-out skips the melee result step). Melee: added to what the opponent dealt -
+  Fear(X)'s polarity, so #419's "wounds taken" rewrite keeps the same sign. Shooting: counted wounds count as wounds
+  TAKEN (they alone can trigger the test, per the item's acceptance) and are allocated virtually for the
+  half-strength check in the mandatory order (wounded models first, rank and file in order, joined hero last); a
+  model only counts as gone when the counted wounds cover all it has left. Strafe / Crossing Strike morale reads
+  them too ("as if it was shooting"). Re-rolled save dice (Bane family) do not add 1s - the Shred precedent reads the
+  original histogram the same way.
+- **D5 - Unwieldy on a weapon swaps the whole melee (2026-10-29) - OWNER REVIEW.** 3.6 Unwieldy is a weapon rule. The
+  engine orders UNITS, not weapons, so one Unwieldy melee weapon in the charging unit lets the charged unit strike
+  first - the same approximation weapon-scoped Counter has always had (one Counter spear = the whole unit strikes
+  first). The exact reading (the Unwieldy weapons swing after the defender, the rest before) would split the
+  charger's swing around the strike-back - a melee pipeline change well beyond this item. In the 3.6 books the axes
+  and great weapons that carry it are carried by whole units, so the difference is mostly theoretical.
+- **D6 - Crossing Strike is Strafing renamed, so no new stage (2026-10-29).** The 3.6 text is identical to 3.5
+  Strafing's, and Strafing's whole shape is still in the engine (`StrafingStage`, `StrafingRules` detecting the
+  restriction by EFFECT, so a renamed copy is restricted too, `ResolveStrafeMoraleStage`). The definition is the
+  catalog's activated ability under the new name, in the GDF supplement (Crossing Strike is not a core name). No
+  fly-over permission, as before: carriers need Flying or Aircraft. Not a design fork - adapting it was data only.
+- **D7 - the variant names (2026-10-29).** 3.6 books still reference three variants of the renamed rule - "Anti-Cover
+  Aura" (Eternal Dynasty), "Anti-Cover when Shooting" and "Anti-Cover when Shooting Aura" (Dwarf Guilds) - so they
+  were authored as the renames of the Ignores Cover variants (same shapes). No 3.6 book references any "Ignores
+  Cover" / "Ignores Regeneration" name or an Anti-Regen variant (census + both coverage lists), so the old
+  definitions stay for #436 to remove. "Unwieldy on its weapons in melee" (the grant target of the reworded Unwieldy
+  Debuff and High Elf Fleets' Creator of Illusions spell) is not one of this item's names and only makes sense together with the
+  Debuff's reword, so it is handed to #434/#435.
+- **D8 - spell hits "with Smash / Pierce" (2026-10-29) - OWNER NOTE, handed to #439.** Seventeen 3.6 spells name Smash or
+  Pierce, most as "takes N hits with AP(1) and Smash/Pierce" (Cerebral Trauma, Dark Wound, Godly Smash, ...). `CastSpellStage`'s synthetic spell weapon has range
+  0, so the over-half-range facet never fires for them (Pierce's positive-modifier facet does). If the owner reads
+  "this weapon's range" as the spell's range, #439 can give the synthetic weapon the spell's range.
+- **D9 - presentation touch-ups (2026-10-29).** The save re-roll beat was labelled "Bane Re-roll" for every re-roll
+  rule; with five new ones it now reads "Defense Re-roll". The cover log hard-coded "(Blast)"; it now names the rule
+  that ignored the cover. Pierce's ignored Defense bonus shows no chip, and a "Pierce: no +Def" chip says why.
 
 ## Outcome
 
-(open)
+Done 2026-10-29 on `feature/opr-3.6`. Every OPR 3.6 weapon rule in the item (Anti-Cover, Anti-Regen, Smash, Pierce,
+Fracture, Fragment, Puncture, Obliterate, Decimate, Destructive, Disintegrate, Demolish, Purge, Reap, Scourge,
+Unwieldy, Imprecise, Crossing Strike), plus the three Anti-Cover variants the books still name, has a validated
+definition in `GdfRuleSupplement.json`, the 3.6 text, and engine + app tests; a scratch import of all 88 3.6 books
+leaves none of them undefined. The engine gained five target conditions, Pierce's positive-modifier ignore and
+Scourge's counted-wounds feed, all named for reuse. Engine `3b92c54e`. Open: D2, D3, D5 and D8 for the owner;
+hand-offs to #419, #434/#435, #436, #438, #439, #442 recorded in Notes.
 
 ## Rules for the agent (plan section 1, restated)
 

@@ -73,6 +73,9 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-29 (from #431): `WeaponEffectAssigner.CarriesStrafing` (#379) gives range-0 bomb weapons the aerial-bomb
+  effect set by matching the rule NAME "Strafing"; 3.6 bombs carry "Crossing Strike" instead, so add that name to the
+  check when the effect-set keywords are redone, or the re-baked bombs fall back to a melee look.
 - 2026-10-29 (from #422): the re-bake must clear four allowlist entries #422 added (each test fails once its entry
   goes stale): `BookRuleCensusTests` "Counter-Attack" and "Counter-Attack Aura" (15 bundled 3.5 books, 36 refs -
   `--rule-coverage` reports Dead: 36 until then), `BookSpellCoverageTests` / `BookSpellCastProbeTests`

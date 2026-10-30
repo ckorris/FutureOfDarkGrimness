@@ -67,6 +67,16 @@ Tests green; `--validate-rules` OK; the #325 forecast tags show the condition st
 
 ## Notes
 
+- 2026-10-29 (from #431): new condition/effect kinds you can use (semantics in #431 Notes and `Condition.cs` /
+  `Effect.cs`). Conditions: `targetOverHalfWeaponRange` (shooting distance > half the FIRING weapon's printed range; false in melee,
+  for range 0, or with no weapon), `targetMostModelsDefenseInRange {minDefense, maxDefense}` (strict majority of the
+  target's living models, per-model Defense incl. a joined hero), `targetAboveHalfStrength` (complement of the morale
+  "half or less"), `targetShakenOrFatigued`, `targetMostModelsWithinInchesOfTerrain {distanceInches}` (the target-side
+  twin of `mostModelsWithinInchesOfTerrain`). Effects: `ignorePositiveDefenseModifiers` (author at
+  `Shooting_OnHitRollComplete`), `countsAsWoundsTaken {onRollValue, woundsPerDie}` (at `Shooting_OnSaveRollComplete`;
+  counted, not dealt - melee result + shooting morale trigger). Reuse rather than re-mint: "re-roll successful 5-6" is
+  `reroll Save onUnmodifiedValue minValue 5`, "most models Tough(X)+" is `targetMajorityHasTough`.
+  None of them is a range-from-the-attacker gate of the 9"/6" kind - that family is still yours.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

@@ -63,6 +63,14 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-29 (from #431): no 3.6 book names "Ignores Cover", "Ignores Cover when Shooting", "Ignores Cover Aura",
+  "Ignores Cover when Shooting Aura", "Ignores Regeneration" or "Ignores Regeneration in Melee" - their 3.6 renames
+  (Anti-Cover + variants, Anti-Regen) are in the GDF supplement, so the six old definitions are yours to delete.
+  Strafing (catalog) is now duplicated by the supplement's "Crossing Strike" (same ability, same text); deleting
+  Strafing also means updating `StrafingStage`'s "Choosing a Strafing Target" display name and its "carries a
+  Strafing weapon" warning, the `StrafingRules`/`StrafingStage` doc comments, and `StrafingShippedDataTests` /
+  `StrafingRuleIntegrationTests` (re-point them at Crossing Strike or retire them; `CrossingStrikeRuleIntegrationTests`
+  already covers the renamed rule).
 - 2026-10-29 (from #422): Counter-Attack and Counter-Attack Aura are already DELETED from the catalog, with
   `CounterRuleIntegrationTests`' Counter-Attack case and `MostModelsRuleGateIntegrationTests.CounterAttack_*`
   retired; a list naming them loads with the #168 Unimplemented drop (`CounterLegacyDataTests`). Counter's 3.5

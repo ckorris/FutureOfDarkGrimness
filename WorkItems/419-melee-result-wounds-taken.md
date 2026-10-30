@@ -60,6 +60,12 @@ and the Fear wording.
 
 ## Notes
 
+- 2026-10-29 (from #431): `DetermineMeleeWinnerStage` now also adds Scourge's counted wounds
+  (`CountedWounds.Take(unit)`, a `TokenType.CountedWoundsTaken` magnitude on the STRUCK unit) to what its opponent
+  dealt - Fear's polarity, i.e. "enemies count as having taken X". When you rewrite the result as "wounds each
+  unit took this activation", fold them into the struck unit's TAKEN total and keep the `Take` (it consumes them);
+  `ScourgeRuleIntegrationTests` pins the three melee cases. `ReconcileEndOfActivationStage` sweeps the token off
+  every unit at activation end.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

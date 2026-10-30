@@ -60,6 +60,17 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-29 (from #431): the weapon-rule family lives in `GdfRuleSupplement.json` and the AoF file inherits it
+  (no AoF copies - `WeaponRules36ShippedDataTests` pins that). AoF-relevant leftovers: "Unwieldy on its weapons in
+  melee" (Ogres' Unwieldy Debuff; GDF High Elf Fleets has the same Debuff and a spell granting it) - see #434's note; whoever lands first takes it.
+  New kinds available: Conditions: `targetOverHalfWeaponRange` (shooting distance > half the FIRING weapon's printed range; false in melee,
+  for range 0, or with no weapon), `targetMostModelsDefenseInRange {minDefense, maxDefense}` (strict majority of the
+  target's living models, per-model Defense incl. a joined hero), `targetAboveHalfStrength` (complement of the morale
+  "half or less"), `targetShakenOrFatigued`, `targetMostModelsWithinInchesOfTerrain {distanceInches}` (the target-side
+  twin of `mostModelsWithinInchesOfTerrain`). Effects: `ignorePositiveDefenseModifiers` (author at
+  `Shooting_OnHitRollComplete`), `countsAsWoundsTaken {onRollValue, woundsPerDie}` (at `Shooting_OnSaveRollComplete`;
+  counted, not dealt - melee result + shooting morale trigger). Reuse rather than re-mint: "re-roll successful 5-6" is
+  `reroll Save onUnmodifiedValue minValue 5`, "most models Tough(X)+" is `targetMajorityHasTough`.
 - 2026-10-29 (from #422): "Brace in Melee" is DONE in `AofRuleSupplement.json` (weapon scope, Brace(1) as a literal,
   the Fatigue gate, 3.6 text), and "Counter in Melee" left the AoF file for the GDF one (one definition serves
   both; the old copy's `reduceImpactDicePerModel` facet is gone). No 3.6 book names a "Brace in Melee Aura" or

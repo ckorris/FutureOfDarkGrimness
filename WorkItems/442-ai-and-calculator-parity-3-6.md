@@ -51,6 +51,11 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-29 (from #431): parity status of the weapon-rule family. Done: Pierce's positive-modifier ignore folds
+  through the shared `RollToHitStage.WholeAttackSaveModifier` in `CombatMath` and `ShootingForecast`; the AP and
+  re-roll gates run through the same evaluation. Not modelled: Scourge's counted wounds in `CombatMath`'s melee
+  result / morale estimate and in the Combat Calculator, and Unwieldy (unit- or weapon-scoped) in `CombatMath`'s
+  strike order (pre-existing for the unit-scoped one - only the defender's StrikeFirst is read).
 - 2026-10-29 (from #422): goal item 2's Impact/Brace/Counter half is done - `CombatMath.EstimateMelee` reads Impact,
   Brace and Counter through the same evaluation the stages run, so the 3.6 Fatigue gates and the Counter/Brace split
   reached it with no code change; pinned in `CombatMathPinTests` (fatigued Impact charger, Brace defender, fatigued

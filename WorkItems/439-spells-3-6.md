@@ -63,6 +63,12 @@ so trailing clauses (including "in line of sight") are silently ignored today; L
 
 ## Notes
 
+- 2026-10-29 (from #431, D8 there): seventeen 3.6 spells name Smash or Pierce ("takes 6 hits with AP(1) and Smash",
+  ...). `CastSpellStage` builds its synthetic spell weapon with range 0, and `targetOverHalfWeaponRange` is false for a
+  range-0 weapon, so the "over half of this weapon's range" facet never fires for spell hits (Pierce's ignore-positive
+  facet does). If the owner reads the spell's range as "this weapon's range", give the synthetic weapon the spell's
+  range here. Other #431 rules spells name (Fracture, Fragment, Puncture, Obliterate, Decimate, Destructive,
+  Disintegrate, Demolish, Purge, Reap, Scourge) need no range and work as `withRules` once the names resolve.
 - 2026-10-29 (from #422): AoF Orcs "Evil Gaze" and GDF Elven Jesters "Asphyxiating Fog" grant "Counter-Attack" in the
   bundled 3.5 books (dropped by 3.6, now an allowlisted dead grant); their 3.6 text is "Pick one friendly unit
   within 12", which gets Counter in Melee once (next time the effect would apply)." - `addRule "Counter in Melee"`
