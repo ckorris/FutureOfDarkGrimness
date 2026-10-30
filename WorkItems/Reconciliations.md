@@ -800,3 +800,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `origin/master` at `19b1f9a`: index + archive max **446**, no `44x` branch on either remote beyond the upgrade's.
 > **447 = Impact(X) rolled per unit instead of per model** (surfaced by #422). Reserved on `master`; detail file on
 > `feature/opr-3.6`.
+
+> **2026-10-30 - number 448 filed clean (on `master`, mirrored here).** `git fetch origin` before filing, from
+> `origin/master` at `8e598a9`: index + archive max **447**, no `448` on either remote. **448 = holographic
+> war-table main menu background**, filed on `master` in `af8dae8`; this line reserves it on `feature/opr-3.6`
+> so upgrade sub-items take 449+. Detail file lives on `master`.
