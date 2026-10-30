@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; #450 (format + host recorder) done 2026-10-30. Umbrella work item: **#449**.
+**Status:** planning complete 2026-10-30; #450 (format + host recorder) and #454 (playback engine) done 2026-10-30. Umbrella work item: **#449**.
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -182,11 +182,22 @@ on `BuildVersion` mismatch - dev builds all report `-dev`).
   Summary` where `Summary` comes from `ReplayDecisionDescriber` (one ASCII line per request type: unit
   name + action / target / path length / wounds assigned / yes-no; generic fallback = `DisplayName`).
 
+**As built (#454; details in its Decisions).** The reader kept its name (`ReplayReader.ReadGzip`) and gained
+`ReplayDocument.Warnings`. Playback loads snapshots with `GameSaveSerializer.Load(json, stampLegacyReserves:
+false)` - the save path's legacy InReserve stamp would mark every unit of snapshot 0 (pre-deployment) as in
+reserve - and applies adds with `EDeltaGenerationPolicy.Adopt`, since a snapshot carries no generation for an
+empty slot. `StepForward` from the last step goes to the end of the recording (`IsAtEnd`). Summaries are
+filled by one forward walk in the player's constructor (the timeline stays store-free). Measured on a 2k game
+(Debug): worst seek 49 ms, player construction 0.3 s warm; played back from snapshot 0 it equals the live
+final save.
+
 ### 4.4 Steps (D4)
 
 A step is a `Request` event that has a matching `Reply`. Folded (not a step, shown inside the previous
 step's span): requests whose option list has <= 1 entries (`SelectionRequest<T>.Options.Count <= 1`,
-`StringSelectionRequest` likewise), and `RequestError`s. Everything else - human, AI or remote - is a
+`StringSelectionRequest` likewise), and `RequestError`s. (As built, #454: the option list is `ValidOptions`, `Options` or
+`AvailableZones`, read from the request JSON as plain tokens, and a Back option - `AllowCancel`, or a
+`CancellableResult` reply - counts as one entry.) Everything else - human, AI or remote - is a
 step. The filter is one class (`DefaultStepFilter`) so the viewer can offer "show folded steps" later.
 
 ### 4.5 Files on disk
@@ -254,7 +265,7 @@ scope here (gzip already does most of that work).
 | 451 | Engine: decision payloads to clients (D2) + `ClientReplayRecorder` + `ReplayMarkerMessage` | 450 | todo |
 | 452 | App: auto-write `.fdgreplay` on every game exit (host, client, headless, scenario, crash best-effort) | 450, 451 | todo |
 | 453 | Replay inside `.fdgsave`: save embeds, resume continues, clients receive history | 450, 451 | todo |
-| 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | todo |
+| 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | done 2026-10-30 |
 | 455 | Headless tooling: `--replay` dump / stats / verify / export / make-save | 454 | todo |
 | 456 | GUI replay viewer: browser screen, playback screen, controls, decision list | 454, 452 | todo |
 | 457 | Verification + merge: networked hand-verify, size check, docs, merge `feature/replay` -> `master` | all | todo |

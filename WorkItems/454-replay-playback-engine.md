@@ -1,6 +1,6 @@
 # 454 — Engine: playback (ReplayReader, ReplayTimeline, ReplayPlayer, StoreDeltaApplier, steps, describer)
 
-**Status**: in progress (2026-10-30)
+**Status**: done (2026-10-30)
 **Related**: plan `docs/replay-plan.md` sections 4.3, 4.4; depends on #450; consumed by #455 (CLI) and #456 (GUI)
 
 ## Goal
@@ -68,6 +68,26 @@ the final store equals the live final store", and `ReplayPlayer` is usable from 
 Engine suite green; `dotnet build`. No app change in this ticket.
 
 ## Notes
+- 2026-10-30 - Slice 4 (describer) and close-out: `Replay/ReplayDecisionDescriber.cs` -
+  `Describe(ReplayStep | ReplayRequest, IReadableGameDataStore storeAtStep, ReplayHeader?)`, never throws.
+  Lines: activate "P1 activates Warriors (5)" (living models), action "Warriors: Shoot", ranged "Warriors
+  shoot Grunts with Rifle" / "hold fire with" / ": Back", movement "Warriors move 6.0in" (longest model path
+  from where it stood) / "stay put" / ": Back", melee target "Warriors charge Grunts", wounds "3 wounds ->
+  Grunts: 2 models", yes/no, string selection, ability effect, any named `SelectionRequest` /
+  `CancellableSelectionRequest` pick, objective placement "... at (68, 25.5)"; anything else = DisplayName.
+  `ReplayPlayer`'s constructor describes every step in one forward walk (beats not read; skipped when the
+  timeline is already described). The step filter now also counts `Options` (`ChooseAbilityEffectRequest`)
+  and `AvailableZones` (`ChooseDeploymentZoneRequest`). New internal `ReplayText.Ascii` (importer fold, then
+  '?') shared by the describer, the reader's warning and the recorder's failure line.
+  `Tests/ReplayDecisionDescriberTests.cs` (9); the real-game playback test now also checks every summary is
+  ASCII and most are not the fallback. Engine 3447 passed / 1 skipped; build clean.
+  On the 2k game every one of the 312 summaries is ASCII and reads right (sample: "P1 activates Battle Tank
+  (1)", "Battle Tank move 8.0in", "Battle Tank shoot Orc Warriors with Rapid Autocannon", "2 wounds -> Orc
+  Warriors: 2 models", "Orc Warriors charge Destroyers"); the fallback is left for deployment placement
+  ("Deploying Orc Warriors"), consolidation and the zone pick, whose display names already say it. Player
+  construction 770 ms cold / 295 ms warm (Debug). Verified from a plain console program (throwaway project,
+  `~/Projects/fdg-lab-scratch/replay-454/console-probe/`, engine reference only): read, describe, seek to
+  step 150, seek to end == live final save.
 - 2026-10-30 - Slice 3 (`ReplayPlayer`): `Replay/ReplayPlayer.cs` - `Store`, `TableState`, `CurrentStep`,
   `IsAtEnd`, `OnStoreReplaced`, `SeekToStep`, `StepForward`, `StepBack`, `SeekToEnd`; `PlaybackSpan`
   (FromSeq exclusive, ToSeq inclusive, Events, Beats, LogLines, Markers, StoreReplaced, Problems);
@@ -108,6 +128,16 @@ Engine suite green; `dotnet build`. No app change in this ticket.
   `Tests/StoreDeltaApplierTests.cs` (4). Engine 3427 passed / 1 skipped; build clean; headless smoke exit 0.
 
 ## Decisions
+- **The describer reads JSON tokens, not wire-deserialized objects** (the ticket suggested deserializing
+  replies with the wire settings). Same reasons as the step filter: no `$type` from an untrusted file is
+  resolved, a renamed field costs a fallback line instead of an exception, and no generic CLR reply types
+  need constructing. The store at the step still supplies names (units by reference or `UnitID`, model
+  positions for path length), which is why the player, not the timeline, fills `Summary`.
+- **Wording choices.** Players are "P<slot+1>" (short, and slot names can be long); a ranged pick names its
+  ONE weapon (the request is per weapon - the ticket's "(3 weapons)" does not fit the reply); a null ranged
+  target is #319's hold fire; the melee attacker comes from the activation marker's unit (the request has
+  no attacker field); wounds are the packets' wounds after ignores, and models are those a commit LANDED
+  on; whole numbers print without a decimal (probabilistic dice give fractions).
 - **Seek timing: met with room to spare, no cache.** Worst `SeekToStep` on a 2k game is 49 ms in a Debug
   build against the 250 ms target (one snapshot load ~19 ms plus at most a round of deltas), so the player
   keeps no per-step cache or extra snapshots; a step back is simply a re-seek.
@@ -150,4 +180,21 @@ Engine suite green; `dotnet build`. No app change in this ticket.
   update (unchanged client behaviour); playback never raises wound events, so it does not need them.
 
 ## Outcome
-(open)
+Done 2026-10-30 on `feature/replay`. The engine plays a recorded game back from its container with no
+renderer, resolvers or dice: `ReplayReader` (build-stamp warnings), `ReplayTimeline` (steps per D4, folded
+one-option picks, round/activation attribution, the snapshot seek rule), `ReplayPlayer` (seek / step forward
+in place / step back by re-seek / seek to end, spans with beats, log lines and markers), `StoreDeltaApplier`
+(now also the networked client's delta path) and `ReplayDecisionDescriber`. Proven on real games: played
+back from snapshot 0, the state equals the live final save (in-process test game, and the plan's 2k BB vs
+Orks game); seeking to any step equals walking to it; every snapshot reloads exactly. Worst seek on a 2k
+game 49 ms (Debug) against the 250 ms target. Engine tests: 4 + 7 + 4 + 9 new (3447 total).
+
+Found and fixed on the way: a mirrored `UnitData` / `ModelData` update lost the entity's rules (a
+networked client's unit showed no rules after its first token change) - now rehydrated on deserialize;
+and the save path's legacy reserve stamp would have shown every pre-deployment unit as in reserve in
+playback.
+
+Not done here, by design: the CLI (#455), the GUI viewer (#456), client recordings (#451), `Resumed`
+markers and save embedding (#453) - the player already treats a `Resumed` marker as a hard boundary, but no
+recording contains one until #453. Noted for #453: a client that joins through a mid-game catch-up shares
+the empty-slot generation exposure the `Adopt` policy solves for playback.
