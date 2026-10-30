@@ -67,6 +67,44 @@ public class Enhanced36ShippedDataTests
         new HookEntry(EHookID.Shooting_OnRangeCheck, Has(x), new Effect.RangeModifier(4, 0, 2), ELifetime.ThisActivation),
     };
 
+    private static HookEntry[] ApMinusTwo(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnHitRollComplete, And(Has(x), MostModels), new Effect.ReduceArmorPenetration(1),
+            ELifetime.ThisAttack, ERuleSeat.Subject),
+    };
+
+    private static HookEntry[] IgnoreFivePlus(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnSaveRollComplete, And(Has(x), MostModels), new Effect.IgnoreWoundOnRoll(5),
+            ELifetime.ThisAttack, ERuleSeat.Subject),
+    };
+
+    private static HookEntry[] RecoverThreePlus(string x) => new[]
+    {
+        new HookEntry(EHookID.Round_OnRoundStart, And(Has(x), And(new Condition.TokenPresent(TokenType.Shaken), MostModels)),
+            new Effect.ClearTokenOnRoll(TokenType.Shaken, 3), ELifetime.ThisRound),
+    };
+
+    private static HookEntry[] RerollFivePlus(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnSaveRollComplete, Has(x),
+            new Effect.Reroll(ERollKind.Save, new RerollCondition.OnUnmodifiedValue(5)), ELifetime.ThisAttack),
+    };
+
+    private static HookEntry[] PostCombatSix(string x) => new[]
+    {
+        new HookEntry(EHookID.Shooting_OnPostShoot, And(Has(x), MostModels), new Effect.TriggeredMove(6f, true),
+            ELifetime.ThisAttack),
+        new HookEntry(EHookID.Melee_OnPostMelee, And(Has(x), MostModels), new Effect.TriggeredMove(6f, true),
+            ELifetime.ThisAttack),
+    };
+
+    private static HookEntry[] TwoD3(string x) => new[]
+    {
+        new HookEntry(EHookID.Activation_OnActivationStart, And(Has(x), MostModels),
+            new Effect.RepositionAtActivation(new DiceExpression.D3(), 0, Move: true), ELifetime.ThisActivation),
+    };
+
     // --- the 3.6.0 texts: OPR templates them per family, so one template per shape ---------------------------------------
 
     private const string MoveText =
@@ -76,6 +114,18 @@ public class Enhanced36ShippedDataTests
         "{X} (instead of only -4\"/-2\").";
     private const string ReachText =
         "If this model has {X}, it gets +8\"/+4\" range when shooting/charging from {X} (instead of only +4\"/+2\").";
+    private const string ApMinusTwoText =
+        "If most models in this unit have {X}, hits they take count as having AP(-2) from {X} (instead of only AP(-1)).";
+    private const string IgnoreFivePlusText =
+        "If most models in this unit have {X}, they ignore wounds on rolls of 5-6 from {X} (instead of only on 6+).";
+    private const string RecoverThreePlusText =
+        "If most models in this unit have {X}, they stops being Shaken on rolls of 3+ from {X} (instead of only on 4+).";
+    private const string RerollFivePlusText =
+        "If this model has {X}, enemies taking hits from it must re-roll successful unmodified Defense results of 5-6 " +
+        "from {X} (instead of only results of 6).";
+    private const string PostCombatSixText =
+        "If most models in this unit have {X}, they may move by up to 6\" from {X} (instead of only 3\").";
+    private const string TwoD3Text = "If this model has {X}, it may move by up to 2D3\" from {X} (instead of only D3\").";
 
     private static string Text(string template, string x) => template.Replace("{X}", x);
 
@@ -91,6 +141,25 @@ public class Enhanced36ShippedDataTests
         foreach (string x in new[] { "Highborn", "Extra Reach" })
             yield return Case(Gdf, x, Text(ReachText, x), Reach(x));
         yield return Case(Aof, "Royal Legion", Text(ReachText, "Royal Legion"), Reach("Royal Legion"));
+        // B2: keep-best folds.
+        foreach (string x in new[] { "Guardian", "Fortified" })
+            yield return Case(Gdf, x, Text(ApMinusTwoText, x), ApMinusTwo(x));
+        foreach (string x in new[] { "Ossified", "Warden" })
+            yield return Case(Aof, x, Text(ApMinusTwoText, x), ApMinusTwo(x));
+        foreach (string x in new[] { "Plaguebound", "Self-Repair", "Protected" })
+            yield return Case(Gdf, x, Text(IgnoreFivePlusText, x), IgnoreFivePlus(x));
+        yield return Case(Aof, "Cursed Undead", Text(IgnoreFivePlusText, "Cursed Undead"), IgnoreFivePlus("Cursed Undead"));
+        yield return Case(Gdf, "Steadfast", Text(RecoverThreePlusText, "Steadfast"), RecoverThreePlus("Steadfast"));
+        yield return Case(Aof, "Vale Oath", Text(RecoverThreePlusText, "Vale Oath"), RecoverThreePlus("Vale Oath"));
+        foreach (string x in new[] { "Mischievous", "Scrapper", "Vicious" })
+            yield return Case(Gdf, x, Text(RerollFivePlusText, x), RerollFivePlus(x));
+        yield return Case(Aof, "Bestial", Text(RerollFivePlusText, "Bestial"), RerollFivePlus("Bestial"));
+        foreach (string x in new[] { "Harassing", "Guerrilla", "Hit & Run" })
+            yield return Case(Gdf, x, Text(PostCombatSixText, x), PostCombatSix(x));
+        // B3: the activation move.
+        foreach (string x in new[] { "Wolfborn", "Nimble", "Rapid Blink" })
+            yield return Case(Gdf, x, Text(TwoD3Text, x), TwoD3(x));
+        yield return Case(Aof, "Wave-Step", Text(TwoD3Text, "Wave-Step"), TwoD3("Wave-Step"));
     }
 
     private static TestCaseData Case(string file, string x, string text, HookEntry[] entries) =>
@@ -193,6 +262,46 @@ public class Enhanced36ShippedDataTests
             Is.EqualTo(8f));
         Assert.That(RangeRuleQueries.EffectiveRange(shooter, new Weapon("Rifle", 24f, 1, 0), pretender, world.Evaluator),
             Is.EqualTo(24f), "Enhanced Darkborn without Darkborn is inert");
+    }
+
+    [Test]
+    public void ShippedPlagueboundAndEnhancedPlaguebound_FoldToOneFivePlusIgnore()
+    {
+        var world = new World();
+        UnitData attacker = world.Unit();
+        UnitData daemons = world.Unit(Shipped(Gdf, "Plaguebound"), Shipped(Gdf, "Enhanced Plaguebound"));
+        UnitData pretender = world.Unit(Shipped(Gdf, "Enhanced Plaguebound"));
+
+        WoundIgnoreSink Fold(UnitData defender)
+        {
+            var sink = new WoundIgnoreSink();
+            sink.ApplyFrom(world.Evaluator.EvaluateAll(new SaveRollCompleteContext(attacker, defender, TestFaces(1)),
+                RuleParticipant.Actor(attacker), RuleParticipant.Subject(defender, models: HeroStatRules.LivingModels(defender))));
+            return sink;
+        }
+
+        Assert.That(Fold(daemons).Threshold, Is.EqualTo(5), "6+ and 5+ fold to one roll at 5+");
+        Assert.That(Fold(pretender).HasIgnore, Is.False, "Enhanced Plaguebound without Plaguebound is inert");
+    }
+
+    [Test]
+    public void ShippedSteadfastAndEnhancedSteadfast_FoldToOneThreePlusRoll()
+    {
+        var world = new World();
+        UnitData unit = world.Unit(Shipped(Gdf, "Steadfast"), Shipped(Gdf, "Enhanced Steadfast"));
+        unit.Tokens.AddToken(new FDG.Rules.Tokens.Token(TokenType.Shaken, 1, new TokenClearTrigger.ManualOnly()));
+
+        var sink = new TokenClearRollSink();
+        sink.ApplyFrom(world.Evaluator.EvaluateAll(new RoundStartContext(unit), RuleParticipant.Actor(unit)));
+
+        Assert.That(sink.Entries, Is.EqualTo(new[] { (TokenType.Shaken, 3) }));
+    }
+
+    private static DiceResults TestFaces(params int[] faces)
+    {
+        var perSide = new float[6];
+        foreach (int face in faces) perSide[face - 1] += 1f;
+        return new DiceResults(perSide);
     }
 
     [Test]
