@@ -26,6 +26,10 @@ public class MainMenuScreen : IAppScreen
     /// <summary>#448: the holographic war table plays behind the menu.</summary>
     public bool ShowsMenuBackground => true;
 
+    /// <summary>The table holds still under the privacy notice, the Options popup, or a modal opened from
+    /// outside (<see cref="SetModalOpen"/>).</summary>
+    public bool MenuBackgroundPaused => _modalOpen || _privacy.IsOpen || _optionsOpen;
+
     /// <summary>Opens the privacy notice or the Options popup without a click, for the offscreen
     /// <c>--menu-preview</c> render (#448). Never called in a normal run.</summary>
     internal void OpenForPreview(string which)

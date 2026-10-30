@@ -1,6 +1,6 @@
 # 448 — Holographic war-table main menu background
 
-**Status**: in-progress (slices 1-4 done 2026-10-30; awaiting GUI hand-verify)
+**Status**: implemented 2026-10-30 (all 5 slices); awaiting GUI hand-verify
 **Related**: `docs/menu-background/` (mockup, army colour sheet, generators, pairing check)
 
 ## Goal
@@ -86,9 +86,44 @@ re-run the script after any colour or group change.
    2D footprint test** (owner: "use whatever is the simplest").
 4. **[done 2026-10-30] Motion + camera director.** Drift, glide to skirmishes, unit advances.
    **Deferred:** the optional click-to-dive transition on leaving the menu (not built; see Notes).
-5. **Options toggle** (Animated / Static / Off) + perf check on a weak GPU; pause/dim while a modal is open.
+5. **[done 2026-10-30] Options toggle** (Animated / Still / Off) + perf check; pause while a modal is open.
+   The weak-GPU half of the perf check could not be done here (see Notes).
+
+## GUI hand-verify checklist (owner)
+1. Launch: the war table plays right of the command panel - a pairing fades in, walkers arrive, fire,
+   tracers and pulse run, the measure draws out, the camera glides in on the action around 14-18s and
+   back out, and after ~32s the table dissolves and a new pairing fades in.
+2. Hover each button: frame lights; a chevron on Host/Solo, Join and the three middle buttons.
+3. Options: restyled modal; the table freezes behind it. Switch "Menu background" to Still (one frozen
+   frame) and Off (plain dark), then back to Animated; the choice survives a restart.
+4. Host/Solo and Join: the table shows, dimmed and frozen, behind each dialog; backing out resumes it,
+   and returning to the menu from a game deals a new pairing.
+5. F11 / resize: the table re-fits next to the panel.
+6. Quit still exits. (Privacy notice styling: only shows on a fresh install, or via
+   `--menu-preview out.png privacy`.)
 
 ## Notes
+- 2026-10-30: **Slice 5 implemented.** `EMenuBackground` (Animated default / Still / Off) saved in
+  `SavedViewSettings.MenuBackground`, loaded through `ViewSettings` (a hand-edited out-of-range number
+  reads as Animated; an unknown NAME fails the whole file to defaults, the existing policy for every
+  enum there), a "Menu background" combo in the Options panel's Display section. `HoloClock`: the table's
+  own clock - only advances while animating and unpaused, clamps a frame to 0.1s so a hitch (a blocking
+  file dialog) cannot fast-forward the battle, wraps into a new battle (new pairing) each 32s.
+  `IAppScreen.MenuBackgroundPaused`: the main menu while its privacy notice / Options / an external
+  modal is up, and the Host/Join dialogs always - the table freezes and the cached frame is reused.
+  Rendering now only re-runs when live (Animated, unpaused) or stale (new pairing, resize, setting
+  changed); Still shows the overview at battle time 12s with the drift centred. Off presents plain dark.
+  **Perf:** `--menu-preview out.png WxH bench` times frames in the hidden window, synced by reading back
+  a 1x1 copy of the finished frame (the first attempt read back the whole screen, which cost more than
+  the scene and made Still look as slow as Animated). On this machine's NVIDIA GPU: Animated 1.67 ms
+  (1080p, 2x supersampled), 1.81 ms (1440p, 1x), 1.99 ms (4K, 1x); Still 0.06-0.07 ms. **Not done:** a
+  measurement on a weak/integrated GPU - none available here. If one runs Animated badly, Still is the
+  answer already in Options; a further lever is dropping the 2x supersample.
+  Tests: `MainMenuMotionTests` +4 (pause freezes and resumes in place, hitch clamp, battle wraps exactly
+  once per length + external restart, Still moment shows the whole fight on the overview);
+  `UserConfigTests` extended (default Animated, file round trip, bad number -> Animated, capture).
+  Mutation-checked: pause ignored, no hitch clamp, battle never wraps, enum unguarded, not captured,
+  default changed - each reddens its test.
 - 2026-10-30: **Slice 4 implemented.** `HoloDirector` (pure timeline): a 32s battle per pairing - 1s
   hologram fade-in (with a stutter while fading), units with trails walk in over 8s (eased, by distance
   along the polyline - `HoloUnit.OffsetAt`), fight/pulse from 1s, measure from 9s (after arrival),

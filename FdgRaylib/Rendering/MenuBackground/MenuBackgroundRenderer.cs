@@ -1,4 +1,5 @@
 using System.Numerics;
+using FdgRaylib.Config;
 using Raylib_cs;
 
 namespace FdgRaylib.Rendering.MenuBackground;
@@ -65,8 +66,10 @@ void main()
     private readonly Random _rng;
     private HoloSkirmish _skirmish;
     private HoloEngagement _engagement;
-    private float? _battleStart;        // wall time the current pairing's battle began (null = next frame)
+    private readonly HoloClock _clock = new();
     private int _battleIndex;           // alternates the camera's close-up between the fight and the measure
+    private bool _stale = true;         // the cached frame no longer matches (new pairing, size or setting)
+    private EMenuBackground _lastMode;
 
     private int _w, _h, _ss;
     private bool _haveTargets;
@@ -96,6 +99,10 @@ void main()
     /// <summary>Freezes the animation clock at this many seconds (the offscreen preview); null = live.</summary>
     internal float? FixedTime { get; set; }
 
+    /// <summary>Holds the picture still (a dialog is open over the menu). The clock stops and the last
+    /// frame is reused, so a paused table costs nothing and resumes exactly where it was.</summary>
+    public bool Paused { get; set; }
+
     /// <summary>The armies currently on the table.</summary>
     public HoloSkirmish Skirmish => _skirmish;
 
@@ -104,10 +111,16 @@ void main()
     /// deals the next one itself.</summary>
     public void Reshuffle()
     {
+        DealNewPairing();
+        _clock.RestartBattle();
+    }
+
+    private void DealNewPairing()
+    {
         _skirmish = HoloSkirmish.Random(_rng);
         _engagement = HoloEngagement.Plan(_skirmish, _scene.Footprints);
-        _battleStart = null;
         _battleIndex++;
+        _stale = true;
     }
 
     /// <summary>Draws the background over the whole screen. Call inside BeginDrawing, before ImGui.</summary>
@@ -125,16 +138,44 @@ void main()
     /// </summary>
     public void Prepare(int screenW, int screenH, MainMenuLayout layout)
     {
-        if (screenW <= 0 || screenH <= 0) return;
+        EMenuBackground mode = ViewSettings.MenuBackground;
+        if (mode != _lastMode) { _lastMode = mode; _stale = true; }
+        if (mode == EMenuBackground.Off || screenW <= 0 || screenH <= 0) return;
         EnsureInit();
         if (!_haveTargets || screenW != _w || screenH != _h) Resize(screenW, screenH);
-        RenderFrame(layout, FixedTime ?? (float)Raylib.GetTime());
+
+        // Which moment to draw. The preview freezes one; Still shows the signed-off overview (drift at
+        // its centre, everyone arrived and fighting); Animated runs the table's own clock.
+        float wall, battle;
+        bool live = false;
+        if (FixedTime is { } fixedTime)
+            (wall, battle) = (fixedTime, fixedTime);
+        else if (mode == EMenuBackground.Still)
+            (wall, battle) = (0f, HoloDirector.StillMoment);
+        else
+        {
+            if (_clock.Tick(Raylib.GetFrameTime(), Paused)) DealNewPairing();
+            (wall, battle) = (_clock.Wall, _clock.Battle);
+            live = !Paused;
+        }
+
+        // Only a running table needs a new frame every frame; otherwise the cached one stands until
+        // something it shows changes.
+        if (live || _stale || FixedTime is not null)
+        {
+            RenderFrame(layout, wall, battle);
+            _stale = false;
+        }
     }
 
-    /// <summary>Draws the frame <see cref="Prepare"/> rendered over the whole of the current target.</summary>
+    /// <summary>Draws the frame <see cref="Prepare"/> rendered over the whole of the current target -
+    /// or, with the background switched off, plain dark.</summary>
     public void Present()
     {
-        if (_haveTargets) DrawTargetFlipped(_finalRT, new Rectangle(0, 0, _w, _h), Color.White);
+        if (ViewSettings.MenuBackground == EMenuBackground.Off)
+            Raylib.DrawRectangle(0, 0, Raylib.GetRenderWidth(), Raylib.GetRenderHeight(), BaseColor);
+        else if (_haveTargets)
+            DrawTargetFlipped(_finalRT, new Rectangle(0, 0, _w, _h), Color.White);
     }
 
     private void EnsureInit()
@@ -185,6 +226,7 @@ void main()
             Raylib.SetTextureWrap(rt.Texture, TextureWrap.Clamp);
         }
         _haveTargets = true;
+        _stale = true;
     }
 
     private void UnloadTargets()
@@ -195,17 +237,10 @@ void main()
         _haveTargets = false;
     }
 
-    private void RenderFrame(MainMenuLayout layout, float time)
+    /// <param name="time">Wall time - the camera drift and the flicker of fire and tracers.</param>
+    /// <param name="battle">Seconds into the current pairing's battle (<see cref="HoloDirector"/>).</param>
+    private void RenderFrame(MainMenuLayout layout, float time, float battle)
     {
-        // A frozen clock (the preview) reads as battle time; a live one counts from the battle's start.
-        _battleStart ??= FixedTime is null ? time : 0f;
-        float battle = time - _battleStart.Value;
-        if (battle >= HoloDirector.BattleLength)
-        {
-            Reshuffle();
-            _battleStart = time;
-            battle = 0f;
-        }
         float presence = HoloDirector.Presence(battle);
         // A hologram stutters as it resolves: while fading, every other 1/17s frame drops a third.
         if (presence < 1f && Frac(time * 17f) < 0.5f) presence *= 0.65f;

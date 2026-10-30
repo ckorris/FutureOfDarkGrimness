@@ -54,6 +54,9 @@ public class ClientModal : IAppScreen
     /// dimmed backdrop.</summary>
     public bool ShowsMenuBackground => true;
 
+    /// <summary>A dialog over the table: it holds still behind it.</summary>
+    public bool MenuBackgroundPaused => true;
+
     public void Draw(int screenW, int screenH)
     {
         bool browserAvailable = ListServerConfig.IsConfigured;

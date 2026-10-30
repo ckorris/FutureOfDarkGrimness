@@ -144,6 +144,57 @@ public class MainMenuMotionTests
         Assert.That(plan.Shots.Any(s => s.Shooter == walker || s.Target == walker), Is.False);
     }
 
+    [Test]
+    public void Clock_StandsStillWhilePaused_AndResumesWhereItWas()
+    {
+        var clock = new HoloClock();
+        clock.Tick(0.05f, paused: false);
+        clock.Tick(0.05f, paused: false);
+        float before = clock.Battle;
+        for (int i = 0; i < 100; i++) clock.Tick(0.05f, paused: true);
+
+        Assert.That(clock.Battle, Is.EqualTo(before), "a dialog open over the menu freezes the battle");
+        Assert.That(clock.Wall, Is.EqualTo(0.1f).Within(1e-5f), "and the drift");
+        clock.Tick(0.05f, paused: false);
+        Assert.That(clock.Battle, Is.EqualTo(before + 0.05f).Within(1e-5f), "it picks up from the same moment");
+    }
+
+    [Test]
+    public void Clock_AHitchCannotFastForwardTheBattle()
+    {
+        var clock = new HoloClock();
+        clock.Tick(5f, paused: false);   // a file dialog blocked the loop for five seconds
+        Assert.That(clock.Wall, Is.EqualTo(HoloClock.MaxStep));
+    }
+
+    [Test]
+    public void Clock_StartsANewBattle_OnceEachTimeOneRunsOut()
+    {
+        var clock = new HoloClock();
+        int newBattles = 0;
+        int frames = (int)(HoloDirector.BattleLength * 2.5f / 0.05f);
+        for (int i = 0; i < frames; i++)
+        {
+            if (clock.Tick(0.05f, paused: false)) newBattles++;
+            Assert.That(clock.Battle, Is.InRange(0f, HoloDirector.BattleLength));
+        }
+        Assert.That(newBattles, Is.EqualTo(2), "two full battles in two and a half battles' time");
+
+        clock.RestartBattle();
+        clock.Tick(0.05f, paused: false);
+        Assert.That(clock.Battle, Is.EqualTo(0f), "a pairing dealt from outside starts its battle from the top");
+    }
+
+    [Test]
+    public void StillMoment_ShowsTheWholeFight()
+    {
+        float t = HoloDirector.StillMoment;
+        Assert.That(HoloDirector.Presence(t), Is.EqualTo(1f));
+        Assert.That(HoloDirector.Advance(t), Is.EqualTo(1f), "everyone has arrived");
+        Assert.That(t, Is.GreaterThan(HoloDirector.MeasureFrom), "the measure is up");
+        Assert.That(HoloDirector.FocusWeight(t), Is.EqualTo(0f), "on the overview");
+    }
+
     private static float WalkedTo(IReadOnlyList<Vector2> trail, int leg, float t)
     {
         float d = 0f;

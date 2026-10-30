@@ -16,4 +16,8 @@ public interface IAppScreen
     /// Host/Join dialogs that open from it. The renderer paints the table before the screen's ImGui pass.
     /// </summary>
     bool ShowsMenuBackground => false;
+
+    /// <summary>True while a dialog is up over the war table (#448): it holds still and costs nothing
+    /// until the dialog closes.</summary>
+    bool MenuBackgroundPaused => false;
 }

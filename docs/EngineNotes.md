@@ -88,8 +88,9 @@ FdgRaylib/
     HostModal.cs / ClientModal.cs / LobbyScreen.cs
     MainMenuLayout.cs / HoloUi.cs          #448 menu command-panel layout + holographic styling
     MenuBackground/                        #448 war-table background (scene, camera, bloom renderer);
-                                           `--menu-preview out.png [WxH] [menu|privacy|options]` renders
-                                           the menu offscreen from a hidden window
+                                           `--menu-preview out.png [WxH] [menu|privacy|options] [seed]
+                                           [t=SECONDS] [bench]` renders the menu offscreen from a hidden
+                                           window (bench: ms/frame, Animated vs Still)
     Resolvers/
       IGuiResolver.cs                      Has-pending + Draw
       IGuiCanvasOverlay.cs                 Optional layout receiver for table interactions

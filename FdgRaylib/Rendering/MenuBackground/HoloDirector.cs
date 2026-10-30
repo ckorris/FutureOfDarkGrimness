@@ -26,6 +26,10 @@ internal static class HoloDirector
     /// <summary>The measuring line starts after the (advancing) vehicles have arrived.</summary>
     public const float MeasureFrom = AdvanceTime + 1f;
 
+    /// <summary>The moment the "Still" setting shows: everyone has arrived, the fight and the measure are
+    /// on, and the camera is on the overview.</summary>
+    public const float StillMoment = 12f;
+
     // The camera's one move per battle: overview until FocusIn, glide in, hold, glide back out.
     public const float FocusIn = 14f, FocusHeld = 18f, FocusOut = 24f, FocusBack = 28f;
 

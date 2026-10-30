@@ -58,6 +58,10 @@ public static class ViewSettings
     /// opens; the Options slider sets both.</summary>
     public static float MasterVolume = 1f;
 
+    /// <summary>#448: the main menu's war table - Animated (default), Still (one frame, for weak GPUs or
+    /// anyone who finds motion distracting) or Off.</summary>
+    public static EMenuBackground MenuBackground = EMenuBackground.Animated;
+
     /// <summary>Takes the saved values (#412), clamping anything a hand-edit pushed out of range.</summary>
     public static void Load(SavedViewSettings saved)
     {
@@ -69,6 +73,7 @@ public static class ViewSettings
         DiceLingerScale      = float.IsFinite(saved.DiceLingerScale)
             ? Math.Clamp(saved.DiceLingerScale, DiceLingerMin, DiceLingerMax) : 1f;
         MasterVolume         = float.IsFinite(saved.MasterVolume) ? Math.Clamp(saved.MasterVolume, 0f, 1f) : 1f;
+        MenuBackground       = Enum.IsDefined(saved.MenuBackground) ? saved.MenuBackground : EMenuBackground.Animated;
     }
 
     public static SavedViewSettings Capture() => new()
@@ -80,6 +85,7 @@ public static class ViewSettings
         ShowVictoryFireworks = ShowVictoryFireworks,
         DiceLingerScale      = DiceLingerScale,
         MasterVolume         = MasterVolume,
+        MenuBackground       = MenuBackground,
     };
 
     /// <summary>Writes the current values to the config file, if they differ from what it holds.</summary>

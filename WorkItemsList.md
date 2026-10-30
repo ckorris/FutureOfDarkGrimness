@@ -278,7 +278,6 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 - [~] 289 — Decisive rolls (morale, cast, objective D3, Storm, token shed) render as real dice in probabilistic mode instead of an expected-value bar: `DiceRolledBeat.FromDecisive`. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/289](WorkItems/289-decisive-rolls-render-as-dice.md))
 - [~] 292 — Shoot panel weapon rows show special rules as underlined, individually hoverable names (new in-game `RuleHoverText`) + a Rules block with descriptions in the Details pane. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/292](WorkItems/292-weapon-select-rule-hovers.md))
 - [~] 298 — Resolver option buttons were hardcoded 28-32px while the font is `18f * uiScale`: row height (and every pixel step sitting next to text) now derives from the line height, shared via `ResolverPanelLayout.OptionRowHeight`. Melee weapon menu also gained its rules' descriptions as option subtext. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/298](WorkItems/298-resolver-option-button-height.md))
-- [ ] 448 — Holographic war-table main menu background: animated wireframe 6'x4' table with terrain, two random contrasting armies skirmishing, left command-panel menu. Slices 1-4 of 5 (table, command-panel menu, random armies + units, animated fight, battle timeline + directed camera) done; awaiting GUI hand-verify. ([WorkItems/448](WorkItems/448-holo-war-table-menu-background.md))
 
 ## 2026-06-10 audit follow-ups
 
@@ -335,6 +334,7 @@ Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc 
 Implemented, merged, suite green — held open only until confirmed by hand in the running app.
 Tick and move to the archive once verified. The detail files carry the full ledgers.
 
+- [~] 448 — Holographic war-table main menu background (animated 6'x4' wireframe table, random contrasting armies skirmishing, command-panel menu, Animated/Still/Off option). Verify: the six GUI checks in the detail file. ([WorkItems/448](WorkItems/448-holo-war-table-menu-background.md))
 
 - [~] 326 — Single-model moves show a roster of the unit's models with each one's distance travelled: pick by row click, Up/Down, Tab/Shift+Tab, or the table click #295 left as the only way in (which a playtester never found). Space stays Confirm. Consolidation gets the same roster as slice 2. Verify: the six GUI checks in the detail file. ([WorkItems/326](WorkItems/326-single-model-move-roster.md))
 - [~] 324 — A single-target "Replace all X" now leaves the copies that specialist swaps below it were bought for (5 pistols, trade 1, then replace-all -> 4 rifles + the 1), and "-es" plural targets match ("Bashes" -> the "Bash" weapon, which was silently free). Multi-target all-swaps (88 corpus pairs) deferred pending the aggregate weapon-model question. Verify: DAO Union Tactical Grunts - take "Replace all Pulse Rifles" then "Replace one Pulse Rifle -> Plasma Rifle"; expect 4 carbines + 1 plasma at 150 pts. ([WorkItems/324](WorkItems/324-all-swap-yields-and-plurals.md))

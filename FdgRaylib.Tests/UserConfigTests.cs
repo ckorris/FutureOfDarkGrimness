@@ -431,6 +431,7 @@ public class UserConfigTests
             Assert.That(saved.ShowVictoryFireworks, Is.True);
             Assert.That(saved.DiceLingerScale, Is.EqualTo(1f));
             Assert.That(saved.MasterVolume, Is.EqualTo(1f));
+            Assert.That(saved.MenuBackground, Is.EqualTo(EMenuBackground.Animated), "#448: the war table animates by default");
         });
     }
 
@@ -442,6 +443,7 @@ public class UserConfigTests
         {
             ShowLabels = false, ShowGrid = false, ShowAllTokens = true, ShowReachOverlay = false,
             ShowVictoryFireworks = false, DiceLingerScale = 1.5f, MasterVolume = 0.25f,
+            MenuBackground = EMenuBackground.Still,
         };
         UserConfig.WriteTo(path, new UserConfig { View = view });
 
@@ -477,6 +479,12 @@ public class UserConfigTests
 
             FdgRaylib.Rendering.ViewSettings.Load(new SavedViewSettings { DiceLingerScale = float.NaN });
             Assert.That(FdgRaylib.Rendering.ViewSettings.DiceLingerScale, Is.EqualTo(1f));
+
+            // #448: a hand-edited number that names no setting (the enum reads integers too) means Animated.
+            FdgRaylib.Rendering.ViewSettings.Load(new SavedViewSettings { MenuBackground = (EMenuBackground)42 });
+            Assert.That(FdgRaylib.Rendering.ViewSettings.MenuBackground, Is.EqualTo(EMenuBackground.Animated));
+            FdgRaylib.Rendering.ViewSettings.Load(new SavedViewSettings { MenuBackground = EMenuBackground.Off });
+            Assert.That(FdgRaylib.Rendering.ViewSettings.Capture().MenuBackground, Is.EqualTo(EMenuBackground.Off));
         }
         finally
         {

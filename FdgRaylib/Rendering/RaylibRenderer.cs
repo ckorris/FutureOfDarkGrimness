@@ -743,7 +743,10 @@ public class RaylibRenderer
             {
                 // #448: the main menu (and the Host/Join dialogs over it) sit on the holographic war table.
                 if (menuBackground)
-                    _menuBackground!.Draw(screenW, screenH, MainMenuLayout.Compute(screenW, screenH));
+                {
+                    _menuBackground!.Paused = _currentScreen.MenuBackgroundPaused;
+                    _menuBackground.Draw(screenW, screenH, MainMenuLayout.Compute(screenW, screenH));
+                }
 
                 rlImGui.Begin();
                 _currentScreen.Draw(screenW, screenH);
