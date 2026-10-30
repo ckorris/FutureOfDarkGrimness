@@ -51,6 +51,23 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 4 - #432's charge and save-side arms, B): `AttackContext.ChargeOriginInches` (new) reaches
+  `CombatMath`'s hit-modifier, hit-complete AND save-complete contexts for a charging melee swing only (a strike-back
+  or a Countered charge carries none, as `CombatActionContext` reports); the save context also gets the shooting
+  distance, and a spell's wounds `IsSpell` (it was priced as shooting: Spell Resistance / Knightborn's "spell wounds
+  ignored on 2+" never fired in `SpellValuation`, an older gap the same fix closes). `EstimateMelee` takes
+  `chargeOriginInches`. Callers: the planner's own charge reads the activation-start gap (`ChargeOriginTo`, the
+  engine's snapshot - kept across batch 3's memo reset because the engine measures before that move too); an enemy's
+  charge into a candidate endpoint is priced from an approximate edge gap (centroid distance less both units'
+  `TacticalAnalysis.Spread`), memoized per half-inch; transport bail / screen lane / alternative-target terms measure
+  the real gap; the melee-defender pick reads the planner's snapshot (`MeasuredChargeOrigin`); ambush arrivals use the
+  victim's spread; `DeploymentMatchup` keeps 0 (no positions yet). D4, D5. Pins (`CombatMathPinTests`, all against the
+  real stages): Ferocious charging from 7" / 5", a Changebound defender charged from 7" / 5", a Knightborn defender
+  shot from 10" / 8" (save-side shooting arm), an Infected weapon at 10" / 8" (save-side extra wound), the spell arm
+  through `ResolveSpellDamageStage`'s chain, and `EstimateMelee`'s origin reaching the charger only (and vanishing
+  under Counter); `TacticianPlannerTests.ChargeCandidate_PricesTheChargeArm_FromTheActivationStartGap` (7" / 5").
+  Negative controls: dropping the save context's distance / IsSpell fails 3 (Knightborn 10", Infected 10", spell);
+  dropping the hit contexts' origin fails 3 (Ferocious 7", Changebound 7", the EstimateMelee case).
 - 2026-10-30 (#442 batch 3 - the activation-start reposition move): the Tactician no longer hands #434's
   activation-start triggered move (Wolfborn / Bounding / Rapid Blink / Nimble / Wave-Step) to solo.
   `TacticianPlanner.AimActivationStartMove` plans the activation from where the unit stands (the search's prescribed
@@ -265,6 +282,16 @@ with no illegal-action retries in the log.
   planner's builders re-pack into formation at the end, which on a 1-3" budget ate most of the move (a 3-model column
   advanced 0.9" of 2" in the first test). Kept although the A/B is neutral (86.4% vs 86.3%, N = 1000 each): it removes
   the only systematic G3 fallback the 3.6 smokes showed and is the policy the planner would choose anyway.
+- **D4 - the cover habit keeps an origin-free melee threat (2026-10-30).** The #365 habit term is a share in [0, 1]
+  (melee that can reach this endpoint / all melee threat), and its denominator is endpoint-independent. Pricing the
+  numerator with the endpoint's charge origin (a Ferocious enemy hits harder from over 6") could push the share past
+  1 and the habit past its cap, so the share uses the origin-0 estimate; the RETALIATION and projected-threat terms
+  use the endpoint's origin.
+- **D5 - approximate charge origins where only a centroid exists (2026-10-30).** Candidate endpoints and ambush
+  spots have no models placed, so the base-edge gap is the centroid distance less each unit's spread (farthest
+  living base edge from its centroid), or the victim's spread plus 1" for a not-yet-placed arriver; memoized per
+  half-inch. The planner's own charge and every current-position term measure the real gap. Deployment matchup
+  pricing keeps 0 (no charge arm) - it has no positions at all.
 
 ## Outcome
 
