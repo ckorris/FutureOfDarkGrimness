@@ -15,7 +15,8 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 // #197 P6 - the deferred buff/debuff family ("pick one unit, which gets X once, next time the effect
-// would apply"): Morale / Defense / Speed / Piercing / Casting Debuff plus Speed Buff and Casting Buff.
+// would apply"): Morale / Defense / Speed / Piercing Debuff plus Speed Buff and Casting Buff (#436 deleted
+// the 3.5 Casting Debuff, which no 3.6.0 book prints).
 //
 // The same gap BoostRuleCompositionTests was written for applies here. --validate-rules checks structure
 // and RuleFireLint proves an entry CAN fire, but neither proves the op is consumed at the seam the author
@@ -154,7 +155,6 @@ public class DeferredDebuffCompositionTests
     // Debuff is the one that needed a new carrier - ERollKind.Cast - built for this slice).
     [TestCase("Morale Debuff", ERollKind.Morale, -1)]
     [TestCase("Defense Debuff", ERollKind.Save, -1)]
-    [TestCase("Casting Debuff", ERollKind.Cast, -1)]
     [TestCase("Casting Buff", ERollKind.Cast, +1)]
     public void StatModifierRules_CarryTheRightRollKindAndSign(string ruleName, ERollKind roll, int delta)
     {
@@ -185,7 +185,6 @@ public class DeferredDebuffCompositionTests
     [TestCase("Defense Debuff", ETargetAffinity.Foe, 18f, true, null)]
     [TestCase("Speed Debuff", ETargetAffinity.Foe, 18f, true, null)]
     [TestCase("Piercing Debuff", ETargetAffinity.Foe, 18f, true, null)]
-    [TestCase("Casting Debuff", ETargetAffinity.Foe, 18f, true, "Caster")]
     [TestCase("Speed Buff", ETargetAffinity.Friend, 12f, false, null)]
     [TestCase("Casting Buff", ETargetAffinity.Friend, 12f, false, "Caster")]
     public void DeferredModifierRules_OfferOnceBeforeAttacking_AtTheCorpusRangeAndAffinity(

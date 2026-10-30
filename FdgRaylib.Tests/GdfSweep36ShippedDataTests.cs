@@ -267,8 +267,6 @@ public class GdfSweep36ShippedDataTests
     }
 
     // A 3.6 name that is another shipped rule's twin, entry for entry (the text is pinned above).
-    [TestCase("Grounded Defense", "Grounded Reinforcement")]
-    [TestCase("Grounded Evasion", "Grounded Stealth")]
     [TestCase("Precision Marksman", "Targeting Visor")]
     [TestCase("Predator", "Bloodborn")]
     [TestCase("Nimble", "Wolfborn")]
@@ -465,9 +463,10 @@ public class GdfSweep36ShippedDataTests
     }
 
     [Test]
-    public void IndirectOnTheirWeapons_IsTheSupplementsIndirectWhenShooting()
+    public void IndirectOnTheirWeapons_IsTheCatalogIndirect()
     {
-        Assert.That(Shipped("Indirect on their weapons").Passive, Is.EqualTo(Shipped("Indirect when shooting").Passive));
+        // #436: was compared against the supplement's "Indirect when shooting", deleted as a 3.5 name.
+        Assert.That(Shipped("Indirect on their weapons").Passive, Is.EqualTo(Catalog("Indirect").Passive));
         Assert.That(Shipped("Indirect on their weapons").Scope, Is.EqualTo(ERuleScope.Weapon));
     }
 }

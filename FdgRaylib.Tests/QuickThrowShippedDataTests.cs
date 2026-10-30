@@ -5,6 +5,7 @@ using System.Linq;
 using FdgRaylib.Import;
 using FDG.ArmyBuilding;
 using FDG.Rules.Definitions;
+using FDG.Rules.Dispatch;
 using FDG.Rules.Foundation;
 using NUnit.Framework;
 
@@ -54,17 +55,22 @@ public class QuickThrowShippedDataTests
             Is.InstanceOf<Effect.IgnoreLineOfSight>());
     }
 
-    // "Indirect when Shooting Aura" (still in 3.6.0 books) grants this name; it must behave as 3.6 Indirect.
+    // "Indirect when Shooting Aura" (still in 3.6.0 books) grants the catalog's 3.6 Indirect since #436, which deleted
+    // the supplement's re-authored "Indirect when shooting" (a 3.5 name) and re-pointed the aura at "Indirect".
     [Test]
-    public void IndirectWhenShooting_IsThe36Indirect()
+    public void IndirectWhenShootingAura_GrantsThe36Indirect()
     {
-        SpecialRuleDefinition rule = Gdf("Indirect when shooting");
-        var hold = new Condition.Not(new Condition.AfterMoving());
+        SpecialRuleDefinition aura = Gdf("Indirect when Shooting Aura");
 
-        Assert.That(rule.Passive.Select(p => (p.HookID, p.Condition, p.Effect.GetType())), Is.EquivalentTo(new[]
+        Assert.That(aura.Passive.Single().Effect, Is.EqualTo(new Effect.Aura("Indirect")));
+        Assert.That(CoreRuleCatalog.CreateResolver().TryResolve("Indirect", out ResolvedRule indirect), Is.True);
+        var hold = new Condition.Not(new Condition.AfterMoving());
+        Assert.That(indirect.Definition.Passive.Select(p => (p.HookID, p.Condition, p.Effect.GetType())), Is.EquivalentTo(new[]
         {
             (EHookID.Shooting_OnSaveRollModifier, (Condition)hold, typeof(Effect.IgnoreLineOfSight)),
             (EHookID.Shooting_OnSaveRollModifier, (Condition)hold, typeof(Effect.IgnoreSightBlockerCover)),
         }), "Hold-only LoS and Sight-Blocker-cover bypass; no -1 after moving, no all-cover ignore.");
+        Assert.That(BookRuleSupplement.LoadDefinitions(File.ReadAllText(Path.Combine(BooksDirectory, "GdfRuleSupplement.json")))
+            .Any(r => r.Name == "Indirect when shooting"), Is.False);
     }
 }

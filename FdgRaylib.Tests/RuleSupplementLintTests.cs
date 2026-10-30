@@ -34,10 +34,6 @@ public class RuleSupplementLintTests
         // TeleportRuleIntegrationTests. Ethereal's movement-penalty entries DO pass the lint - only the
         // teleport ability trips it.
         ["Ethereal"] = "activated teleport enacted by TeleportStage (routed on Effect.Teleport), not by operations.",
-
-        // #425: a dropped 3.5 rule shipped inert until #436 deletes it. Its +1 cancelled Indirect's -1 after moving,
-        // which Core Rules v3.6.0 removed - keeping the +1 would have made it a free buff.
-        ["Quick Readjustment"] = "inert 3.5 leftover (no entries): nothing to cancel since 3.6 Indirect; #436 deletes it.",
     };
 
     // Every bundled supplement file plus every per-book override file (#375 C9: AofBookOverrides/,

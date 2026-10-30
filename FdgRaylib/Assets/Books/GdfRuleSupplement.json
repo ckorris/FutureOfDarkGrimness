@@ -195,40 +195,6 @@
     "description": "This model gets +4\"/+2\" range when shooting/charging."
   },
   {
-    "name": "Re-Position Artillery",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 6,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Friend",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": "Artillery"
-        },
-        "effect": {
-          "kind": "triggeredMove",
-          "maxInches": 9,
-          "isOptional": true
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 6\" with Artillery, which may immediately move by up to 9\"."
-  },
-  {
     "name": "Unique",
     "passive": [],
     "activated": [],
@@ -385,43 +351,6 @@
     "description": "Kept in reserve; may arrive from round 2 onward, placed anywhere over 3\" from enemy units."
   },
   {
-    "name": "Breath Attack",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 6,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Foe",
-          "requireLineOfSight": true,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "dealHits",
-          "count": 1,
-          "withRules": [
-            "Blast(3)"
-          ],
-          "armorPenetration": 1
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, one enemy unit within 6\" in line of sight takes 1 hit with Blast(3) and AP(1)."
-  },
-  {
     "name": "Precision Debuff",
     "passive": [],
     "activated": [
@@ -513,30 +442,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "For each unmodified result of 6 to hit, those hits get AP(+3)."
-  },
-  {
-    "name": "Tear",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "targetMajorityHasTough",
-          "minToughValue": 9
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Save",
-          "delta": -4
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Against units where most models have Tough 9+, this weapon gets AP(+4)."
   },
   {
     "name": "Disintegrate",
@@ -716,50 +621,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Melee Slayer."
-  },
-  {
-    "name": "Ignores Regeneration",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "ignoreRule",
-          "ruleName": "Regeneration"
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This weapon's attacks ignore the target's Regeneration."
-  },
-  {
-    "name": "Ignores Regeneration in Melee",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollComplete",
-        "condition": {
-          "kind": "isMelee"
-        },
-        "effect": {
-          "kind": "ignoreRule",
-          "ruleName": "Regeneration"
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "In melee, this weapon's attacks ignore the target's Regeneration."
   },
   {
     "name": "Changebound",
@@ -1697,170 +1558,6 @@
     "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified result of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
   },
   {
-    "name": "Point-Blank Surge",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "distanceGreaterThan",
-                "distanceInches": 12
-              }
-            },
-            "right": {
-              "kind": "unmodifiedRollEquals",
-              "dieValue": 6
-            }
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 6,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "When shooting enemies within 12 inches, each unmodified 6 to hit scores an extra hit."
-  },
-  {
-    "name": "Point-Blank Piercing",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "right": {
-            "kind": "not",
-            "inner": {
-              "kind": "distanceGreaterThan",
-              "distanceInches": 12
-            }
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Save",
-          "delta": -1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "When shooting enemies within 12 inches, this model's weapons get AP(+1)."
-  },
-  {
-    "name": "Point-Blank Piercing Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Point-Blank Piercing"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Point-Blank Piercing."
-  },
-  {
-    "name": "Surge when Shooting",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "right": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 6,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "When shooting, each unmodified 6 to hit scores an extra hit."
-  },
-  {
-    "name": "Brutal Fighter",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "isMelee"
-          },
-          "right": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 6,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "In melee, each unmodified 6 to hit scores an extra hit."
-  },
-  {
     "name": "Havocbound",
     "passive": [
       {
@@ -2551,40 +2248,6 @@
     "description": "If most models in this unit have this rule, they get +1 to Morale Test rolls when shot/charged from over 9\"/6\" away."
   },
   {
-    "name": "Courage Buff",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 12,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Friend",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "addRule",
-          "ruleName": "Courage",
-          "scope": "NextTrigger"
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Courage for its next relevant roll."
-  },
-  {
     "name": "Bravery Aura",
     "passive": [
       {
@@ -3126,92 +2789,6 @@
     "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units get +6\" range on their weapons when shooting against once (next time the effect would apply)."
   },
   {
-    "name": "Ignores Cover",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollModifier",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "ignoreCover"
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This weapon's attacks ignore cover."
-  },
-  {
-    "name": "Ignores Cover when Shooting",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollModifier",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "ignoreCover"
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "When shooting, this weapon's attacks ignore cover."
-  },
-  {
-    "name": "Ignores Cover Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Ignores Cover when Shooting"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Ignores Cover when Shooting."
-  },
-  {
-    "name": "Ignores Cover when Shooting Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Ignores Cover when Shooting"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Ignores Cover when Shooting."
-  },
-  {
     "name": "Indirect Mark",
     "passive": [],
     "activated": [
@@ -3245,44 +2822,6 @@
     "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Indirect on their weapons against once (next time the effect would apply)."
   },
   {
-    "name": "Indirect when shooting",
-    "passive": [
-      {
-        "hookID": "Shooting_OnSaveRollModifier",
-        "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "afterMoving"
-          }
-        },
-        "effect": {
-          "kind": "ignoreLineOfSight"
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Shooting_OnSaveRollModifier",
-        "condition": {
-          "kind": "not",
-          "inner": {
-            "kind": "afterMoving"
-          }
-        },
-        "effect": {
-          "kind": "ignoreSightBlockerCover"
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Gets Indirect when shooting: when using Hold actions and shooting, may target enemies that are not in line of sight as if in line of sight, and ignores Cover from Sight Blockers."
-  },
-  {
     "name": "Indirect when Shooting Aura",
     "passive": [
       {
@@ -3292,7 +2831,7 @@
         },
         "effect": {
           "kind": "aura",
-          "ruleName": "Indirect when shooting"
+          "ruleName": "Indirect"
         },
         "lifetime": "UntilEndOfGame",
         "seat": "Actor"
@@ -3808,114 +3347,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets +6\" range on its weapons when shooting once (next time the effect would apply)."
-  },
-  {
-    "name": "Versatile Attack (Piercing)",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "attackedFromOverInches",
-          "distanceInches": 9
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Save",
-          "delta": -1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "AP(+1) when shooting or charging enemies over 9 inches away, for this activation."
-  },
-  {
-    "name": "Versatile Attack (Precision)",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "attackedFromOverInches",
-          "distanceInches": 9
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "+1 to hit when shooting or charging enemies over 9 inches away, for this activation."
-  },
-  {
-    "name": "Versatile Attack",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnActivationStart",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 0,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Self",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "addRule",
-          "ruleName": "Versatile Attack (Piercing)",
-          "scope": "ThisActivation"
-        },
-        "availableWhen": {
-          "kind": "always"
-        },
-        "label": "AP(+1)"
-      },
-      {
-        "triggerHook": "Activation_OnActivationStart",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 0,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Self",
-          "requireLineOfSight": false,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": null
-        },
-        "effect": {
-          "kind": "addRule",
-          "ruleName": "Versatile Attack (Precision)",
-          "scope": "ThisActivation"
-        },
-        "availableWhen": {
-          "kind": "always"
-        },
-        "label": "+1 to hit"
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(+1) or +1 to hit rolls."
   },
   {
     "name": "Watchborn (Piercing)",
@@ -6253,41 +5684,6 @@
     "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which loses AP(1) on its weapons when attacking once (next time the effect would apply)."
   },
   {
-    "name": "Casting Debuff",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": {
-          "kind": "oncePerActivation"
-        },
-        "targetSelector": {
-          "rangeInches": 18,
-          "minCount": 1,
-          "maxCount": 1,
-          "targetAffinity": "Foe",
-          "requireLineOfSight": true,
-          "requiredToken": null,
-          "singleModel": false,
-          "requiredRule": "Caster"
-        },
-        "effect": {
-          "kind": "statModifier",
-          "roll": "Cast",
-          "delta": -1,
-          "lifetimeScope": "NextTrigger"
-        },
-        "availableWhen": {
-          "kind": "always"
-        }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight with Caster, which gets -1 to casting rolls once (next time the effect would apply)."
-  },
-  {
     "name": "Casting Buff",
     "passive": [],
     "activated": [
@@ -6374,58 +5770,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Screened."
-  },
-  {
-    "name": "Grounded Reinforcement",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "mostModelsHaveThisRule"
-          },
-          "right": {
-            "kind": "mostModelsWithinInchesOfTerrain",
-            "distanceInches": 1
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Save",
-          "delta": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If most models in this unit are within 1 inch of terrain, this unit gets +1 to defense rolls."
-  },
-  {
-    "name": "Grounded Reinforcement Aura",
-    "passive": [
-      {
-        "hookID": "Lifecycle_OnUnitCreated",
-        "condition": {
-          "kind": "always"
-        },
-        "effect": {
-          "kind": "aura",
-          "ruleName": "Grounded Reinforcement"
-        },
-        "lifetime": "UntilEndOfGame",
-        "seat": "Actor"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This model and its unit gain Grounded Reinforcement."
   },
   {
     "name": "Grounded Precision",
@@ -6556,111 +5900,6 @@
     "description": "If a unit where most models have this rule has most of them within 1\" of terrain, enemies get -1 to hit rolls when attacking them."
   },
   {
-    "name": "Grounded Stealth",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "mostModelsHaveThisRule"
-          },
-          "right": {
-            "kind": "mostModelsWithinInchesOfTerrain",
-            "distanceInches": 1
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": -1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "If most models in this unit are within 1 inch of terrain, enemies get -1 to hit rolls when attacking this unit."
-  },
-  {
-    "name": "Mobile Artillery",
-    "passive": [
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "afterMoving"
-              }
-            },
-            "right": {
-              "kind": "attackedFromOverInches",
-              "distanceInches": 9
-            }
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Shooting_OnHitRollModifier",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "mostModelsHaveThisRule"
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "tokenPresent",
-                "tType": {
-                  "id": "MovedThisRound"
-                },
-                "minCount": 1
-              }
-            },
-            "right": {
-              "kind": "distanceGreaterThan",
-              "distanceInches": 9
-            }
-          }
-        },
-        "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Hit",
-          "delta": -2
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Subject"
-      }
-    ],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "When this unit uses a Hold action and shoots at enemies over 9 inches away, it gets +1 to hit rolls. As long as this unit hasn't moved during the round, when enemies shoot at it from over 9 inches away, they get -2 to hit rolls."
-  },
-  {
     "name": "Heavy Impact",
     "passive": [
       {
@@ -6688,15 +5927,6 @@
     "engineArgumentCount": 1,
     "valence": "Positive",
     "description": "Counts as having Impact(X) with hits that have AP(1)."
-  },
-  {
-    "name": "Quick Readjustment",
-    "passive": [],
-    "activated": [],
-    "scope": "Weapon",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "This unit ignores the -1 to hit penalty for shooting after moving when firing Indirect weapons."
   },
   {
     "name": "Hazardous",
@@ -7326,23 +6556,6 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which counts as being in Dangerous terrain once (next time the effect would apply)."
-  },
-  {
-    "name": "Dangerous Terrain Debuff (Immediate)",
-    "passive": [],
-    "activated": [
-      {
-        "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": { "kind": "oncePerActivation" },
-        "targetSelector": { "rangeInches": 18, "minCount": 1, "maxCount": 1, "targetAffinity": "Foe", "requireLineOfSight": false, "requiredToken": null, "singleModel": false, "requiredRule": null },
-        "effect": { "kind": "dangerousTerrainTest" },
-        "availableWhen": { "kind": "always" }
-      }
-    ],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18\", which must immediately take a Dangerous Terrain test - it rolls a die per wound it would take to destroy it, taking a wound on each 1."
   },
   {
     "name": "Difficult Terrain Debuff Effect",

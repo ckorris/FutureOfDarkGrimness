@@ -52,9 +52,9 @@ public class TerrainDebuffShippedDataTests
     // The line-of-sight column is the interesting one, which is easy to lose by copying whichever sibling was
     // nearest in the file. #434: the 3.6.0 Difficult Terrain Debuff says "within 18" in line of sight" (so did
     // 3.5's; the old copy had dropped the clause). The Immediate variant is a 3.5-only name (no 3.6.0 book prints
-    // it) and keeps its 3.5 shape.
+    // it): #436 deleted its supplement entry, and the bundled 3.5 Lust / War Disciples books embed their own copy
+    // until #438 (its dangerousTerrainTest kind stays for them and for old army files - TerrainDebuffRuleIntegrationTests).
     [TestCase(DangerousDeferred, true)]
-    [TestCase(DangerousImmediate, false)]
     [TestCase(Difficult, true)]
     public void EachVariant_OffersOnceBeforeAttacking_AtTheCorpusRangeAndSight(
         string ruleName, bool needsLineOfSight)
@@ -93,17 +93,6 @@ public class TerrainDebuffShippedDataTests
             "read throughout the victim's move and spent by ExecuteMoveStage when it resolves");
         Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor), "the victim is the one moving");
         Assert.That(entry.Effect, Is.EqualTo(new Effect.CountAsInTerrain(terrain)));
-    }
-
-    [Test]
-    public void TheImmediateArm_TestsOnTheSpot_RatherThanArmingAMove()
-    {
-        // The distinction the whole slice exists for. Authored as an AddRule of a counts-as rule instead,
-        // this variant would do nothing at all to a victim that simply holds still.
-        Assert.That(Definition(DangerousImmediate).Activated.Single().Effect,
-            Is.InstanceOf<Effect.DangerousTerrainTest>(),
-            "'must IMMEDIATELY take a Dangerous Terrain test'");
-        Assert.That(Definition(DangerousImmediate).Passive, Is.Empty);
     }
 
     // ---- The grant survives to the move it is meant to spoil, and no further --------------------------

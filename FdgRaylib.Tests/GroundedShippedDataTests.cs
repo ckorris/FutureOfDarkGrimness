@@ -14,7 +14,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #197 misc - the Grounded family (Grounded Reinforcement / Precision / Stealth, 8 refs), over the DATA as
+// #197 misc - the Grounded family (3.6: Grounded Defense / Precision / Evasion), over the DATA as
 // shipped. The engine's GroundedTerrainRuleIntegrationTests prove the mechanism and geometry; these prove
 // the supplement authors each rule the way that mechanism expects - the right hook and seat (a Hit delta on
 // the wrong hook nets zero; the wrong seat aims the modifier at the wrong side), the terrain gate, and that
@@ -31,11 +31,8 @@ public class GroundedShippedDataTests
 
     // ---- Structure: the terrain gate and the right hook/seat/effect ---------------------------------
 
-    [TestCase("Grounded Reinforcement", EHookID.Shooting_OnHitRollComplete, ERuleSeat.Subject,
-        ERollKind.Save, 1)]
-    [TestCase("Grounded Stealth", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Subject,
-        ERollKind.Hit, -1)]
-    // #434: the 3.6 names Grounded Defense / Grounded Evasion are word for word the shapes above.
+    // #434: the 3.6 names Grounded Defense / Grounded Evasion carry the 3.5 Grounded Reinforcement / Grounded Stealth
+    // shapes word for word; #436 deleted the 3.5 names (no 3.6.0 book prints them).
     [TestCase("Grounded Defense", EHookID.Shooting_OnHitRollComplete, ERuleSeat.Subject,
         ERollKind.Save, 1)]
     [TestCase("Grounded Evasion", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Subject,
@@ -78,7 +75,6 @@ public class GroundedShippedDataTests
             "If most models in this unit are within 1\" of terrain, this model gets +1 to hit rolls when attacking."));
     }
 
-    [TestCase("Grounded Reinforcement Aura", "Grounded Reinforcement")]
     [TestCase("Grounded Precision Aura", "Grounded Precision")]
     [TestCase("Grounded Defense Aura", "Grounded Defense")]
     public void EachAura_ConfersItsBaseRule(string auraName, string baseName)
@@ -92,10 +88,10 @@ public class GroundedShippedDataTests
     // ---- Net effect over shipped data, gated on terrain ---------------------------------------------
 
     [Test]
-    public void GroundedReinforcement_NetsPlusOneDefense_OnlyWhenMostModelsAreInTerrain()
+    public void GroundedDefense_NetsPlusOneDefense_OnlyWhenMostModelsAreInTerrain()
     {
-        var harness = new Harness("Grounded Reinforcement");
-        IUnit defender = harness.BuildUnit("P1", "Grounded Reinforcement"); // models at origin
+        var harness = new Harness("Grounded Defense");
+        IUnit defender = harness.BuildUnit("P1", "Grounded Defense"); // models at origin
         IUnit attacker = harness.BuildUnit("P2");
 
         Assert.That(harness.NetSave(attacker, defender, Harness.OriginTerrain), Is.EqualTo(1));
@@ -104,10 +100,10 @@ public class GroundedShippedDataTests
     }
 
     [Test]
-    public void GroundedStealth_NetsMinusOneToEnemyHit_OnlyWhenMostModelsAreInTerrain()
+    public void GroundedEvasion_NetsMinusOneToEnemyHit_OnlyWhenMostModelsAreInTerrain()
     {
-        var harness = new Harness("Grounded Stealth");
-        IUnit defender = harness.BuildUnit("P1", "Grounded Stealth");
+        var harness = new Harness("Grounded Evasion");
+        IUnit defender = harness.BuildUnit("P1", "Grounded Evasion");
         IUnit attacker = harness.BuildUnit("P2");
 
         Assert.That(harness.NetEnemyHit(attacker, defender, Harness.OriginTerrain), Is.EqualTo(-1));
