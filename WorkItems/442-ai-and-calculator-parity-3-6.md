@@ -51,6 +51,20 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 3 - the activation-start reposition move): the Tactician no longer hands #434's
+  activation-start triggered move (Wolfborn / Bounding / Rapid Blink / Nimble / Wave-Step) to solo.
+  `TacticianPlanner.AimActivationStartMove` plans the activation from where the unit stands (the search's prescribed
+  macro when one is pending) and `TacticianMovementResolver` spends the move toward that plan's endpoint - a rigid
+  shift straight at it, longest legal fraction first, or the planner's route-following move when that gets closer (a
+  wall); a Hold plan declines (Cancel). Every activation memo is reset afterwards (the board changed). D3. Smokes
+  (same 22 games): 0 solo-fallbacks (was 129), 102 moves toward the plan, 26 stays, 3 declines with no legal move,
+  0 invalid paths. Quick A/B, tactician vs solorules, pool {wolf, jesters, deepsea, ck, ghosts} (the reposition
+  armies), 1000 games each, seeds 5000+: new 86.4% (809-82-109) vs old 86.3% (812-86-102) - neutral at this army
+  size, so kept for the fallback-rate and the principle (D3). Tests: `AiTriggeredRequestLegalityTests` +6 (melee
+  unit takes the move toward the enemy; wall; enemy inside the standoff; a shooter follows its own plan at 14/22/40").
+  Not changed (pre-existing, not 3.6): a triggered move AFTER the plan - Dash at the end of the activation (a move
+  since #434, a placement before), Harassing / Hit & Run - still replays the cached plan, which the repair pass turns
+  into a near-zero move toward where the unit already stands: the same "stand still" the placement form got.
 - 2026-10-30 (#442 batch 2 - goal item 5, Versatile picks): new `TacticianAbilityEffectResolver` answers the
   activation-start "pick one effect" (Versatile Attack / Warrior / Expert, Watchborn, Vinci Tech) by pricing each
   option's helper rule against the best target the unit can shoot (advancing if it must) or charge this activation;
@@ -244,6 +258,13 @@ with no illegal-action retries in the log.
   inside its threat reach. The max over targets, not a sum: the unit attacks one target. Ties (within 0.0001) keep
   the authored first option, so Versatile Reach / Versatile Defense, whose helpers never change an attack estimate at a
   fixed distance, behave exactly as before.
+- **D3 - the activation-start move heads for the activation's own plan (2026-10-30).** At activation start there is no
+  Choose Action menu and no cached plan yet, so the planner pre-plans against the menu an unrestricted unit normally
+  gets (Shoot, Move, Charge, Pass; the generator already drops charges the unit may not declare) and the move goes
+  toward the best candidate's endpoint; Hold (or an endpoint under 0.5" away) declines. Rigid shift first because the
+  planner's builders re-pack into formation at the end, which on a 1-3" budget ate most of the move (a 3-model column
+  advanced 0.9" of 2" in the first test). Kept although the A/B is neutral (86.4% vs 86.3%, N = 1000 each): it removes
+  the only systematic G3 fallback the 3.6 smokes showed and is the policy the planner would choose anyway.
 
 ## Outcome
 
