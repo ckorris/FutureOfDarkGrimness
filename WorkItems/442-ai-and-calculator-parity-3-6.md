@@ -51,6 +51,11 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-29 (from #417): goal item 1's strike-range half is done - `TacticalAnalysis.MeleeThreatReach`,
+  `TacticianPlanner.MeleeReachOf` and `PositionEncoder.CheapThreatReach` read `MELEE_RANGE_INCHES_HORIZONTAL`,
+  now 3". Open for this item: the shipped Strategist leaf net (`MlpPositionEvaluator`) was trained when
+  `CheapThreatReach` added 2"; it now adds 3" for melee units (same schema, inputs drifted) - re-train or at
+  least re-measure it in the goal-6 bench (#417 D5). One Tactician pin moved (#417 D3, the corridor scene).
 - 2026-10-29: filed with the plan.
 
 ## Decisions

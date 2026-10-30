@@ -59,7 +59,7 @@ public class ScreenedShippedDataTests
         IUnit attacker = harness.BuildUnit("P2");
 
         // A charge declared from 20 inches, resolving in base contact - the arm that a live-distance gate
-        // could never pass (melee resolves at ~2 inches). Reads the charge launch distance.
+        // could never pass (melee resolves within 3 inches). Reads the charge launch distance.
         var charged = new HitRollModifierContext(attacker, defender, DistanceInches: 0.5f,
             AttackerMoved: true, IsMelee: true, IsCharging: true, ChargeOriginDistanceInches: 20f);
         var sink = new RollModifierSink();

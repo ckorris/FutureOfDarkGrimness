@@ -5,7 +5,8 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #334 — the 1" forced-charge standoff band, app side. The RULE is the engine's (ForcedChargeUtilities,
+// #334 — the 1" forced-charge standoff band, app side. (#417: still 1" under 3.6; the strike range it sits
+// inside went 2" -> 3", so the may-charge-but-not-forced band is now 1"-3".) The RULE is the engine's (ForcedChargeUtilities,
 // shared with the ChooseActionStage gate this previews); what is pinned here is the two things the app adds:
 // the outline geometry the player reads the boundary off, and the wording of the panel warning.
 //
@@ -111,6 +112,19 @@ public class ForcedChargeBandTests
         Assert.That(text, Does.Contain("cannot Pass"));
         Assert.That(text, Does.Contain("no melee weapon"));
         Assert.That(text, Does.Not.Contain("must Charge"));
+    }
+
+    [Test]
+    public void ForcedChargeWarning_NamesTheOneInchStandoff_NotTheStrikeRange()
+    {
+        // #417: 3.6 widened the strike range to 3" but kept the 1" standoff ("Units may only be within 1" of
+        // other units when charging"). The warning is about the obligation, so it must keep naming 1" - a
+        // unit ending 1"-3" away may Charge and is warned of nothing.
+        string text = GuiDefineMovementResolver.ForcedChargeWarning(1, new[] { "Ork Boyz" }, hasMeleeWeapons: true);
+
+        Assert.That(Band, Is.LessThan(GameWideConstants.MELEE_RANGE_INCHES_HORIZONTAL));
+        Assert.That(text, Does.Contain("within 1\""));
+        Assert.That(text, Does.Not.Contain("3\""));
     }
 
     [Test]

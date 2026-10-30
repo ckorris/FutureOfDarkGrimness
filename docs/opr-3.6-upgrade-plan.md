@@ -237,7 +237,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 |---|-------|-------|------------|-------|--------|--------|
 | 415 | OPR 3.6 upgrade umbrella: plan, branch policy, master merges, release | all | - | F | medium | in-progress |
 | 416 | 3.6 reference snapshot + census/coverage tooling | 1 | - | S | low | done 2026-10-29 |
-| 417 | Melee ranges: 3" strike, 3" pile-in/consolidate, vertical convention | 2 | - | O | medium | todo |
+| 417 | Melee ranges: 3" strike, 3" pile-in/consolidate, vertical convention | 2 | - | O | medium | done 2026-10-29 (awaiting GUI hand-verify; owner: D5-D7) |
 | 418 | Fatigue: fatigued 6s do not trigger "unmodified 6" rules | 2 | - | O | high | done 2026-10-29 (awaiting GUI hand-verify) |
 | 419 | Melee result = wounds taken this activation; Fear(X) rewording | 2 | - | O | medium | todo |
 | 420 | Dangerous terrain dice = wounds to destroy the unit | 2 | - | S | medium | done 2026-10-29 (open: D5 "activates in it") |
