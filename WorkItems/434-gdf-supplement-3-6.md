@@ -66,6 +66,19 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30: **Batch 6 - Mind Control's once-per-round clause (engine).** 3.6 adds "Units may only be moved once per
+  round in this way." (relayed from #429): a per-TARGET gate across every Mind Control on the table, not just text.
+  `Effect.TriggeredMove` gained `OncePerRoundKey` (JSON `oncePerRoundKey`, default null = unrestricted, what old data
+  parses to); `RuleOperation.InvokeTriggeredMove` refuses a unit already stamped this round under the key (logged
+  through a new default `IOperationServices.Log`) and stamps a unit that actually moved
+  (`MovedOncePerRound:<key>`, RoundEnd clear) - a declined or zero-length move spends nothing; the morale test itself
+  still happens. The supplement's Mind Control keys its move "Mind Control" and carries the 3.6 text. Tests: engine
+  `MindControlOncePerRoundRuleIntegrationTests` (5: first move stamps with a RoundEnd clear, a second Mind Control this
+  round cannot move the unit, a declined move spends nothing, an unkeyed forced move is unrestricted, JSON round trip +
+  legacy parse) through the real MoraleTestThen -> GameOperationServices -> MovementExecutor path; app
+  `MoraleTestThenShippedDataTests` (the key), `GdfSweep36ShippedDataTests` (+ Mind Control / Hazardous texts). Negative
+  control: the stamp check off fails the second-Mind-Control case.
+
 - 2026-10-30: **Batch 5 - Hazardous 3.6 (engine).** "Gets AP(4), but on unmodified results of 1 to hit this model takes
   one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule." (3.5: "this weapon's unit takes one wound".)
   `Effect.SelfWoundOnUnmodifiedRoll` gained `CountFromBlastOrDeadly` (JSON `countFromBlastOrDeadly`, default false): a

@@ -50,6 +50,8 @@ public class MoraleTestThenShippedDataTests
         Assert.That(move!.MaxInches, Is.EqualTo(6f).Within(0.001f));
         Assert.That(move.IsOptional, Is.True,
             "'you may' - a mandatory move would force the controller to shove the victim every time");
+        // #434 (3.6): "Units may only be moved once per round in this way." - a per-target gate keyed on the rule.
+        Assert.That(move.OncePerRoundKey, Is.EqualTo("Mind Control"));
     }
 
     [Test]

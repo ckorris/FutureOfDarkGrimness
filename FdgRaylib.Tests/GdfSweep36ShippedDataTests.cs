@@ -120,6 +120,8 @@ public class GdfSweep36ShippedDataTests
         yield return new TestCaseData("Versatile Reach", "When this unit is activated, pick one effect: until the end of the activation, all models with this rule in this unit either get +4\" range when shooting or move +2\" when charging.").SetArgDisplayNames("Versatile Reach");
         yield return new TestCaseData("Regenerative Strength", "Place one token on this model when it ignores a wound. Once per round, when it's this model's turn to strike in melee, roll as many dice as tokens on it before attacking, unless this unit is Fatigued. For each 4+ the target takes one wound.").SetArgDisplayNames("Regenerative Strength");
         yield return new TestCaseData("Ravage Aura", "This model and its unit get Ravage(+1).").SetArgDisplayNames("Ravage Aura");
+        yield return new TestCaseData("Mind Control", "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which must take a Morale Test. If failed you may move it by up to 6\" in a straight line in any direction. Units may only be moved once per round in this way.").SetArgDisplayNames("Mind Control");
+        yield return new TestCaseData("Hazardous", "Gets AP(4), but on unmodified results of 1 to hit this model takes one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule.").SetArgDisplayNames("Hazardous");
     }
 
     [TestCaseSource(nameof(Texts))]

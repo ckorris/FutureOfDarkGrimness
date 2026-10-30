@@ -7123,16 +7123,37 @@
     "activated": [
       {
         "triggerHook": "Activation_OnBeforeAttackAction",
-        "cost": { "kind": "oncePerActivation" },
-        "targetSelector": { "rangeInches": 18, "minCount": 1, "maxCount": 1, "targetAffinity": "Foe", "requireLineOfSight": true, "requiredToken": null, "singleModel": false, "requiredRule": null },
-        "effect": { "kind": "moraleTestThen", "onFailure": { "kind": "triggeredMove", "maxInches": 6, "isOptional": true } },
-        "availableWhen": { "kind": "always" }
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "moraleTestThen",
+          "onFailure": {
+            "kind": "triggeredMove",
+            "maxInches": 6,
+            "isOptional": true,
+            "oncePerRoundKey": "Mind Control"
+          }
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
       }
     ],
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which must take a morale test. If failed you may move it by up to 6\" in a straight line in any direction."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which must take a Morale Test. If failed you may move it by up to 6\" in a straight line in any direction. Units may only be moved once per round in this way."
   },
   {
     "name": "Fatigue Debuff",
