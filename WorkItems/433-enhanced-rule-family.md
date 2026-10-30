@@ -73,6 +73,13 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Notes
 
+- 2026-10-29 (from #418, its D2): the 3.5 Boost rules' 5-face entries (`UnmodifiedRollEquals(5)` +
+  `AddExtraHit(5)` - Primal / Clan Warrior / Devout / Ferocious / Lucky / Royal Warrior Boost, Great
+  Sergeant) add an extra hit for ANY natural 5, including a miss (a Fatigued unit's 5s always miss; so do a
+  Quality 6+ unit's). #418 stripped only face 6, per the Fatigue text. The 3.6 Enhanced texts say "extra
+  attacks on successful unmodified hit results of 5-6", so whichever option this item takes must gate the 5s
+  on SUCCESSFUL hits, and should pin a Fatigued Enhanced unit getting nothing from its 5s or 6s. New
+  hit-face primitives must read `IHasUnmodifiedHitRolls.SpecialRuleHitRolls`, not the raw roll.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

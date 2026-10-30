@@ -24,7 +24,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [~] 415 — OPR 3.6 upgrade umbrella: the plan, ground rules, master merges into the branch, release gate. ([WorkItems/415](WorkItems/415-opr-3-6-upgrade-umbrella.md))
 - [x] 416 — 3.6 reference snapshot (90 Army Forge books, core rules, common-rules API) + `scripts/census-opr-books.py` + coverage baseline. Done 2026-10-29. ([WorkItems/416](WorkItems/416-opr-3-6-reference-snapshot-census.md))
 - [ ] 417 — Melee ranges 3.6: 3" strike range, 3" pile-in/consolidate, vertical convention (Q4). ([WorkItems/417](WorkItems/417-melee-range-3-inches.md))
-- [ ] 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" special rules. ([WorkItems/418](WorkItems/418-fatigue-no-special-sixes.md))
+- [x] 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" special rules. Done 2026-10-29; dice-panel GUI hand-verify pending. ([WorkItems/418](WorkItems/418-fatigue-no-special-sixes.md))
 - [ ] 419 — Melee result 3.6: loser = most wounds TAKEN this activation; Fear(X) adds to the enemy's taken count. ([WorkItems/419](WorkItems/419-melee-result-wounds-taken.md))
 - [x] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. Done 2026-10-29; "or that activate in it" not built (D5, owner question). ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))
 - [ ] 421 — Hero 3.6: Tough(9+) heroes lend Quality for morale within 6"; both lends gated on the hero not being Shaken. ([WorkItems/421](WorkItems/421-hero-morale-aura-3-6.md))

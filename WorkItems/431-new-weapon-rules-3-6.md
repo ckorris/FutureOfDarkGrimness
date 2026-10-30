@@ -71,6 +71,12 @@ scratch 3.6 import drops every name above to 0.
 
 ## Notes
 
+- 2026-10-29 (from #418): Fatigue's "those hits don't count as rolls of 6 for special rules" is now enforced
+  once, on the hit context: `UnmodifiedRollEquals`, `AddExtraHit`, `SelfWoundOnUnmodifiedRoll`,
+  `PerHitSaveModifier` and `PerHitApSplitter` read `IHasUnmodifiedHitRolls.SpecialRuleHitRolls`. Fracture
+  (and any other hit-face rule) built on those primitives inherits it with no extra work. A NEW primitive that
+  reads hit-roll faces must read `SpecialRuleHitRolls`, never `UnmodifiedHitRolls`. Defense-roll rules (the
+  5-6 re-roll family, Scourge) read the save histogram and are unaffected by Fatigue.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

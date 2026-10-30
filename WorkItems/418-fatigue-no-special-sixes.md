@@ -1,6 +1,6 @@
 # 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" rules
 
-**Status**: todo
+**Status**: done 2026-10-29 - awaiting Chris's GUI hand-verify (dice panel in a fatigued melee)
 **Related**: #415, #030 (Furious), #032 (Rending), #202 (Fatigue plumbing), #431 (new 6-triggered weapon rules)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high.
 
@@ -67,15 +67,100 @@ Fatigued; the hit threshold is forced to 6 in `DetermineHitRollStage`, but the `
 
 ## Notes
 
+- 2026-10-29: **Landed.** Engine commit `fe5fe52e` (submodule, `feature/opr-3.6`); the superproject commit bumps it with these docs.
+  - **Engine, one seam.** `IHasUnmodifiedHitRolls` gained `SpecialRuleHitRolls`: the hit rolls as special
+    rules see them. `HitRollCompleteContext` carries `SixesCountForSpecialRules` (default true) and computes
+    the view on read (face 6 zeroed when false; raw roll untouched). The decision is
+    `FatigueUtilities.SixesCountForSpecialRules(attacker, isMelee)` = not (melee and
+    `CountsAsFatiguedInMelee`), so Shaken strikers are covered by the same predicate as the 6+ threshold.
+    `RollToHitStage` stamps it on the context it already built (the old :84). Readers switched to the view:
+    `Condition.UnmodifiedRollEquals`, `Effect.AddExtraHit`, `Effect.SelfWoundOnUnmodifiedRoll`,
+    `Effect.PerHitSaveModifier` (now emits nothing when no die counts at its face, see D3) and
+    `PerHitApSplitter.Split` (new optional view argument; never peels a face the view zeroes). No rule
+    definition changed: Furious, Surge, Rending, Rending in melee, Crack and every supplement rule on
+    `UnmodifiedRollEquals(6)` / `AddExtraHit(6)` / `PerHitSaveModifier(6)` (Predator Fighter, Bloodborn,
+    Clan Warrior, Primal, Ferocious, Devout, Brutal Fighter, Destructive, Sergeant, Lucky, Royal Warrior,
+    Great Sergeant's 6 entry, ...) inherit it. Shared helper `DiceResultsExtensions.WithoutFaces` (the
+    splitter's old private `RemoveFaces`, promoted).
+  - **Other builders.** `SyntheticHitResolution` (spells, Breath Attack, Strafing, Surprise Attack: never a
+    melee hit roll) keeps the default and passes the view to its split. `ShootingForecast` routes the flag
+    through the shared helper for parity (always true: shooting-only, and it prices no face triggers - D6).
+    `RuleFireLint` unchanged (default flag; lint still green).
+  - **AI / calculator.** `CombatMath.EstimateVolley` builds its hit context with the same helper and passes
+    the view to its split. The Combat Calculator runs the real stages, so it needed no code.
+  - **Text.** Fatigued token description and the `DetermineHitRollStage` log line now add "and those don't
+    count as 6s for special rules". The threshold chip stays "Fatigued: 6s only" (D5).
+  - **Rule text check.** 3.6 Rending is "Ignores Regeneration, and for each unmodified result of 6 to hit,
+    those hits get AP(+4)": the Regeneration-ignore facet is unconditional and stays on under Fatigue; only
+    the AP facet is a 6-trigger.
+  - **Tests.** New `FatigueSpecialSixesRuleIntegrationTests` (23, real `DetermineHitRollStage` ->
+    `RollToHitStage`): Furious fatigued charge = no extra hits + fresh control; Surge fatigued/fresh; Rending
+    and Rending in melee fatigued = one base group saving at 4+ / fresh = AP group saving at 8; Shaken
+    strike-back counts as Fatigued (no Surge, no Rending); fatigued unit SHOOTING still fires Relentless;
+    to-hit beat has no proc chips under Fatigue (keeps the "Fatigued: 6s only" chip) and names both triggers
+    when fresh; `ProbabilisticDiceRoller` Furious fatigued (1 hit) vs fresh (4); Hazardous's natural 1 still
+    self-wounds while Surge's 6 adds nothing (histogram mode); an UNGUARDED Always -> AddExtraHit(6) +
+    PerHitSaveModifier(6) rule also adds nothing; full chain to `AssignWoundsStage` showing Shred (+1/6) and
+    Bane (+1/12) unchanged under Fatigue, plus a no-rule control; the context view and helper directly;
+    the splitter's own guard. `CombatMathPinTests`: fatigued/fresh Furious + Surge + Rending charge pinned
+    to the engine (fatigued estimate = 0.5 by hand). `CombatCalculatorTests`: fatigued Furious charger gets
+    10/6 hits vs 5 + 10/6 fresh. Negative controls run by hand: forcing the flag to true in `RollToHitStage`
+    fails 8 of the new tests (the fatigued ones; every control passes), and in `CombatMath` fails the
+    fatigued pin. Nothing in `FatigueTests`, `ExtraHitRuleIntegrationTests`, `RendingRuleIntegrationTests`
+    or `CombatCalculatorTests` encoded the old behaviour (all stayed green untouched; `FatigueTests` header
+    now points at the new file).
+  - **Counts.** Engine 3443 -> 3469 passed (1 skipped before and after). FdgRaylib.Tests 3063 -> 3063.
+  - **Verification.** Engine suite green; full `dotnet build` 0 errors, no warnings in touched files; headless
+    smoke exit 0 ("Game result: outcome=Tie winner=none rounds=4", and the log shows "Heavy Gunners is
+    fatigued - hits only on unmodified 6s in melee, and those don't count as 6s for special rules.");
+    `--rule-coverage FdgRaylib/Assets/Books` "Total references: 22079 / Dead: 0".
+  - **Deferred, named.** (1) The 5-face of the 3.5 Boost rules - see D2, handed to #433. (2) The dice
+    panel rings top-face successes whenever ANY proc chip is present, so a Hazardous self-wound chip still
+    rings a fatigued 6 - see D4 (pre-existing, not changed). (3) GUI hand-verify of the dice panel in a
+    fatigued melee is Chris's (no GUI code changed; the panel reads the engine's proc chips).
 - 2026-10-29: filed with the plan.
 
 ## Decisions
 
-(none yet)
+- **D1 - where the decision lives (2026-10-29).** One flag on the hit context, decided by one helper
+  (`FatigueUtilities.SixesCountForSpecialRules`), and one view every trigger reads - not per-rule `Not(Fatigued)`
+  conditions. `RollToHitStage` computes the flag from the attacker's tokens with the same
+  `CountsAsFatiguedInMelee` predicate `DetermineHitRollStage` uses for the 6+ threshold, rather than carrying
+  a new field on `DetermineHitRollResults`: the two stages read the same unit within one attack, so they
+  cannot disagree, and the many tests that inject a `DetermineHitRollResults` directly still see Fatigue.
+- **D2 - only face 6 is stripped; the 5s of the Boost rules are #433's (2026-10-29).** The rule text strips
+  "rolls of 6", so natural 1s still count (Hazardous self-wounds, pinned). A fatigued unit's natural 5 is a
+  MISS, but the 3.5 Boost rules still in the supplements (Primal / Clan Warrior / Devout / Ferocious /
+  Lucky / Royal Warrior Boost, Great Sergeant's 5 entry: `UnmodifiedRollEquals(5)` + `AddExtraHit(5)`) add
+  an extra hit for ANY natural 5, hit or miss - pre-existing, and the same today for a Quality 6+ or a
+  -1-to-hit Quality 5+ unit. Stripping 5s too would be reading beyond the text, so it was not done. The 3.6
+  replacements say "extra attacks on successful unmodified hit results of 5-6", so #433's Enhanced family
+  must gate on SUCCESSFUL hits; that removes the fatigued-5 case along with the Boost rules. Recorded in #433.
+- **D3 - `PerHitSaveModifier` reads the view everywhere (2026-10-29).** It emits nothing when the firing
+  context has hit rolls and none count at its face - not only under Fatigue. Every shipped user is guarded by
+  `UnmodifiedRollEquals(6)` already, so nothing changes in play; for an unguarded authoring it also drops a
+  spurious "AP+4 on 6s" chip on a roll with no 6s. Kept a plain `Effect` (not a `CapabilityEffect`) so the
+  validator's requirements are unchanged.
+- **D4 - dice panel ring (2026-10-29) - OWNER NOTE.** The proc chips are composed from the ops, so a fatigued
+  6 yields no chip and, with no chip, `DiceOverlay` rings no 6 (pinned engine-side via the beat's
+  `ProcTags`). The ring itself keys on "any proc chip present", so a Hazardous "1 self-wound" chip still rings
+  the top-face successes - including a fatigued melee 6 (only melee Hazardous weapon in the books: AoF
+  Ratmen Overtuned Halberd). Pre-existing and identical without Fatigue; fixing it needs a "top-face proc"
+  flag on `DiceRolledBeat` (a wire-format change) and an overlay change, so it was left alone. Candidate
+  small follow-up if the owner wants it (needs a fresh number).
+- **D5 - the threshold chip text stays "Fatigued: 6s only" (2026-10-29).** It is pinned by
+  `DiceBeatGlanceMetadataTests` and chip width is tight; the token tooltip and the log line carry the new
+  clause instead.
+- **D6 - the #325 forecast (2026-10-29).** `ShootingForecast` is shooting-only and by design prices no
+  face-triggered effects (it evaluates an empty histogram), so "drop the trigger when Fatigued" had nothing to
+  drop. It now passes the flag through the shared helper so a future melee forecast inherits the rule.
 
 ## Outcome
 
-(open)
+Done 2026-10-29 on `feature/opr-3.6` (engine + superproject commits; see the Notes entry). Fatigued (or
+Shaken) melee hits no longer trigger any "unmodified 6 to hit" special rule, in the engine, the AI's
+CombatMath and the Combat Calculator alike; shooting and defender-side rolls are unaffected. Open: Chris's
+GUI hand-verify of the dice panel; D2 handed to #433; D4 noted for the owner.
 
 ## Rules for the agent (plan section 1, restated)
 

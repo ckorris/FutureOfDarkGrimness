@@ -54,7 +54,7 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 - `PileInStage` — implemented (moves defenders toward the charger via `PileInUtilities.ComputePileInMoves`); no longer a no-op
 
 **Fatigue & morale implemented** (#020 fatigue + #091 morale-core; re-verified 2026-06-28)
-- `ApplyFatigueStage` — applies `FatigueUtilities.ApplyFatigued` to units that fought (charge/strike-back/swing); a Fatigued (or Shaken) unit hits only on unmodified 6s in melee (`DetermineHitRollStage`)
+- `ApplyFatigueStage` — applies `FatigueUtilities.ApplyFatigued` to units that fought (charge/strike-back/swing); a Fatigued (or Shaken) unit hits only on unmodified 6s in melee (`DetermineHitRollStage`), and those 6s don't count as 6s for special rules (#418, 3.6): `RollToHitStage` sets `HitRollCompleteContext.SixesCountForSpecialRules` from `FatigueUtilities.SixesCountForSpecialRules`, and every on-a-natural-N trigger (`UnmodifiedRollEquals`, `AddExtraHit`, `SelfWoundOnUnmodifiedRoll`, `PerHitSaveModifier`, `PerHitApSplitter`) reads the context's `SpecialRuleHitRolls` view (face 6 zeroed), never the raw roll. AI `CombatMath` mirrors the flag; the Combat Calculator runs the real stages. Shooting and defender-side rolls (Shred, Bane) are unaffected
 - `AssignMeleeMoralePenaltyStage` — real: Shaken, or Rout (lethal-wounds-to-all, since there's no whole-unit removal primitive) when the loser is at half strength
 - `RollForMoraleStage` — runs `MoraleUtilities.TakeMoraleTest` (rule-aware: folds `Morale_OnPreMoraleTest` modifiers, Fearless re-roll). Invocable on demand — #034's conditional spells (`Effect.MoraleTestThen`) call it to branch on pass/fail
 
