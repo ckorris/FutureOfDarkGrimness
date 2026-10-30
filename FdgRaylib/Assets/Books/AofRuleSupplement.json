@@ -19,7 +19,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Ignores each wound on a roll of 6+."
+    "description": "When a unit where most models have this rule takes wounds, roll one die for each. On a 6+ it is ignored."
   },
   {
     "name": "Angelic Blessing",
@@ -167,7 +167,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "The defender must re-roll unmodified Defense 6s."
+    "description": "When attacking, targets must re-roll unmodified Defense results of 6 when blocking hits from this model's weapons."
   },
   {
     "name": "Lucky",
@@ -223,7 +223,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit scores an extra hit."
+    "description": "For each unmodified roll of 6 to hit when attacking, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
   },
   {
     "name": "Great Sergeant",
@@ -352,7 +352,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This unit's models may pass through other units, friendly or enemy, while moving."
+    "description": "May move through friendly and enemy units."
   },
   {
     "name": "Ethereal",
@@ -495,7 +495,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this unit is Shaken at the start of the round, roll one die. On a 4+ it stops being Shaken."
+    "description": "If a unit where most models have this rule is Shaken at the beginning of the round, roll one die. On a 4+, it stops being Shaken."
   },
   {
     "name": "Vale Oath",
@@ -530,7 +530,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this unit is Shaken at the start of the round, roll one die. On a 4+ it stops being Shaken."
+    "description": "If a unit where most models have this rule is Shaken at the beginning of the round, roll one die. On a 4+, it stops being Shaken."
   },
   {
     "name": "Steadfast Buff",
@@ -700,7 +700,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When shooting enemies over 9 inches away, this model gets +1 to hit."
+    "description": "When shooting at enemies over 9\" away, this model gets +1 to hit rolls."
   },
   {
     "name": "Vinci Tech (Piercing)",
@@ -833,7 +833,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "+1 to hit rolls in melee."
+    "description": "This model gets +1 to hit rolls in melee."
   },
   {
     "name": "Takedown when Shooting",
@@ -854,7 +854,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When shooting, may fire at a single chosen model in the target unit; all wounds hit that model. Must be resolved before the unit's other weapons."
+    "description": "This model gets Takedown on its weapons when shooting."
   },
   {
     "name": "Wild Veil",
@@ -912,7 +912,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Melee Evasion for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Melee Evasion once (next time the effect would apply)."
   },
   {
     "name": "Piercing Assault Buff",
@@ -1013,7 +1013,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets AP(+1) in melee."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets AP(+1) on their weapons in melee against once (next time the effect would apply)."
   },
   {
     "name": "Rapid Charge Mark",
@@ -1046,7 +1046,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Rapid Charge."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Rapid Charge against once (next time the effect would apply)."
   },
   {
     "name": "Surge Mark",
@@ -1079,7 +1079,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Surge."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Surge on their weapons when attacking against once (next time the effect would apply)."
   },
   {
     "name": "Precision Feat Boost",
@@ -1137,7 +1137,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per game, at the start of its activation, this unit may take +1 to hit rolls for that activation."
+    "description": "Once per game, when this unit attacks, you may use this rule so that all models with this rule in it get +1 to hit rolls."
   },
   {
     "name": "Piercing Feat Boost",
@@ -1195,7 +1195,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per game, at the start of its activation, this unit may give all its weapons AP(+1) for that activation."
+    "description": "Once per game, when this unit attacks, you may use this rule so that the weapons of all models with this rule in it get AP(+1)."
   },
   {
     "name": "Destroyer",
@@ -1379,7 +1379,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If most models in this unit are within 1 inch of terrain, roll one die for each wound the unit takes. On a 5+ the wound is ignored."
+    "description": "If a unit where most models have this rule has most of them within 1\" of terrain, when they take wounds roll one die per wound, and on a 5+ it is ignored."
   },
   {
     "name": "Grounded Protection Aura",
@@ -1401,7 +1401,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Grounded Protection."
+    "description": "This model and its unit get Grounded Protection."
   },
   {
     "name": "Reckless Piercing",
@@ -1505,7 +1505,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Neutral",
-    "description": "When this unit is activated, it may roll one die. On a 2+ its weapons get AP(+1) when attacking until the end of the round, but on a 1 enemy units get AP(+1) on their weapons when attacking it instead."
+    "description": "When a unit where most models have this rule is activated, you may roll one die. On a 2+ their weapons get AP(+1) when attacking until the end of the round, but on a 1 enemy units get AP(+1) on their weapons when attacking them instead."
   },
   {
     "name": "Reckless Piercing Aura",
@@ -1527,7 +1527,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Reckless Piercing."
+    "description": "This model and its unit get Reckless Piercing."
   },
   {
     "name": "Bloodthirsty Fighter",
@@ -1550,7 +1550,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "For each unmodified 1 enemies roll when blocking hits from this unit's weapons in melee, it rolls one extra attack with that weapon. The extra attacks cannot generate more."
+    "description": "For each unmodified roll of 1 that enemies roll when blocking hits from this model's weapons in melee, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
   },
   {
     "name": "Retreating Strike",
@@ -1606,5 +1606,174 @@
     "engineArgumentCount": 1,
     "valence": "Positive",
     "description": "Once per round, when this unit ends its move within 3\" of enemy units after being in melee, pick one of them and roll X dice for each model with this rule, or X dice in total for single-model units. For each 6+ the target takes one wound. Cannot be used while Shaken."
+  },
+  {
+    "name": "Piercing Charge Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Piercing Charge",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Piercing Charge once (next time the effect would apply)."
+  },
+  {
+    "name": "AP(+1) on its weapons in melee",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gets AP(+1) on its weapons in melee."
+  },
+  {
+    "name": "Bane on its weapons in melee",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "reroll",
+          "roll": "Save",
+          "condition": {
+            "kind": "onUnmodifiedValue",
+            "minValue": 6
+          }
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "ignoreRule",
+          "ruleName": "Regeneration"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gets Bane on its weapons in melee."
+  },
+  {
+    "name": "Unstoppable on its weapons in melee",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "ignoreRule",
+          "ruleName": "Regeneration"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "ignoreNegativeWeaponModifiers"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "ignoreNegativeWeaponModifiers"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gets Unstoppable on its weapons in melee."
+  },
+  {
+    "name": "Surge on their weapons",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          },
+          "right": {
+            "kind": "isNotSpell"
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gets Surge on its weapons."
   }
 ]

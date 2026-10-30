@@ -60,6 +60,25 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30: **Batch 3 - the five dead AoF names, 3.6 texts (data + a catalog text).** New in the AoF file (AoF-only
+  names): the spell-phrase aliases "AP(+1) on its weapons in melee" (Giant Tribes / Human Empire Elemental Form), "Bane
+  on its weapons in melee" (High Elves Magical Surge), "Unstoppable on its weapons in melee" (Ossified Undead Drain
+  Spirit) - each its catalog rule ("AP(+1) in melee", "Bane in melee", "Unstoppable in melee") under the 3.6 phrase,
+  #434 D5 - and "Surge on their weapons" (Chivalrous Kingdoms Curse of the Huntress, a mark) = Surge's entry with the
+  weapons-only `isNotSpell` gate (D8); Piercing Charge Buff (Dark Elves, Orcs) = Thrust in Melee Buff's shape granting
+  Piercing Charge. 3.6 texts on shapes that already match (D1): Cursed Undead (= catalog Protected), Unmovable / Vale
+  Oath (= Steadfast), Buccaneer (= Precision Marksman), Bestial (= Mischievous), Royal Warrior (= Predator, #434 D7's
+  approximation - D10), Grounded Protection (+ Aura), Reckless Piercing (+ Aura; already most-models gated), Traversal,
+  Good Fighter, Melee Evasion Buff, Piercing / Precision Feat (D7), Piercing Fighting / Rapid Charge / Surge Mark (the
+  mark already waits for the next friendly attack - "this activation" was a paraphrase), Takedown when Shooting,
+  Bloodthirsty Fighter. GDF file: Piercing Fighter's text ("This model gets AP(+1) on its weapons in melee." - only AoF
+  Goblins defines it in 3.6). Catalog (engine): "Bane in melee" carries the AoF books' 3.6 "Bane in Melee" text. Every
+  AoF-file name a 3.6 AoF book defines now carries its book text except Retreating Strike (D9) and the dead 3.5 "AP"
+  quirk (#436). Coverage after: all 90 "Dead: 4066 (4066 no-definition across 93 names)" (Assault 3503, Parry 264,
+  Enhanced 299 / 91 names); AoF only "Dead: 1152 (1152 no-definition across 60 names)" (Assault 763, Parry 252, Enhanced
+  137 / 58). Tests: app `AofSweep36ShippedDataTests` +40 (21 texts + Piercing Fighter, five text-only twins, Cursed
+  Undead = Protected, the catalog Bane in Melee text, the three aliases, Surge on their weapons, Piercing Charge Buff,
+  every AoF grant resolves). Counts: engine 4107 (unchanged), app 3347 -> 3387.
 - 2026-10-30: **Batch 2 - faction rules on existing primitives (data + an engine test).** Ossified / Warden: 3.6 "When
   units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)." - Guardian's
   (#434) unconditional shape, the 3.5 `attackedFromOverInches(9)` gate gone. Wave-Step: "you may move all models with
@@ -193,6 +212,29 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
   Aura. Dropped from the AoF file: Difficult Terrain Debuff, Fortified Growth, Melee Slayer (the names still resolve, to
   the GDF definitions; nothing is deleted from the rule universe). `AofSweep36ShippedDataTests.TheAofFile_ShadowsNoGdfDefinition`
   keeps the two files disjoint.
+- **D7 - Piercing / Precision Feat keep the activation-start offer (2026-10-30) - OWNER REVIEW.** 3.6: "Once per game,
+  when this unit attacks, you may use this rule so that the weapons of all models with this rule in it get AP(+1)" /
+  "... get +1 to hit rolls" (3.5: "at the start of its activation"). Shipped: the 3.5 offer at activation start
+  (once per game, most models, the Boost helper for the activation) with the 3.6 text - GDF Speed Feat's #434
+  approximation of "when this unit moves". The Boost covers every weapon of the unit, not only the carriers' (one model
+  in a unit without the rule cannot be told apart at the unit-level hooks). Options: (a) keep; (b) offer it as a
+  before-attack menu action (Activation_OnBeforeAttackAction, existing hook - still the unit's own activation);
+  (c) a Yes/No at the attack window (Combat_OnAttackWindow, the Takedown Strike / Shot seam: the existing YesNoRequest,
+  fires for shooting, charging AND strike-backs), which needs ResolveExtraAttackStage to accept an AddRule offer with an
+  attack-long lifetime. Recommendation: (c) - the only reading that covers "when this unit attacks" in the enemy's
+  activation too; no new request type.
+- **D8 - The AoF spell-phrase aliases (2026-10-30).** #434 D5's convention, in the AoF file (no GDF book or spell names
+  them). "Surge on their weapons" keeps #434 D2's weapons-only reading of "on their weapons" (`isNotSpell`, as "Shred /
+  Bane on their weapons when attacking"); the "in melee" three need no gate (melee hits are never a spell's).
+- **D9 - Retreating Strike unchanged (2026-10-30).** Its 3.6 text is its 3.5 text ("... roll X dice for each model with
+  this rule in this unit. For each 6+ the target takes one wound."), so #381's owner ruling (trigger = end of a chosen
+  move after melee; not while Shaken; once per round) stands and the description keeps the ruling's two clarifications
+  ("or X dice in total for single-model units", "Cannot be used while Shaken"). #436's text parity should keep them or
+  move them to the ruling's notes.
+- **D10 - Royal Warrior keeps the extra-hit approximation (2026-10-30) - OWNER NOTE.** "For each unmodified roll of 6 to
+  hit when attacking, this model may roll +1 attack with that weapon" is #434 D7's family (Predator, Bloodborn, Primal,
+  Clan Warrior); authored as Predator's entries (one extra hit on a 6) with the 3.6 text. A true bonus attack needs a
+  hit-face `AddBonusAttack` sibling (pre-existing gap, #434 D7).
 
 ## Outcome
 

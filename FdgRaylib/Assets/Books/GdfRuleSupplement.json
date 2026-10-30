@@ -2837,7 +2837,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "AP(+1) in melee."
+    "description": "This model gets AP(+1) on its weapons in melee."
   },
   {
     "name": "Piercing Fighter Aura",

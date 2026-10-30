@@ -58,6 +58,30 @@ public class AofSweep36ShippedDataTests
         yield return Case("Wave-Step", "When this unit is activated, you may move all models with this rule in it by up to D3\".");
         yield return Case("Ethereal", "Once per activation, before attacking, you may place this model anywhere fully within 6\" of its position. If you do, this model moves -6\" when using Advance, and -6\" when using Rush/Charge until the end of that activation.");
         yield return Case("Grounded Speed", "If most models in this unit are within 1\" of terrain when activated, this model may move +2\" on Advance, and +4\" on Rush/Charge during this activation.");
+        // Behaviour already 3.6 (D1: the AoF file ends text-parity with the 3.6.0 books), and the new Piercing Charge Buff.
+        yield return Case("Cursed Undead", "When a unit where most models have this rule takes wounds, roll one die for each. On a 6+ it is ignored.");
+        yield return Case("Unmovable", "If a unit where most models have this rule is Shaken at the beginning of the round, roll one die. On a 4+, it stops being Shaken.");
+        yield return Case("Vale Oath", "If a unit where most models have this rule is Shaken at the beginning of the round, roll one die. On a 4+, it stops being Shaken.");
+        yield return Case("Buccaneer", "When shooting at enemies over 9\" away, this model gets +1 to hit rolls.");
+        yield return Case("Grounded Protection", "If a unit where most models have this rule has most of them within 1\" of terrain, when they take wounds roll one die per wound, and on a 5+ it is ignored.");
+        yield return Case("Grounded Protection Aura", "This model and its unit get Grounded Protection.");
+        yield return Case("Reckless Piercing", "When a unit where most models have this rule is activated, you may roll one die. On a 2+ their weapons get AP(+1) when attacking until the end of the round, but on a 1 enemy units get AP(+1) on their weapons when attacking them instead.");
+        yield return Case("Reckless Piercing Aura", "This model and its unit get Reckless Piercing.");
+        yield return Case("Traversal", "May move through friendly and enemy units.");
+        yield return Case("Bestial", "When attacking, targets must re-roll unmodified Defense results of 6 when blocking hits from this model's weapons.");
+        yield return Case("Royal Warrior", "For each unmodified roll of 6 to hit when attacking, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks.");
+        yield return Case("Good Fighter", "This model gets +1 to hit rolls in melee.");
+        yield return Case("Melee Evasion Buff", "Once per activation, before attacking, pick one friendly unit within 12\", which gets Melee Evasion once (next time the effect would apply).");
+        yield return Case("Piercing Feat", "Once per game, when this unit attacks, you may use this rule so that the weapons of all models with this rule in it get AP(+1).");
+        yield return Case("Precision Feat", "Once per game, when this unit attacks, you may use this rule so that all models with this rule in it get +1 to hit rolls.");
+        yield return Case("Piercing Fighting Mark", "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets AP(+1) on their weapons in melee against once (next time the effect would apply).");
+        yield return Case("Rapid Charge Mark", "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Rapid Charge against once (next time the effect would apply).");
+        yield return Case("Surge Mark", "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Surge on their weapons when attacking against once (next time the effect would apply).");
+        yield return Case("Takedown when Shooting", "This model gets Takedown on its weapons when shooting.");
+        yield return Case("Bloodthirsty Fighter", "For each unmodified roll of 1 that enemies roll when blocking hits from this model's weapons in melee, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks.");
+        yield return Case("Piercing Charge Buff", "Once per activation, before attacking, pick one friendly unit within 12\", which gets Piercing Charge once (next time the effect would apply).");
+        // The GDF file's Piercing Fighter: only AoF Goblins defines it in 3.6.
+        yield return Case("Piercing Fighter", "This model gets AP(+1) on its weapons in melee.");
     }
 
     private static TestCaseData Case(string name, string text) => new TestCaseData(name, text).SetArgDisplayNames(name);
@@ -159,6 +183,84 @@ public class AofSweep36ShippedDataTests
         Assert.That(teleport.Cost, Is.InstanceOf<Cost.OncePerActivation>());
         Assert.That(teleport.Effect, Is.InstanceOf<Effect.Teleport>(), "TeleportStage routes on the effect");
         Assert.That(teleport.AvailableWhen, Is.InstanceOf<Condition.MostModelsHaveThisRule>());
+    }
+
+    // Text only: the 3.5 shape already does what the 3.6 sentence says.
+    [TestCase("Bestial", "Mischievous")]
+    [TestCase("Buccaneer", "Precision Marksman")]
+    [TestCase("Unmovable", "Steadfast")]
+    [TestCase("Vale Oath", "Steadfast")]
+    [TestCase("Royal Warrior", "Predator")]
+    public void TheTextOnlyRule_IsItsTestedSiblingsShape(string name, string sibling)
+    {
+        // Royal Warrior shares Predator's extra-hit approximation of "may roll +1 attack" (#434 D7).
+        Assert.That(AofShipped(name).Passive, Is.EqualTo(Shipped(sibling).Passive));
+    }
+
+    [Test]
+    public void CursedUndead_IsTheCatalogProtected()
+    {
+        Assert.That(AofShipped("Cursed Undead").Passive, Is.EqualTo(Catalog("Protected").Passive));
+    }
+
+    [Test]
+    public void TheCatalogBaneInMelee_CarriesThe36Text()
+    {
+        Assert.That(Catalog("Bane in Melee").Description, Is.EqualTo("This model gets Bane on its weapons in melee."));
+    }
+
+    // --- new names --------------------------------------------------------------------------------------------
+
+    // The 3.6 AoF spell text grants "X on its weapons in melee" (#434 D5): each is its canonical catalog rule under the
+    // 3.6 phrase. Melee hits are never a spell's, so no weapons-only gate is needed.
+    [TestCase("AP(+1) on its weapons in melee", "AP(+1) in melee")]
+    [TestCase("Bane on its weapons in melee", "Bane in melee")]
+    [TestCase("Unstoppable on its weapons in melee", "Unstoppable in melee")]
+    public void TheSpellPhraseAlias_IsTheCatalogRule(string alias, string canonical)
+    {
+        Assert.That(AofShipped(alias).Passive, Is.EqualTo(Catalog(canonical).Passive));
+        Assert.That(AofShipped(alias).Scope, Is.EqualTo(Catalog(canonical).Scope));
+    }
+
+    [Test]
+    public void SurgeOnTheirWeapons_IsSurge_WeaponsOnly()
+    {
+        // Chivalrous Kingdoms' Curse of the Huntress: "... which friendly units gets Surge on their weapons against once".
+        // Surge's entries with #434 D2's weapons-only gate (the "Shred / Bane on their weapons when attacking" convention).
+        SpecialRuleDefinition alias = AofShipped("Surge on their weapons");
+        Assert.That(alias.Scope, Is.EqualTo(Catalog("Surge").Scope));
+        Assert.That(alias.Passive, Is.EqualTo(Catalog("Surge").Passive.Select(e => e with
+        {
+            Condition = new Condition.And(e.Condition, new Condition.IsNotSpell()),
+        })));
+    }
+
+    [Test]
+    public void PiercingChargeBuff_IsThrustInMeleeBuffsShape_OverPiercingCharge()
+    {
+        ActivatedAbility buff = AofShipped("Piercing Charge Buff").Activated.Single();
+        ActivatedAbility thrust = Shipped("Thrust in Melee Buff").Activated.Single();
+        Assert.That(buff, Is.EqualTo(thrust with { Effect = new Effect.AddRule("Piercing Charge", ELifetime.NextTrigger) }));
+    }
+
+    // Every grant an AoF-file rule makes resolves in the universe an AoF book bakes against (+ the catalog).
+    [Test]
+    public void EveryAofGrant_ResolvesInTheMergedUniverse()
+    {
+        var names = new HashSet<string>(Merged().Select(r => r.Name).Concat(CoreRuleCatalog.All.Select(r => r.Name)),
+            StringComparer.OrdinalIgnoreCase);
+        foreach (SpecialRuleDefinition rule in Aof())
+        {
+            IEnumerable<string> granted = rule.Passive.Select(e => e.Effect).Concat(rule.Activated.Select(a => a.Effect))
+                .Select(e => e switch
+                {
+                    Effect.Aura a => a.RuleName, Effect.AddRule r => r.RuleName, Effect.MarkTarget m => m.RuleName,
+                    _ => null,
+                })
+                .OfType<string>();
+            foreach (string target in granted)
+                Assert.That(names, Does.Contain(target), $"'{rule.Name}' grants '{target}'");
+        }
     }
 
     [Test]
