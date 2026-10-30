@@ -12,6 +12,7 @@ using FDG.GameModel;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
 using FDG.Presentation;
+using FDG.Replay;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 using FdgRaylib.SaveLoad;
@@ -903,8 +904,10 @@ else
                     tableBackground: scenarioSettings.TableBackground,
                     seeThroughFriendlyUnits: scenarioSettings.SeeThroughFriendlyUnits);
 
+                var scenarioReplay = new ReplayRecorder(); // #450
+                parts.HumanGame.AttachReplay(scenarioReplay);
                 var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
-                    new RealtimePresentationClock());
+                    new RealtimePresentationClock(), replay: scenarioReplay);
                 // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
                 // Launch attached the log - push any drops it just produced into the visible summary.
                 RuleLoadWarnings.FlushPending();

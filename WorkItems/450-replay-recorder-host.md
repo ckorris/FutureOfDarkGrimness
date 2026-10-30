@@ -94,6 +94,15 @@ Engine suite green; `dotnet build`; headless smoke exits 0; a GUI local game sti
 user-visible changes in this ticket). Commit on `feature/replay` (engine first, then bump).
 
 ## Notes
+- 2026-10-30 - Slice 4 (app wiring): `CliApp.RunAsync` (seed materialised before the AI player is built,
+  recorder attached to the human game and passed to the server), `CliApp.RunScenarioAsync` and the GUI
+  `--scenario` path in `Program.cs` (recorder on the resume constructor, attached to the human game),
+  `ScenarioLauncher.BuildResume` materialises a scenario's missing seed before building its AI players.
+  `ScenarioLauncher` does not construct the server, so it takes no recorder. The seed helper moved from
+  `FDGServer` (internal) to a public `GameSettings.WithConcreteSeed()` so the app can call it; +1 engine
+  test for it. Engine suite 3422 passed, 1 skipped; app suite 3059 passed; `dotnet build` clean; headless
+  smoke exit 0 (`Game result: outcome=Tie winner=none rounds=4`); headless `--scenario
+  Scenarios/example-shootout.json` exit 0 (`outcome=Win winner="Player 1" rounds=4`); no `[replay]` lines.
 - 2026-10-30 - Slice 3 (engine wiring): `RequestMessageSender.Observer` (request before any send, so a
   synchronous AI reply can't be recorded first; reply / error / disconnect-failure after the claim and
   before the stage resumes), `PresentationRelayer.Observer`, `IGameContext.GameId` + `ReplayMarkers`
@@ -182,9 +191,9 @@ user-visible changes in this ticket). Commit on `feature/replay` (engine first, 
   `Capture`, never cleared by `WriteProgress`, and minted by the resume constructor only when the store
   has none (pre-#450 save, compiled scenario). **Never minted for a simulation** - a simulation is a
   throwaway copy of a game, and its runs must stay byte-identical (`SimulationServiceTests`).
-- **D5 seed:** `FDGServer.WithConcreteSeed` on both constructors, before anything reads the settings,
-  written back to the progress record on resume. Additionally the lobby's new-game launch (and CliApp,
-  slice 4) materialise it BEFORE building the AI controllers, so the bots derive their streams from the
+- **D5 seed:** `GameSettings.WithConcreteSeed()` on both `FDGServer` constructors, before anything reads the settings,
+  written back to the progress record on resume. Additionally the lobby's new-game launch, `CliApp.RunAsync` and
+  `ScenarioLauncher.BuildResume` materialise it BEFORE building the AI controllers, so the bots derive their streams from the
   same seed the dice use - otherwise a re-run with the recorded seed would replay the dice but not the AI.
   Launch-local copy: the lobby's own setting stays "random" for the next game. (Observation, not changed:
   `LaunchResume` seeds resumed bots from the LOBBY's seed, not the save's - pre-existing.)

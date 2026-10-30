@@ -3,6 +3,7 @@ using FDG.Ai;
 using FDG.Data;
 using FDG.GameModel;
 using FDG.Players;
+using FDG.Replay;
 using FDG.SaveLoad;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
@@ -92,19 +93,25 @@ public class CliApp
         var humanController = new LocalPlayerController("Player 1", playerSlots[0].PlayerID, _localGame);
         playerSlots[0].AssignPlayerController(humanController);
 
-        // Player 2 — computer (profile per --ai-profile; solo-rules by default)
-        _aiGame = new FDGGame_AsLocal(_gameDataStore!, _messageBus!);
-        var aiController = AiProfileFactory.CreateController(_aiProfile,
-            "Player 2 (AI)", playerSlots[1].PlayerID, _aiGame, _diceSeed, playerSlots[1].SlotID);
-        playerSlots[1].AssignPlayerController(aiController);
-
         var gameSettings = GameSettings.GetDefault();
         gameSettings.RandomnessType = ERandomnessType.Realistic;
         gameSettings.ObjectivePlacementMode = EObjectivePlacementMode.AutoPlaced;
         gameSettings.DiceSeed = _diceSeed;
+        // #450 D5: without --seed, pick one now - before the AI player below is built - so the bot derives
+        // its stream from the same seed the dice use and the replay's recorded seed reproduces both.
+        gameSettings = gameSettings.WithConcreteSeed();
+
+        // Player 2 — computer (profile per --ai-profile; solo-rules by default)
+        _aiGame = new FDGGame_AsLocal(_gameDataStore!, _messageBus!);
+        var aiController = AiProfileFactory.CreateController(_aiProfile,
+            "Player 2 (AI)", playerSlots[1].PlayerID, _aiGame, gameSettings.DiceSeed, playerSlots[1].SlotID);
+        playerSlots[1].AssignPlayerController(aiController);
 
         var gameEnded = new TaskCompletionSource();
-        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
+        // #450: record the game; the human game exposes it (IFDGGame.Replay) for #452 to write at exit.
+        var replay = new ReplayRecorder();
+        _localGame.AttachReplay(replay);
+        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots, replay: replay);
         // #168: army loads just ran inside the server build - flush their buffered rule warnings
         // into this mode's log as the aggregated summary (headless keeps the stdout fallback).
         if (Log != null)
@@ -157,7 +164,9 @@ public class CliApp
         }
 
         var gameEnded = new TaskCompletionSource();
-        var server = new FDGServer(parts.Store, parts.Bus, parts.Slots); // resume constructor
+        var replay = new ReplayRecorder(); // #450
+        _localGame.AttachReplay(replay);
+        var server = new FDGServer(parts.Store, parts.Bus, parts.Slots, replay: replay); // resume constructor
         server.OnGameCompleted += PrintGameResult;
         server.OnGameEnded += result =>
         {

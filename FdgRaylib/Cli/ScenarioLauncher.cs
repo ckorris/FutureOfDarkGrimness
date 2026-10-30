@@ -73,6 +73,10 @@ public static class ScenarioLauncher
             settings.DiceSeed = seedOverride;
             progress.Settings = settings;
         }
+        // #450 D5: a scenario (or save) that names no seed gets one here, before the AI players are built,
+        // so they derive their streams from the same seed the dice use. FDGServer reads it from the record.
+        if (progress != null)
+            progress.Settings = progress.Settings.WithConcreteSeed();
         int? effectiveSeed = progress?.Settings.DiceSeed;
         // #384: the save's LoS house rule reaches the AI planners (absent progress -> official rules).
         bool seeThroughFriendlyUnits = progress?.Settings.SeeThroughFriendlyUnits ?? false;
