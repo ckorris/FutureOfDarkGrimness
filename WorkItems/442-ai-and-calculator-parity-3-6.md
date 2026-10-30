@@ -51,6 +51,26 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 7 - #429's casting gaps, B): `SpellValuation.CastThreshold / CastSuccessChance` are the
+  engine's own number (4+ less `CastRollRules.Net` read-only, less the caster's granted cast tokens peeked, less a
+  relay's bonus, clamped 2-6; `CastSpellStage.CastSuccessThreshold` is a new public alias of its private constant),
+  replacing the flat 0.5. Targets are reached from every origin `SpellRelay.OriginsFor` offers (a Spell Conduit relay
+  measures range and sight from its own models) and the net value takes the best bonus among the origins covering
+  every counted target. `TacticianCastAssistResolver` never spends past what a token can still move (2+ floor for a
+  boost, 6+ ceiling for a hinder). Spell Drain (new 3.6 rule) is now used: the planner takes a drain-shaped
+  before-attack ability (MoraleTestThen -> ConsumeToken(SpellTokens), Foe) first in Choose Action, once per
+  activation, when an enemy in reach holds tokens it may fail to keep (expected drain = min(2, held) x P(fail the
+  rule-forced test), from batch 6's helper with cause Other, so Banner does not count); a new
+  `TacticianBeforeAttackTargetResolver` answers the following target pick with the aimed enemy (or the offered one
+  with the most expected drain), never Cancel, and hands every other pick to solo. Pins: `TacticianCastingTests` +4
+  (threshold with Spell Amplifier / granted tokens / clamp, net value +1/6 per face, a target only a relay reaches is
+  valued at the relay's +1, assist never past the clamp), `TacticianSpellDrainTests` (5, incl. the legality pin).
+  Smoke: Blessed Sisters vs Daemons of Lust, tactician mirror, seeds 1-6: the drain fires when the Sacred Mirror
+  still holds tokens at the Exo-Suit's activation (seed 6: "Sacred Mirror failed the morale test. Exo-Suit used Spell
+  Drain before attacking."), otherwise "no enemy in reach holds tokens to lose" (the Mirror spends all three on its
+  own activation). Not built (optional per the brief): a self-boost policy - both bots still reply 0 boost. Mind
+  Control stays unused by the AI (steering an ENEMY unit's 6" move needs its own policy), so #434's once-per-round
+  gate note has no reader yet - C, deferred.
 - 2026-10-30 (#442 batch 6 - morale pass chance, B: #421 + #432 (3) + #435 Banner): new
   `TacticalAnalysis.MoralePassChance` prices `MoraleUtilities.TakeMoraleTest` instead of rolling it - the Quality from
   `ResolveMoraleQuality` (own / joined hero / Tough(9)+ Hero aura; a new `ITableState` overload, the `IGameContext`
