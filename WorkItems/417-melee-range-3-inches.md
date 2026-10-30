@@ -71,7 +71,7 @@ Findings that shape the item: pile-in (3") and consolidation (3" survivor / 1" f
 
 ## Notes
 
-- 2026-10-29: filed with the plan.
+- 2026-10-29: filed with the plan. Q4 answered the same day: horizontal 3", the 4" vertical convention stays.
 
 ## Decisions
 

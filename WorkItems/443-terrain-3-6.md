@@ -1,6 +1,6 @@
 # 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed) - design fork, blocked on Q3
 
-**Status**: blocked (plan Q3: in this release or deferred? Default: deferred, nothing built)
+**Status**: deferred past the 3.6 release (Chris answered Q3 on 2026-10-29: defer). Only the Elevated -> Climbable rename and the new type names may be reserved by #444 if cheap; nothing else is built on this branch.
 **Related**: #415, #002 (terrain placement), #167 (scenario terrain), #268/#301 (terrain palette/modes), #201 (cover rules), #253
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high (after sign-off).
 
