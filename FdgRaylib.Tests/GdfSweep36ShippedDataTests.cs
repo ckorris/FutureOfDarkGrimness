@@ -113,6 +113,13 @@ public class GdfSweep36ShippedDataTests
         yield return new TestCaseData("Dash", "Once per round, at the end of this unit's activation, you may move all models with this rule in it by up to D3+1\".").SetArgDisplayNames("Dash");
         yield return new TestCaseData("Rapid Blink", "When this unit is activated, you may move all models with this rule in it by up to D3\".").SetArgDisplayNames("Rapid Blink");
         yield return new TestCaseData("Wolfborn", "When this unit is activated, you may move all models with this rule in it by up to D3\".").SetArgDisplayNames("Wolfborn");
+        yield return new TestCaseData("Ranged Slayer", "When using Hold actions and shooting, this model's weapons get AP(+2) if most models in the target have Tough(3) or higher.").SetArgDisplayNames("Ranged Slayer");
+        yield return new TestCaseData("Takedown Shot", "Once per game, when this model shoots, it may make X extra attacks against the target at Quality 2+ with AP(2), Deadly(3), and Takedown.").SetArgDisplayNames("Takedown Shot");
+        yield return new TestCaseData("Takedown Strike", "Once per game, when it's this model's turn to strike in melee, it may make X attacks at Quality 2+ with AP(2), Deadly(3), and Takedown.").SetArgDisplayNames("Takedown Strike");
+        yield return new TestCaseData("Vengeance", "When this unit is fully destroyed, place as many Vengeance tokens on the unit that destroyed it as models with this rule in this unit at the beginning of the game. Friendly units get +X to hit rolls when attacking that unit, where X is the number of tokens on it.").SetArgDisplayNames("Vengeance");
+        yield return new TestCaseData("Versatile Reach", "When this unit is activated, pick one effect: until the end of the activation, all models with this rule in this unit either get +4\" range when shooting or move +2\" when charging.").SetArgDisplayNames("Versatile Reach");
+        yield return new TestCaseData("Regenerative Strength", "Place one token on this model when it ignores a wound. Once per round, when it's this model's turn to strike in melee, roll as many dice as tokens on it before attacking, unless this unit is Fatigued. For each 4+ the target takes one wound.").SetArgDisplayNames("Regenerative Strength");
+        yield return new TestCaseData("Ravage Aura", "This model and its unit get Ravage(+1).").SetArgDisplayNames("Ravage Aura");
     }
 
     [TestCaseSource(nameof(Texts))]
@@ -207,6 +214,16 @@ public class GdfSweep36ShippedDataTests
         Assert.That(shatter.Scope, Is.EqualTo(ERuleScope.Weapon));
         Assert.That(shatter.Passive.Single(), Is.EqualTo(new HookEntry(EHookID.Shooting_OnHitRollComplete,
             new Condition.UnmodifiedRollEquals(6), new Effect.PerHitSaveModifier(6, -3), ELifetime.ThisAttack)));
+    }
+
+    [Test]
+    public void RangedSlayer_IsAHoldShootingAp()
+    {
+        Assert.That(Shipped("Ranged Slayer").Passive.Single(), Is.EqualTo(new HookEntry(EHookID.Shooting_OnHitRollComplete,
+            new Condition.And(new Condition.Not(new Condition.IsMelee()),
+                new Condition.And(new Condition.Not(new Condition.AfterMoving()),
+                    new Condition.And(NotSpell, new Condition.TargetMajorityHasTough(3)))),
+            new Effect.RollModifier(ERollKind.Save, -2), ELifetime.ThisAttack)));
     }
 
     [Test]

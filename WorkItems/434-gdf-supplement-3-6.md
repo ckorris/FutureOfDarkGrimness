@@ -66,6 +66,23 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30: **Batch 4 - "Hold actions" at the AP hook; Slayer / Ranged Slayer; the importer's stale rename; texts
+  (engine).** 3.6 Slayer: "When using Hold actions and shooting, or when charging, this model's weapons get AP(+2) if
+  most models in the target have Tough(3) or higher." (3.5: shooting from over 9"); Ranged Slayer the shooting half.
+  AP folds at `Shooting_OnHitRollComplete`, whose context could not say whether the attacker moved (`--validate-rules`
+  refused `afterMoving` there), so `HitRollCompleteContext` gained `AttackerMoved` (implements `IHasAttackerMoved`; the
+  `afterMoving` condition Artillery / Indirect use) - filled by `RollToHitStage`, `ShootingForecast` and the AI's
+  `CombatMath` from the attack's own moved flag, false for synthetic hits. Catalog Slayer re-authored (Hold arm, never a
+  spell's hits; 3.6 text), supplement Ranged Slayer likewise. `OprBookImporter`: the Lust / War Disciples rename to
+  "Dangerous Terrain Debuff (Immediate)" is gone - 3.6 prints the deferred text in all six GDF books (the survey row's
+  re-check); the map stays empty for a future reuse, the "(Immediate)" definition stays for 3.5 data (#436). Texts:
+  Takedown Shot / Strike (X is 1 in every 3.6.0 book, D11), Vengeance (the owner-signed literal 1 token still fits: one
+  Honor-Bound model per unit), Versatile Reach. Tests: engine `ThrustRuleIntegrationTests` Slayer cases re-pinned to 3.6
+  (Hold at 20" and 1" applies, after moving does not, soft target does not, charge arm unchanged),
+  `GdfSweep36RuleIntegrationTests` +3 (Ranged Slayer Hold / moved / soft), `OprBookImporterTests` (no army renamed);
+  app `GdfSweep36ShippedDataTests` +8 (Ranged Slayer shape, the batch's texts). Negative control: `RollToHitStage`
+  passing `AttackerMoved: false` fails the after-moving Slayer case. Counts: engine 4057 -> 4061, app 3266 -> 3274.
+
 - 2026-10-30: **Batch 3 - Ravage per model and 3.6; Regenerative Strength 3.6; Ravage Aura (engine).** 3.6 Ravage: "Once
   per round, when it's this model's turn to strike in melee, roll X dice before attacking, unless this unit is Fatigued.
   For each 6+ the target takes one wound." Regenerative Strength: "... Once per round, when it's this model's turn to
