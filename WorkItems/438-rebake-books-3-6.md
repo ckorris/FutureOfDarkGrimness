@@ -73,6 +73,12 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #423): Parry resolves against the catalog, so the re-bake embeds nothing new for it - the 3.6.0
+  books reference it as a numeric core rule ("Parry(1)" / "Parry(3)" on Hand Weapons) and a scratch import of all 90
+  snapshots against the current supplements is now Dead 0 (was 264 = Parry alone). After your re-bake the shipped
+  `--rule-coverage` should drop from Dead 36 by the Counter-Attack family only. Smoke armies that exercise Parry at base
+  size: AoF High Elves (Warriors), Dwarves (Mountain Warriors), Ogres (Devourers, Parry(3)), GDF Daemons of War (Blood
+  Warriors) - reorder the book so those units are among the first four `--book-to-army` compiles.
 - 2026-10-30 (from #433): the Enhanced family is data in both supplements (112 definitions: 64 `Enhanced X`, 42
   `Enhanced X Aura`, 6 `Enhanced X Buff`), so the re-bake needs nothing new - a scratch import of all 90 3.6.0
   snapshots against the finished supplements leaves Enhanced 0 dead (Dead 264 = Parry alone, #423); the shipped books

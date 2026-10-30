@@ -29,7 +29,8 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [x] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. Done 2026-10-29; "or that activate in it" built by #446 (D5 resolved). ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))
 - [x] 421 — Hero 3.6: Tough(9+) heroes lend Quality for morale within 6"; both lends gated on the hero not being Shaken. Done 2026-10-30; owner review asked on D3, D4. ([WorkItems/421](WorkItems/421-hero-morale-aura-3-6.md))
 - [x] 422 — Impact/Counter/Brace 3.6: Fatigue gate on all three; Counter = strike-first only; new core Brace(X) (+ Counter/Brace in Melee grants); Counter-Attack dropped. Done 2026-10-29; GUI hand-verify pending, owner: D1/D4; D8 resolved by #447. ([WorkItems/422](WorkItems/422-impact-counter-brace.md))
-- [ ] 423 — Parry(X): new melee step (X dice per Parry model, 6+ ignores a hit, defender picks) with CLI/GUI/AI resolvers. ([WorkItems/423](WorkItems/423-parry.md)) Fork written up 2026-10-29, pending sign-off (plan Q11).
+- [x] 423 — Parry(X): new melee hit-ignore step (X dice per Parry model, 6+ ignores a hit, worst group first, one pool per attack) as a group-naming dice beat, no UI. ([WorkItems/423](WorkItems/423-parry.md))
+  Done 2026-10-30; awaiting GUI hand-verify; owner review asked on D2, D3.
 - [x] 424 — Assault weapons: one weapon counts as both ranged and melee (3500+ references) across engine, importer, Forge, resolvers, AI, calculator. ([WorkItems/424](WorkItems/424-assault-weapons.md))
   Done 2026-10-30 (capability-operation seam + B1); GUI hand-verify after the #438 re-bake; owner review asked on D2, D3.
 - [x] 425 — Cumbersome (new core); Artillery most-models/unmoved; Indirect = Hold-only LoS bypass, no move penalty; Quick Throw. Done 2026-10-30; owner review asked on D1, D3, D4, D5; GUI hand-verify pending. ([WorkItems/425](WorkItems/425-cumbersome-artillery-indirect.md))

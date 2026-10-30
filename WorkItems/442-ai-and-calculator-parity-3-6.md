@@ -51,6 +51,20 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #423): the Parry half landed in #423 itself - `CombatMath.ParryBudgetFor` (the stage's own
+  `MeleeHitsTakenContext` evaluation and `ParryHitsStage.HitsTakenParticipants`, read-only) sizes one pool per side in
+  `EstimateMelee` and `ApplyParry` runs the stage's `RemoveWorstHitsFirst` on the volley's groups (B1: threaded through
+  `SwingAllBatches` -> `EstimateVolleyCore`; Impact hits get their own pool; the Bloodthirsty follow-up shares the attack's).
+  Expected reduction = sum over the min(X x carriers, hits) dice of P(6+) = dice / 6, taken worst group first; pinned in
+  `CombatMathPinTests` against the real chain (Parry_OnTheDefender, Parry_AgainstRending) and numerically (2 hits, 3
+  carriers -> 5/6 wounds; a two-profile charger -> 21/12 not 20/12; the strike-back parried by the charger's own 2 dice ->
+  11/6). The Combat Calculator runs the real `ParryHitsStage` with one `ParryBudget` per run and notes "Parry: 4 dice
+  ignored 0.67 of 4 hits before the saves." (pinned, `CombatCalculatorTests`). Left for you: (1) a Parry column / chip on
+  the report rather than a note, and a Parry note on the IMPACT row (its dealt wounds include the parry but its hits are
+  pre-Parry - the Impact stage's child metadata is not readable from `ResolveImpact`); (2) re-run the bench: `EstimateMelee`
+  now makes two extra read-only evaluations per call (plus one when the charger has Impact dice), null-cheap when nobody
+  carries Parry but present in every AoF melee; (3) the pool is priced at the defender's current strength (the first
+  striker's expected kills do not shrink it, D10) - a conservative-for-the-defender reading you may want to tighten.
 - 2026-10-30 (from #433): the Enhanced half landed as DATA (112 definitions) plus one AI code change: `CombatMath`
   threads the clamped hit threshold onto its mirrored `HitRollCompleteContext` (`HitRollNeeded`), which
   `Condition.UnmodifiedRollHits` reads for "extra attacks on SUCCESSFUL unmodified 5-6" - pinned by

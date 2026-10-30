@@ -1,6 +1,6 @@
 # 423 — Parry(X): new melee hit-ignore step with a defender pick
 
-**Status**: signed off 2026-10-30 (plan Q11; Chris): always auto-resolve (worst hits first), NO new request or UI; Parry is a visible dice beat that names the parried groups; B1 budget. Build after #433.
+**Status**: done 2026-10-30 (built the same day the fork was signed off, plan Q11). Always auto-resolve (worst hits first), NO new request or UI; Parry is a Defense dice beat that names the parried groups; B1 budget. All-90 scratch import Dead 0. Awaiting GUI hand-verify (Chris); owner review asked on D2, D3.
 **Related**: #415, #042 (rules architecture), #286 (assign-wounds dialog, nearest GUI pattern), #435 (AoF hand weapons carry Parry), #442
 **Branch**: `feature/opr-3.6`. Model/effort: Fable 5.1 / xhigh. Read `docs/ResolverGuide.md` before touching resolvers.
 
@@ -127,8 +127,9 @@ ignored hits, and the save roll shows fewer dice than hits.
 
 ## Acceptance
 
-Tests green; network round-trip test for the new request green; hand-verify (Chris): an AoF infantry unit
-with hand weapons parries a charge in the GUI.
+Tests green (engine 4374 / app 3628); no request, so no network round-trip test (superseded by the signed-off design);
+all-90 scratch import Dead 0; three headless smokes with a Parry roll and an ignored hit each; hand-verify (Chris): an
+AoF infantry unit with hand weapons parries a charge in the GUI (list under "GUI hand-verify" in the Outcome).
 
 ## Code anchors (survey 2026-10-29)
 
@@ -146,6 +147,59 @@ with hand weapons parries a charge in the GUI.
 
 ## Notes
 
+- 2026-10-30 (built, five commits - engine 927c29ec, fac3aa6a; superproject cc7f679, 2d6802b, fea9348 + the ledger
+  commit): **Engine step.** New hook `EHookID.Melee_OnHitsTaken` (104, Subject) with `MeleeHitsTakenContext(Attacker,
+  Defender, HitsTaken)`; `Effect.ParryHits(ValueSource)` (JSON `parryHits`) names the living models whose MELEE weapons
+  carry its attachment (the Brace `CountCarriers` shape; a unit-attached copy counts every living model) and emits
+  `RuleOperation.ParryDice(DicePerModel, Carriers)`; `ParrySink` keeps the highest X per model. `CoreRuleCatalog.Parry`
+  (weapon scope, `EngineArgumentCount 1`, Positive, the 3.6 sentence) sits beside Brace in `All`. `ParryHitsStage<T>` is
+  the new `CombatStage` between `RollToHitStage` and `DetermineSaveRollsNeededStage` in `SwingMeleeWeaponStage` and the
+  first child of `ResolveImpactHitsStage`: evaluates the hook live (participants = Actor(attacker) +
+  `SubjectWithMeleeWeapons(defender)`), sizes the attack's `ParryBudget` on the first hits (B1, on
+  `ICombatActionContext`, handed to each swing's `CombatMetadata.ParryBudget` by `ConsumeAttackIntoContext`, reset by
+  `SwapCombatRoles`; a strike-back's new context is a new pool), rolls min(remaining, hits) with
+  `GameContext.DiceRoller`, and `RemoveWorstHitsFirst` edits `RollToHitResults.SuccessfulHitList` in place (lowest
+  `SaveModifier` first, stable; `IDiceResults.WithoutTopRolls`), posting `ParryResults`. `RollToSaveStage` appends
+  "(after Parry)" to its bucket labels when hits were removed. `RuleFireLint` maps the hook (op `ParryDice`, a
+  3-hit context variant, the lint weapon is melee). **Presentation.** `DiceRolledBeat` "Parry vs {weapon}", Defense,
+  6+ threshold, context "{defender} parries {attacker}", result line = `Summary` ("Parry: 5 dice, 3 x 6+ - ignored 2
+  Rending hits, 1 base hit" / "Parry: 3 dice, one 6+ - ignored 1 Rending hit" / "Parry: 3 dice, no 6+"), chips
+  ["5 models x Parry(1)", "8 hits -> 5 dice", + "3 of 10 Parry dice used this attack" when a swing did not spend the
+  pool]; the log line carries the same text. No app code: the GUI `DiceOverlay` renders every DiceRolledBeat field
+  generically (header, dice, result line, context, chips), so there is no presentation model to unit-test app-side.
+  **AI / Calculator.** `CombatMath.ParryBudgetFor` (the stage's own evaluation and participants, read-only) sizes one
+  pool per side in `EstimateMelee`, threaded through `SwingAllBatches` -> `EstimateVolleyCore` (`ApplyParry`: the stage's
+  `RemoveWorstHitsFirst` on the same groups); Impact hits get their own pool; the Bloodthirsty follow-up shares the
+  attack's (engine `ResolveBonusMeleeAttacksStage` now hands its child the parent's budget). `CombatCalculator` runs the
+  real `ParryHitsStage` with one `ParryBudget` per run; the row keeps the hits LANDED, the save buckets carry the
+  post-Parry hits, and a note reads "Parry: 4 dice ignored 0.67 of 4 hits before the saves.". **Tests.** 27
+  `ParryRuleIntegrationTests` (real chain / `SwingMeleeWeaponStage` x2 on one context / whole `MeleeStage` / Impact /
+  Ravage stages; all pins of scope A, the three result lines, the beat, the "(after Parry)" label, the probabilistic
+  roller, the negative control), 2 describe cases, 5 `CombatMathPinTests` (two engine-vs-estimate pins incl. Rending
+  worst-first; 5/6, 21/12 and 11/6 numeric pins), 3 `CombatCalculatorTests`, 5 app `ParryShippedDataTests`. Negative
+  controls run: the swing chain without the step (4 pins fail), best-group-first (4 fail), no budget cap (4 fail).
+  **Gates.** Engine 4332 -> 4374 / 1 skipped; app 3623 -> 3628; build 0 errors; `--validate-rules` OK 447 (unchanged:
+  Parry is a catalog entry, D7); shipped `--rule-coverage` Dead 36 (unchanged, Counter-Attack family until #438);
+  all-90 scratch import Dead 0 (was 264 = Parry); default headless smoke exit 0. Smokes (3.6 scratch books reordered
+  so Parry carriers lead, `--book-to-army`, `--headless --army --trace-rules`, exit 0 + `Game result:` each):
+  High Elves / solorules: "Warriors vs High Noble's Dual Hand Weapons - Parry: 3 dice, one 6+ - ignored 1 base hit
+  (10 models x Parry(1); 3 hits -> 3 dice; 3 of 10 Parry dice used this attack)."; GDF Daemons of War / solorules
+  `--seed 11`: "Blood Warriors vs Avatar of War's Stomp - Parry: 5 dice, one 6+ - ignored 1 base hit (5 models x
+  Parry(1); 6 hits -> 5 dice)."; AoF Ogres (Devourers, Parry(3)) / tactician `--seed 37`: "Fang-Beast Rider vs
+  Fang-Beast Rider's Impact - Parry: 3 dice, one 6+ - ignored 1 base hit (1 model x Parry(3); 3 hits -> 3 dice)." (an
+  Impact parry in play). The trace shows `Parry(1) at Melee_OnHitsTaken/Subject: fired -> ParryDice`. A Dwarves /
+  tactician run exited 0 with no melee at all (no Parry line; not counted). Parry(3) at base size exists in five
+  3.6.0 books (Chivalrous Kingdoms' Grail Relic crew, Vinci Scholar, Eternal Wardens' Destroyers, Havoc Ogres, Ogres'
+  Devourers); every Hand Weapon on a multi-model base profile is Parry(1).
+- 2026-10-30 (surprises): (1) the item's "weapon scope plus unit scope" is realised the way Counter / Brace do it - a
+  single `ERuleScope.Weapon` with the army-load re-homing of a unit-level mention onto every weapon (`GameBootstrap.
+  AttachToEveryWeapon`); a unit-attached copy (grant / hand-built) still counts every living model (pinned). (2) The
+  Bloodthirsty follow-up batch built its metadata without the parent's budget, so it would have had a fresh pool -
+  fixed (D8). (3) The budget chip can read "2 models x Parry(1) ... 3 of 3 Parry dice used this attack" after a carrier
+  died mid-attack: the pool was set at 3 carriers when the first hits landed (D4) while the pool chip describes the
+  carriers standing now - seen in the Daemons seed-23 smoke; left as is, flagged for the hand-verify. (4) `GetMeleeWeapons`
+  returns one Weapon per model copy, so the evaluator's dedup ("duplicate instance skipped") shows in the trace once
+  per extra carrier - harmless, one firing per attachment, the sink counts carriers by model id.
 - 2026-10-30 (from #433): the Enhanced family touched the save pipeline only as data - a second `ignoreWoundOnRoll 5`
   (Enhanced Plaguebound family) and a `reroll Save onUnmodifiedValue 5` (Enhanced Mischievous family) folded by the
   existing sinks - so the Parry hit-ignore step before saves is untouched. One engine seam you may build on:
@@ -176,10 +230,80 @@ with hand weapons parries a charge in the GUI.
 
 - D1 (signed off by Chris, 2026-10-30): A1 always auto-resolve (worst hits first), no new request or UI, Parry as a
   visible dice beat naming the parried groups + B1; Impact parryable.
+- D2 (OWNER REVIEW): carrier detection asks the rule graph through the EVALUATOR at a new hook (`Melee_OnHitsTaken`,
+  Subject seat) rather than through a `WeaponRoleQueries`-style structural pre-pass: `Effect.ParryHits` names the living
+  models whose melee weapons carry its attachment (the Brace `CountCarriers` shape - identity by attachment / definition,
+  never by the name "Parry", so an army's embedded or renamed copy is recognised by its effect) and the sink keeps the
+  highest X per model. Why not the literal structural read: #424 chose it for build-time, no-table reads (the Forge card,
+  the compiler); the Parry step runs inside a live stage with the evaluator in hand, where the evaluator path gives
+  conditions, suppression (`IgnoreRule`), token grants and `--trace-rules` narration for free and is the shape of its
+  nearest sibling (Brace). Same intent as the sign-off ("asked-for capability, not a name check"), different dispatch.
+- D3 (OWNER REVIEW): the charge's Impact hits are their OWN hit-taking event with their own Parry pool; the attacker's
+  weapon swings then share one pool (B1). Impact resolves fully (hits, Parry, saves, wounds) "before either unit attacks",
+  so at the table it is a separate "takes hits" moment, and the sign-off's budget sentence speaks of "every weapon
+  profile the attacker swings". Alternative: one pool spanning Impact and the swings (a 5-model Parry(1) unit charged by
+  Impact(6) cavalry would then parry nothing of the swings). Implemented as the former: `ResolveImpactHitsStage`'s child
+  metadata carries no shared budget, so the step sizes a fresh one.
+- D4: the pool is sized once, when the attack's first hits land, and never re-counted: a carrier that dies between two
+  swings does not shrink it (pinned), and a model that... cannot appear mid-attack, so it never grows. The pool chip
+  describes the carriers standing at the current swing while the "N of M used" chip reports the pool as set, so the two
+  can disagree after a mid-attack casualty (see Notes, surprise 3).
+- D5: ONE result-line shape (the design's three examples were shorthand): "Parry: {dice}, {6+ count} - ignored {groups}"
+  with the dice count always present ("one 6+" for a single success, "N x 6+" otherwise, "no 6+" ends the line). Groups
+  are named by the rule that made them worse (`HitGroupSource.RuleName` of a per-hit-AP group, "AP" if nameless) and
+  every group saving at the weapon's own threshold - rolled hits, Furious extras, Blast overflow - is "base", merged.
+  Within one threshold the removal goes in volley order (the rolled base group before the extras and the overflow).
+  Fractional (probabilistic) counts print with two decimals ("0.67 x 6+ - ignored 0.67 base hits").
+- D6: "(after Parry)" is appended to the save beat only when hits were actually removed; a Parry roll with no 6+ leaves
+  the save beat as before (the Parry beat itself says "no 6+", and the dice counts agree). A swing that finds the pool
+  spent rolls nothing, emits no beat and logs "{defender}'s Parry has no dice left this attack (N already rolled); M hits
+  from {attacker}'s {weapon} stand.".
+- D7: `Parry` is a CATALOG entry (`CoreRuleCatalog.Parry`), not a supplement definition: the step must read X and roll,
+  so the effect needs engine code, like Brace / Impact; `--validate-rules` therefore stays at 447 and the shipped-data
+  test pins that neither supplement redefines the name (a copy would shadow the catalog by name and fire nothing).
+- D8: the #376 Bloodthirsty follow-up batch is the same attack, so `ResolveBonusMeleeAttacksStage` now hands its child
+  metadata the parent's `ParryBudget` (it used to build the metadata without it, which would have given the bonus hits a
+  fresh pool); `CombatMath` mirrors it. Covered by the mechanism pins, not by a Bloodthirsty-specific pin (deferred,
+  below).
+- D9: beat shape - Label "Parry vs {attacking weapon}" (so a stack of Impact + swing parries reads distinctly), Context
+  "{defender} parries {attacker}", Category Defense (the defender's roll, coloured like its saves), threshold 6, chips
+  [pool, "N hits -> M dice", "+ X of Y Parry dice used this attack" when the swing did not spend the pool in one go];
+  emitted before the save beat, after the hit beat. No app change: the GUI renders DiceRolledBeat generically.
+- D10: `CombatMath` sizes each side's Parry pool once per `EstimateMelee` (two read-only evaluations, plus one for the
+  Impact hits when there are impact dice) and threads it through the batches rather than evaluating per volley; the pool
+  is priced at the defender's CURRENT strength - the first striker's expected kills do not shrink it (the Ravage-carrier
+  convention). `EstimateVolley` takes an optional pool for one-volley callers; the pin harness prices it when melee.
+- D11: the Combat Calculator row keeps `ExpectedHits` = hits LANDED, the save buckets carry the post-Parry hits and a
+  volley note says "Parry: N dice ignored X of Y hits before the saves."; the Impact row's hits stay pre-Parry (the
+  Impact stage's child metadata is not readable from the report) though its dealt wounds include the parry - a Parry
+  column and the Impact note are handed to #442 / #441.
+- D12: `RuleValidator.OwnershipGatedSubjectHooks` does NOT list `Melee_OnHitsTaken`: Parry is per model by its text
+  ("X dice per model with this rule"), so a most-models gate would be the wrong shape for any rule at this hook.
 
 ## Outcome
 
-(open)
+Done 2026-10-30. Core Rules v3.6.0 Parry(X) is live: a `ParryHitsStage` on the defender's side between the hit roll and
+the saves of every melee swing and of the charge's Impact hits rolls min(X x living carriers, hits) of the defender's own
+dice and removes one hit per 6+ from the worst group first, with one dice pool per enemy melee attack (B1) and a fresh one
+per strike-back; the roll is a Defense dice beat that names the parried groups, the log line carries the same text and the
+save beat reads "(after Parry)". Catalog entry `Parry` (weapon scope, 1 argument, the 3.6 sentence). CombatMath and the
+Combat Calculator mirror the step through the stage's own evaluation and removal order. Engine 4374 / app 3628 green,
+build clean, `--validate-rules` 447, shipped Dead 36 (unchanged until #438), all-90 scratch import Dead 0 (was 264), three
+smokes with a Parry roll and an ignored hit. Decisions D2-D12; owner review on D2 (evaluator-hook carrier read instead of a
+structural pre-pass) and D3 (Impact hits have their own Parry pool).
+
+Deferred, recorded here and in the hand-off notes: a Bloodthirsty-specific pool-sharing pin (D8, mechanism pinned by the
+two-profile tests); the Combat Calculator Parry column and an Impact-row Parry note (#442 / #441, D11); a Tactician
+re-bench after the two extra read-only evaluations per `EstimateMelee` (#442, D10); the shipped books carry Parry only
+after the #438 re-bake (the smokes used the 3.6 scratch imports).
+
+GUI hand-verify (Chris): load a 3.6 scratch army with Hand Weapons (`--book-to-army` on a re-imported AoF book, e.g. High
+Elves Warriors / Dwarves Mountain Warriors), charge it with a Rending unit (or let the AI charge it) and watch the dice
+stack: hit beat -> "Parry vs {weapon}" beat with the 6+ highlighted and the result line "Parry: N dice, ... - ignored
+K Rending hits, M base hits" -> a save beat with fewer dice than hits labelled "(after Parry)" (the Rending bucket vanishes
+when all its hits were parried). Then an Impact charger into the same unit: a "Parry vs Impact" beat before the Impact
+saves, and a second pool for the swings. Check the chips read right ("5 models x Parry(1)", "8 hits -> 5 dice", and
+"3 of 10 Parry dice used this attack" on a partial swing).
 
 ## Rules for the agent (plan section 1, restated)
 

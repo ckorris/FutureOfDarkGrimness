@@ -46,6 +46,12 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #423): Parry needs no Forge code - a numeric core rule whose glossary / hover text is the 3.6
+  sentence from the catalog (`ParryShippedDataTests` pins `RuleGlossary.Describe("Parry")` and the `Parry(3)` tooltip).
+  Two display considerations for you: (1) the Combat Calculator screen gets Parry as a volley NOTE ("Parry: 4 dice
+  ignored 0.67 of 4 hits before the saves.") and the save buckets already carry the post-Parry hits - a dedicated chip or
+  column would read better (#442 has the same note); (2) the melee weapon menu's #336 option rules already list "Parry(1)"
+  with the sentence (generic code), nothing to add.
 - 2026-10-30 (from #433): the Enhanced family needs no Forge code - each name is an ordinary supplement rule whose
   description is the 3.6.0 sentence verbatim (so the glossary prints OPR's "they stops being Shaken" and the Versatile
   Warrior family's "If this model has Versatile Attack ..." until #436 normalises). One display consideration: a list

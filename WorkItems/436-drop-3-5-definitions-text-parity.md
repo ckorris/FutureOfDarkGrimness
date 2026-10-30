@@ -63,6 +63,11 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #423): Parry is a CATALOG entry (`CoreRuleCatalog.Parry`, weapon scope, `EngineArgumentCount 1`) with
+  OPR's 3.6 sentence verbatim as its description - including "(defender picks which)", which the engine resolves on the
+  player's behalf (worst hits first, D1). Keep the wording as OPR's; if you normalise core descriptions, this one has no
+  3.5 predecessor to reconcile. Neither supplement may define a "Parry" (a copy would shadow the catalog by name and fire
+  nothing) - `ParryShippedDataTests` pins that.
 - 2026-10-30 (from #433): the Enhanced family is authored (112 definitions, both files). Text-parity items it leaves
   you: (1) two 3.6.0 Aura texts are OPR's own typo, kept verbatim like #432 D12 - "This model and its unit Enhanced
   Brutal." / "... Enhanced Ferocious." (no "get"); (2) "they stops being Shaken" in Enhanced Steadfast / Vale Oath

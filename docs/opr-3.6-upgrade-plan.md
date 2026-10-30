@@ -243,7 +243,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 420 | Dangerous terrain dice = wounds to destroy the unit | 2 | - | S | medium | done 2026-10-29 (D5 resolved by #446) |
 | 421 | Hero morale: Tough(9+) 6" Quality aura; not-Shaken gate | 2 | #428 | O | high | done 2026-10-30 (owner review: D3, D4) |
 | 422 | Impact before attacks + Fatigue gate; Counter split; new Brace(X) | 2 | - | O | high | done 2026-10-29 (awaiting GUI hand-verify; owner: D1, D4; D8 resolved by #447) |
-| 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | O | high | todo (Q11 signed off 2026-10-30: always auto-resolve, group-naming dice beat, no UI, B1) |
+| 423 | Parry(X): new melee hit-ignore step with defender pick | 2 | - | O | high | done 2026-10-30 (ParryHitsStage at the new Melee_OnHitsTaken hook, catalog Parry, worst-group-first auto-resolve, B1 pool per attack, group-naming Defense dice beat + "(after Parry)" save label, CombatMath / Calculator mirror; all-90 scratch import Dead 0; awaiting GUI hand-verify; owner review: D2, D3) |
 | 424 | Assault weapons count as ranged and melee | 2 | - | O | xhigh | done 2026-10-30 (capability-operation seam `WeaponRoleQueries` + B1 melee effect key; all-90 scratch import Assault 0 dead; awaiting GUI hand-verify after #438; owner review: D2, D3) |
 | 425 | Cumbersome; Artillery and Indirect 3.6; Quick Throw | 2 | - | O | medium | done 2026-10-30 (owner review: D1, D3, D4, D5) |
 | 426 | Deployment distances: Scout, Vanguard, Fanatic, Reinforcement, Ambush objectives | 2 | - | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4, D5, D6) |
@@ -277,7 +277,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433, #423) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file
