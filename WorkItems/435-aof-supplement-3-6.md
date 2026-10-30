@@ -60,6 +60,9 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30 (orchestrator): #429 found Mind Control gained a 3.6 clause ("Units may only be moved once per round in
+  this way.") and Spell Resistance is new with no definition; #434 owns the GDF side. Check the AoF 3.6.0 snapshots for
+  the same names (and Casting Debuff, which no GDF book names any more) and share #434's definitions.
 - 2026-10-29 (from #432): the range-conditional family is DONE for AoF: Lucky, Destroyer, Vinci Tech (+ helpers),
   Empyrean Spirit, Angelic Blessing, Wild Veil and Royal Legion re-authored in `AofRuleSupplement.json`; the shared
   names (Brutal, Ferocious, Havocbound, Piercing Warrior, Violent, Warbound, Changebound, Screened, Guarded, Sturdy,

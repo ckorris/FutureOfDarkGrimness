@@ -66,6 +66,10 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30 (orchestrator, relaying #429's findings that were recorded on #436 only): Mind Control's 3.6 text adds
+  "Units may only be moved once per round in this way." (a behaviour change - needs a per-round moved-by-Mind-Control
+  gate, not just text); Spell Resistance is NEW in 3.6 with no definition anywhere; Casting Debuff appears in no
+  3.6.0 book (drop candidate for #436). The first two belong to this sweep.
 - 2026-10-29 (from #432): the range-conditional family is DONE in `GdfRuleSupplement.json` (Devout, Ferocious, Brutal,
   Havocbound, Piercing Warrior, Infected, Warbound, Violent, Versatile Warrior + helpers / Aura / Buff, Watchborn,
   Changebound, Machine-Fog, Screened, Guarded, Sturdy, Knightborn, Warding, Darkborn, Shadowborn (moved here from the
