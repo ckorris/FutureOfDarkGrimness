@@ -4950,7 +4950,7 @@
       {
         "hookID": "Morale_OnPreMoraleTest",
         "condition": {
-          "kind": "always"
+          "kind": "moraleTestFromShootingOrMelee"
         },
         "effect": {
           "kind": "rollModifier",
@@ -4965,7 +4965,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "The unit gets +1 to morale test rolls."
+    "description": "This model and its unit get +1 to Morale Test rolls triggered by shooting or melee."
   },
   {
     "name": "Musician",
@@ -5020,7 +5020,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "The unit moves +1 inch on Advance, Rush and Charge actions."
+    "description": "This model and its unit move +1\" when using move actions."
   },
   {
     "name": "Sergeant",

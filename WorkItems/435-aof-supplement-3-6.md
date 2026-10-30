@@ -1,6 +1,6 @@
 # 435 — AoF supplement sweep to 3.6 + book overrides + AoF-specific core rules
 
-**Status**: todo
+**Status**: in-progress
 **Related**: #415, #375/#376 (the 3.5 AoF rules work), #378, #381 (Retreating Strike), #422 (Brace), #423 (Parry), #431-#434, #438
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high. Run after #434 so shared names are already done.
 
@@ -60,6 +60,37 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30: **Batch 1 - the AoF Command Groups (engine).** AoF Core Rules v3.6.0: "Sergeant: This model gets AP(+1)
+  when attacking." (= the GDF file's #434 Sergeant, text and shape), "Musician: This model and its unit move +1" when
+  using move actions." (shape unchanged: +1" on Advance / Rush / Charge, one entry per action), "Banner: This model and
+  its unit get +1 to Morale Test rolls triggered by shooting or melee." (3.5: every morale test). The GDF and AoF texts
+  are the same (Army Forge's common rules list them for both games), so the GDF file's single definitions serve both -
+  no AoF copy. Banner needed the test's CAUSE, which the pre-morale context did not carry (`ShotFromInches` /
+  `ChargedFromInches` are null for a charger losing its own melee, and for a shooting test of unknown distance): new
+  `EMoraleTestCause { Other, Shooting, Melee }` (capability `IHasMoraleTestCause`) on `PreMoraleTestContext.Cause`
+  (default Other = what old call sites and every spell / rule-forced test pass), set by
+  `MoraleUtilities.ResolveWoundDrivenMorale` (Shooting - the ranged test and the strafe / Crossing Strike one, "as if it
+  was shooting") and `RollForMoraleStage` (Melee), threaded through `TakeMoraleTest(..., cause)`; new condition
+  `moraleTestFromShootingOrMelee` (`Condition.MoraleTestFromShootingOrMelee`); `RuleFireLint` synthesizes Shooting /
+  Melee pre-morale contexts. Book rules: Great Sergeant "This model gets AP(+2) when attacking." (3.5: extra hits on
+  5-6) = Sergeant's weapon-scoped body at -2 (the champion marking still applies); Great Banner grants Banner once
+  (3.5 granted Courage, every test) - D3; Great Musician unchanged but for the 3.6 text. Tests: engine
+  `AofCommandGroup36RuleIntegrationTests` (15: Banner through the real wound-driven, melee-loser and Spell Drain sites,
+  the no-cause default, Great Banner's one-shot and its spend by a rule-forced test, Musician per action, Great Musician,
+  JSON round trip, validator accept / refuse, fire-lint) and `AofSweep36RuleIntegrationTests` (2: Great Sergeant AP(+2)
+  in melee and shooting, no extra hits); app `AofSweep36ShippedDataTests` (12: texts, shapes, one definition for both
+  systems). Negative controls (each reverted): the wound-driven site passing Other fails 2, the melee site passing Other
+  fails 1, the condition always true fails 4, the lint's Shooting / Melee contexts removed fails the lint case. Counts:
+  engine 4085 -> 4102 (1 skipped), app 3326 -> 3338.
+- 2026-10-30: **Baseline (before any change).** Scratch import of all 90 3.6.0 snapshots (the #434 recipe):
+  "Total references: 30839 / Dead: 4074 (4074 no-definition across 98 names)" - Assault 3503, Parry 264, Enhanced 299
+  refs / 91 names, and the five AoF-only names (Piercing Charge Buff 3, "AP(+1) on its weapons in melee" 2, "Bane on
+  its weapons in melee" 1, "Surge on their weapons" 1, "Unstoppable on its weapons in melee" 1; "Unwieldy on its weapons
+  in melee" is no longer dead - #434 authored it). AoF only (the 41 AoF imports copied to their own folder): "Total
+  references: 10794 / Dead: 1160 (1160 no-definition across 65 names)" - Assault 763, Parry 252, Enhanced 137 refs / 58
+  names, the same five names (8 refs). Engine 4085 passed / 1 skipped, app 3326, `--validate-rules` GDF + AoF "OK: 329",
+  shipped coverage "Dead: 36 (36 no-definition across 2 names)".
+
 - 2026-10-30 (from #434): (1) **Moved from the AoF file to the GDF file** (AoF merges GDF first, so AoF keeps them):
   Rapid Rush Buff (3.6 text) and Ravage Aura (re-authored: an aura granting the one-die helper "Ravage (Aura)", with
   Ravage's 3.6 Fatigue gate; see #434 D10). (2) **Touched in the AoF file:** Defense Buff granted "Entrenched", whose old
@@ -113,7 +144,23 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Decisions
 
-(none yet)
+- **D1 - Which texts change (2026-10-30).** #434 D1's convention, applied to the AoF file: every definition the sweep
+  re-authors, and every AoF-file name a 3.6.0 AoF book defines whose behaviour already matches its 3.6 text, carries
+  that text verbatim (ASCII-folded) - the AoF file ends text-parity with the 3.6 books. The GDF file and the catalog are
+  touched only for names this item owns (Banner, Musician, Piercing Fighter, Bane in Melee); their other paraphrases stay
+  #436's.
+- **D2 - Banner / Musician wording (2026-10-30) - OWNER REVIEW.** The AoF Core Rules v3.6.0 PDF (plan rule 5's source
+  (a)) reads "... triggered by shooting or melee." and "This model and its unit move +1" ..."; Army Forge's common-rules
+  JSON (source (b), what army lists show) reads "... triggered by shooting/melee." and "... moves +1" ...". Shipped: the
+  PDF's. Alternative: the Army Forge wording (one string each to change).
+- **D3 - Great Banner's one-shot Banner (2026-10-30) - OWNER REVIEW.** "... which gets +1 to Morale Test rolls
+  triggered by shooting/melee once (next time the effect would apply)" is authored as a one-shot grant of Banner
+  (`addRule Banner NextTrigger`), so the +1 keeps Banner's shooting-or-melee gate. The grant is spent by the unit's next
+  Morale Test whatever triggered it (#101's rule: a one-shot grant is spent when its hook fires, even if its condition
+  fails), so a spell- or rule-forced test (Mind Control, Spell Drain, a spell's Morale Test) taken first costs the grant
+  and helps nothing. Alternatives: (a) spend a grant only when its condition passes (an engine-wide change to #101's
+  policy); (b) a one-shot +1 Morale token (Bravery Buff's shape), which would wrongly help spell / rule tests.
+  Recommendation: keep (the case is rare and #101's policy is deliberate).
 
 ## Outcome
 
