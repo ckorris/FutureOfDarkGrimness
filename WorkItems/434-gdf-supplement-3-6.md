@@ -69,6 +69,16 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30 (from #436, follow-up list - new-number candidates, not reopened here): #436 put the 3.6 text on every
+  description (D6) and left behaviour alone, so these now read differently from what the engine does: (1) Teleport (+
+  Aura) 3"/6" by action vs flat 6"; (2) Reinforcement "all models" text vs the most-models gate; (3) Swift (+ Aura,
+  Buff) "may ignore the Slow rule" vs ignore-Difficult-terrain; (4) the Predator family (Bloodborn, Clan Warrior,
+  Primal, Predator (+ Aura), Predator Fighter, Predator Shooter (+ Aura)) "may roll +1 attack with that weapon" vs an
+  automatic extra hit; (5) Extended Buff Range's Hero-to-bearer 24" relay vs a 12" relay from any friendly; (6)
+  Protection Feat (+ Aura) on taking wounds vs an activation-start brace (your D4); (7) Slayer Mark marks "Slayer" vs
+  the engine's "Melee Slayer"; (8) Versatile Defense per attack vs per activation (your D3); (9) Mend's "model with
+  Tough" vs a unit pick; (10) the Marks' "once (next time the effect would apply)" lifetime, unverified; (11)
+  Re-Deployment's "up to two" vs the owner-ruled stacking budget. Details: WorkItems/436 D6.
 - 2026-10-30: **Done - coverage, verification, hand-offs.**
   - **Coverage (scratch imports outside the repo, the #431 / #432 recipe).** GDF only (the 49 GDF 3.6.0 snapshots, GDF
     supplement): before "Total references: 20045 / Dead: 3163 (3163 no-definition across 92 names)" - Enhanced 162

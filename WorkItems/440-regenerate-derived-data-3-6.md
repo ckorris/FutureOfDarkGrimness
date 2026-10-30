@@ -65,6 +65,16 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
 
 ## Notes
 
+- 2026-10-30 (from #436): (1) **Legacy Strafing** (#436 D2, owner review): a 3.5 `.fdgarmy` naming Strafing on a range-0
+  bomb now loads with the #168 drop, and the bomb - no longer strafe-only - counts as a melee weapon. Decide whether
+  the legacy path wants a dropped-name -> 3.6-successor table (Strafing -> Crossing Strike, Courage Aura -> Bravery
+  Aura, Piercing Assault -> Piercing Charge, Piercing Hunter -> Piercing Marksman, Darkborn (Offensive) / (Defensive)
+  -> Darkborn); the successors are supplement rules an old file does not embed, so it needs the supplement at load. (2)
+  The in-memory pattern for "a 3.5 list naming deleted catalog names" is `Dropped35CatalogLegacyDataTests` (engine)
+  beside `CounterLegacyDataTests` - the fixture-file version of point 5 can reuse its name list (Courage Aura, Crack,
+  Strafing, Harassing / Guerrilla Boost (+ Auras), Resistance (+ Aura), Piercing Assault (+ Aura), Piercing Hunter (+
+  Aura), Darkborn (Offensive) / (Defensive), Storm of Change / Lust / Plague / War). (3) The built-in EOF test army no
+  longer carries "Strafing" (#436); it still has "Very Fast", which no 3.6 book prints (point 3).
 - 2026-10-29: filed with the plan.
 
 ## Decisions

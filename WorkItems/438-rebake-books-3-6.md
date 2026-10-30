@@ -73,6 +73,24 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #436): the re-bake must clear / settle: (1) **Unique** - delete the GDF-file "Unique", the `Unique` arm
+  of `ListValidator.Validate`'s `uniqueRule` ternary, the `["Unique"]` lint exemptions (`RuleSupplementLintTests.cs`,
+  `BookRuleFireLintTests.cs`), the UniqueBook fixtures in `ListValidatorTests.cs`,
+  `LaunchGateTests.ForgeArmyWithCatalogError_IsAProblem_AttributedToThePlayer` and the `Core("Unique")` in
+  `DefaultBaseEstimatorTests` (#430's list; 3.6 books carry the catalog "Unique Hero"). (2) **Allowlists #436 added**
+  (each fails as stale once the bundled books stop naming it): `BookRuleCensusTests` - Courage Aura, Crack, Strafing,
+  Harassing Boost Aura, Guerrilla Boost Aura, Resistance (+ Aura), Piercing Assault (+ Aura), Piercing Hunter Aura,
+  Darkborn (Offensive) / (Defensive), Storm of Change / Lust / Plague / War (shipped `--rule-coverage` Dead 475 until
+  then: these 18 names + #422's two); `BookSpellCoverageTests` / `BookSpellCastProbeTests` - Crack, Harassing Boost,
+  Piercing Assault, Piercing Hunter, Resistance (granted by bundled 3.5 spells: Brutal Massacre, Magic Arrows, Fire
+  Ball, Dark Isle Spirit, Rune of Piercing, Battle Guts, ...; #439's re-import). (3) `StrafingShippedDataTests` now
+  reads "Strafing" OR "Crossing Strike" for its carriers-can-fly check; after the bake it should find Crossing Strike
+  carriers only (drop the Strafing arm then). (4) Candidates to delete once nothing bundled uses them: StormStage +
+  `Effect.StormOfHits` / `RuleOperation.InvokeStorm` + ChooseActionStage's Storm routing (#436 D7; no 3.6 rule uses
+  them), and the catalog rules no 3.6 book reaches - "Very Fast", "AP(+1) in melee", "AP(1) when shooting", "Bane when
+  attacking", "Shred when attacking", "+6" range when shooting" (#436 D10: re-run #436's `usage2.py`-style check over
+  the shipped 3.6 books). Keep the `dangerousTerrainTest`, `attackedFromOverInches` and `reduceImpactDicePerModel`
+  kinds - old army files embed them.
 - 2026-10-30 (from #423): Parry resolves against the catalog, so the re-bake embeds nothing new for it - the 3.6.0
   books reference it as a numeric core rule ("Parry(1)" / "Parry(3)" on Hand Weapons) and a scratch import of all 90
   snapshots against the current supplements is now Dead 0 (was 264 = Parry alone). After your re-bake the shipped

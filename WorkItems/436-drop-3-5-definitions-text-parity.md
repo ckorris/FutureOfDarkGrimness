@@ -1,6 +1,8 @@
 # 436 — Remove dropped 3.5 definitions; bring every kept description to 3.6 wording
 
-**Status**: todo
+**Status**: done 2026-10-30 (owner review asked on D1, D2, D3, D5, D6; Unique deferred to #438 per #430). Engine commits
+`2daf35b5`, `b6750f88`, `8629dad9`, `a8cf053b`, `bf9ad809` (submodule `feature/opr-3.6`); superproject `436:` commits
+`4332671`, `d823b67`, `1c2de2b`, `02528dd` plus the records commit.
 **Related**: #415, #434/#435 (run after them), #259/#292/#336 (rule hover glossary shows these descriptions), #168 (not-implemented diagnostics), #440 (legacy army loading)
 **Branch**: `feature/opr-3.6`. Model/effort: Sonnet 5.5 / medium.
 
@@ -63,6 +65,98 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (#436 run, Opus 5.5): **what shipped**, newest slice last.
+  - **Survey first.** Every drop candidate was checked against the 90 scratch `.fdgbook` files of the all-90 3.6 import
+    (embedded definitions are the transitive closure, so a name an embedded definition grants shows up), the two
+    3.6.0 snapshot folders (every `name` / `originalName` / `label`, case-insensitive - the resolver is
+    case-insensitive), the importer's C# (no rename table names any of them) and the grant targets of every kept
+    definition. Deviations from the Goal's drop list, each with its evidence: **kept** "Shred in melee" (catalog; 3.6
+    Blessed Sisters prints "Shred in Melee" and six books' "Shred in Melee Aura" grants it - #435 saw the same),
+    "Predator Fighter" (GDF file; 3.6 AoF Dark Elves' Abyssal Beast carries it), Melee Evasion (catalog + its Aura, AoF
+    "Melee Evasion Buff"; 19 3.6 snapshots name it, there is no GDF-only copy to drop), "Courage" (Bravery Aura grants
+    it, #434 D6), the Versatile Defense / Reach helpers (3.6 Versatile Defense / Reach still grant them), "Unwieldy in
+    melee" (#434: kept for 3.5 data); **deferred** "Unique" + its ListValidator arm, lint exemptions and fixtures to the
+    #438 re-bake (#430's note); **added** "Surge when Shooting" (census "dropped", on no 3.6 page, not on the Goal's
+    list), the catalog's "Piercing Hunter" (+ Aura) (#434: renamed Piercing Marksman), "Darkborn (Offensive)" /
+    "(Defensive)" (#432), "Harassing Boost" / "Guerrilla Boost" (+ Auras) (#433), "Dangerous Terrain Debuff
+    (Immediate)" (#434), and the AoF file's "Steadfast Buff", "Versatile Attack Buff", "Piercing Assault Buff" and "AP"
+    (#435: no 3.6 book or spell names them; the bundled 3.5 books embed their own copies). **Nothing to delete**:
+    Courageous, Reach Hunt, Reinforced, Precision Hunter, "+1 to Defense" and the book-level "Artillery" duplicate have
+    no definition in the catalog or either supplement (book-level 3.5 data only, gone with #438's re-bake).
+  - **Slice 1 - catalog** (engine `2daf35b5`, super `4332671`). Deleted from `CoreRuleCatalog` and `All` (20): Crack,
+    Strafing, Resistance (+ Aura), Courage Aura, Piercing Assault (+ Aura), Piercing Hunter (+ Aura), Harassing Boost,
+    Guerrilla Boost (+ both Auras), Darkborn (Offensive) / (Defensive), Storm of Change / Lust / Plague / War (+ the
+    `MakeStorm` factory and the "Boost variants" comment block). StrafingStage stays (Crossing Strike, a supplement
+    rule, is the same ability): its pick prompt is now "Choosing a {rule} Target" and the no-fly-over warning says
+    "Crossing Strike weapon"; `StrafingRules` / stage docs re-worded. AoF "Piercing Assault Buff" went in the same slice
+    (it granted a deleted catalog rule). The built-in EOF test army's unit-level "Strafing" was removed (it was skipped
+    with a scope warning anyway). Legacy: new `Dropped35CatalogLegacyDataTests` (engine; in-memory list in
+    `CounterLegacyDataTests`' shape, the convention #422 set - no fixture file) - every deleted name on a 3.5 list is
+    one #168 Unimplemented drop, the unit still builds, `ArmyRuleAudit` agrees with the launch.
+  - **Slice 2 - supplements** (engine `b6750f88`, super `d823b67`). GDF file (26): Re-Position Artillery, Breath
+    Attack, Tear, Ignores Regeneration (+ in Melee), Point-Blank Surge, Point-Blank Piercing (+ Aura), Surge when
+    Shooting, Brutal Fighter, Courage Buff, Ignores Cover (+ Aura, when Shooting, when Shooting Aura), Indirect when
+    shooting, Versatile Attack (+ (Piercing) / (Precision)), Casting Debuff, Grounded Reinforcement (+ Aura), Grounded
+    Stealth, Mobile Artillery, Quick Readjustment, Dangerous Terrain Debuff (Immediate). AoF file (3): Steadfast Buff,
+    Versatile Attack Buff, AP. "Indirect when Shooting Aura" now grants the catalog "Indirect" (#425's note). Engine:
+    `TokenType.RegenerativeStrengthSpent` deleted (#434 D9 left it orphaned); the MovedThisRound comments
+    (TokenType, MovementStage, TokenDefinition(Catalog), MovementBackOutTests, MovedTokenVisibilityTests) name 3.6
+    Artillery / Entrenched instead of Mobile Artillery (#425's note). Kept on purpose: the `attackedFromOverInches`
+    kind and `IHasAttackOriginDistance` (#432), the `dangerousTerrainTest` effect kind (bundled 3.5 Lust / War
+    Disciples embed it; `TerrainDebuffRuleIntegrationTests` hand-builds the shape), `reduceImpactDicePerModel` (#422).
+    Supplement count 447 -> 417 (`--validate-rules` OK).
+  - **Slice 3 - #442's log wording** (engine `8629dad9`, super `1c2de2b`). `ClearTokenOnRoll` / `InvokeGrantTokenOnRoll`
+    `Describe()` name the token by `TokenDefinitionCatalog.Lookup(...).Name` ("clears Shaken on a 4+"); ChooseActionStage's
+    no-shoot reason rounds (`0.##`) and lost its double space ("Moved 12 inches, when max to move and shoot for
+    Destroyer is 6."); `Effect.DealAutoWounds` labels its op with the struck unit when the hook context is a
+    ChargeContactContext (a passive Ravage has no explicit target, so `EffectiveTarget` was the bearer in BOTH
+    placements, not only the struck-back twin - the stage always wounded the right unit). Pins:
+    `RuleOperationDescribeTests.TokenOperations_NameTheTokenByItsDisplayName`,
+    `MoveShootAllowanceTests.TheNoShootReason_RoundsTheDistance_AndHasNoDoubleSpace`,
+    `RavageRuleIntegrationTests.TheRavageOperation_NamesTheStruckUnit_InBothPlacements`.
+  - **Slice 4 - text parity** (engine `a8cf053b`, super `02528dd`). Scratch script
+    `.../scratchpad/436/parity.py` (+ `pdfrules.py`, which parses the three-column SPECIAL RULES REFERENCE page of each
+    core-rules text extract) compares every kept definition's `description` (catalog via a JSON dump of `All`, both
+    supplements) with the 3.6 text, sources in plan rule 5's order: the core PDFs (either system; D4), the Army Forge
+    common-rules JSON's `rules` (its `traits` are campaign traits - "Agile", "Fanatic", "Destroyer" there are NOT the
+    special rules), then the snapshots' `specialRules` by name, then by `originalName` with the book's alias names
+    substituted back. ASCII-folded like `OprBookImporter.AsciiFold`, whitespace slips normalised (D3). Before: 123
+    mismatches / 364 match / 53 no source; after: **0 mismatches / 487 match / 53 no source**. The 53 "no source" are
+    engine-internal helpers with no printed text ("Versatile Expert (Piercing)", the "X on their weapons when Y" spell
+    phrases, "Speed Feat Boost", "X Debuff Effect", "Ravage (Aura)", "Courage", "Very Fast", "Unique", ...). The
+    UnitAura default now reads "This model and its unit get X." (3.5: "whole unit gain"); Fast Aura and Rapid Charge
+    Aura carry their spelled-out book sentences. Re-pinned: `RangeConditional36Definitions.MinusHitText` /
+    `RangeConditional36ShippedDataTests` (the stray space, D3). New: `CoreRuleDescriptions36Tests` (21 - the 18 core
+    rules whose catalog text this item rewrote, plus the default aura wording). Comment-only follow-up (engine
+    `bf9ad809`): `RerollCondition`, `RerollSink`, `TokenClearRollSink`, `ITokenClearRollSink`, `Effect.ClearTokenOnRoll`
+    and friends name the Enhanced rules instead of 3.5 Boosts (#433's note 5).
+  - **Tests retired with their rules** (each mechanism stays covered elsewhere): engine
+    `QuickReadjustmentRuleIntegrationTests` (file), `ThrustRuleIntegrationTests` Piercing Assault / Piercing Hunter x4
+    (3.6 Piercing Charge / Marksman: `GdfSweep36RuleIntegrationTests`), `TriggeredMoveRuleIntegrationTests`
+    HarassingBoost x2 (Enhanced Harassing: `EnhancedCombatRuleIntegrationTests`), `RendingRuleIntegrationTests` /
+    `CombatMathPinTests` Crack x2 (Rending's per-hit AP), `RangeModifierRuleIntegrationTests` Darkborn x3 (3.6
+    Darkborn: `RangeFamily36RuleIntegrationTests`); app `MobileArtilleryShippedDataTests` and
+    `QuickReadjustmentShippedDataTests` (files), `BookRuleScopeTests.Darkborn_ResolvesToTheArmyVariant` x2, the
+    Strafing catalog-shape tests in `StrafingShippedDataTests` (the carrier-can-fly check stays, reading both names),
+    the 3.5 cases in `GroundedShippedDataTests` / `GdfSweep36ShippedDataTests` twins / `TerrainDebuffShippedDataTests`
+    / `DeferredDebuffCompositionTests`, and the "Quick Readjustment" lint allowlist line; scenarios
+    `mobile-artillery-defensive.json`, `mobile-artillery-moved.json`, `armies/MobileArtillery.fdgarmy`. **Re-pointed
+    instead of retired**: the StrafingStage tests (`StrafingRuleIntegrationTests`, `CrossingAttack...`, `Assault
+    Consumer...`, `MovementFlyOver...`, `RuleTraceTests`) at `WeaponRules36Definitions.CrossingStrike`; the Resistance
+    cases (`Wound...`, `Caster...`) at 3.6 Spell Resistance (same 2+ spell / 6+ other thresholds) and
+    `WoundIgnore...` at Protected; Storm at hand-built copies (D7); the Grounded harness tests at Grounded Defense /
+    Evasion; `IndirectWhenShootingAura_GrantsThe36Indirect`.
+  - **Gates.** Engine 4374 -> 4366 passed (1 skipped; about 34 retired or catalog-parameterised cases out, 26 new in);
+    FdgRaylib.Tests 3628 -> 3573; `dotnet build` 0 errors; `--validate-rules` "OK: 447" -> "OK: 417 definitions, no
+    problems"; all-90 3.6 scratch import Dead 0, no importer errors in the 90 logs; headless smoke exit 0 ("Game result:
+    outcome=Tie ... rounds=4" on the final run). **Shipped `--rule-coverage FdgRaylib/Assets/Books`: Dead 36 -> 475**
+    (D1), every added reference one of the 18 deleted catalog names in the un-rebaked 3.5 books: Crack 107, Courage
+    Aura 69, Resistance 50, Resistance Aura 33, Darkborn (Offensive) 32, Strafing 31, Piercing Assault 28, Darkborn
+    (Defensive) 27, Piercing Assault Aura 26, Piercing Hunter Aura 15, Harassing Boost Aura 5, Storm of Lust 4, Guerrilla
+    Boost Aura 2, Harassing Boost 2, Piercing Hunter 2, Storm of Change / Plague / War 2 each (plus #422's Counter-Attack
+    27 + 9). The supplement deletions moved nothing (the bundled books embed their own copies). Allowlisted with
+    reasons in `BookRuleCensusTests` (16 names), `BookSpellCoverageTests` / `BookSpellCastProbeTests` (Crack, Harassing
+    Boost, Piercing Assault, Piercing Hunter, Resistance - granted by bundled 3.5 spells); all stale at #438.
 - 2026-10-30 (from #423): Parry is a CATALOG entry (`CoreRuleCatalog.Parry`, weapon scope, `EngineArgumentCount 1`) with
   OPR's 3.6 sentence verbatim as its description - including "(defender picks which)", which the engine resolves on the
   player's behalf (worst hits first, D1). Keep the wording as OPR's; if you normalise core descriptions, this one has no
@@ -238,11 +332,87 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Decisions
 
-(none yet)
+- **D1 - Delete the catalog rules now, not at the re-bake (2026-10-30) - OWNER REVIEW.** The bundled books are still
+  the 3.5 bake until #438, and they name 18 of the deleted catalog rules 475 times, so shipped `--rule-coverage` goes
+  36 -> 475 dead and those units lose the rules in the interim (a list naming them gets the #168 drop). Chosen: delete
+  now, as #422 did for Counter-Attack - the plan orders #436 before #438, the 3.6 books need none of them, and the
+  allowlists name every one with its reason so the re-bake's tests fail until they are cleared. Alternative: keep the
+  catalog drops that bundled books name until #438 (as #430 did for Unique) - the shipped Dead stays 36 but the
+  catalog keeps resolving 3.5 names for another phase.
+- **D2 - A legacy army naming Strafing (2026-10-30) - OWNER REVIEW.** With the catalog Strafing gone, a pre-3.6
+  `.fdgarmy` (and the bundled 3.5 books until #438) that names Strafing on a range-0 bomb loads with the #168 drop, and
+  the bomb - no longer strafe-only - counts as a melee weapon (`IWeapon.IsMelee()` is "range 0"). Chosen: accept it
+  (the file loads, plan rule 6; 3.6 has no Strafing). Alternative for #440: a legacy-name table at army load that maps
+  dropped 3.5 catalog names to their 3.6 successors (Strafing -> Crossing Strike, Courage Aura -> Bravery Aura,
+  Piercing Assault -> Piercing Charge, Piercing Hunter -> Piercing Marksman, Darkborn variants -> Darkborn) - the
+  successors are supplement rules an old file does not embed, so it would need the supplement at load. Handed to #440.
+- **D3 - OPR's typos in the 3.6 text (2026-10-30) - OWNER REVIEW.** Decided once, applied everywhere: **whitespace
+  slips are normalised** (runs of spaces collapse; no space before `. , ; : )`), **wording and grammar slips are kept
+  verbatim**. So Changebound / Machine-Fog / Screened / Empyrean Spirit now end "-1 to hit rolls." (#432 D12 had kept
+  OPR's "rolls ."), while "This model and its unit Enhanced Brutal." / "... Enhanced Ferocious." (#433), "they stops
+  being Shaken" (#433), "which friendly units gets X against once" (every Mark), "This model and its unit moves ..."
+  (Fast Aura, Rapid Charge Aura) and Enhanced Versatile Warrior's "Versatile Attack" stay as printed. Why: a whitespace
+  slip is typesetting, invisible in Army Forge's own HTML (it collapses spaces) except the stray " ."; a grammar fix
+  needs a judgment per case and makes our glossary read differently from the army list. Alternative: also fix the
+  unambiguous grammar slips (insert "get" in the two Enhanced auras, "they stop", "units get", "unit move").
+- **D4 - Source order for core rules: either system's PDF before the JSON (2026-10-30).** Plan rule 5 ranks the core
+  PDFs above the common-rules JSON, and the GF PDF's reference page has no Banner / Musician / Sergeant while the AoF
+  PDF's has. So the shared GDF-file Banner / Musician keep #435 D2's AoF-PDF wording ("triggered by shooting or melee",
+  "move +1"") rather than the GDF JSON's ("shooting/melee", "moves"), and GDF books show that wording too. The catalog's
+  core rules carry the GF PDF sentence (the AoF PDF differs only by a comma in Fast). (Ties to #435 D2's open review.)
+- **D5 - Retreating Strike's text (2026-10-30) - OWNER REVIEW.** #435 D9 left #381's ruling in the description ("or X
+  dice in total for single-model units", "Cannot be used while Shaken"). Now the 3.6.0 Dark Elves sentence verbatim
+  ("... roll X dice for each model with this rule in this unit. ..."). Behaviour unchanged: one model x X is X dice,
+  and a Shaken unit uses no active special rules (#391). Alternative: keep the ruling's explicit clauses.
+- **D6 - Behaviour gaps under 3.6 text (2026-10-30) - OWNER REVIEW.** Per the brief, a description is the 3.6 text even
+  where the engine does something else; behaviour is not changed here. The gaps (none new in 3.6 unless noted - the
+  old descriptions paraphrased the engine's reading), handed to #434's follow-up list as new-number candidates:
+  (1) **Teleport** (+ Aura): 3" on Advance/Charge, 6" on Rush vs the engine's flat 6" (#426, #435). (2)
+  **Reinforcement**: text "a unit where all models have this rule" vs #428's most-models gate (#426). (3) **Swift** (+
+  Aura, Buff): "This model may ignore the Slow rule." vs the engine's ignore-Difficult-terrain (a Strider copy) - the
+  largest. (4) **Predator family** - Bloodborn, Clan Warrior, Primal, Predator (+ Aura), Predator Fighter, Predator
+  Shooter (+ Aura): "may roll +1 attack with that weapon ... doesn't apply to newly generated attacks" vs the engine's
+  automatic extra hit on a 6. (5) **Extended Buff Range**: a Hero in a unit within 24" of another unit with the rule
+  may target that unit with its 12" friendly picks vs the engine's relay from any friendly unit within 12". (6)
+  **Protection Feat** (+ Aura): once per game when the unit takes wounds vs an activation-start brace until the next
+  activation (#434 D4). (7) **Slayer Mark**: marks "Slayer" (Hold-shooting or charging) vs the engine's "Melee Slayer"
+  grant. (8) **Versatile Defense**: pick each time the unit is attacked vs once per activation (#434 D3). (9) **Mend**:
+  "one friendly model within 3" with Tough" vs a unit pick healing its first model (documented approximation). (10)
+  Marks' "once (next time the effect would apply)" lifetime not re-verified against `markTarget`'s. (11)
+  **Re-Deployment**: the 3.6 text says "up to two friendly units"; the engine keeps the owner ruling "two per
+  Re-Deployment unit, stacking". Not gaps: Mind Control's once per round (`oncePerRoundKey`, #434), Caster Group's
+  transfer (tokens pool on the unit), Self-Destruct, Infiltrate, Crossing Attack.
+- **D7 - Storm of X: rules out, mechanism kept (2026-10-30).** 3.6 has no Storm rules (the Daemons books carry "Storm
+  of X" as weapons, which the importer reads natively). The four catalog definitions and `MakeStorm` are deleted;
+  `Effect.StormOfHits` (`stormOfHits`), `RuleOperation.InvokeStorm`, StormStage and ChooseActionStage's routing stay -
+  still JSON-authorable and working - and `StormRuleIntegrationTests` drives hand-built copies. Nothing ships that uses
+  them after #438; removing the stage chain is a #438 candidate. Alternative: delete the chain now (stage-graph surgery
+  for no 3.6 benefit).
+- **D8 - Replacement fixtures over retirement (2026-10-30).** Where a deleted rule only served as a convenient carrier
+  for a mechanism that 3.6 rules still use, the test was re-pointed rather than deleted (Notes, slice list): Strafing
+  -> Crossing Strike, Resistance -> Spell Resistance / Protected, Grounded Reinforcement / Stealth -> Grounded Defense
+  / Evasion, Storm -> hand-built copies. Retired outright only where a 3.6 test already pins the same mechanism.
+- **D9 - "Dangerous Terrain Debuff (Immediate)" (2026-10-30).** The supplement entry is deleted (3.5-only name, the
+  importer no longer produces it - #434); the `dangerousTerrainTest` effect kind it used stays, because the bundled
+  3.5 Lust / War Disciples books and old army files embed it.
+- **D10 - Catalog rules no 3.6 book reaches, not on the drop list (2026-10-30).** Kept: "Very Fast" (the built-in EOF
+  test army uses it; #440 owns that army), "AP(+1) in melee", "AP(1) when shooting", "Bane when attacking", "Shred when
+  attacking", "+6" range when shooting" (spell-phrase targets - the GDF file's "... on their weapons ..." aliases equal
+  them and bundled 3.5 spells grant them). Re-check after #438 (handed off).
 
 ## Outcome
 
-(open)
+Done 2026-10-30. Nothing on the (survey-corrected) drop list resolves: 20 catalog definitions and 30 supplement
+definitions are gone (supplements 447 -> 417), with the deviations recorded in Notes - kept because a 3.6 book still
+names them (Shred in melee, Predator Fighter, Melee Evasion, Courage, the Versatile helpers), deferred to #438 (Unique),
+added (Surge when Shooting, Piercing Hunter, the Darkborn variants, the last Boosts, the Immediate terrain debuff, four
+orphaned AoF entries). A 3.5 list naming a deleted catalog rule loads with one #168 drop per name
+(`Dropped35CatalogLegacyDataTests`). Every kept description with a printed 3.6 text now equals it (scratch parity
+script: 0 mismatches over 540 definitions; 53 engine-internal helpers have no printed text). #442's three log strings
+are fixed. All-90 scratch import Dead 0; shipped coverage Dead 475 until #438 re-bakes (D1). Owner review: D1, D2, D3,
+D5, D6. Deferred: Unique and the allowlists / re-bake checks (#438), legacy Strafing and a legacy-name table (#440),
+the D6 behaviour gaps (#434's follow-up list, new-number candidates). No GUI resolver changed; the strafe pick prompt's
+title now names the rule ("Choosing a Crossing Strike Target") - worth a glance in the next GUI session.
 
 ## Rules for the agent (plan section 1, restated)
 

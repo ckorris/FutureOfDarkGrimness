@@ -47,7 +47,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
   Done 2026-10-30; Enhanced family -> #433; owner review asked on D2, D3, D4, D7, D12, D13.
 - [x] 435 — AoF supplement sweep to 3.6 + book overrides (all moot, deleted) + AoF core: Sergeant AP, Banner, Musician, Brace in Melee. ([WorkItems/435](WorkItems/435-aof-supplement-3-6.md))
   Done 2026-10-30; Enhanced family -> #433, Parry -> #423; owner review asked on D2, D3, D7.
-- [ ] 436 — Remove dropped 3.5 definitions (catalog + supplements) and bring every kept description to 3.6 wording for the glossary. ([WorkItems/436](WorkItems/436-drop-3-5-definitions-text-parity.md))
+- [x] 436 — Remove dropped 3.5 definitions (catalog + supplements) and bring every kept description to 3.6 wording for the glossary. Done 2026-10-30; Unique -> #438; owner review asked on D1, D2, D3, D5, D6. ([WorkItems/436](WorkItems/436-drop-3-5-definitions-text-parity.md))
 - [ ] 437 — Importer 3.6: snapshot shape, `OPR v3.6.0` stamp, renamed/parent books, share-link version gate, Assault weapon class. ([WorkItems/437](WorkItems/437-importer-3-6.md))
 - [ ] 438 — Re-bake all 88 books from the 3.6.0 snapshots: unified bake script, post-bake passes, effect-set keywords for new weapon names, bundle swap. ([WorkItems/438](WorkItems/438-rebake-books-3-6.md))
 - [ ] 439 — Spells 3.6: parser grammar (LoS clause, weapon-scoped grants, new rule names), re-import, per-book parity verification. ([WorkItems/439](WorkItems/439-spells-3-6.md))
