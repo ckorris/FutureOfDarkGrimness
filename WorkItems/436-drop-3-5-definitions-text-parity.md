@@ -63,6 +63,17 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #429): casting text. Already 3.6, skip: `CoreRuleCatalog.Caster` (pinned by
+  `CasterRuleIntegrationTests.Caster_CarriesTheCore360Wording_WithNoLineOfSightClause`) and the new supplement entry
+  `Spell Drain`. Seen but NOT changed (supplement descriptions vs the 3.6.0 snapshots' `specialRules`): `Spell
+  Accumulator`, `Spell Conduit` and `Casting Buff` say "unit" where 3.6 says "model"; `Fatigue Debuff` and `Mind
+  Control` capitalise "Morale Test" (and "Fatigued") in 3.6; `Mind Control` 3.6 also ADDS "Units may only be moved once
+  per round in this way." - a behaviour facet, so #434's, not just text; `Caster Group` is reworded in 3.6 (pick one
+  model with the rule to have Caster(X); if it is killed, pick another and transfer all spell tokens; the caster loses
+  unspent tokens at round end) - the engine pools tokens on the unit, so the transfer is already implicit, but the
+  description is still 3.5's. `Casting Debuff` is defined by no 3.6 book (drop candidate if nothing else names it).
+  `Spell Resistance` (new in 3.6, in at least six books: spell wounds ignored on 2+, others on 6+) has no definition -
+  a #434/#435 sweep item.
 - 2026-10-29 (from #419): `CoreRuleCatalog.Fear`'s description is the Core Rules v3.6.0 text verbatim ("When in melee
   with this model, enemies count as having taken +X wounds when checking who won."), so the parity pass can skip it.
   No supplement or `AofBookOverrides` entry defines a Fear-like rule (nothing uses `extraMeleeWoundCount`).

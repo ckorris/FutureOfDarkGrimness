@@ -8,6 +8,9 @@ namespace FdgRaylib.Cli.Resolvers;
 // remainder AND the useful maximum (to the 2+ floor - a natural 1 always fails - plus one per in-range
 // enemy hinder token); past the floor extra tokens only hedge against enemy Casters' -1s, so with none in
 // range the cap closes. EOF defaults: first castable spell, 0 boost (the old first-option piped behavior).
+// #429 (Core Rules v3.6.0): line of sight is each spell's own requirement, so a spell that needs it prints "(LoS)"
+// after its label, and a greyed row says why ("no target in line of sight" when everything in range is out of
+// sight). The casting-roll line states the caster's own threshold and where it came from (Spell Amplifier...).
 public class ChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpellReply>
 {
     public Task<ChooseSpellReply> Resolve(ChooseSpellRequest request)
@@ -27,19 +30,22 @@ public class ChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpel
                 $"+{relay.RollBonus} to the roll and measure range from it.");
         }
 
+        Console.WriteLine(CastingRollLine(request));
+
         // Number only the castable rows; disabled rows print with their reason, un-numbered.
         var castableIndices = new List<int>();
         for (int i = 0; i < request.Spells.Count; i++)
         {
             ChooseSpellRequest.SpellOption option = request.Spells[i];
+            string label = RowLabel(option);
             if (option.Castable)
             {
                 castableIndices.Add(i);
-                Console.WriteLine($"  [{castableIndices.Count}] {option.Label}");
+                Console.WriteLine($"  [{castableIndices.Count}] {label}");
             }
             else
             {
-                Console.WriteLine($"      {option.Label} (unavailable: {option.UnavailableReason})");
+                Console.WriteLine($"      {label} (unavailable: {option.UnavailableReason})");
             }
             if (!string.IsNullOrEmpty(option.Description))
                 Console.WriteLine($"        {option.Description}");
@@ -52,6 +58,16 @@ public class ChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpel
         int boost = PromptBoost(request, request.Spells[spellIndex].Cost);
         return Task.FromResult(new ChooseSpellReply(spellIndex, boost));
     }
+
+    // "Seen Hex (1) (LoS)" for a spell whose text demands line of sight, the plain label otherwise. ASCII only.
+    internal static string RowLabel(ChooseSpellRequest.SpellOption option) =>
+        option.RequiresLineOfSight ? $"{option.Label} (LoS)" : option.Label;
+
+    // "Casting roll: 3+ before boosts (base 4+, rules +1)." - the note only when something moved the 4+.
+    internal static string CastingRollLine(ChooseSpellRequest request) =>
+        string.IsNullOrEmpty(request.BaseThresholdNote)
+            ? $"  Casting roll: {request.BaseThreshold}+ before boosts."
+            : $"  Casting roll: {request.BaseThreshold}+ before boosts ({request.BaseThresholdNote}).";
 
     // Returns the chosen request index, or -1 for Cancel. EOF defaults to the first castable spell.
     private static int PromptSpell(IReadOnlyList<int> castableIndices)

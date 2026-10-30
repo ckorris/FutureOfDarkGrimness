@@ -14,6 +14,10 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// the stepper says why, so a player never overspends into tokens that cannot matter (#103 hinder
 /// prompts come after the caster commits, which is why hedging past the floor is real only while enemy
 /// Casters hold tokens in range).
+/// <para>#429 (Core Rules v3.6.0): line of sight is each spell's own requirement, so a spell that needs it carries a
+/// "(LoS)" tag on its row (with a tooltip), a greyed row says "no target in line of sight" when everything in range
+/// is hidden, and "Roll needed" names where the caster's own threshold came from ("base 4+, rules +1" for a Spell
+/// Amplifier staff).</para>
 /// </summary>
 public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpellReply>, IGuiResolver
 {
@@ -166,18 +170,20 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
                     ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(AccentRgba.X * 0.5f, AccentRgba.Y * 0.5f, AccentRgba.Z * 0.5f, 1f));
                     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, AccentRgba);
                 }
-                if (ImGui.Button($"{(selected ? "> " : "")}{numPrefix}{option.Label}##spell{i}", new Vector2(btnW, rowH)))
+                if (ImGui.Button($"{(selected ? "> " : "")}{numPrefix}{RowText(option)}##spell{i}", new Vector2(btnW, rowH)))
                 {
                     _selectedIndex = i;
                     ClampBoost(request);
                 }
                 if (selected) ImGui.PopStyleColor(2);
+                DrawLineOfSightTooltip(option);
             }
             else
             {
                 ImGui.BeginDisabled(true);
-                ImGui.Button($"{option.Label} ({option.UnavailableReason})##spell{i}", new Vector2(btnW, rowH));
+                ImGui.Button($"{RowText(option)}##spell{i}", new Vector2(btnW, rowH));
                 ImGui.EndDisabled();
+                DrawLineOfSightTooltip(option);
             }
             y += rowH + 2f;
 
@@ -240,11 +246,8 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
                 pad, y, dw, descScale);
         }
 
-        int needed = System.Math.Max(2, request.BaseThreshold - _boost); // 2+ floor: a natural 1 always fails
         ImGui.SetCursorPos(new Vector2(pad, y));
-        ImGui.TextUnformatted(_boost > 0
-            ? $"Roll needed: {needed}+ (base {request.BaseThreshold}+, self +{_boost})"
-            : $"Roll needed: {request.BaseThreshold}+");
+        ImGui.TextUnformatted(RollNeededLine(request, _boost));
         y += lineH + 4f;
 
         ImGui.SetCursorPos(new Vector2(pad, y));
@@ -297,6 +300,41 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         ImGui.PopStyleColor();
 
         return ImGui.CalcTextSize(text, false, (panelWidth - pad * 2f) / scale).Y * scale + 2f;
+    }
+
+    /// <summary>#429 - a spell row's text: "Name (cost)", then "(LoS)" when the spell's own text demands line of
+    /// sight, then the reason when it cannot be cast. ASCII only. Internal for the resolver tests.</summary>
+    internal static string RowText(ChooseSpellRequest.SpellOption option)
+    {
+        string text = option.RequiresLineOfSight ? $"{option.Label} (LoS)" : option.Label;
+        return option.Castable ? text : $"{text} ({option.UnavailableReason})";
+    }
+
+    /// <summary>
+    /// #429 - "Roll needed: 3+ (base 4+, rules +1)" / "Roll needed: 2+ (base 4+, rules +1, self +1)" / "Roll needed:
+    /// 4+": the caster's own threshold less the boost, floored at 2+ (a natural 1 always fails), with the same
+    /// terms the cast banner will print. Internal for the resolver tests.
+    /// </summary>
+    internal static string RollNeededLine(ChooseSpellRequest request, int boost)
+    {
+        int needed = System.Math.Max(2, request.BaseThreshold - boost); // 2+ floor: a natural 1 always fails
+        string own = string.IsNullOrEmpty(request.BaseThresholdNote)
+            ? $"base {request.BaseThreshold}+"
+            : request.BaseThresholdNote;
+        if (boost > 0) return $"Roll needed: {needed}+ ({own}, self +{boost})";
+        return string.IsNullOrEmpty(request.BaseThresholdNote)
+            ? $"Roll needed: {request.BaseThreshold}+"
+            : $"Roll needed: {request.BaseThreshold}+ ({own})";
+    }
+
+    // Hovering a LoS-tagged row explains the tag (also on a disabled row, where the reason already shows).
+    private static void DrawLineOfSightTooltip(ChooseSpellRequest.SpellOption option)
+    {
+        if (!option.RequiresLineOfSight) return;
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+        {
+            ImGui.SetTooltip("This spell needs line of sight to its target. Spells without (LoS) may target units out of sight.");
+        }
     }
 
     // Re-clamp the boost when the selected spell changes (a pricier spell leaves fewer boost tokens).

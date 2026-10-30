@@ -51,6 +51,18 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (from #429): casting pricing gaps, none changed there (D7). (1) `SpellValuation.BaseCastSuccessChance`
+  is a flat 0.5: it ignores Spell Amplifier (`CastRollRules.Net(caster, evaluator, live: false)`), the caster's granted
+  cast tokens (`GrantedRollModifiers.PeekNet(caster, ERollKind.Cast)`), the Spell Conduit relay bonus and boost/hinder.
+  The engine's own number is what `CastSpellStage.PickSpell` puts in `ChooseSpellRequest.BaseThreshold` (4+ less rules
+  and granted, clamped [2, 6]); the chance is `(7 - threshold) / 6`. (2) The valuation measures range/LoS from the
+  caster only - no relay origin (`SpellRelay.OriginsFor`) - so a target only a Spell Conduit reaches is valued 0 though
+  castable. (3) No AI boost policy (solo and Tactician reply 0 boost); `ChooseSpellRequest.MaxUsefulBoost` is there to
+  use. (4) `TacticianCastAssistResolver` prices a token at 1/6 of the spell's value: it ignores the [2, 6] clamp (a
+  token past the 2+ floor buys nothing) and the caster's own modifiers. (5) Both bots skip before-attack abilities, so
+  the AI never uses Spell Drain (new 3.6 book rule: enemy within 18" in LoS takes a Morale Test, loses 2 spell tokens on
+  a fail); a cheap policy is "the in-sight enemy Caster holding the most tokens". LoS itself is per spell already,
+  pinned by `TacticianCastingTests.Casting_ReadsLineOfSightFromTheSpell_NotTheCaster`.
 - 2026-10-29 (from #419): melee-result parity. The engine's loser is now the unit that took the most wounds during
   the ACTIVATION: the melee's own wounds plus any it took earlier in the activation (a Dangerous Terrain test on the
   charge move, a Breath Attack / spell / Surprise Attack / Storm on the target; ledger `WoundsTakenThisActivation`,

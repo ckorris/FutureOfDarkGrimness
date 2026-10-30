@@ -63,6 +63,18 @@ so trailing clauses (including "in line of sight") are silently ignored today; L
 
 ## Notes
 
+- 2026-10-30 (from #429): **the LoS clause -> flag is done in the importer; you only re-import.** Rule implemented:
+  `OprBookImporter.SpellTextRequiresLineOfSight(text)` = `\bin line of sight\b`, case-insensitive, anywhere in the
+  effect text, and `TryParseSpell` feeds it to EVERY shape's `TargetSelector.RequireLineOfSight` (damage, mark, grant,
+  stat modifier, morale test, the synthesized grants) - no more "damage = LoS, everything else = no LoS". The
+  `SpellShape` prefix still matches with the clause after the range. Counts over the 3.6.0 snapshots: GDF 288 spells
+  (153 with the clause, 135 without), AoF 240 (134 / 106), **total 528 (287 / 241)**; every clause is in the opening
+  target clause and every one is on an ENEMY-targeting spell (196 "Pick one enemy unit", 45 "one enemy model", 45 "up
+  to two enemy units", 1 "up to three enemy units"). Your parity pass should therefore expect exactly 287 flagged
+  spells. Until the re-import, the shipped 3.5 books keep their shape-based flags (427 true / 565 false). Tests:
+  `OprBookImporterTests.Import_SpellLineOfSight_FollowsTheSpellsOwnClause_NotItsEffectShape` and
+  `SpellTextRequiresLineOfSight_IsTheClauseTest`; `Import_ParsesSpells_DamageBuffAndSingleModel_SkippingUnparseable`
+  now expects its clause-less 3.5 damage spell to need no LoS. The engine, picker, CLI and AI already read the flag.
 - 2026-10-29 (from #431, D8 there): seventeen 3.6 spells name Smash or Pierce ("takes 6 hits with AP(1) and Smash",
   ...). `CastSpellStage` builds its synthetic spell weapon with range 0, and `targetOverHalfWeaponRange` is false for a
   range-0 weapon, so the "over half of this weapon's range" facet never fires for spell hits (Pierce's ignore-positive
