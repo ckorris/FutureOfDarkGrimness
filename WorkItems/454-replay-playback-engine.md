@@ -1,6 +1,6 @@
 # 454 — Engine: playback (ReplayReader, ReplayTimeline, ReplayPlayer, StoreDeltaApplier, steps, describer)
 
-**Status**: todo
+**Status**: in progress (2026-10-30)
 **Related**: plan `docs/replay-plan.md` sections 4.3, 4.4; depends on #450; consumed by #455 (CLI) and #456 (GUI)
 
 ## Goal
@@ -68,10 +68,30 @@ the final store equals the live final store", and `ReplayPlayer` is usable from 
 Engine suite green; `dotnet build`. No app change in this ticket.
 
 ## Notes
-- (none yet)
+- 2026-10-30 - Slice 1 (`StoreDeltaApplier`): `Data/StoreDeltaApplier.cs` - `ApplyAdd` / `ApplyUpdate` /
+  `ApplyRemove` plus `Apply(store, ReplayEvent)` (true for the three Store* kinds, false otherwise), with an
+  `EDeltaGenerationPolicy` (`Sequential` for the live client stream, `Adopt` for playback - see Decisions).
+  `GameDataUpdateReceiver` is now a thin adapter over it; `NetworkedFullStateSyncTests` unchanged and green.
+  Found on the way and fixed: a mirrored `UnitData` / `ModelData` update arrives as a new deserialized
+  instance with only the rule blob, so on a networked client a unit's rules vanished (stat block,
+  tooltips) after its first token change - and would have in playback. Both classes now rehydrate in
+  `[OnDeserialized]`, as `Weapon` already does (#325). Verified the new test fails without the hooks.
+  `Tests/StoreDeltaApplierTests.cs` (4). Engine 3427 passed / 1 skipped; build clean; headless smoke exit 0.
 
 ## Decisions
-- (record the option-count detection choice and the seek timing)
+- (still to record: the option-count detection choice and the seek timing)
+- **Generation policy for adds.** A snapshot (any whole-store save) carries no generation for an EMPTY
+  slot, so after loading one, an add that refills a slot the game recycled BEFORE the snapshot carries
+  generation g+1 against a rebuilt slot at 0 - the live stream's "exactly one ahead" check throws
+  FutureGeneration (pinned by a test). Playback therefore applies adds with `Adopt` (the #270 snapshot
+  rule: adopt the recorded generation; index, type and slot-free checks still apply); the client keeps
+  `Sequential`, which is a real missed-message guard there. Not fixed here: a client that joins via a
+  mid-game catch-up has the same latent exposure - it is a client-sync question, noted for #453 (resume
+  with clients) rather than changed under it.
+- **Rules restored at deserialization** (`UnitData` / `ModelData` `[OnDeserialized]`), not by a sweep in the
+  applier: it is the #325 pattern, it fixes the client too, and every other deserialization path gets it
+  for free (`StoreReplay`'s sweep becomes a no-op). Wound subscriptions are NOT rewired on a mirrored
+  update (unchanged client behaviour); playback never raises wound events, so it does not need them.
 
 ## Outcome
 (open)
