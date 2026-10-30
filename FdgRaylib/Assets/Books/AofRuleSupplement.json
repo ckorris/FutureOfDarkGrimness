@@ -368,7 +368,7 @@
           "right": {
             "kind": "tokenPresent",
             "tType": {
-              "id": "AbilityUsed:Ethereal"
+              "id": "TeleportedThisActivation"
             },
             "minCount": 1
           }
@@ -393,7 +393,7 @@
           "right": {
             "kind": "tokenPresent",
             "tType": {
-              "id": "AbilityUsed:Ethereal"
+              "id": "TeleportedThisActivation"
             },
             "minCount": 1
           }
@@ -418,7 +418,7 @@
           "right": {
             "kind": "tokenPresent",
             "tType": {
-              "id": "AbilityUsed:Ethereal"
+              "id": "TeleportedThisActivation"
             },
             "minCount": 1
           }

@@ -60,6 +60,33 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
 
 ## Notes
 
+- 2026-10-30: **Batch 5 - smokes; Ethereal's "if you do" refined (engine).** The scratch smokes (below) showed the CLI
+  and AI default answer to Ethereal's placement is "stay put", and the batch-2 gate (the cost's `AbilityUsed:Ethereal`
+  marker) then charged -6" for a teleport that never moved anything. New catalog token `TokenType.TeleportedThisActivation`
+  (invisible, activation-end clear), stamped by `TeleportStage` only when a model actually moved; Ethereal's penalty
+  entries gate on it instead (D4). Tests: engine `AofSweep36RuleIntegrationTests` +1 (an accepted stand-still placement
+  pays the cost but moves nothing and costs nothing), the after-teleport cases now read the flag. Negative controls:
+  stamping regardless of movement fails the stand-still case; no stamp fails the three after-teleport cases.
+  **Smokes** (3.6 scratch armies: the batch-4 scratch import of each snapshot, units reordered so the carriers are the
+  first four - command-group / Mind Control / Great buff rules added to a base unit where the book sells them only as
+  upgrades - then `--book-to-army`, `--headless --army ... --trace-rules --seed N`; all exit 0, logs under the session
+  scratchpad `435/smokes/`): Chivalrous Kingdoms (no Fearless in 3.6; Men-at-Arms + Banner / Musician / Sergeant, Pledge
+  Knights, Peasant Bowmen, Foot Knights; seeds 3 and 7) - "Men-at-Arms's Banner at Morale_OnPreMoraleTest/Actor: fired ->
+  ApplyRollModifier" after "Melee result: ... Men-at-Arms took more and loses the melee.", "Men-at-Arms's Hand
+  Weapon's Sergeant added -1 to Save rolls.", "Pledge Knights's Spell Resistance at Shooting_OnSaveRollComplete/Subject:
+  fired -> IgnoreWound" / "... ignored wounds on a 6+." (and its spell arm "condition And(IsSpell, MostModelsHaveThisRule)
+  not met" on weapon hits), Vale Oath evaluated at every round start; Vampiric Undead (seeds 3, 7) - "Vampire Knights's
+  Cursed Undead at Shooting_OnSaveRollComplete/Subject: fired -> IgnoreWound", "Drained Archers used Mind Control before
+  attacking." after "Drained Soldiers failed the morale test." and the forced move, then "Mind Control ability ...: not
+  offered (cannot pay OncePerActivation)"; Daemons of Lust (the renamed book; seeds 3, 7) - "Lust Shooters's Mind Control
+  ability at Activation_OnBeforeAttackAction: offered" (the GDF 3.6 definition, `oncePerRoundKey`), "Sacred Mirror's Spell
+  Resistance ... fired -> IgnoreWound", default effect sets arcane-bolt / daemon-arcane-melee; Deep-Sea Elves - "Sea
+  Guard's Wave-Step at Activation_OnActivationStart/Actor: fired -> RepositionModels" / "Sea Guard may move up to 3"."
+  (the move form); Ghostly Undead - Ethereal offered at every action choice, "Ghost Horde held its position." (the
+  default; what prompted the refinement above); Ossified Undead - "Guardians's Ossified at Shooting_OnHitRollComplete/
+  Subject: fired -> ReduceArmorPenetration"; Ogres - "Ogre Warriors used Great Banner before attacking.", "... used Great
+  Musician ...", "Ogre Warriors's Dual Hand Weapons's Great Sergeant added -2 to Save rolls.". Musician never traces: the
+  movement budget is a read-only projection (as for Fast).
 - 2026-10-30: **Batch 4 - the per-book overrides are all moot in 3.6; the 3.6 Daemons book names (engine table).** Every
   entry of the six `AofBookOverrides/*.json` re-checked against its 3.6.0 book: Change / Lust / Plague / War Disciples'
   "Versatile Attack (Piercing)" / "(Precision)" - no 3.6 AoF book names Versatile Attack (census: removed; the four books
@@ -102,9 +129,8 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
   (#434) unconditional shape, the 3.5 `attackedFromOverInches(9)` gate gone. Wave-Step: "you may move all models with
   this rule in it by up to D3"" - Wolfborn's `repositionAtActivation.move` entry (#434 D8: a real move through the
   triggered-move request). Ethereal: "... If you do, this model moves -6" when using Advance, and -6" when using
-  Rush/Charge until the end of that activation." (3.5 moved -6" always) - each penalty entry now also gates on the
-  ability's own once-per-activation marker `AbilityUsed:Ethereal`, which TeleportStage stamps only when the placement is
-  accepted and which clears at activation end (D4). Grounded Speed: "If most models in this unit are within 1" of terrain
+  Rush/Charge until the end of that activation." (3.5 moved -6" always) - each penalty entry now also gates on a
+  teleport having moved the unit this activation (D4; the token and its stamp came with batch 5). Grounded Speed: "If most models in this unit are within 1" of terrain
   when activated, this model may move +2" ..." - the terrain gate alone (D5). Shadow copies dropped from the AoF file
   (3.6 prints the same text in both games, so the GDF file's #434 definitions serve AoF books): Difficult Terrain Debuff
   and Melee Slayer (shape-identical), Fortified Growth (the AoF copy was the 3.5 clock without the most-models gate) -
@@ -215,12 +241,13 @@ Kingdoms (Fearless removed, Spell Resistance added) and a Vampiric Undead headle
   and helps nothing. Alternatives: (a) spend a grant only when its condition passes (an engine-wide change to #101's
   policy); (b) a one-shot +1 Morale token (Bravery Buff's shape), which would wrongly help spell / rule tests.
   Recommendation: keep (the case is rare and #101's policy is deliberate).
-- **D4 - Ethereal's "if you do" reads the ability's used marker (2026-10-30) - OWNER NOTE.** The penalty entries gate on
-  `tokenPresent AbilityUsed:Ethereal`, the marker `RuleEvaluator` stamps when a once-per-activation cost is paid
-  (TeleportStage pays it only on an accepted placement; it clears at activation end, the text's "until the end of that
-  activation"). It ties the data to the engine's marker id, which saved games already persist and the engine tests
-  already name. An accepted placement that leaves every model where it stood still counts as "you do". Alternative: a
-  dedicated `thisRuleAbilityUsed` condition (no string coupling, one new kind).
+- **D4 - Ethereal's "if you do" = a teleport that moved a model (2026-10-30).** The penalty entries gate on the new
+  catalog token `TeleportedThisActivation`, which TeleportStage stamps only when at least one model was placed somewhere
+  else (activation-end clear: "until the end of that activation"). An accepted placement that leaves every model where
+  it stood - the CLI and AI default answer - pays the once-per-activation cost (so the offer does not loop) but is not
+  "you do". (First authored on the cost's `AbilityUsed:Ethereal` marker; the scratch Ghostly Undead smoke showed the
+  default resolvers accept the offer and stand still, which would have charged them -6" for nothing - changed in the
+  same batch.)
 - **D5 - Grounded Speed loses its carrier gate (2026-10-30).** 3.6 has no "where most models have this rule" clause
   ("If most models in this unit are within 1" of terrain when activated, this model may move ..."), so only the terrain
   gate stays - #434 D15's Grounded Precision / Speed Feat reading. The unit-level move evaluation never sees a joined

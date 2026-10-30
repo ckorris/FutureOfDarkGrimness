@@ -171,12 +171,11 @@ public class AofSweep36ShippedDataTests
     public void Ethereal_MovesMinusSix_OnlyAfterItsTeleport()
     {
         SpecialRuleDefinition ethereal = AofShipped("Ethereal");
-        var used = new TokenType("AbilityUsed:Ethereal");
         Assert.That(ethereal.Passive, Is.EqualTo(new[] { EActionType.Advance, EActionType.Rush, EActionType.Charge }
             .Select(a => new HookEntry(EHookID.Movement_OnMoveActionDeclared,
-                new Condition.And(new Condition.ActionTypeIs(a), new Condition.TokenPresent(used)),
+                new Condition.And(new Condition.ActionTypeIs(a), new Condition.TokenPresent(TokenType.TeleportedThisActivation)),
                 new Effect.MovementBonus(a, -6f), ELifetime.ThisActivation))),
-            "'if you do' - the ability's own once-per-activation marker (activation-end clear)");
+            "'if you do' - TeleportStage's flag for a placement that moved a model (activation-end clear)");
 
         ActivatedAbility teleport = ethereal.Activated.Single();
         Assert.That(teleport.TriggerHook, Is.EqualTo(EHookID.Activation_OnActionChoice));
