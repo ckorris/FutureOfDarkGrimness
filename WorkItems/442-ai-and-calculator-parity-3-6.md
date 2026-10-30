@@ -51,6 +51,15 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 11 - Combat Calculator, B): `CombatSituation.ChargeFromInches` (new; 0 = not given) rides
+  a charging swing's `CombatMetadata.ChargeOriginDistanceInches` through the real stages, so the calculator's charge
+  arms fire (#432 (4)); the screen's melee row gains a whole-inch "Charged from (in), 0 = not set" field with a
+  tooltip, shown only while charging (default 0: an untouched calculator reports exactly what it did). The calculator
+  now runs the real `ResolveRavageWoundsStage` after the impact row (#434: Ravage / Regenerative Strength's pre-strike
+  dice) and shows it as its own "Ravage" row (dice, threshold, no save). The shooting checkbox reads "Attacker
+  advanced (untick = Hold)" (#425 (5) - the Hold-only rules key on it). Tests: engine `CombatCalculatorTests` +2
+  (Ferocious from 7"/5"/unset; the Ravage row), app `CombatCalculatorScreenTests` +1 (whole-inch snap, default 0) and
+  the new strings in the Latin-1 test. Awaiting GUI hand-verify (the new field and label).
 - 2026-10-30 (#442 batch 10 - #446 Dangerous end position, B): the planner's Score charges a candidate that leaves the
   unit standing in Dangerous terrain (any living model's base overlapping a Dangerous piece at its planned end, or
   where it stands for a Hold - the engine's swept-base test, `TacticalAnalysis.EndsInDangerousTerrain`) the expected

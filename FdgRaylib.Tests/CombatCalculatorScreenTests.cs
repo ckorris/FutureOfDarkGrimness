@@ -571,6 +571,21 @@ public class CombatCalculatorScreenTests
         });
     }
 
+    // #442 (#432): the charge's launch distance is typed in whole inches too, 0 meaning "not given".
+    [Test]
+    public void ChargeFromLandsOnWholeInches_ZeroMeansNotSet()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.SnapChargeFrom(6.6f), Is.EqualTo(7f));
+            Assert.That(CombatCalculatorScreen.SnapChargeFrom(-2f), Is.EqualTo(0f), "never below 'not set'");
+            Assert.That(CombatCalculatorScreen.SnapChargeFrom(99f),
+                Is.EqualTo(CombatCalculatorScreen.MaxChargeFromInches));
+            Assert.That(new CombatCalculatorScreen().Situation.ChargeFromInches, Is.EqualTo(0f),
+                "defaults to not set, so an untouched calculator reports exactly what it did before");
+        });
+    }
+
     [Test]
     public void TheSteppersLandOnMultiplesRatherThanCarryingAnOffsetAlong()
     {
@@ -631,6 +646,8 @@ public class CombatCalculatorScreenTests
             CombatCalculatorScreen.MovedLabel,
             CombatCalculatorScreen.ChargingLabel,
             CombatCalculatorScreen.FatiguedLabel,
+            CombatCalculatorScreen.ChargeFromLabel,
+            CombatCalculatorScreen.ChargeFromTooltip,
         };
 
         // The engine's own notes and warnings are shown verbatim, so they are held to the same rule.

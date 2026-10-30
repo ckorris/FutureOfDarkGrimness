@@ -58,9 +58,15 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string CancelLabel = "Cancel";
     internal const string DistanceLabel = "Distance (in)";
     internal const string CoverLabel = "Defender is in cover";
-    internal const string MovedLabel = "Attacker moved this activation";
+    // #442 (#425): named for the action it stands for - 3.6's Hold-only rules (Indirect, Artillery, Slayer) read it.
+    internal const string MovedLabel = "Attacker advanced (untick = Hold)";
     internal const string ChargingLabel = "Attacker is charging";
     internal const string FatiguedLabel = "Attacker is fatigued";
+    // #442 (#432): where the charge was declared from - the "charges / is charged from over 6in" rules read it.
+    internal const string ChargeFromLabel = "Charged from (in), 0 = not set";
+    internal const string ChargeFromTooltip =
+        "How far apart the units stood, base to base, when the charge was declared. Rules such as Ferocious " +
+        "or a Changebound defender's -1 to hit read it. Leave at 0 to ignore it.";
 
     private static readonly Vector4 DimText = new(0.62f, 0.62f, 0.62f, 1f);
     private static readonly Vector4 BrightText = new(1f, 1f, 1f, 1f);
@@ -1112,7 +1118,27 @@ public class CombatCalculatorScreen : IAppScreen
         bool fatigued = _situation.AttackerFatigued;
         if (ImGui.Checkbox(FatiguedLabel, ref fatigued))
             _situation = _situation with { AttackerFatigued = fatigued };
+
+        // #442 (#432): only a charge has a launch distance.
+        if (!_situation.AttackerCharging) return;
+        ImGui.SetNextItemWidth(ImGui.GetFontSize() * 3.2f);
+        float from = _situation.ChargeFromInches;
+        if (ImGui.InputFloat("##calc-charge-from", ref from, 0f, 0f, "%.0f"))
+            _situation = _situation with { ChargeFromInches = SnapChargeFrom(from) };
+        if (ImGui.IsItemHovered()) UiText.Tooltip(ChargeFromTooltip);
+        ImGui.SameLine();
+        UiText.Colored(DimText, ChargeFromLabel);
     }
+
+    /// <summary>
+    /// #442: the charge's launch distance lands on whole inches, like the shooting distance, between 0 (not given)
+    /// and the longest charge a unit can declare. Internal so the rounding is pinned without a window.
+    /// </summary>
+    internal static float SnapChargeFrom(float inches) =>
+        Math.Clamp(MathF.Round(inches), 0f, MaxChargeFromInches);
+
+    /// <summary>A Fast unit's charge with every bonus the corpus prints stays well inside this.</summary>
+    internal const float MaxChargeFromInches = 24f;
 
     /// <summary>
     /// A tick on the distance slider at every range this fight's weapons actually reach, so the player
