@@ -790,3 +790,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > branch on either remote. The whole block **415-445** is filed at once on branch `feature/opr-3.6`
 > (plan: `docs/opr-3.6-upgrade-plan.md`); the index lines are mirrored onto `master` so sessions filing from
 > `origin/master` see them. A sub-item of the upgrade takes the next free number above 445 the usual way.
+
+> **2026-10-29 - number 446 filed clean (OPR 3.6 upgrade sub-item).** `git fetch origin` before filing, from
+> `origin/master` at `c5c7ebf`: index + archive max **445** (the 415-445 block above), no `44x` branch on either
+> remote. **446 = units activating in Dangerous terrain take the test** (surfaced by #420). Reserved on `master`
+> alongside the block; the detail file lives on `feature/opr-3.6`.
