@@ -66,6 +66,23 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-30: **Batch 7 - Piercing / Precision Tag and Target 3.6 (engine).** Tag(X): "place X tokens on one enemy unit
+  within 24" and in line of sight, or one token on X enemy units ... When attacking, friendly units may remove ONE
+  token from their target ... to get AP(+1) / +1 to hit." Target(X): "pick X enemy units within 18" ... and place one
+  token on them. Friendly units get AP(+1) / +1 to hit rolls when attacking them." (3.5: X markers on one unit, +1 per
+  marker, any number spent.) New vocabulary: `TargetSelector.maxCountFromArgument` (pick up to the rule's X units;
+  `EffectiveMaxCount`, read by `BeforeAttackActionStage`'s target loop), `ValueSource.argIfSoleTarget` (X on a lone
+  target, 1 each when spread; reads the new `RuleInvocation.TargetCount` that `RuleEvaluator.ResolveAbility` fills;
+  `RuleArgumentArity` counts it), and the single-spend Tag tokens `SingleSpendHitBonus` / `SingleSpendApBonus` (catalog
+  tokens) that `TargetMarkerSpend` offers one per attack through the existing StringSelection prompt (spend-first
+  default) - the Spotters keep their spend-any-number markers. `ShootingForecast` notes the Tag tokens. The four
+  definitions use them, with the 3.6 texts. No new request type: the target loop and the spend menu already exist on
+  CLI, GUI and AI. Tests: engine `TagTarget36RuleIntegrationTests` (10: X tokens on one unit, one each on X units with at
+  most X picks, Target one each, a flagless selector keeps its max, a Tag token spends one for +1, declining keeps it,
+  JSON round trips + legacy selector, ArgIfSoleTarget, arity and fire-lint); app `GdfSweep36ShippedDataTests` +8 (shapes,
+  texts). Negative controls: the stage on the static max fails 2, ArgIfSoleTarget always X fails 2, the Tag spend off
+  fails 1.
+
 - 2026-10-30: **Batch 6 - Mind Control's once-per-round clause (engine).** 3.6 adds "Units may only be moved once per
   round in this way." (relayed from #429): a per-TARGET gate across every Mind Control on the table, not just text.
   `Effect.TriggeredMove` gained `OncePerRoundKey` (JSON `oncePerRoundKey`, default null = unrestricted, what old data

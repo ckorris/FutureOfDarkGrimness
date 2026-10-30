@@ -5667,15 +5667,16 @@
           "requireLineOfSight": true,
           "requiredToken": null,
           "singleModel": false,
-          "requiredRule": null
+          "requiredRule": null,
+          "maxCountFromArgument": true
         },
         "effect": {
           "kind": "grantToken",
           "tType": {
-            "id": "SpendableApBonusMarker"
+            "id": "SingleSpendApBonusToken"
           },
           "count": {
-            "kind": "arg",
+            "kind": "argIfSoleTarget",
             "index": 0
           },
           "clear": {
@@ -5690,7 +5691,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Once per game during its activation: pick one enemy within 24 inches in line of sight and place X markers on it. Attackers may remove markers from it before it rolls to block, gaining AP(+1) per removed marker."
+    "description": "Once per game, during this model's activation, before attacking, place X tokens on one enemy unit within 24\" and in line of sight, or one token on X enemy units within 24\" and in line of sight. When attacking, friendly units may remove one token from their target before rolling to block to get AP(+1) on their weapons."
   },
   {
     "name": "Precision Tag",
@@ -5709,15 +5710,16 @@
           "requireLineOfSight": true,
           "requiredToken": null,
           "singleModel": false,
-          "requiredRule": null
+          "requiredRule": null,
+          "maxCountFromArgument": true
         },
         "effect": {
           "kind": "grantToken",
           "tType": {
-            "id": "SpendableHitBonusMarker"
+            "id": "SingleSpendHitBonusToken"
           },
           "count": {
-            "kind": "arg",
+            "kind": "argIfSoleTarget",
             "index": 0
           },
           "clear": {
@@ -5732,7 +5734,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Once per game during its activation: pick one enemy within 24 inches in line of sight and place X markers on it. Attackers may remove markers from it before rolling to hit, gaining +1 to hit per removed marker."
+    "description": "Once per game, during this model's activation, before attacking, place X tokens on one enemy unit within 24\" and in line of sight, or one token on X enemy units within 24\" and in line of sight. When attacking, friendly units may remove one token from their target before rolling to hit to get +1 to hit rolls."
   },
   {
     "name": "Piercing Target",
@@ -5751,7 +5753,8 @@
           "requireLineOfSight": true,
           "requiredToken": null,
           "singleModel": false,
-          "requiredRule": null
+          "requiredRule": null,
+          "maxCountFromArgument": true
         },
         "effect": {
           "kind": "grantToken",
@@ -5759,8 +5762,8 @@
             "id": "PersistentApBonusMarker"
           },
           "count": {
-            "kind": "arg",
-            "index": 0
+            "kind": "literal",
+            "value": 1
           },
           "clear": {
             "kind": "manualOnly"
@@ -5774,7 +5777,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Once per game during its activation: pick one enemy within 18 inches in line of sight and place X markers on it. Attackers get AP(+1) per marker while they remain."
+    "description": "Once per game, during this model's activation, before attacking, pick X enemy units within 18\" and in line of sight of it, and place one token on them. Friendly units get AP(+1) on their weapons when attacking them."
   },
   {
     "name": "Precision Target",
@@ -5793,7 +5796,8 @@
           "requireLineOfSight": true,
           "requiredToken": null,
           "singleModel": false,
-          "requiredRule": null
+          "requiredRule": null,
+          "maxCountFromArgument": true
         },
         "effect": {
           "kind": "grantToken",
@@ -5801,8 +5805,8 @@
             "id": "PersistentHitBonusMarker"
           },
           "count": {
-            "kind": "arg",
-            "index": 0
+            "kind": "literal",
+            "value": 1
           },
           "clear": {
             "kind": "manualOnly"
@@ -5816,7 +5820,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Once per game during its activation: pick one enemy within 18 inches in line of sight and place X markers on it. Attackers get +1 to hit per marker while they remain."
+    "description": "Once per game, during this model's activation, before attacking, pick X enemy units within 18\" and in line of sight of it, and place one token on them. Friendly units get +1 to hit rolls when attacking them."
   },
   {
     "name": "Piercing Spotter",

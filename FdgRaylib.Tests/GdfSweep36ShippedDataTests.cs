@@ -122,6 +122,10 @@ public class GdfSweep36ShippedDataTests
         yield return new TestCaseData("Ravage Aura", "This model and its unit get Ravage(+1).").SetArgDisplayNames("Ravage Aura");
         yield return new TestCaseData("Mind Control", "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which must take a Morale Test. If failed you may move it by up to 6\" in a straight line in any direction. Units may only be moved once per round in this way.").SetArgDisplayNames("Mind Control");
         yield return new TestCaseData("Hazardous", "Gets AP(4), but on unmodified results of 1 to hit this model takes one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule.").SetArgDisplayNames("Hazardous");
+        yield return new TestCaseData("Piercing Tag", "Once per game, during this model's activation, before attacking, place X tokens on one enemy unit within 24\" and in line of sight, or one token on X enemy units within 24\" and in line of sight. When attacking, friendly units may remove one token from their target before rolling to block to get AP(+1) on their weapons.").SetArgDisplayNames("Piercing Tag");
+        yield return new TestCaseData("Precision Tag", "Once per game, during this model's activation, before attacking, place X tokens on one enemy unit within 24\" and in line of sight, or one token on X enemy units within 24\" and in line of sight. When attacking, friendly units may remove one token from their target before rolling to hit to get +1 to hit rolls.").SetArgDisplayNames("Precision Tag");
+        yield return new TestCaseData("Piercing Target", "Once per game, during this model's activation, before attacking, pick X enemy units within 18\" and in line of sight of it, and place one token on them. Friendly units get AP(+1) on their weapons when attacking them.").SetArgDisplayNames("Piercing Target");
+        yield return new TestCaseData("Precision Target", "Once per game, during this model's activation, before attacking, pick X enemy units within 18\" and in line of sight of it, and place one token on them. Friendly units get +1 to hit rolls when attacking them.").SetArgDisplayNames("Precision Target");
     }
 
     [TestCaseSource(nameof(Texts))]
@@ -226,6 +230,26 @@ public class GdfSweep36ShippedDataTests
                 new Condition.And(new Condition.Not(new Condition.AfterMoving()),
                     new Condition.And(NotSpell, new Condition.TargetMajorityHasTough(3)))),
             new Effect.RollModifier(ERollKind.Save, -2), ELifetime.ThisAttack)));
+    }
+
+    // 3.6 Tag(X): "place X tokens on one enemy unit ..., or one token on X enemy units", a token removed one per attack;
+    // Target(X): "pick X enemy units ... place one token on them". Pick up to X units; X tokens on a lone target.
+    [TestCase("Piercing Tag", 24f, "SingleSpendApBonusToken", true)]
+    [TestCase("Precision Tag", 24f, "SingleSpendHitBonusToken", true)]
+    [TestCase("Piercing Target", 18f, "PersistentApBonusMarker", false)]
+    [TestCase("Precision Target", 18f, "PersistentHitBonusMarker", false)]
+    public void TheTagAndTargetPair_PickUpToXUnits(string name, float range, string token, bool xOnALoneTarget)
+    {
+        SpecialRuleDefinition rule = Shipped(name);
+        ActivatedAbility ability = rule.Activated.Single();
+        Assert.That(rule.EngineArgumentCount, Is.EqualTo(1));
+        Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Activation_OnBeforeAttackAction));
+        Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerGame>());
+        Assert.That(ability.TargetSelector, Is.EqualTo(new TargetSelector(range, 1, 1, ETargetAffinity.Foe,
+            RequireLineOfSight: true, MaxCountFromArgument: true)));
+        Assert.That(ability.Effect, Is.EqualTo(new Effect.GrantToken(new TokenType(token),
+            xOnALoneTarget ? new ValueSource.ArgIfSoleTarget(0) : new ValueSource.Literal(1),
+            new TokenClearTrigger.ManualOnly())));
     }
 
     [Test]
