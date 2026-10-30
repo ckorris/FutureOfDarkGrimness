@@ -98,7 +98,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls ."
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls."
   },
   {
     "name": "Ossified",
@@ -1477,7 +1477,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Once per round, when this unit ends its move within 3\" of enemy units after being in melee, pick one of them and roll X dice for each model with this rule, or X dice in total for single-model units. For each 6+ the target takes one wound. Cannot be used while Shaken."
+    "description": "Once per round, when this unit ends its move within 3\" of enemy units after being in melee, pick one of them and roll X dice for each model with this rule in this unit. For each 6+ the target takes one wound."
   },
   {
     "name": "Piercing Charge Buff",

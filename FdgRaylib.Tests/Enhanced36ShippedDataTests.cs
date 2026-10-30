@@ -335,7 +335,7 @@ public class Enhanced36ShippedDataTests
         Assert.That(aura.Activated, Is.Empty);
         Assert.That(aura.Scope, Is.EqualTo(ERuleScope.Unit));
         // OPR's 3.6.0 books print "This model and its unit Enhanced Brutal." / "... Enhanced Ferocious." (a missing
-        // "get"); kept verbatim like every other book text (#432 D12 precedent), for #436's parity pass to normalise.
+        // "get"); kept verbatim - #436 normalised OPR's whitespace slips only and kept every wording/grammar slip as printed.
         string expected = x is "Brutal" or "Ferocious"
             ? $"This model and its unit Enhanced {x}."
             : $"This model and its unit get Enhanced {x}.";

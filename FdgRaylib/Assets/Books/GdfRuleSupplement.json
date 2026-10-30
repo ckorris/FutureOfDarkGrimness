@@ -38,7 +38,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "One model in this unit casts spells with as many spell tokens per round as there are models with this rule in the unit. Unspent tokens are lost at the end of the round."
+    "description": "Pick one model with this rule in this unit to have Caster(X), where X is the total number of models with this rule in this unit. If the model is killed, pick another to be the new caster, and transfer all spell tokens to it. The caster loses all unspent spell tokens at the end of the round."
   },
   {
     "name": "Spell Accumulator",
@@ -92,7 +92,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once. Casters from other friendly units within 12\" may spend this unit's accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
+    "description": "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once. Casters from other friendly units within 12\" may spend this model's accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
   },
   {
     "name": "Spell Conduit",
@@ -122,7 +122,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Casters within 12\" that are from other friendly units may cast spells as if they were in this unit's position, and get +1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn't Shaken."
+    "description": "Casters within 12\" that are from other friendly units may cast spells as if they were in this model's position, and get +1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn't Shaken."
   },
   {
     "name": "Extended Buff Range",
@@ -144,7 +144,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Other friendly units within 12\" may use rules that pick friendly units as if they were in this unit's position, so a 12\" pick reaches targets up to 24\" away. Applies to unit picks, not to spells."
+    "description": "If this unit is within 24\" of another friendly unit with this rule that has a Hero in it, then that Hero may use special rules that allow it to pick friendly units within 12\" (except for spells) on this unit as if it was in range."
   },
   {
     "name": "Highborn",
@@ -279,7 +279,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit in melee scores an extra hit."
+    "description": "For each unmodified roll of 6 to hit in melee, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
   },
   {
     "name": "Predator",
@@ -348,7 +348,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Kept in reserve; may arrive from round 2 onward, placed anywhere over 3\" from enemy units."
+    "description": "Counts as having Ambush, but may be deployed anywhere over 3\" away from enemy unit."
   },
   {
     "name": "Precision Debuff",
@@ -517,7 +517,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Melee Slayer."
+    "description": "This model and its unit get Melee Slayer."
   },
   {
     "name": "Ranged Slayer",
@@ -587,7 +587,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Ranged Slayer."
+    "description": "This model and its unit get Ranged Slayer."
   },
   {
     "name": "Slayer Mark",
@@ -620,7 +620,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Melee Slayer."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Slayer against once (next time the effect would apply)."
   },
   {
     "name": "Changebound",
@@ -651,7 +651,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls ."
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls."
   },
   {
     "name": "Primeborn",
@@ -757,7 +757,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls ."
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls."
   },
   {
     "name": "Plaguebound",
@@ -1037,7 +1037,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Regeneration for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Regeneration once (next time the effect would apply)."
   },
   {
     "name": "Bloodborn",
@@ -1061,7 +1061,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit scores an extra hit."
+    "description": "For each unmodified roll of 6 to hit when attacking, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
   },
   {
     "name": "Clan Warrior",
@@ -1085,7 +1085,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit scores an extra hit."
+    "description": "For each unmodified roll of 6 to hit when attacking, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
   },
   {
     "name": "Primal",
@@ -1109,7 +1109,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit scores an extra hit."
+    "description": "For each unmodified roll of 6 to hit when attacking, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
   },
   {
     "name": "Predator Shooter",
@@ -1142,7 +1142,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 6 to hit when shooting scores an extra hit."
+    "description": "For each unmodified roll of 6 to hit when shooting, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
   },
   {
     "name": "Predator Shooter Aura",
@@ -1164,7 +1164,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Predator Shooter."
+    "description": "This model and its unit get Predator Shooter."
   },
   {
     "name": "Lustbound",
@@ -1295,7 +1295,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Ignores the movement penalty for Difficult terrain (as Strider)."
+    "description": "This model may ignore the Slow rule."
   },
   {
     "name": "Swift Aura",
@@ -1317,7 +1317,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Swift."
+    "description": "This model and its unit get Swift."
   },
   {
     "name": "Swift Buff",
@@ -1351,7 +1351,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Swift for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Swift once (next time the effect would apply)."
   },
   {
     "name": "Warbound",
@@ -1829,7 +1829,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Furious."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Furious against once (next time the effect would apply)."
   },
   {
     "name": "Relentless Mark",
@@ -1862,7 +1862,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Relentless."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Relentless against once (next time the effect would apply)."
   },
   {
     "name": "Precision Fighting",
@@ -1918,7 +1918,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets +1 to hit rolls in melee."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units get +1 to hit rolls in melee against once (next time the effect would apply)."
   },
   {
     "name": "Unpredictable Fighter Mark",
@@ -1951,7 +1951,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly unit to attack it in melee this activation rolls one die: on a 1-3 its attacks get AP(+1); on a 4-6 +1 to hit instead."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Unpredictable Fighter against once (next time the effect would apply)."
   },
   {
     "name": "Unpredictable Shooter Mark",
@@ -1984,7 +1984,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly unit to shoot it this activation rolls one die: on a 1-3 its attacks get AP(+1); on a 4-6 +1 to hit instead."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Unpredictable Shooter against once (next time the effect would apply)."
   },
   {
     "name": "Piercing Shooting",
@@ -2108,7 +2108,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets +1 to hit rolls when shooting."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units get +1 to hit rolls when shooting against once (next time the effect would apply)."
   },
   {
     "name": "Mischievous",
@@ -2133,7 +2133,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "The defender must re-roll unmodified Defense 6s."
+    "description": "When attacking, targets must re-roll unmodified Defense results of 6 when blocking hits from this model's weapons."
   },
   {
     "name": "Vicious",
@@ -2183,7 +2183,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "The defender must re-roll unmodified Defense 6s."
+    "description": "When attacking, targets must re-roll unmodified Defense results of 6 when blocking hits from this model's weapons."
   },
   {
     "name": "Hold the Line",
@@ -2429,7 +2429,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Precision Fighter."
+    "description": "This model and its unit get +1 to hit rolls in melee."
   },
   {
     "name": "Precision Shooter",
@@ -2477,7 +2477,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Precision Shooter."
+    "description": "This model and its unit get +1 to hit rolls when shooting."
   },
   {
     "name": "Piercing Fighter",
@@ -2731,7 +2731,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Precision Charge."
+    "description": "This model and its unit get +1 to hit rolls when charging."
   },
   {
     "name": "Strider Aura",
@@ -2753,7 +2753,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Strider."
+    "description": "This model and its unit get Strider."
   },
   {
     "name": "Increased Shooting Range Mark",
@@ -2897,7 +2897,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Rapid Advance for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Rapid Advance once (next time the effect would apply)."
   },
   {
     "name": "Rapid Rush Buff",
@@ -3008,7 +3008,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Entrenched for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Entrenched once (next time the effect would apply)."
   },
   {
     "name": "Precision Shooter Buff",
@@ -3042,7 +3042,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Precision Shooter for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets +1 to hit rolls when shooting once (next time the effect would apply)."
   },
   {
     "name": "Bane in Melee Buff",
@@ -3221,7 +3221,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Guarded for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Guarded once (next time the effect would apply)."
   },
   {
     "name": "Precision Fighter Buff",
@@ -3255,7 +3255,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Precision Fighter for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets +1 to hit rolls in melee once (next time the effect would apply)."
   },
   {
     "name": "Precision Attacks",
@@ -3312,7 +3312,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Precision Attacks for its next relevant roll."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets +1 to hit rolls when attacking once (next time the effect would apply)."
   },
   {
     "name": "Increased Shooting Range Buff",
@@ -3900,7 +3900,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When a unit where most models have this rule is deployed or activated, pick one effect until its next activation: when shot/charged from over 9\"/6\" away, it either gets +1 to Defense rolls, or enemy units get -1 to hit rolls against it."
+    "description": "When a unit where most models have this rule is shot/charged from over 9\"/6\" away, pick one effect: the unit either gets +1 to Defense rolls, or enemy units get -1 to hit rolls against it. Note that you may pick a different effect each time the unit is attacked."
   },
   {
     "name": "Versatile Defense Aura",
@@ -3922,7 +3922,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Versatile Defense."
+    "description": "This model and its unit get Versatile Defense."
   },
   {
     "name": "Versatile Reach (Range)",
@@ -4052,7 +4052,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Versatile Reach."
+    "description": "This model and its unit get Versatile Reach."
   },
   {
     "name": "Steadfast",
@@ -4179,7 +4179,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Steadfast."
+    "description": "This model and its unit get Steadfast."
   },
   {
     "name": "Infiltrate Aura",
@@ -4201,7 +4201,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Infiltrate."
+    "description": "This model and its unit get Infiltrate."
   },
   {
     "name": "Infiltrating Precision Strike",
@@ -4373,7 +4373,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Bounding."
+    "description": "This model and its unit get Bounding."
   },
   {
     "name": "Banner",
@@ -4499,7 +4499,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Counts as having Defense X+ in place of the model's own Defense stat."
+    "description": "Counts as having Defense X+."
   },
   {
     "name": "Piercing Frenzy",
@@ -5007,7 +5007,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Defensive Growth."
+    "description": "This model and its unit get Defensive Growth."
   },
   {
     "name": "Fortified Growth",
@@ -5716,7 +5716,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12\" with Caster, which gets +1 to casting rolls once (next time the effect would apply)."
+    "description": "Once per activation, before attacking, pick one friendly model within 12\" with Caster, which gets +1 to casting rolls once (next time the effect would apply)."
   },
   {
     "name": "Screened",
@@ -5747,7 +5747,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls ."
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls."
   },
   {
     "name": "Screened Aura",
@@ -5769,7 +5769,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Screened."
+    "description": "This model and its unit get Screened."
   },
   {
     "name": "Grounded Precision",
@@ -5815,7 +5815,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Grounded Precision."
+    "description": "This model and its unit get Grounded Precision."
   },
   {
     "name": "Grounded Defense",
@@ -6047,7 +6047,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Speed Feat."
+    "description": "This model and its unit get Speed Feat."
   },
   {
     "name": "Protection Feat Guard",
@@ -6091,7 +6091,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per game, when this unit activates, it may brace: until its next activation it rolls one die per wound it takes, ignoring each on a 5+."
+    "description": "Once per game, when this unit takes wounds and most of its models have this rule, you may use this rule and roll one die per wound, and on a 5+ it is ignored."
   },
   {
     "name": "Protection Feat Aura",
@@ -6108,7 +6108,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model and its unit gain Protection Feat."
+    "description": "This model and its unit get Protection Feat."
   },
   {
     "name": "Repel Ambushers",
@@ -6657,7 +6657,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight. One friendly unit that used a Rush action may still shoot it once."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Quick Shot against once (next time the effect would apply)."
   },
   {
     "name": "Unwieldy in melee",
@@ -7285,7 +7285,7 @@
     "scope": "Unit",
     "engineArgumentCount": 1,
     "valence": "Positive",
-    "description": "Counts as having Infiltrate. The first time this unit is activated, pick one enemy unit within 6\" in line of sight and roll X dice; for each 2+ it takes one hit with AP(1)."
+    "description": "Counts as having Infiltrate. The first time this unit is activated, pick one enemy unit within 6\" in line of sight, and roll X dice. For each 2+ it takes one hit with AP(1)."
   },
   {
     "name": "Instinctive",
@@ -7316,7 +7316,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "When this model is activated, if it is able to shoot/charge an enemy unit, it must immediately attack the closest valid target and gets +1 to hit rolls for that attack."
+    "description": "When this model is activated, if it is able to shoot/charge an enemy unit, then it must immediately attack the closest valid target and gets +1 to hit rolls for that attack."
   },
   {
     "name": "Vengeance",
