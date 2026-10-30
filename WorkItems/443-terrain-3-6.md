@@ -65,6 +65,11 @@ needs a JSON alias or it breaks every save/scenario that uses it. Climbable, Den
 
 ## Notes
 
+- 2026-10-30 (from #442): the Tactician now charges a candidate that ENDS in Dangerous terrain the next activation's
+  test (`TacticalAnalysis.EndsInDangerousTerrain`, the engine's swept-base overlap; WoundsToDestroy / 6 as a value
+  fraction, Flying exempt). Path cost through Dangerous pieces is still unpriced. When #443's new terrain types land
+  (Dense, Unstable, Steep, Climbable), check whether any carries the Dangerous flag or a test of its own the planner
+  should see - the term keys on `ETerrainType.Dangerous` only.
 - 2026-10-30 (from #446): Dangerous terrain now also tests a unit that ACTIVATES in it
   (`ActivatedInDangerousTerrainStage` -> `MovementExecutor.RollActivationDangerousTerrain`, any living model's base
   overlapping a piece flagged `ETerrainType.Dangerous`, via `MovementUtilities.IsModelInDangerousTerrain`), with one

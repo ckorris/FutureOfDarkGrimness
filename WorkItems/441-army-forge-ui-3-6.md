@@ -46,6 +46,10 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #442): the Combat Calculator (main menu) gained a whole-inch "Charged from (in), 0 = not set"
+  field in its melee row (shown while charging) and its shooting checkbox now reads "Attacker advanced (untick =
+  Hold)"; a Ravage / Regenerative Strength unit gets its own pre-strike "Ravage" row. Nothing in the Forge or lobby
+  changed; listed here only because the calculator shares the book picker - awaiting GUI hand-verify with #442.
 - 2026-10-30 (from #430): force-org and Unique Hero hand-off. (1) Where the warnings surface: the Forge's list pane
   prints every `ListValidator` issue under the list (amber for Warnings, red for Errors; `ArmyForgeScreen` ~:992) and
   the Army Builder prints `ForceOrgValidator.Validate` lines under the points box; the LOBBY shows none of the amber

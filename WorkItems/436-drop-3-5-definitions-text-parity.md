@@ -63,6 +63,13 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #442): two user-facing log strings seen in the 3.6 smokes, neither AI-side: (1)
+  `RuleOperation.ClearTokenOnRoll.Describe()` (`Rules/Definitions/RuleOperation.cs:522`) interpolates the `TokenType`
+  record, so the log reads "Peasant Levy's Vale Oath clears TokenType { Id = Shaken } on a 4+." - wants the token's
+  display name; (2) ChooseActionStage's no-shoot reason prints a raw float and a double space: "Shoot: Moved 11.998999
+  inches, when max to move and shoot for Destroyer  is 6." (3) On the struck-back Ravage twin the operation's narration
+  names the striker as the target: "Tribe Master's Ravage(6) rolled 6 dice at Tribe Master, each 6+ a direct wound." -
+  the next line ("dealt 1 unsaveable wound(s) to Errant Knights") and the wounds are right. All ASCII, wording only.
 - 2026-10-30 (from #435): (1) **AoF-file definitions no 3.6.0 AoF book or spell names** (not deleted - yours): Steadfast
   Buff, Piercing Assault Buff, Versatile Attack Buff, and "AP" (the #375 C9a unit-level wargear quirk, ranged-gated
   Save -1; only the bundled 3.5 Wood Elves book embeds it - a 3.6 book only carries weapon AP(X), which the importer reads

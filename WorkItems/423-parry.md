@@ -117,6 +117,15 @@ with hand weapons parries a charge in the GUI.
 
 ## Notes
 
+- 2026-10-30 (from #442): the AI / Combat Calculator half of Parry waits on this fork (Q11); nothing was built in
+  #442. Once the stage lands: (1) `CombatMath.EstimateVolley` must mirror the new hit-ignore step - expected melee
+  hits less Parry's 6+ fraction - by folding the stage's own operation through the evaluator (as Impact / Brace /
+  Counter already are), never by rule name; pin it against the real stage in `CombatMathPinTests` (the harness there
+  runs DetermineHitRoll -> AssignWounds); (2) the Combat Calculator runs the real stages, so it prices Parry for free -
+  add a `CombatCalculatorTests` case; (3) under A1 (auto-resolve, the default) there is no new request; under A2 the
+  AI needs a resolver for the defender's pick (Tactician: the hits whose ignore saves the most expected wounds; solo:
+  first option) with an AI legality pin (#066 pattern, see `Tests/AiTriggeredRequestLegalityTests.cs`); (4) the
+  Tactician's melee threat terms read `CombatMath`, so they follow with no extra change.
 - 2026-10-29: fork options written up ("The fork" above); nothing built until sign-off (plan Q11).
 - 2026-10-29: filed with the plan.
 

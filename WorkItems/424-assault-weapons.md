@@ -136,6 +136,15 @@ absent everywhere ("Piercing Assault", "Twin Assault Blaster" are unrelated subs
 
 ## Notes
 
+- 2026-10-30 (from #442): the AI / calculator half of Assault waits on this fork (Q12); nothing was built in #442.
+  Once the seam lands: (1) `CombatMath.EstimateMelee` batches `GetMeleeWeapons()` and `EstimateShooting` batches
+  `GetRangedWeapons()` - under A1 ("IsMelee = range 0 or Assault", one weapon object in both lists) both pick an Assault
+  weapon up with no AI change; pin a melee estimate and a shooting estimate of an Assault pistol; (2)
+  `Ai/AiUnitClassifier` (Shooting / Melee / Hybrid by weapon mix) must count Assault weapons on both sides - the solo
+  bot's whole move policy keys on that archetype; (3) `TacticalAnalysis.MeleeThreatReach` / the planner's
+  `EnemyFacts.HasMelee` read melee weapons (and, since #442, `MayCharge`), and `MacroActionGenerator`'s `hasMelee`
+  reads `ChargeContactRules.CanFightInMelee` - check an Assault-only unit reads as melee-capable there; (4) the Combat
+  Calculator's melee batches go through `GetMeleeWeapons()` too. Shooting threat "at their range" follows from (1).
 - 2026-10-29: fork options written up ("The fork" above); nothing built until sign-off (plan Q12).
 - 2026-10-29: filed with the plan.
 

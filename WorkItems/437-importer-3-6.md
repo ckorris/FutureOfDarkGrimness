@@ -65,6 +65,8 @@ refresh tools) so renamed books silently lose curation.
 
 ## Notes
 
+- 2026-10-30 (from #442): nothing for the importer from the AI side; the AI keys on rule effects, not names. If the
+  importer starts emitting Assault weapons (#424 A1), see the AI notes in `WorkItems/424-assault-weapons.md`.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

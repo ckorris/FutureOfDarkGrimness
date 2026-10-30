@@ -1,6 +1,6 @@
 # 442 — Tactician AI + Combat Calculator parity with 3.6
 
-**Status**: in-progress (2026-10-30)
+**Status**: done 2026-10-30 (awaiting GUI hand-verify; owner review: D7, D9)
 **Related**: #415, #191 (Tactician umbrella), #364 (melee threat reach), #360 (Indirect pricing), #066 (AI resolver legality tests), #325 (forecast), the phase-2 items it mirrors (#417, #422, #423, #424, #425)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high. Run after phase 2 lands; read `docs/ai-agent-plan.md`.
 
@@ -51,6 +51,42 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+- 2026-10-30 (#442 batch 12 - the bench, goal item 6 / D): FdgLab `bench`, Release builds, pool of 8 armies compiled
+  from the #435 3.6 scratch books (`scratchpad/442/pool/`: Wolf Brothers, Elven Jesters, Goblin Reclaimers, Alien
+  Hives, Chivalrous Kingdoms, Ghostly Undead, Deep-Sea Elves, Ogres; 630-830 pts each, upgrade picks and joined heroes
+  in), every ordered pair incl. mirrors (64 matchups) x 100 games (50 seeds x 2 sides), seeds 9000+, realistic dice,
+  DOP 16, profile A = tactician, B = solorules. #442 build: superproject `783cf01`, engine `f0940a8a`; baseline =
+  the #435 head (superproject `8420197`, engine `a0594db9`) built from temporary worktrees, same pool and seeds.
+
+  | build | games | tactician W-L-T | score | faults | timeouts | decision mean | worst p95 | game wall mean / p95 |
+  |---|---|---|---|---|---|---|---|---|
+  | #442 | 6400 | 5137-537-726 | **85.9%** | 0 | 0 | 2.01 ms | 104.0 ms | 589 / 849 ms |
+  | base (#435) | 6400 | 5112-558-730 | **85.6%** | 0 | 0 | 1.49 ms | 96.3 ms | 477 / 639 ms |
+
+  Outcome hashes `90CF4E2E6B8C04B8` (#442) / `55D949DAB515F258` (base) - different by design (behaviour changed);
+  the #191 perf-slice hash `D9577EB4D76AC8CA` was a different matrix and is not comparable. Per-matchup: the
+  per-cell spread is the usual +/-5-8 points at 100 games (largest moves: deepsea-ogres 75 -> 85, wolf-ogres 71 ->
+  79, ck-ogres 55.5 -> 47.5, ghosts-ghosts 96.5 -> 93.5); per-army as side A within +/-2. No regression vs the
+  solorules baseline (D10). Decision time +35% mean (the extra estimates: Ravage / defender pools, the urgency's
+  Hold volley, morale pass chance, charge-origin memo keys), still ~2 ms. G2 reading (two dumped games, Ogres vs
+  Chivalrous Kingdoms seed 9001, Deep-Sea Elves vs Alien Hives seed 9002, tactician vs solorules): charges taken
+  when favourable, objectives contested, the Deep-Sea Artillery holds and shoots every round (activation-start move:
+  "stay (Hold)"), Wave-Step moves head for the planned endpoints, Ravage fires on the struck-back Tribe Master; no
+  oscillation, no suicide charges, 0 solo-fallbacks. Two observations: the activation-start pre-plan and the real
+  plan can differ after the free move (Sea Guard pre-planned a charge, then contested - acceptable: the move still
+  went forward), and the Ravage log line names the striker as the target on the struck-back twin ("Tribe Master's
+  Ravage(6) rolled 6 dice at Tribe Master" - the wounds land on the right unit; hand-off to #436).
+  Final legality pass at the finished code: the batch-1 matrix again (22 FdgLab games, both profiles, seed 42) -
+  22/22 exit 0, 0 faults, 0 invalid paths, 0 re-prompts, 0 solo-fallbacks, 27 legal declines, 18 priced Versatile
+  picks; and the CLI path (`FdgRaylib --headless --army <3.6 army> --ai-profile solorules|tactician`, CLI EOF
+  defaults vs the AI) for Wolf Brothers, Chivalrous Kingdoms, Ghostly Undead, Deep-Sea Elves - 8/8 exit 0 with a
+  `Game result:` line.
+  Strategist leaf check (D11): `bench --pool {wolf, ck, ogres, deepsea}` (16 ordered matchups x 10 games, seeds 7000+,
+  DOP 4, search budget "benchmark", #442 Release build), profile A = strategist, B = tactician, same seeds both arms:
+  shipped net `StrategistLeafV1` 98-36-26 = **69.4%** (hash `0FE92C5942B23DBB`), `--evaluator hand` 100-47-13 =
+  **66.6%** (hash `D32009B2DA24E71B`); 0 faults, 0 timeouts; per-game 26.3 / 26.4 s mean, decision mean 118 ms, worst
+  p95 1.49 s. (The hand arm's first launch, chained after the net arm while other games ran, stopped after printing
+  its header with no error; re-run alone it completed - cause not found, no fault recorded in either report.)
 - 2026-10-30 (#442 batch 11 - Combat Calculator, B): `CombatSituation.ChargeFromInches` (new; 0 = not given) rides
   a charging swing's `CombatMetadata.ChargeOriginDistanceInches` through the real stages, so the calculator's charge
   arms fire (#432 (4)); the screen's melee row gains a whole-inch "Charged from (in), 0 = not set" field with a
@@ -408,10 +444,51 @@ with no illegal-action retries in the log.
   around the estimate and remove it (mutates shared, synced state from a resolver - rejected); (c) drop the op by
   rule name after evaluation (re-implements the rule's gate by name - against plan G1). Recommendation: (a), as its
   own small item; deferred here, nothing built.
+- **D10 - the bench and its verdict (2026-10-30).** The plan's G4 pool is Chris-curated at 2,000 points; the brief asked
+  for 6-8 armies from the 3.6 scratch books, which `--book-to-army` / the scratch compiler produce at 600-800 points,
+  so the bench is a SMALL-game bench - recorded as such, not a G4 gate number. Verdict: no regression (85.9% vs
+  85.6% over 6,400 games each, same seeds; well inside the noise of ~0.4 points SE). Re-run on the shipped books
+  after #438 (hand-off there).
+- **D11 - the shipped Strategist leaf is accepted as-is, not re-trained (2026-10-30).** Its inputs drifted at #417
+  (`CheapThreatReach` +3" instead of +2"; nothing in #442 changed them, D6). On 3.6 armies the net still out-scores
+  the hand-weighted leaf it replaced: 69.4% vs 66.6% against the Tactician, N = 160 each on identical seeds - within
+  noise (SE about 3.5 points), but not worse, which is the bar for keeping a shipped model. Re-training stays the
+  owner's call (plan rule 8); the measurement to repeat is this one at 2,000 points on the shipped books after #438.
 
 ## Outcome
 
-(open)
+**Done 2026-10-30** (awaiting GUI hand-verify of the calculator's new field / label; owner review on D7, D9).
+Engine 4112 -> 4194 passed (1 skipped), app 3377 -> 3378, build 0 errors, both headless smokes exit 0, rule coverage
+Dead: 36 unchanged. The goal's six lines:
+
+1. **Melee / shooting threat** - 3" reach was #417's; an ENEMY that may not charge (Cumbersome) is no charge threat
+   anywhere (batch 5). Assault weapons: DEFERRED, fork #424 / Q12 (hand-off in its Notes).
+2. **Expected damage** - Impact / Brace / Counter / Fatigue were #422 / #447's; added Ravage and Regenerative
+   Strength pools, Hazardous self-wounds, Scourge counted wounds, wounds taken earlier in the activation, the
+   charger's Unwieldy, granted roll modifiers and Target / Spotter / Tag markers, and the 3.6 range arms on the save
+   side and the charge side (batches 4, 8, 9). Parry: DEFERRED, fork #423 / Q11.
+3. **Action legality / Hold** - 3.6 legality smokes clean, the activation-start reposition move planned instead of
+   solo-delegated, Hold-vs-moved priced in target choice and the urgency term (batches 1, 3, 9). Scout / Vanguard
+   keep-out was #426's. Artillery's moved -1 for move candidates: DEFERRED (D9, needs an engine seam).
+4. **Range-conditional rules** - charge origin and save-side distance through `CombatMath`, base-to-base attack
+   distance in the shooting resolver, morale pass chance with Hive Bond / Banner, calculator charge distance
+   (batches 4, 6, 11).
+5. **New AI resolvers** - Versatile picks priced (batch 2), Spell Drain used (batch 7); every new request shape the
+   AI answers has a legality pin. Parry's pick: DEFERRED with #423.
+6. **Bench** - 85.9% vs 85.6% (no regression, D10); Strategist leaf accepted as-is - shipped net 69.4% vs the hand leaf's 66.6% against the Tactician (D11).
+
+Negative controls (E): the hypothetical-rule carrier (4 tests fail without it), the save context's distance / IsSpell
+(3 fail), the hit contexts' charge origin (3 fail).
+
+**Deferred, and where recorded:** fork-blocked - Assault threat / classifier (#424 Notes), Parry hit reduction and
+pick resolver (#423 Notes), Enhanced X pricing (#433 Notes); owner review - D7 (break-bonus scaling), D9 (Artillery
+moved -1 seam); pre-existing, not 3.6 (C, this file's Notes) - #426's objective-aware reposition aim / keep-out-aware
+Scout aim / placement alternation, positioning near a friendly Tough(9)+ Hero and shooting units outside an enemy
+Hero's 6", activation order around Dangerous terrain and path cost through it, the Tactician's bare evaluator not
+reading GRANTED rules (auras, spell buffs, a picked Versatile helper - `TacticianRuleLookup` is the resolver that
+would close it), Dash / Harassing / Hit & Run triggered moves after the plan (replay the plan, near-zero move),
+Mind Control (no policy for steering an enemy unit), a self-boost casting policy, a melee-result morale estimate,
+Strafe handling, Learning/PositionEncoder inputs (D6).
 
 ## Rules for the agent (plan section 1, restated)
 

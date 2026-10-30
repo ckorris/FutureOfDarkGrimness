@@ -73,6 +73,12 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #442): after the re-bake, re-run #442's bench with armies compiled from the SHIPPED 3.6 books (it
+  ran on the #435 scratch imports): `FdgLab bench --pool <dir> --profile-a tactician --profile-b solorules`, recipe and
+  baseline numbers in `WorkItems/442-ai-and-calculator-parity-3-6.md` (D10/D11). The AI reads Spell Drain /
+  Versatile / Ravage / Hazardous / Tag shapes by their EFFECTS, not their names, so renamed data keeps working; a
+  change of effect shape (e.g. Spell Drain no longer `MoraleTestThen -> ConsumeToken(SpellTokens)`) would silently turn
+  the Tactician's Spell Drain policy off - worth a glance in the bake diff.
 - 2026-10-30 (from #435): the AoF re-bake must pick up: Banner's `moraleTestFromShootingOrMelee` condition (GDF file,
   shared), Great Sergeant (AP(+2), weapon scope) and Great Banner (grants Banner), Ossified / Warden (no 9" gate), Wave-Step
   `move: true`, Ethereal's `tokenPresent TeleportedThisActivation` gate, Grounded Speed (terrain gate only), the five new

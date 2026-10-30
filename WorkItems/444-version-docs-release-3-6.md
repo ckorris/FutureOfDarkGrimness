@@ -58,6 +58,10 @@ shows `v0.4.0`; CI release job green with the title containing "(OPR 3.6.0)".
 
 ## Notes
 
+- 2026-10-30 (from #442): release-notes material - the Tactician now uses Spell Drain, prices its Versatile picks and
+  the 3.6 activation-start moves, and reads the 3.6 range / charge-distance rules, Ravage, Hazardous, Scourge and Tag
+  tokens; the Combat Calculator takes a charge distance and shows Ravage. Two owner-review items there (D7 break-bonus
+  discount, D9 Artillery's moved -1) and the Strategist leaf decision (D11) are in #442's Decisions.
 - 2026-10-29: filed with the plan.
 
 ## Decisions

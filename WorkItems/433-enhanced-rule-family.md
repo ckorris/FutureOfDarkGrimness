@@ -73,6 +73,14 @@ Every Enhanced name resolves (`--rule-coverage` 0 for the family), one integrati
 
 ## Notes
 
+- 2026-10-30 (from #442): AI / calculator notes for whichever option is chosen (Q6); nothing was built in #442.
+  (1) `CombatMath` prices every rule through the evaluator, so an Enhanced variant authored as DATA (its own
+  definition, or a parameterised base rule) prices for the AI and the calculator with no AI change; a per-name engine
+  mechanism would need a mirror. (2) The Tactician's `TacticianAbilityEffectResolver` prices any "pick one effect"
+  helper as a hypothetical attacker rule (`CombatMath`'s `hypotheticalAttackerRule`), so an Enhanced pick shaped like
+  Versatile's prices for free. (3) Spells that GRANT an Enhanced rule (Righteous Fury -> Enhanced Wolfborn, Litanies of
+  War -> Enhanced Devout) land as `RuleGrant` tokens, which the Tactician's bare evaluator cannot read (no rule
+  resolver - a recorded #191 gap); `Ai/Tactician/TacticianRuleLookup` (#442) is the resolver that would close it.
 - 2026-10-30 (from #435): **the AoF view of your family.** The 41 AoF 3.6.0 imports leave exactly 58 Enhanced names /
   137 refs dead (all 90 entries: 91 / 299), nothing else but Assault / Parry. AoF base rules whose shapes are now in place
   for an Enhanced upgrade: Ossified / Warden (Guardian's unconditional AP(-1); Enhanced "AP(-2) from Ossified/Warden"),

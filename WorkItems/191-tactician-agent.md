@@ -23,6 +23,13 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-10-30 (from #442, OPR 3.6 parity) - pointer, not a gate.** #442 changed the A policy and `CombatMath` for the
+3.6 rules (charge-origin and save-side range arms, Ravage / Hazardous / Scourge / granted tokens / markers, morale
+pass chance, Versatile picks, Spell Drain, the activation-start reposition move, Dangerous end positions). Small-game
+bench on 3.6 scratch armies (8 armies, 600-800 pts, 6,400 games): tactician vs solorules 85.9% (#442) vs 85.6% (the
+#435 head); Strategist leaf check 69.4% (shipped net) vs 66.6% (hand) against the Tactician, N = 160 each. Full record,
+hashes and seeds in `WorkItems/442-ai-and-calculator-parity-3-6.md` (D10, D11); the shipped leaf is kept as-is.
+
 **2026-09-09 (18:45, Opus 5) - CLOSING THE PERF STRAND. THE HONEST READ: WE BANKED A REAL 21-29% AND
 THE REMAINING EXACT LEVERS CANNOT REACH THE NEXT STEP OF ROOT COVERAGE. THE VALUE LEFT IS IN
 CONFIRMING WHAT WE BANKED, NOT IN A THIRTEENTH PASS. (Chris, 18:45: "good enough right now".)**
