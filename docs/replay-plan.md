@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; implementation not started. Umbrella work item: **#449**.
+**Status:** planning complete 2026-10-30; #450 (format + host recorder) done 2026-10-30. Umbrella work item: **#449**.
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -202,7 +202,7 @@ step. The filter is one class (`DefaultStepFilter`) so the viewer can offer "sho
 Method: a temporary probe in FdgLab (archived at `~/Projects/fdg-lab-scratch/replay-probe/`, not in the
 repo) tallied every store event, request, reply and log line of two seeded 2k 1v1 AI games
 (`smoke --seed 42` Battle Brothers vs Orks; `--seed 7` Alien Hives vs HDF), 4 rounds, 54-56 activations,
-312-349 decisions each. Beats were NOT measured (FdgLab wires no presenter); their row is an estimate.
+312-349 decisions each. Beats were not in that probe; their row is #450's measurement (below).
 
 | Stream | Events | Raw bytes | Notes |
 |--------|--------|-----------|-------|
@@ -213,15 +213,33 @@ repo) tallied every store event, request, reply and log line of two seeded 2k 1v
 | `StoreUpdate:GameProgressData` | 165-171 | 163-171 KB | the #052 rolling snapshot, ~1 KB each |
 | `StoreUpdate:Position/Float2` | 400-500 | 65-80 KB | movement is cheap |
 | `Log` | 1500-1800 lines | 67-82 KB | |
-| `Beat` (estimate) | 500-1500 | 0.3-1 MB | ~300-800 B each; measure in #450 and update this table |
-| **Event stream total** | | **3.2-3.4 MB raw -> 166-192 KB gzip** (+ est. 30-60 KB gzip for beats) | |
+| `Beat` (measured, #450) | 326-421 | 383-495 KB | `UnitMovedBeat` 3.4-4.1 KB avg (42-47), `AttackBeat` ~1.7 KB (46-70), `DiceRolledBeat` ~0.74 KB (114-188), banners / deaths / wounds / roll-offs 0.4-0.8 KB; 33-40 KB gzip on their own |
+| **Event stream total** (probe) | | **3.2-3.4 MB raw -> 166-192 KB gzip** (excl. beats) | the real recorder's stream is larger - see below |
 | `Snapshot` (one full save) | | 400 KB raw -> 21-27 KB gzip | per round (5 incl. start) = ~130 KB gz; per activation (55) = ~1.4 MB gz, hence per-round |
 
-**Per 2k 1v1 game: ~0.35-0.5 MB `.fdgreplay`** (stream ~0.2-0.25 MB + snapshots ~0.13 MB). Scales
+**Measured end to end (#450, 2026-10-30)** - the real `ReplayRecorder` attached to the same two FdgLab
+smoke games (temporary env-gated patch, archived at `~/Projects/fdg-lab-scratch/replay-450-measure/`),
+sizes taken from its `ExportGzip()`:
+
+| Game | Steps | `.fdgreplay` (gzip) | Raw | Stream without snapshots | 5 snapshots | Beats |
+|------|-------|--------------------|-----|--------------------------|-------------|-------|
+| BB vs Orks, seed 42 | 349 | **485 KB** | 7.06 MB | 4.53 MB -> 340 KB | 2.53 MB -> 140 KB | 421: 495 KB -> 40 KB |
+| Hives vs HDF, seed 7 | 312 | **411 KB** | 6.68 MB | 4.16 MB -> 289 KB | 2.52 MB -> 118 KB | 326: 383 KB -> 33 KB |
+
+The stream is ~1.6x the probe's gzip estimate because (a) every payload is embedded as an escaped JSON
+string (each `"` becomes `\"`), which adds raw bytes and compresses less well, (b) the log carries the
+Debug-category lines too (1505-1806 lines, 140-168 KB raw), and (c) beats were not in the probe. Setup adds
+almost vanish (19-22 `StoreAdd`) because the finished world is snapshot 0. A snapshot is ~505 KB raw
+(`GameSaveSerializer.Save` is indented) and 24-28 KB gzip.
+
+**Per 2k 1v1 game: 0.41-0.49 MB `.fdgreplay`** (measured; the estimate was ~0.35-0.5 MB: stream ~0.2-0.25 MB
++ snapshots ~0.13 MB). F3 still holds - a thousand games is ~0.5 GB. Cheap cuts if size ever matters:
+non-indented snapshot JSON, raw-embedded payloads, or the `UnitData` field diff below. Scales
 linearly with decisions and unit count: a 4k or 2v2 game ~2x, a 1k game ~0.5x. A 1 MB uncompressed
 `.fdgsave` from the GUI (the two in the repo root have 201 models) will gain ~0.5-0.7 MB of base64
 (~1.5-1.7 MB total); a lab-sized 400 KB save roughly doubles. Embedding the stream UNcompressed would add
-3.5-4.5 MB (4-10x the save) - do not. Memory: the recorder holds ~3.5 MB of strings per game; fine.
+3.5-4.5 MB (4-10x the save) - do not. Memory: the recorder holds ~6.7-7 MB of strings per 2k game,
+snapshots included (~14 MB as .NET UTF-16); fine.
 If size ever matters, a field-level diff for `UnitData` updates would cut the raw stream ~10x; out of
 scope here (gzip already does most of that work).
 
@@ -232,7 +250,7 @@ scope here (gzip already does most of that work).
 | # | Title | Depends on | Status |
 |---|-------|------------|--------|
 | 449 | Umbrella: plan, ground rules, master merges, release gate | - | planning done |
-| 450 | Engine: replay format + host-side `ReplayRecorder` (store, requests, beats, log, markers, snapshots, seed materialisation) | - | todo |
+| 450 | Engine: replay format + host-side `ReplayRecorder` (store, requests, beats, log, markers, snapshots, seed materialisation) | - | done 2026-10-30 |
 | 451 | Engine: decision payloads to clients (D2) + `ClientReplayRecorder` + `ReplayMarkerMessage` | 450 | todo |
 | 452 | App: auto-write `.fdgreplay` on every game exit (host, client, headless, scenario, crash best-effort) | 450, 451 | todo |
 | 453 | Replay inside `.fdgsave`: save embeds, resume continues, clients receive history | 450, 451 | todo |

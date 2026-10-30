@@ -256,3 +256,6 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
   ([WorkItems/413](413-no-morale-roll-after-shooting.md))
 - [x] 414 — Client join dialog text was not scaled (browser tab + password popup); browser columns fit
   their text, Join column labelled, name label first. **Done 2026-10-28.** ([WorkItems/414](414-client-join-text-scaling.md))
+- [x] 450 — Engine: replay container format + host-side `ReplayRecorder` (store deltas, request/reply,
+  beats, log, markers, per-round snapshots, concrete seed always). **Done 2026-10-30** on `feature/replay`;
+  2k 1v1 replay 0.41-0.49 MB. ([WorkItems/450](WorkItems/450-replay-recorder-host.md))

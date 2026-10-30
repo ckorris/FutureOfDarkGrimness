@@ -1,6 +1,6 @@
 # 450 — Engine: replay format + host-side ReplayRecorder
 
-**Status**: in progress (2026-10-30)
+**Status**: done (2026-10-30)
 **Related**: plan `docs/replay-plan.md` sections 4.1, 4.2, 5; umbrella #449; consumers #451 (client), #452 (auto-write), #453 (save embedding), #454 (playback)
 
 ## Goal
@@ -94,6 +94,20 @@ Engine suite green; `dotnet build`; headless smoke exits 0; a GUI local game sti
 user-visible changes in this ticket). Commit on `feature/replay` (engine first, then bump).
 
 ## Notes
+- 2026-10-30 - Slice 5 (measurement + close-out): the real recorder on the plan's two FdgLab smoke games
+  (temporary env-gated `GameRunner` patch + `ReplayMeasure.cs`, archived with both reports at
+  `~/Projects/fdg-lab-scratch/replay-450-measure/`, reverted from the tree). Beats: 421 (BB vs Orks, seed
+  42) and 326 (Hives vs HDF, seed 7), 495 / 383 KB raw, 40 / 33 KB gzip; `UnitMovedBeat` is the big one
+  (3.4-4.1 KB avg). Whole `.fdgreplay`: 485 / 411 KB. Written into plan section 5 (beat row replaced, an
+  end-to-end table added, the stream being ~1.6x the probe's gzip estimate explained: escaped payloads,
+  Debug log lines, beats). `ReplaySummary.SizeBytes` reads ~18% under the real raw size (it ignores
+  escaping) - now said in its doc comment. +1 test: `HostLobbyLaunch_RecordsTheGame_UnderAConcreteSeed`
+  launches through `LobbyViewModel_Host.TryLaunchGame` (the GUI's new-game path; nothing else exercised a
+  real lobby launch) and checks the recorder is exposed on the lobby AND the launched game, the header
+  has a seed and Human/Ai controllers, GameStart + snapshot 0 are recorded, and lobby `Dispose` stops it.
+  GUI `--scenario Scenarios/example-shootout.json` boot-smoked for 25 s: reached "Player 1's Activation",
+  no exceptions, no `[replay]` lines. Final: `dotnet build` clean, engine 3423 passed / 1 skipped, app
+  3059 passed, headless smoke exit 0.
 - 2026-10-30 - Slice 4 (app wiring): `CliApp.RunAsync` (seed materialised before the AI player is built,
   recorder attached to the human game and passed to the server), `CliApp.RunScenarioAsync` and the GUI
   `--scenario` path in `Program.cs` (recorder on the resume constructor, attached to the human game),
@@ -232,4 +246,18 @@ user-visible changes in this ticket). Commit on `feature/replay` (engine first, 
   Debug-category lines unless the toggle is on, and the viewer needs the same flag to do likewise.
 
 ## Outcome
-(open)
+Done 2026-10-30 on `feature/replay` (both repos). The `.fdgreplay` container (format v1: gzip JSON Lines,
+header + ten Kind-tagged event kinds, writer and minimal reader) and the host-side `ReplayRecorder` exist
+in `FutureOfDarkGrimness/Replay/`. Every real host game - lobby new game and resume, headless CLI, headless
+and GUI `--scenario` - records store deltas, every request/reply/error, every beat, every log line, the
+GameStart / RoundStart / ActivationStart / GameEnded markers and per-round snapshots, broadcasts the markers
+to clients (`ReplayMarkerMessage`), and exposes the recording as `IFDGGame.Replay` /
+`ILobbyViewModel.Replay`. Simulations, FdgLab and tests record nothing. Every game now has a concrete seed
+(D5) and a persistent `GameProgressData.GameId`. A 2k 1v1 replay is 0.41-0.49 MB (plan section 5).
+
+Not done here, by design: writing the file (#452), client recording (#451), `Saved`/`Resumed` and save
+embedding (#453), playback, build-stamp warnings and the step filter (#454).
+
+Not hand-verified: a full GUI LOBBY game played to the end. The lobby's launch path is covered by an
+engine test and the GUI `--scenario` path was boot-smoked, but nobody clicked through Host -> lobby ->
+LAUNCH in the running app; #457's hand-verify covers it.

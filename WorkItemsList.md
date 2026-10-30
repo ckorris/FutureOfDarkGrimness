@@ -61,7 +61,6 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 ## Replay system (branch `feature/replay`, plan: `docs/replay-plan.md`)
 
 - [~] 449 — Replay system umbrella: plan, ground rules, master merges into the branch, release gate. Planning done 2026-10-30; sizing measured (plan sec 5). ([WorkItems/449](WorkItems/449-replay-umbrella.md))
-- [ ] 450 — Engine: replay container format + host-side `ReplayRecorder` (store deltas, request/reply, beats, log, markers, per-round snapshots, concrete seed always). ([WorkItems/450](WorkItems/450-replay-recorder-host.md))
 - [ ] 451 — Engine: `StageTaskNotifyResolvedMessage` carries request + reply payloads (D2, partial reversal of #088) + `ClientReplayRecorder` so remote clients record the same replay. ([WorkItems/451](WorkItems/451-replay-client-recording.md))
 - [ ] 452 — App: auto-write `.fdgreplay` to `Replays/` on every game exit (normal, disconnect, escape menu, window close, headless, scenario, crash best-effort), host and client. ([WorkItems/452](WorkItems/452-replay-autosave.md))
 - [ ] 453 — Replay embedded in `.fdgsave`: save carries it, resume continues it (`Saved`/`Resumed` markers), clients of a resumed game receive the history. ([WorkItems/453](WorkItems/453-replay-in-save.md))
