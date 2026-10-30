@@ -63,6 +63,16 @@ A script in the scratchpad (not committed) compares descriptions and reports 0 m
 
 ## Notes
 
+- 2026-10-30 (from #430): the 3.5 `Unique` definition. Still shipped and still handled: `GdfRuleSupplement.json` "Unique"
+  ("Your army may only include one copy of this unit."), the `Unique` branch beside Unique Hero in
+  `ListValidator.Validate` (`uniqueRule`), the lint exemptions `["Unique"]` in `RuleSupplementLintTests.cs:23` and
+  `BookRuleFireLintTests.cs:27`, the `Unique` fixtures in `ListValidatorTests.cs` (UniqueBook and its three tests),
+  `LaunchGateTests.ForgeArmyWithCatalogError_IsAProblem_AttributedToThePlayer`, and the `Core("Unique")` in
+  `DefaultBaseEstimatorTests.Hero_GetsACircle_NotAVehicleRectangle`. Drop them together once the books are re-baked
+  (#438): 3.6 books carry "Unique Hero" instead (26 books, 60 units, none with Hero alongside), which is a CATALOG rule
+  now (`CoreRuleCatalog.UniqueHero`, in `All`), so there is no supplement entry to write. Parity: the catalog description
+  is the book sentence verbatim ("Counts as having Hero, and this model may only be taken once per army."), identical in
+  all 26 books. When `Unique` goes, delete the `uniqueRule` ternary's second arm and rename nothing else.
 - 2026-10-30 (from #426): text already 3.6, skip: `CoreRuleCatalog.Scout`, `.Ambush`, `.Vanguard`, `.Fanatic`
   (pinned by `ScoutPlacementRuleIntegrationTests`, `AmbushRuleIntegrationTests`, `VanguardRuleIntegrationTests`);
   supplement `Reinforcement`, `Spawn`, `Split` (GDF) and `Drakesworn` (AoF) (pinned by

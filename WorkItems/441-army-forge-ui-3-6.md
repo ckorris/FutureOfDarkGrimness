@@ -46,6 +46,24 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #430): force-org and Unique Hero hand-off. (1) Where the warnings surface: the Forge's list pane
+  prints every `ListValidator` issue under the list (amber for Warnings, red for Errors; `ArmyForgeScreen` ~:992) and
+  the Army Builder prints `ForceOrgValidator.Validate` lines under the points box; the LOBBY shows none of the amber
+  force-org lines (only the `LaunchGate` blocking problems and, on click, the Errors as a confirm), so "force-org
+  warnings wording per system" in goal item 4 means those two screens. A lobby amber line would be a new UI fork.
+  (2) New warning text, all ASCII: "Too many Heroes: N (max M at L pts; 1 per 500)", "Too many copies of "X": N (max M at
+  L pts; 1 + 1 per 1000)", "Unit "X" is too large: N pts (max M at L pts; 35% of the army)", "Too many units: N (max M at
+  L pts; 1 per 200)", "Too many models/Tough: N (max M at L pts; 1 model or Tough per 20)" (AoF: 375 / 750 / 150 / 15);
+  the Unique Hero duplicate is the Error "X: Unique Hero - the army may only include one copy." on the second row. The
+  lines are plain strings with no per-row index except the Error, so they sit under the list, not on a row. (3) Already
+  done in the Forge: a new list starts at the book system's starter size (GDF 1000 / AoF 750), a system switch moves a
+  stock limit (2000 -> 1500), and the "pts limit" box has a hover with the suggested sizes and the force-org numbers
+  (`ArmyForgeScreen.PointsLimitTooltip`). (4) Unique Hero: a bearer reports `ForceOrgValidator.IsHero` true, so the join
+  control (`ArmyForgeScreen` ~:1093/:1131, the calculator's `CalculatorSide.MainIsHero`) is offered with no change; its
+  rule list will show "Unique Hero" (the glossary text is the 3.6 sentence, from `CoreRuleCatalog.UniqueHero`). Nothing
+  in the bundled 3.5 books carries Unique Hero until #438, so the Forge-side hand-verify needs a re-baked book or a
+  fixture. (5) Needs a UI pass: whether the amber lines should name the cap's number inline or in a hover, and a lobby
+  line, are Chris's call.
 - 2026-10-30 (from #426): glossary text. `RuleGlossary` reads definition descriptions, so Scout, Ambush, Vanguard and
   Fanatic tooltips already show the full 3.6 text (catalog). Drakesworn, Reinforcement, Spawn and Split are book-embedded:
   their tooltips keep the 3.5 text until #438 re-bakes the books from the updated supplements. The 3.6 texts are 2-4x

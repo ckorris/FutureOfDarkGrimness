@@ -823,12 +823,11 @@ public class LobbyScreen : IAppScreen
         ImGui.BeginDisabled(locked);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints,
-            tooltip: "The point budget each player's army is built to. An army over this limit is\n" +
-                     "flagged red on its row and blocks the launch. Higher points means bigger battles.",
+            tooltip: ArmyPointsTooltip(_viewModel.AllowedGameSystems),
             step: 250);
         // #402: which OPR collections' armies this table takes. All is the default and accepts anything,
         // including an army from neither collection (OPR's custom-book tool makes those).
-        DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, _viewModel.SetAllowedGameSystems,
+        DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, SetArmySource,
             displayName: GameSystems.DisplayName,
             tooltip: "Which game systems' armies this lobby accepts.\n" +
                      "All: anything, GDF and AoF at the same table if that is the plan.\n" +
@@ -1269,6 +1268,42 @@ public class LobbyScreen : IAppScreen
             tableBackground: _viewModel!.TableBackground,
             // #384: likewise synced, so every player's fire-line previews match the engine's LoS.
             seeThroughFriendlyUnits: _viewModel!.SeeThroughFriendlyUnits);
+    }
+
+    /// <summary>
+    /// #430: the host picked an Army Source. The suggested game sizes differ per system (GDF 1000 / 2000, AoF
+    /// 750 / 1500), so a budget still sitting on the old source's suggested size follows to the new source's
+    /// (2000 -> 1500 on switching to Age of Fantasy); a hand-typed budget is left alone. "All" reads as
+    /// Grimdark Future, the default system. Only the live combo does this - loading a saved host config sets
+    /// both values straight through the view model, so a remembered pair is never rewritten.
+    /// </summary>
+    private void SetArmySource(EAllowedGameSystems allowed)
+    {
+        int points = ForceOrgLimits.Retarget(_viewModel.ArmyPoints, _viewModel.AllowedGameSystems, allowed);
+        _viewModel.SetAllowedGameSystems(allowed);
+        if (points != _viewModel.ArmyPoints)
+            _viewModel.SetArmyPoints(points);
+    }
+
+    /// <summary>The Army Points hover (ASCII only; it is game text): what the number does, plus the suggested
+    /// game sizes of the lobby's Army Source (#430, Core Rules v3.6.0).</summary>
+    internal static string ArmyPointsTooltip(EAllowedGameSystems allowed)
+    {
+        ForceOrgLimits gdf = ForceOrgLimits.GrimdarkFuture;
+        ForceOrgLimits aof = ForceOrgLimits.AgeOfFantasy;
+        string suggested = allowed switch
+        {
+            EAllowedGameSystems.AgeOfFantasy =>
+                $"Suggested for Age of Fantasy: {aof.SuggestedStartPoints} to start, {aof.SuggestedFullPoints} for a full match.",
+            EAllowedGameSystems.GrimdarkFuture =>
+                $"Suggested for Grimdark Future: {gdf.SuggestedStartPoints} to start, {gdf.SuggestedFullPoints} for a full match.",
+            _ =>
+                $"Suggested: Grimdark Future {gdf.SuggestedStartPoints} to start, {gdf.SuggestedFullPoints} for a full match; " +
+                $"Age of Fantasy {aof.SuggestedStartPoints} / {aof.SuggestedFullPoints}.",
+        };
+        return "The point budget each player's army is built to. An army over this limit is\n" +
+               "flagged red on its row and blocks the launch. Higher points means bigger battles.\n" +
+               suggested;
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter, string? tooltip = null,

@@ -250,7 +250,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 427 | Core small batch: Unstoppable, Aircraft, Flying, Transport contact, Spell Amplifier, Immobile | 2 | - | S | medium | done 2026-10-29 (owner review: D1, D2, D3, D5, D6) |
 | 428 | "Most models" gating replaces "all models" everywhere | 2 | - | O | medium | done 2026-10-29 (owner review: D2, D3) |
 | 429 | Casting 3.6: LoS per spell, +1 casting modifiers, once per activation, Spell Drain | 2 | #427 | O | high | done 2026-10-30 (owner review: D2, D6) |
-| 430 | Force org and points validation 3.6 (GDF + AoF levels, Unique Hero once per army) | 2 | - | S | medium | todo |
+| 430 | Force org and points validation 3.6 (GDF + AoF levels, Unique Hero once per army) | 2 | - | S | medium | done 2026-10-30 (owner review: D1, D2, D3, D4, D6) |
 | 431 | New weapon-rule family (Anti-Cover ... Crossing Strike) | 3 | #418 | O | high | done 2026-10-29 (owner review: D2, D3, D5, D8) |
 | 432 | Range-conditional army-wide rules (9"/6" family) | 3 | #428 | O | high | done 2026-10-29 (owner review: D1, D2, D4, D5) |
 | 433 | "Enhanced X" family (design fork) | 3 | #432 | F | xhigh | todo |
@@ -277,7 +277,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file

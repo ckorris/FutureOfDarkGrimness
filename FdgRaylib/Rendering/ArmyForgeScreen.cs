@@ -58,7 +58,9 @@ public class ArmyForgeScreen : IAppScreen
 {
     public Action? OnBack;
 
-    private const int DefaultPointsLimit = 1000;
+    /// <summary>#430: a new list starts at its game system's suggested starter size (GDF 1000, AoF 750 -
+    /// "we suggest ... to start", Core Rules v3.6.0).</summary>
+    private static int DefaultPointsLimit(BookFile book) => ForceOrgLimits.For(book.GameSystem).SuggestedStartPoints;
 
     private static readonly Vector4 RedText    = new(0.90f, 0.40f, 0.40f, 1f);
     private static readonly Vector4 YellowText = new(0.90f, 0.80f, 0.35f, 1f);
@@ -157,7 +159,7 @@ public class ArmyForgeScreen : IAppScreen
         InitSystems();
         _bookIndex = _visibleBooks[0];
         UseBook(_library[_bookIndex]);
-        _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
+        _list = new BuilderList { PointsLimit = DefaultPointsLimit(_book), BookName = _book.Name };
     }
 
     /// <summary>#378: pick the first system that has books (GDF in the shipped layout) and build the
@@ -209,7 +211,7 @@ public class ArmyForgeScreen : IAppScreen
         InitSystems();
         _bookIndex = _visibleBooks[0];
         UseBook(_library[_bookIndex]);
-        _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
+        _list = new BuilderList { PointsLimit = DefaultPointsLimit(_book), BookName = _book.Name };
     }
 
     // #378 test accessors (the combo state itself only exists inside Draw).
@@ -229,8 +231,13 @@ public class ArmyForgeScreen : IAppScreen
     {
         if (index < 0 || index >= _library.Count) return;
         _bookIndex = index;
+        BookFile previous = _book;
         UseBook(_library[index]);
-        _list = new BuilderList { PointsLimit = _list.PointsLimit, BookName = _book.Name };
+        // #430: a limit still sitting on the old system's suggested size follows the new system's
+        // (GDF 2000 -> AoF 1500); a hand-typed limit is kept.
+        int limit = ForceOrgLimits.Retarget(_list.PointsLimit,
+            ForceOrgLimits.For(previous.GameSystem), ForceOrgLimits.For(_book.GameSystem));
+        _list = new BuilderList { PointsLimit = limit, BookName = _book.Name };
         _selectedListIndex = null;
         _selectedRosterId = null;
     }
@@ -787,6 +794,8 @@ public class ArmyForgeScreen : IAppScreen
         int limit = _list.PointsLimit;
         if (ImGui.InputInt("pts limit", ref limit, 250) && limit > 0)
             _list.PointsLimit = limit;
+        if (ImGui.IsItemHovered())
+            UiText.Tooltip(PointsLimitTooltip(_book));
 
         string header = PointsHeader(compiled.TotalPoints, _list.PointsLimit);
         float headerW = ImGui.CalcTextSize(header).X;
@@ -1505,6 +1514,19 @@ public class ArmyForgeScreen : IAppScreen
     internal (EForgeStatusKind Kind, string? Text) Status => (_statusKind, _statusHint);
 
     // ── Pure formatting seams (unit-tested; ImGui itself is hand-verified) ──────────────────────────────
+
+    /// <summary>#430: the hover on the points-limit box - the system's suggested game sizes and the force-org
+    /// numbers the amber warnings are measured against (ASCII only; it is game text).</summary>
+    internal static string PointsLimitTooltip(BookFile book)
+    {
+        ForceOrgLimits limits = ForceOrgLimits.For(book.GameSystem);
+        return $"{GameSystems.DisplayName(book.GameSystem)}: {limits.SuggestedStartPoints} pts to start, " +
+               $"{limits.SuggestedFullPoints} pts for a full match.\n" +
+               $"Force Org (optional, shown as warnings): 1 Hero per {limits.PointsPerHero} pts; " +
+               $"copies of one unit: 1 + 1 per {limits.PointsPerExtraCopy} pts;\n" +
+               $"no unit over {limits.MaxUnitSharePercent}% of the army; 1 unit per {limits.PointsPerUnit} pts; " +
+               $"1 model or Tough per {limits.PointsPerModelOrTough} pts.";
+    }
 
     internal static string PointsHeader(int total, int limit) => $"{total} / {limit} pts";
 

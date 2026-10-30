@@ -114,6 +114,56 @@ public class ArmyForgeScreenTests
         Assert.That(screen.VisibleBookNames, Does.Contain("Wood Elves"), "the dropdown now shows the AoF list");
     }
 
+    // ---- #430: points defaults follow the game system's suggested sizes ------------------------
+
+    [Test]
+    public void NewListStartsAtTheSystemsSuggestedStarterSize()
+    {
+        var screen = new ArmyForgeScreen(MixedLibrary());
+
+        Assert.That(screen.List.PointsLimit, Is.EqualTo(1000), "Grimdark Future: 1000 to start");
+
+        screen.SwitchSystem(1);
+        Assert.That(screen.List.PointsLimit, Is.EqualTo(750), "Age of Fantasy: 750 to start");
+
+        screen.SwitchSystem(0);
+        Assert.That(screen.List.PointsLimit, Is.EqualTo(1000));
+
+        var aofOnly = new ArmyForgeScreen(new BookFile { Name = "Wood Elves", GameSystem = GameSystems.AgeOfFantasy });
+        Assert.That(aofOnly.List.PointsLimit, Is.EqualTo(750), "a screen that opens on an AoF book starts at 750");
+    }
+
+    [Test]
+    public void SwitchingSystem_FollowsAStockLimit_ButKeepsATypedOne()
+    {
+        var screen = new ArmyForgeScreen(MixedLibrary());
+        screen.List.PointsLimit = 2000;   // GDF full match
+        screen.SwitchSystem(1);
+        Assert.That(screen.List.PointsLimit, Is.EqualTo(1500), "2000 -> AoF's 1500");
+
+        screen.List.PointsLimit = 1750;   // typed, not a suggested size of either system
+        screen.SwitchSystem(0);
+        Assert.That(screen.List.PointsLimit, Is.EqualTo(1750));
+    }
+
+    [Test]
+    public void PointsLimitTooltip_NamesTheSystemsSizesAndForceOrgNumbers_InAscii()
+    {
+        var gdf = new BookFile { Name = "G" };
+        var aof = new BookFile { Name = "A", GameSystem = GameSystems.AgeOfFantasy };
+
+        string gdfTip = ArmyForgeScreen.PointsLimitTooltip(gdf);
+        string aofTip = ArmyForgeScreen.PointsLimitTooltip(aof);
+
+        Assert.That(gdfTip, Does.Contain("Grimdark Future").And.Contain("1000 pts to start").And.Contain("2000 pts for a full match")
+            .And.Contain("1 Hero per 500").And.Contain("1 + 1 per 1000").And.Contain("35%")
+            .And.Contain("1 unit per 200").And.Contain("1 model or Tough per 20"));
+        Assert.That(aofTip, Does.Contain("Age of Fantasy").And.Contain("750 pts to start").And.Contain("1500 pts for a full match")
+            .And.Contain("1 Hero per 375").And.Contain("1 + 1 per 750")
+            .And.Contain("1 unit per 150").And.Contain("1 model or Tough per 15"));
+        Assert.That(gdfTip + aofTip, Is.All.LessThan('\u0100'), "game text is ASCII/Latin-1 only");
+    }
+
     [Test]
     public void PointsHeader_ShowsTotalOverLimit()
     {
