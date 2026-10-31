@@ -1261,6 +1261,35 @@ public class ArmyForgeScreen : IAppScreen
         return ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
     }
 
+    /// <summary>
+    /// #441 (#438 D3 in the Forge): the pool <paramref name="option"/> may draw on once every counted swap above
+    /// that YIELDS to it (<see cref="ListCompiler.CountedSwapYieldsTo"/>) is set aside - those copies come back,
+    /// because the option hands its target back. 0 when no such swap is chosen, so a caller simply takes the larger
+    /// of this and its ordinary availability. Without it, taking all five of the 3.6 Assault Brothers' Plasma
+    /// Pistols grayed out the "Heavy Pistol, Energy Hammer" combo below, though the compiler lands both.
+    /// <paramref name="excludeOwn"/> releases this section's own picks too (the radio-switching pool).
+    /// </summary>
+    internal static int PassThroughPool(BookFile book, BuilderUnit bu, RosterUnit roster, UpgradeSection section,
+        UpgradeOption option, bool excludeOwn)
+    {
+        if (section.Variant != UpgradeVariant.Replace
+            || !bu.Choices.Any(c => ListCompiler.CountedSwapYieldsTo(roster, c.SectionId, section, option)))
+            return 0;
+
+        var view = new BuilderUnit
+        {
+            RosterUnitId = bu.RosterUnitId,
+            ModelCount = bu.ModelCount,
+            Choices = bu.Choices
+                .Where(c => !(excludeOwn && c.SectionId == section.Id)
+                            && !YieldsTo(roster, c.SectionId, section)
+                            && !ListCompiler.CountedSwapYieldsTo(roster, c.SectionId, section, option))
+                .ToList(),
+        };
+        (UnitFileEntry unit, List<ItemEntry> items) = ListCompiler.CompileUnitDetailed(book, view);
+        return ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
+    }
+
     // Read-only profile of an available (roster) unit, mirroring what the real Army Forge shows in its config
     // column when you select a unit on the left: stats, default gear, rules, base, the caster spell list (for
     // caster units), and every upgrade section with all its options - all non-interactive. The upgrade option

@@ -172,6 +172,14 @@ internal static class ForgeUnitDetail
             // just because the current pick consumed the target (hand-verify round 2). Also drives the
             // header: "(none to replace)" only when there's no target even without this section's choice.
             int switchAvailable = isReplace ? ArmyForgeScreen.AvailableExcludingSection(book, bu, section) : int.MaxValue;
+            // #441: a pass-through option ("Heavy Pistol, Energy Hammer") stays offered when a counted swap above has
+            // taken every copy - the swap yields to it (#438 D3). Only measured when the section looks empty.
+            int PassThrough(UpgradeOption o, bool excludeOwn) =>
+                isReplace && (excludeOwn ? switchAvailable : available) == 0
+                    ? ArmyForgeScreen.PassThroughPool(book, bu, roster, section, o, excludeOwn)
+                    : 0;
+            bool noneToReplace = isReplace && switchAvailable == 0
+                && !section.Options.Any(o => PassThrough(o, excludeOwn: true) > 0);
 
             ImGui.TextUnformatted(section.Label);
             if (linked)
@@ -179,7 +187,7 @@ internal static class ForgeUnitDetail
                 ImGui.SameLine();
                 UiText.Colored(CyanText, "[linked]");
             }
-            if (isReplace && switchAvailable == 0)
+            if (noneToReplace)
             {
                 ImGui.SameLine();
                 UiText.Disabled("(none to replace)");
@@ -197,8 +205,9 @@ internal static class ForgeUnitDetail
                 foreach (UpgradeOption option in section.Options)
                 {
                     int v = BuilderListEditing.ChoiceCount(bu, section.Id, option.Id);
+                    int optionAvailable = Math.Max(available, PassThrough(option, excludeOwn: false));
                     DrawStepper(bu, glossary, section, option, v,
-                        ArmyForgeScreen.StepperMax(section, roster, compiledUnit, available, v, sectionTotal - v));
+                        ArmyForgeScreen.StepperMax(section, roster, compiledUnit, optionAvailable, v, sectionTotal - v));
                 }
             }
             else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
@@ -209,7 +218,8 @@ internal static class ForgeUnitDetail
                 foreach (UpgradeOption option in section.Options)
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
-                    ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
+                    ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen
+                        && PassThrough(option, excludeOwn: true) == 0);
                     string id = $"{section.Id}-{option.Id}";
                     bool hit = ImGui.RadioButton($"##{id}", chosen);
                     ImGui.SameLine();
@@ -223,7 +233,8 @@ internal static class ForgeUnitDetail
                 foreach (UpgradeOption option in section.Options)
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
-                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
+                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen
+                        && PassThrough(option, excludeOwn: false) == 0);
                     string id = $"{section.Id}-{option.Id}";
                     bool hit = ImGui.Checkbox($"##{id}", ref chosen);
                     ImGui.SameLine();
