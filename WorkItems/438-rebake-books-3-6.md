@@ -73,6 +73,25 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-10-30 (from #437): the importer is ready; what changes for the bake: (1) **Parent entries** - `--import-opr` on
+  "Wormhole Daemons" / "Rift Daemons" prints "Skipped ... an Army Forge parent entry ... nothing written" and exits 0,
+  so the bake loop needs no skip of its own (keep one anyway if you like; `_index.json` marks them `unitCount: 0`).
+  (2) **Renames** - `FDG.ArmyBuilding.OprBookNames` is the one rename table; the GDF effect-set rows are now keyed
+  "Daemons of Change / Lust / Plague / War" and "Saurian Starhosts" (carried over from the 3.5 rows), and #437 already
+  DELETED the AoF "Rift Daemons of X" rows (#437 D2), so there is nothing to drop and the renamed books get their
+  defaults at import. Only **Voidspace Stalkers** still has no row (your item 3). Keep `OprBookNames` after the bake -
+  3.5 army files name the old books. File names: compact snapshot names give `DaemonsofChange.fdgbook`,
+  `SaurianStarhosts.fdgbook`, `AoF-DaemonsofChange.fdgbook`; `git mv` from `WormholeDaemonsofX` / `SaurianStarhost` /
+  `AoF-RiftDaemonsofX`. (3) **Skip `--import-book`** - every (unit, option) pair in the 3.6.0 snapshots has a per-unit
+  `costs[]` price, so a 3.6 import has 0 `costUnpriced` options (#437 D7). (4) **Stale snapshots** - High Elf Fleets
+  (2026-10-30 14:47; Venator Plane 280 -> 265 at least), Saurian Starhosts (2026-10-29 22:47) and AoF Orcs
+  (2026-10-30 14:57) were edited after the 2026-10-29 fetch (`editedAt`, live index vs `_index.json`); re-fetch those
+  (or all) before baking, or the shipped books start a day stale. (5) **Expected import warnings** (all-90, Dead 0):
+  113 "no base declared ... estimated" and 11 "Spell ... skipped" (#439); nothing else - any other line is new.
+  (6) `BundledBookRulebookTests.ARenamedBook_IsFoundUnderEitherName` / `TheShared36DaemonsName_StillSplitsByGameSystem`
+  are written to pass before AND after the rename; the #354 `ReportedCases` row still says "Saurian Starhost" on
+  purpose (a 3.5 army's faction).
+
 - 2026-10-30 (from #436): the re-bake must clear / settle: (1) **Unique** - delete the GDF-file "Unique", the `Unique` arm
   of `ListValidator.Validate`'s `uniqueRule` ternary, the `["Unique"]` lint exemptions (`RuleSupplementLintTests.cs`,
   `BookRuleFireLintTests.cs`), the UniqueBook fixtures in `ListValidatorTests.cs`,

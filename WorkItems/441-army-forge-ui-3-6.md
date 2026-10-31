@@ -46,6 +46,18 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #437): share-link import works for 3.6 lists (live check `UGDhJMMH0QBP`, exit 0, playable). For
+  the import summary: (1) `OprVersionMismatchException` now has two remedies by direction - an older book: "That book
+  has not been updated to this OPR version yet, so lists using it cannot be imported."; a newer one: "The game's data
+  needs an update ..." - both start "Army book 'X' is at OPR version A; this game supports 3.6.x." (ASCII). (2) Until
+  #438 re-bakes, a 3.6 import attaches the bundled 3.5 book, so the preview lists Assault / Anti-Cover / Fracture /
+  Armor(3) as "not enforced" and shows base-cost drift for most units - expected, gone after #438 (checked against a
+  scratch 3.6 book: no inert rules). (3) The points reconciliation still shows #262 residuals on old lists (stale
+  "Replace X" selections whose target the unit lacks; Army Forge charges them) - worth wording so users do not read
+  them as a bug. (4) Parent entries ("Wormhole Daemons", "Rift Daemons") never become bundled books, so the Forge
+  book list needs no filter for them. (5) The list importer no longer warns about `attacksMultiplier` (it was noise:
+  Army Forge's `attacks` is already multiplied).
+
 - 2026-10-30 (from #423): Parry needs no Forge code - a numeric core rule whose glossary / hover text is the 3.6
   sentence from the catalog (`ParryShippedDataTests` pins `RuleGlossary.Describe("Parry")` and the `Parry(3)` tooltip).
   Two display considerations for you: (1) the Combat Calculator screen gets Parry as a volley NOTE ("Parry: 4 dice

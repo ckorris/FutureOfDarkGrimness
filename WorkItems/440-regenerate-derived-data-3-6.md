@@ -65,6 +65,14 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
 
 ## Notes
 
+- 2026-10-30 (from #437): legacy `.fdgarmy` files whose Faction is a 3.5 book name ("Wormhole Daemons of X", "Rift
+  Daemons of X", "Saurian Starhost") keep finding the re-baked "Daemons of X" / "Saurian Starhosts" books - the
+  rulebook backfill (`BundledBookRulebook`), `--retrofit-editable`, the share-link book match and the effect-set
+  defaults all compare through `FDG.ArmyBuilding.OprBookNames` (system-gated; both systems now have "Daemons of X").
+  Worth one legacy-load check per renamed family in your regression set. The derived data names old books only as
+  FILE paths (`FdgLab/armies/pool.json`: "Wormhole Demons of Change 1k.fdgarmy", "3k - Saurian Starhost.fdgarmy";
+  `Scenarios/crowded-2v2-3k.json`) - renaming those files is your call; nothing resolves them by book name.
+
 - 2026-10-30 (from #436): (1) **Legacy Strafing** (#436 D2, owner review): a 3.5 `.fdgarmy` naming Strafing on a range-0
   bomb now loads with the #168 drop, and the bomb - no longer strafe-only - counts as a melee weapon. Decide whether
   the legacy path wants a dropped-name -> 3.6-successor table (Strafing -> Crossing Strike, Courage Aura -> Bravery
