@@ -50,7 +50,9 @@ public static class ArmyForgeBookService
         string BookName, int Priced, int Repriced, int Unmatched, IReadOnlyList<string> Samples);
 
     /// <summary>OPR official-books listing for a game system (#378: null = Grimdark Future), as a
-    /// case-insensitive book-name -> uid map.</summary>
+    /// case-insensitive book-name -> uid map. #437: 0-unit PARENT entries (OPR 3.6's "Wormhole Daemons" /
+    /// "Rift Daemons", <c>unitCount: 0</c>) are left out - they are not army books (see
+    /// <see cref="OprBookImporter.IsParentEntry"/>).</summary>
     public static async Task<IReadOnlyDictionary<string, string>> FetchBookIndexAsync(
         string? gameSystem = null, CancellationToken ct = default)
     {
@@ -62,12 +64,19 @@ public static class ArmyForgeBookService
         using JsonDocument doc = JsonDocument.Parse(json);
         foreach (JsonElement e in doc.RootElement.EnumerateArray())
         {
+            if (IsParentIndexEntry(e)) continue;
             if (e.TryGetProperty("name", out JsonElement name) && e.TryGetProperty("uid", out JsonElement uid)
                 && name.GetString() is { Length: > 0 } n && uid.GetString() is { Length: > 0 } u)
                 index[n] = u;
         }
         return index;
     }
+
+    /// <summary>#437: an index row with <c>unitCount: 0</c> is a parent entry. A row without the field (an older
+    /// index shape) is kept - the importer's own <see cref="OprBookImporter.IsParentEntry"/> still catches it.</summary>
+    internal static bool IsParentIndexEntry(JsonElement entry) =>
+        entry.TryGetProperty("unitCount", out JsonElement count)
+        && count.ValueKind == JsonValueKind.Number && count.TryGetInt32(out int n) && n == 0;
 
     /// <summary>Fetch the full OPR army-book JSON for a uid (the endpoint that still carries per-option
     /// costs). <paramref name="gameSystem"/> is the book's slug (#378: null = Grimdark Future).</summary>

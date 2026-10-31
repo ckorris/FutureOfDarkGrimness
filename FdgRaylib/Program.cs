@@ -121,6 +121,14 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
         source: "OnePageRules - Army Forge (army-forge.onepagerules.com)",
         license: "CC-BY-SA 4.0",
         warn: msg => Console.WriteLine($"  {msg}"));
+    // #437: an Army Forge parent entry (OPR 3.6's 0-unit "Wormhole Daemons" / "Rift Daemons") is not a book - writing
+    // it would put an empty faction in the Forge list. Skipped, exit 0, so a bake loop over a snapshot folder simply
+    // passes over it.
+    if (OprBookImporter.IsParentEntry(book))
+    {
+        Console.WriteLine($"Skipped '{book.Name}' {book.Version}: an Army Forge parent entry (no units, no spells) - nothing written.");
+        return;
+    }
     var importSupplementPaths = TrailingPaths(args, importIdx + 3);
     if (importSupplementPaths.Count > 0)
     {
