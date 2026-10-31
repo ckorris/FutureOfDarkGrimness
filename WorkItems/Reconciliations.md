@@ -811,3 +811,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > like the 415-447 block; the work happens on `feature/replay` in both repos. A new replay sub-item or 3.6
 > sub-item takes max(origin/master index + archive) + 1 the usual way, so expect the two efforts' numbers to
 > interleave above 457. No collision.
+
+> **2026-10-31 - number 458 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `22f0d56`: index + archive max **457** (449-457 reserved for replay), no `458` branch on either remote.
+> **458 = rejected player reply no longer ends the game.** No collision.
