@@ -5695,4 +5695,16 @@ the benchmark army pool (~8 armies, archetype spread); (4) start #192/#193/#194.
 
 (open)
 
+- 2026-10-31 (orchestrator, after #440): the 2,000-point measurement on the SHIPPED 3.6 books - the 8 FdgLab/armies
+  lists rebuilt by #440's --reforge (all stamped OPR v3.6.0), #440 engine (super 85ed9a3 / engine 97ea3cf0, Release
+  FdgLab copied out of tree), every ordered pair incl. mirrors (64 matchups), realistic dice.
+  (a) Tactician vs solorules, 50 games per matchup (3200), seeds 9000+, DOP 16: 2727-150-323 = **90.3%** (hash
+  692EE1C324EDC9EB), 0 faults, 0 timeouts, decision mean 2.26 ms, worst p95 90 ms, game wall mean 1.06 s. The
+  historical 2k main-matrix figure (83.9, older engine, 3.5 lists) is not comparable (different lists).
+  (b) Strategist (shipped net StrategistLeafV1) vs Tactician, 256 games, seeds 7000+, DOP 8: 171-40-45 = **75.6%** (hash
+  CA32CFE9E006D47D), decision mean 115 ms, worst p95 1.66 s, game wall mean 37 s; hand-leaf control arm (--evaluator
+  hand), same seeds: 139-49-68 = **67.6%** (hash 2BE991A6806AC360). Net keeps +8 points over the hand leaf at 2k on 3.6
+  (#442 D11 small-game read: 71.9 vs 66.6). Against the 3.5 2k panel's 78.3% (plan section 7) the net is -2.7 points at
+  N = 256 (SE ~2.7), i.e. not distinguishable; re-training stays the post-release follow-up (plan section 7, Chris
+  2026-10-30: "now is too early"). The hand arm did NOT segfault this time (both earlier runs died on first launch).
 - 2026-10-31 (orchestrator): post-#438 engine re-bench, same #442 pool and seeds: tactician vs solorules 86.4% (was 85.9%); Strategist net 71.9% vs hand leaf 66.6% against the Tactician (N = 160 each, small-game pool). Numbers and caveats in WorkItems/442 Notes (2026-10-30 orchestrator bullet). The 2,000-point measurement on the shipped 3.6 books waits for #440's regenerated 2k pool. The hand-leaf arm's FIRST launch segfaulted (exit 139) in both #442 and this run and succeeded on relaunch - a lab-tool flake worth its own look.
