@@ -1,0 +1,22 @@
+{
+  "name": "B-gate probe: hold the responder - round 4, the enemy holds the only marker with a point-blank gunline; our scouts can contest it but die if they go early",
+  "round": 4,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "objectives": [[36, 24]],
+  "players": [
+    {
+      "army": "armies/probe-two-squads.fdgarmy",
+      "units": [
+        { "unit": "Scout Squad", "models": [[22, 22], [22, 24], [22, 26]] },
+        { "unit": "Idle Squad", "models": [[4, 4], [6, 4], [8, 4]] }
+      ]
+    },
+    {
+      "army": "armies/probe-marker-guard.fdgarmy",
+      "units": [
+        { "unit": "Marker Guard", "models": [[35, 24], [36, 24], [37, 24]] }
+      ]
+    }
+  ]
+}

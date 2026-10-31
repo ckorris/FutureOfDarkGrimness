@@ -1,0 +1,96 @@
+{
+  "name": "Instinctive: the Shooters CAN shoot when they activate, so the menu collapses to the attack and the shot must fall on the nearer Dummies, not the Tough Dummy (+1 to hit). The Freaks activate with nothing in reach - the rule does not bind, so they move and attack normally, with a free target and no bonus.",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "players": [
+    {
+      "army": "armies/InstinctiveMobs.fdgarmy",
+      "units": [
+        {
+          "unit": "Ramshackle Shooters",
+          "models": [
+            [
+              24,
+              20
+            ],
+            [
+              25,
+              20
+            ],
+            [
+              26,
+              20
+            ],
+            [
+              24,
+              21
+            ],
+            [
+              25,
+              21
+            ]
+          ]
+        },
+        {
+          "unit": "Ramshackle Freaks",
+          "models": [
+            [
+              34,
+              22
+            ],
+            [
+              35,
+              22
+            ],
+            [
+              36,
+              22
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [
+            [
+              24,
+              26
+            ],
+            [
+              25,
+              26
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              24,
+              27
+            ],
+            [
+              25,
+              27
+            ]
+          ]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [
+            [
+              30,
+              30
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

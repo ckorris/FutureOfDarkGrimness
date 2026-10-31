@@ -1,0 +1,108 @@
+{
+ "name": "Mobile Artillery probe",
+ "faction": "",
+ "pointsLimit": 0,
+ "units": [
+  {
+   "name": "Gun Battery",
+   "modelCount": 3,
+   "quality": 4,
+   "defense": 4,
+   "specialRules": [
+    {
+     "kind": "core",
+     "name": "Mobile Artillery"
+    }
+   ],
+   "weapons": [
+    {
+     "name": "Siege Gun",
+     "quantity": 1,
+     "rangeInches": 30,
+     "attacks": 2,
+     "armorPenetration": 0,
+     "specialRules": []
+    }
+   ],
+   "pointCost": 0
+  }
+ ],
+ "ruleDefinitions": [
+  {
+   "name": "Mobile Artillery",
+   "passive": [
+    {
+     "hookID": "Shooting_OnHitRollModifier",
+     "condition": {
+      "kind": "and",
+      "left": {
+       "kind": "not",
+       "inner": {
+        "kind": "isMelee"
+       }
+      },
+      "right": {
+       "kind": "and",
+       "left": {
+        "kind": "not",
+        "inner": {
+         "kind": "afterMoving"
+        }
+       },
+       "right": {
+        "kind": "attackedFromOverInches",
+        "distanceInches": 9
+       }
+      }
+     },
+     "effect": {
+      "kind": "rollModifier",
+      "rollKind": "Hit",
+      "delta": 1
+     },
+     "lifetime": "ThisAttack",
+     "seat": "Actor"
+    },
+    {
+     "hookID": "Shooting_OnHitRollModifier",
+     "condition": {
+      "kind": "and",
+      "left": {
+       "kind": "allModelsHaveThisRule"
+      },
+      "right": {
+       "kind": "and",
+       "left": {
+        "kind": "not",
+        "inner": {
+         "kind": "tokenPresent",
+         "tType": {
+          "id": "MovedThisRound"
+         },
+         "minCount": 1
+        }
+       },
+       "right": {
+        "kind": "distanceGreaterThan",
+        "distanceInches": 9
+       }
+      }
+     },
+     "effect": {
+      "kind": "rollModifier",
+      "rollKind": "Hit",
+      "delta": -2
+     },
+     "lifetime": "ThisAttack",
+     "seat": "Subject"
+    }
+   ],
+   "activated": [],
+   "scope": "Unit",
+   "engineArgumentCount": 0,
+   "valence": "Positive",
+   "description": "When this unit uses a Hold action and shoots at enemies over 9 inches away, it gets +1 to hit rolls. As long as this unit hasn't moved during the round, when enemies shoot at it from over 9 inches away, they get -2 to hit rolls."
+  }
+ ],
+ "spells": []
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Crowded 2v2, 6k per side: rear units drift laterally/backwards in the deployment zone",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Realistic",
+    "diceSeed": 42
+  },
+  "players": [
+    { "army": "../armies/3k - Saurian Starhost.fdgarmy", "team": 0 },
+    { "army": "../armies/3k - Goblin Reclaimers.fdgarmy", "team": 0 },
+    { "army": "../armies/3k - Soul-Snatcher Cults.fdgarmy", "team": 1 },
+    { "army": "../armies/3k - Dark Elf Raiders.fdgarmy", "team": 1 }
+  ]
+}

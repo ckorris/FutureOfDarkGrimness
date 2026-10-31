@@ -1,0 +1,751 @@
+{
+  "Version": 2,
+  "TypeMap": [
+    {
+      "TypeId": "__placeholder",
+      "Capacity": 0
+    },
+    {
+      "TypeId": "int",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "float",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "string",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "position",
+      "Capacity": 128
+    },
+    {
+      "TypeId": "model",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "playerSlot",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "team",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "unit",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "army",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "terrain",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "rectangularZone",
+      "Capacity": 16
+    },
+    {
+      "TypeId": "objective",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "playerId",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "gameProgress",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "float2",
+      "Capacity": 128
+    }
+  ],
+  "Entries": [
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "3.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "3.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "3.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":30.0,\"Y\":0.0,\"Z\":16.0,\"XY\":{\"X\":30.0,\"Y\":0.0},\"XZ\":{\"X\":30.0,\"Y\":16.0}},\"Position2D\":{\"X\":30.0,\"Y\":16.0},\"x\":30.0,\"y\":0.0,\"z\":16.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":32.0,\"Y\":0.0,\"Z\":16.0,\"XY\":{\"X\":32.0,\"Y\":0.0},\"XZ\":{\"X\":32.0,\"Y\":16.0}},\"Position2D\":{\"X\":32.0,\"Y\":16.0},\"x\":32.0,\"y\":0.0,\"z\":16.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":16.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":16.0}},\"Position2D\":{\"X\":34.0,\"Y\":16.0},\"x\":34.0,\"y\":0.0,\"z\":16.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":38.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":38.0,\"Y\":0.0},\"XZ\":{\"X\":38.0,\"Y\":20.0}},\"Position2D\":{\"X\":38.0,\"Y\":20.0},\"x\":38.0,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":40.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":40.0,\"Y\":0.0},\"XZ\":{\"X\":40.0,\"Y\":20.0}},\"Position2D\":{\"X\":40.0,\"Y\":20.0},\"x\":40.0,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":42.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":42.0,\"Y\":0.0},\"XZ\":{\"X\":42.0,\"Y\":20.0}},\"Position2D\":{\"X\":42.0,\"Y\":20.0},\"x\":42.0,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":44.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":44.0,\"Y\":0.0},\"XZ\":{\"X\":44.0,\"Y\":20.0}},\"Position2D\":{\"X\":44.0,\"Y\":20.0},\"x\":44.0,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":46.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":46.0,\"Y\":0.0},\"XZ\":{\"X\":46.0,\"Y\":20.0}},\"Position2D\":{\"X\":46.0,\"Y\":20.0},\"x\":46.0,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":26.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":26.0,\"Y\":0.0},\"XZ\":{\"X\":26.0,\"Y\":32.0}},\"Position2D\":{\"X\":26.0,\"Y\":32.0},\"x\":26.0,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":28.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":28.0,\"Y\":0.0},\"XZ\":{\"X\":28.0,\"Y\":32.0}},\"Position2D\":{\"X\":28.0,\"Y\":32.0},\"x\":28.0,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":30.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":30.0,\"Y\":0.0},\"XZ\":{\"X\":30.0,\"Y\":32.0}},\"Position2D\":{\"X\":30.0,\"Y\":32.0},\"x\":30.0,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":32.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":32.0,\"Y\":0.0},\"XZ\":{\"X\":32.0,\"Y\":32.0}},\"Position2D\":{\"X\":32.0,\"Y\":32.0},\"x\":32.0,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":32.0}},\"Position2D\":{\"X\":34.0,\"Y\":32.0},\"x\":34.0,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":0,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":0,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":0,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Heavy Crossbow\",\"RangeInches\":24.0,\"Attacks\":2,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Bash\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"a965221f-7c37-430f-953e-58d84cd6935a\"},\"TotalWounds\":3.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":30.0,\"Y\":0.0,\"Z\":16.0,\"XY\":{\"X\":30.0,\"Y\":0.0},\"XZ\":{\"X\":30.0,\"Y\":16.0}},\"Position2D\":{\"X\":30.0,\"Y\":16.0},\"x\":30.0,\"y\":0.0,\"z\":16.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.78740156,\"BoundingRadiusInches\":0.78740156,\"CircumscribedRadiusInches\":0.78740156}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":1,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":1,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":1,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Heavy Crossbow\",\"RangeInches\":24.0,\"Attacks\":2,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Bash\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"cbb7c707-48d7-4f85-9d94-d1410cdba05d\"},\"TotalWounds\":3.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":32.0,\"Y\":0.0,\"Z\":16.0,\"XY\":{\"X\":32.0,\"Y\":0.0},\"XZ\":{\"X\":32.0,\"Y\":16.0}},\"Position2D\":{\"X\":32.0,\"Y\":16.0},\"x\":32.0,\"y\":0.0,\"z\":16.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.78740156,\"BoundingRadiusInches\":0.78740156,\"CircumscribedRadiusInches\":0.78740156}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":2,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":2,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":2,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Heavy Crossbow\",\"RangeInches\":24.0,\"Attacks\":2,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Bash\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"be9793f5-3b24-4467-aabe-f2d8da95504a\"},\"TotalWounds\":3.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":16.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":16.0}},\"Position2D\":{\"X\":34.0,\"Y\":16.0},\"x\":34.0,\"y\":0.0,\"z\":16.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.78740156,\"BoundingRadiusInches\":0.78740156,\"CircumscribedRadiusInches\":0.78740156}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":3,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":3,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":3,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"e3ec39ae-d461-4a4f-8b2f-b0680bfd49a8\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":38.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":38.0,\"Y\":0.0},\"XZ\":{\"X\":38.0,\"Y\":20.0}},\"Position2D\":{\"X\":38.0,\"Y\":20.0},\"x\":38.0,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":4,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":4,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":4,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"57b2f9c3-5d22-4599-a5b0-aeb4ca84d835\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":40.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":40.0,\"Y\":0.0},\"XZ\":{\"X\":40.0,\"Y\":20.0}},\"Position2D\":{\"X\":40.0,\"Y\":20.0},\"x\":40.0,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":5,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":5,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":5,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"a1414178-b068-44ab-b279-322010457d32\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":42.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":42.0,\"Y\":0.0},\"XZ\":{\"X\":42.0,\"Y\":20.0}},\"Position2D\":{\"X\":42.0,\"Y\":20.0},\"x\":42.0,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":6,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":6,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":6,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"c8d25d5d-355e-4476-b6a5-0952d7267307\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":44.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":44.0,\"Y\":0.0},\"XZ\":{\"X\":44.0,\"Y\":20.0}},\"Position2D\":{\"X\":44.0,\"Y\":20.0},\"x\":44.0,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":7,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":7,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":7,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"55dff70e-60cc-4fc7-ba7d-05003a1ff795\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":46.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":46.0,\"Y\":0.0},\"XZ\":{\"X\":46.0,\"Y\":20.0}},\"Position2D\":{\"X\":46.0,\"Y\":20.0},\"x\":46.0,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":8,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":8,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":8,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"dabc4291-cee5-4755-bec1-3674a2c5e743\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":26.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":26.0,\"Y\":0.0},\"XZ\":{\"X\":26.0,\"Y\":32.0}},\"Position2D\":{\"X\":26.0,\"Y\":32.0},\"x\":26.0,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":9,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":9,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":9,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"11b2461a-6bb4-403d-b581-9633677feaca\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":28.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":28.0,\"Y\":0.0},\"XZ\":{\"X\":28.0,\"Y\":32.0}},\"Position2D\":{\"X\":28.0,\"Y\":32.0},\"x\":28.0,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":10,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":10,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":10,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"bb3ec097-0530-42fe-8710-cab33a79146c\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":30.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":30.0,\"Y\":0.0},\"XZ\":{\"X\":30.0,\"Y\":32.0}},\"Position2D\":{\"X\":30.0,\"Y\":32.0},\"x\":30.0,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":11,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":11,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":11,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"a69755ca-7077-463f-8995-809c490766f0\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":32.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":32.0,\"Y\":0.0},\"XZ\":{\"X\":32.0,\"Y\":32.0}},\"Position2D\":{\"X\":32.0,\"Y\":32.0},\"x\":32.0,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":12,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":12,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":12,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"876464d2-f107-40e5-a587-8dc61ee907af\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":32.0}},\"Position2D\":{\"X\":34.0,\"Y\":32.0},\"x\":34.0,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"b8a2ca11-d31e-4e6c-99a5-06983d69a697\"},\"SlotID\":0,\"TeamNumber\":0,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"6240b1b8-e2f8-4a52-b4c9-26d3ad7a5b9f\"},\"SlotID\":1,\"TeamNumber\":1,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":0,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"b8a2ca11-d31e-4e6c-99a5-06983d69a697\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":1,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"6240b1b8-e2f8-4a52-b4c9-26d3ad7a5b9f\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Flying\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Flying\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Movement_OnMoveThroughTerrain\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreTerrainEffects\\\",\\n            \\\"scope\\\": \\\"AllTerrain\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisActivation\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Movement_OnMoveThroughEnemy\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreEnemyMovementBlock\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisActivation\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Ignores all terrain when moving and may move through enemy units (but may not end on them).\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Tough(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Tough\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Lifecycle_OnUnitCreated\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"setMaxWounds\\\",\\n            \\\"amount\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"UntilEndOfGame\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each model in the unit has multiple wounds instead of one.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Vinci Tech\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Vinci Tech\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActivationStart\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"addRule\\\",\\n            \\\"ruleName\\\": \\\"Vinci Tech (Piercing)\\\",\\n            \\\"scope\\\": \\\"ThisActivation\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"AP(\\\\u002B1)\\\"\\n        },\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActivationStart\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"addRule\\\",\\n            \\\"ruleName\\\": \\\"Vinci Tech (Precision)\\\",\\n            \\\"scope\\\": \\\"ThisActivation\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\\u002B1 to hit\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(\\\\u002B1) or \\\\u002B1 to hit rolls.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":2,\"Generation\":1}],\"ID\":{\"ID\":\"3b62fad3-0430-4248-8ce8-63703b370c8c\"},\"PlayerID\":{\"ID\":\"b8a2ca11-d31e-4e6c-99a5-06983d69a697\"},\"Name\":\"Aerea Guard\",\"Quality\":5,\"Defense\":4,\"PointCost\":135}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":3,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":4,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":5,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":6,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":7,\"Generation\":1}],\"ID\":{\"ID\":\"fb3dd534-cd4c-4d85-b63f-217a4d3a7dd0\"},\"PlayerID\":{\"ID\":\"6240b1b8-e2f8-4a52-b4c9-26d3ad7a5b9f\"},\"Name\":\"Target A - INSIDE 9in\",\"Quality\":5,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":8,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":9,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":10,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":11,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":12,\"Generation\":1}],\"ID\":{\"ID\":\"0366107b-2228-4197-a1f7-1640e72f6742\"},\"PlayerID\":{\"ID\":\"6240b1b8-e2f8-4a52-b4c9-26d3ad7a5b9f\"},\"Name\":\"Target B - OUTSIDE 9in\",\"Quality\":5,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [\\n    {\\n      \\\"name\\\": \\\"Vinci Tech (Piercing)\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"attackedFromOverInches\\\",\\n            \\\"distanceInches\\\": 9\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Save\\\",\\n            \\\"delta\\\": -1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"AP(\\\\u002B1) when shooting or charging enemies over 9 inches away, for this activation.\\\"\\n    },\\n    {\\n      \\\"name\\\": \\\"Vinci Tech (Precision)\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"attackedFromOverInches\\\",\\n            \\\"distanceInches\\\": 9\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Hit\\\",\\n            \\\"delta\\\": 1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"\\\\u002B1 to hit when shooting or charging enemies over 9 inches away, for this activation.\\\"\\n    },\\n    {\\n      \\\"name\\\": \\\"Vinci Tech\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActivationStart\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"addRule\\\",\\n            \\\"ruleName\\\": \\\"Vinci Tech (Piercing)\\\",\\n            \\\"scope\\\": \\\"ThisActivation\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"AP(\\\\u002B1)\\\"\\n        },\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActivationStart\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"addRule\\\",\\n            \\\"ruleName\\\": \\\"Vinci Tech (Precision)\\\",\\n            \\\"scope\\\": \\\"ThisActivation\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\\u002B1 to hit\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(\\\\u002B1) or \\\\u002B1 to hit rolls.\\\"\\n    }\\n  ],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"b8a2ca11-d31e-4e6c-99a5-06983d69a697\"},\"ArmyName\":\"Vinci Tech gate demo\",\"Faction\":\"Duchies of Vinci\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":2,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"6240b1b8-e2f8-4a52-b4c9-26d3ad7a5b9f\"},\"ArmyName\":\"Vinci gate demo targets\",\"Faction\":\"\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":0,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":18.0,\"Y\":0.0,\"Z\":24.0,\"XY\":{\"X\":18.0,\"Y\":0.0},\"XZ\":{\"X\":18.0,\"Y\":24.0}},\"Position2D\":{\"X\":18.0,\"Y\":24.0},\"x\":18.0,\"y\":0.0,\"z\":24.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":1,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":36.0,\"Y\":0.0,\"Z\":24.0,\"XY\":{\"X\":36.0,\"Y\":0.0},\"XZ\":{\"X\":36.0,\"Y\":24.0}},\"Position2D\":{\"X\":36.0,\"Y\":24.0},\"x\":36.0,\"y\":0.0,\"z\":24.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":2,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":54.0,\"Y\":0.0,\"Z\":24.0,\"XY\":{\"X\":54.0,\"Y\":0.0},\"XZ\":{\"X\":54.0,\"Y\":24.0}},\"Position2D\":{\"X\":54.0,\"Y\":24.0},\"x\":54.0,\"y\":0.0,\"z\":24.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 14
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Stage\":\"MainPhase\",\"TeamActivateOrder\":[0,1],\"CurrentRoundTeamFinishOrder\":[],\"CurrentTeamIndex\":1,\"CurrentPlayerIndexPerTeam\":{\"0\":0,\"1\":0},\"UnactivatedUnits\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":2,\"Generation\":1}],\"Settings\":{\"ArmyPoints\":2000,\"CoverProximityExceptions\":true,\"SeeThroughFriendlyUnits\":false,\"UnlimitedSplitFire\":false,\"TerrainPieceCount\":20,\"TerrainPointsTotal\":30,\"TerrainPointsPerTurn\":3,\"RandomnessType\":\"Probabilistic\",\"DiceSeed\":null,\"TurnStyle\":\"Standard\",\"ShootingMode\":\"OneAtATime\",\"ObjectivePlacementMode\":\"AutoPlaced\",\"TerrainPlacementMode\":\"AutoFromLayout\",\"TerrainLayoutPath\":null,\"TableBackground\":\"Forest\"},\"RoundCount\":1,\"ActivatingUnit\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    }
+  ]
+}

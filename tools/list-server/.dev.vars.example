@@ -1,0 +1,11 @@
+# Template for .dev.vars, which `wrangler dev` reads for local secrets (#226).
+#
+#   cp .dev.vars.example .dev.vars
+#
+# .dev.vars itself is gitignored. Keep it that way, and NEVER paste the production
+# ADMIN_TOKEN here - production secrets belong in `npx wrangler secret put ADMIN_TOKEN`,
+# which stores them encrypted at Cloudflare and never writes them to disk.
+#
+# This dev value is deliberately public: it only ever guards a local wrangler dev
+# instance on localhost, and smoke.sh defaults to it so the report checks run unattended.
+ADMIN_TOKEN = "dev-admin-token"

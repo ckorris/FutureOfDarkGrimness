@@ -1,0 +1,83 @@
+{
+  "name": "Honor-Bound (Vengeance probe)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Honor-Bound Warriors",
+      "modelCount": 1,
+      "quality": 6,
+      "defense": 6,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Vengeance"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Plain Warriors",
+      "modelCount": 1,
+      "quality": 6,
+      "defense": 6,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [
+    {
+      "name": "Vengeance",
+      "passive": [
+        {
+          "hookID": "Shooting_OnUnitDestroyed",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "grantTokenToKiller",
+            "tType": {
+              "id": "PersistentHitBonusMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 0
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is destroyed, place a marker on the unit that destroyed it. Friendly units get +1 to hit rolls against that unit for the rest of the game."
+    }
+  ],
+  "spells": []
+}

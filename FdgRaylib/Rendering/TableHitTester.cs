@@ -39,6 +39,9 @@ public class TableHitTester
         float bestDist = float.MaxValue;
         foreach (var unit in tableState.Units.Objects)
         {
+            // Off-table units (Ambush reserve, embarked, flown-off Aircraft) park at the origin.
+            if (!unit.GetIsOnBattlefield()) continue;
+
             foreach (var model in unit.Models)
             {
                 if (!model.GetIsAlive()) continue;
@@ -48,7 +51,8 @@ public class TableHitTester
                 float dx   = tableX - pos.x;
                 float dz   = tableZ - pos.z;
                 float dist = MathF.Sqrt(dx * dx + dz * dz);
-                if (dist <= model.BaseRadiusInches && dist < bestDist)
+                // Hit-test the true base shape (#149); dist still breaks ties between overlapping bases.
+                if (model.BaseShape.ContainsLocalPoint(dx, dz) && dist < bestDist)
                 {
                     bestDist     = dist;
                     HoveredModel = model;

@@ -1,4 +1,5 @@
 using FDG;
+using FDG.Ai;
 using FDG.Data;
 using FDG.GameModel;
 using FDG.Players;
@@ -17,10 +18,17 @@ public class CliApp
     private readonly bool _headless;
     private readonly int _slowDelayMs;
 
+    // #193 --seed: seeds dice, decisive rolls, objective auto-placement, and each AI player's stream.
+    private readonly int? _diceSeed;
+
+    // #191 --ai-profile: which AI drives the computer slots (solo-rules baseline or the Tactician).
+    private readonly EAiProfile _aiProfile;
+
     // Initialized by Prepare(); used by RunAsync().
     private LocalMessageBus? _messageBus;
     private GameDataStore? _gameDataStore;
     private FDGGame_AsLocal? _localGame;
+    private FDGGame_AsLocal? _aiGame;
 
     public ITableState? TableState => _localGame?.TableState;
     public GameLog? Log { get; private set; }
@@ -28,10 +36,13 @@ public class CliApp
     // Filled during CreatePlayerSlots(); read by the renderer at draw time.
     public Dictionary<PlayerID, Color> PlayerColors { get; } = new();
 
-    public CliApp(bool headless, int slowDelayMs = 0)
+    public CliApp(bool headless, int slowDelayMs = 0, int? diceSeed = null,
+        EAiProfile aiProfile = EAiProfile.SoloRules)
     {
         _headless = headless;
         _slowDelayMs = slowDelayMs;
+        _diceSeed = diceSeed;
+        _aiProfile = aiProfile;
     }
 
     // Creates the local game instance (and thus TableState) without any user prompts.
@@ -58,8 +69,8 @@ public class CliApp
 
         var playerSlots = CreatePlayerSlots();
 
-        foreach (var slot in playerSlots)
-            _localGame!.AddLocalPlayerID(slot.PlayerID);
+        // Player 1 — human (CLI)
+        _localGame!.AddLocalPlayerID(playerSlots[0].PlayerID);
 
         ILogMessageUI logUI = Log != null
             ? new GuiLogMessageUI(Log)
@@ -73,29 +84,97 @@ public class CliApp
             logMessageUI:          logUI,
             playerMessageUI:       new CliPlayerMessageUI(),
             stageResolverRegistry: resolverRegistry,
-            tempVisualDrawer:      new CliTempVisualDrawer(),
+            presentationSink:      null, // headless: beats emitted but not rendered
             outstandingTaskDisplay: null);
 
-        foreach (var slot in playerSlots)
-        {
-            var controller = new LocalPlayerController(slot.Name, slot.PlayerID, _localGame);
-            slot.AssignPlayerController(controller);
-        }
+        // Name the controllers explicitly: reading playerSlots[i].Name here returns the "[Empty]"
+        // placeholder, since the controller that supplies the real name isn't assigned yet.
+        var humanController = new LocalPlayerController("Player 1", playerSlots[0].PlayerID, _localGame);
+        playerSlots[0].AssignPlayerController(humanController);
+
+        // Player 2 — computer (profile per --ai-profile; solo-rules by default)
+        _aiGame = new FDGGame_AsLocal(_gameDataStore!, _messageBus!);
+        var aiController = AiProfileFactory.CreateController(_aiProfile,
+            "Player 2 (AI)", playerSlots[1].PlayerID, _aiGame, _diceSeed, playerSlots[1].SlotID);
+        playerSlots[1].AssignPlayerController(aiController);
 
         var gameSettings = GameSettings.GetDefault();
         gameSettings.RandomnessType = ERandomnessType.Realistic;
+        gameSettings.ObjectivePlacementMode = EObjectivePlacementMode.AutoPlaced;
+        gameSettings.DiceSeed = _diceSeed;
 
         var gameEnded = new TaskCompletionSource();
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
+        // #168: army loads just ran inside the server build - flush their buffered rule warnings
+        // into this mode's log as the aggregated summary (headless keeps the stdout fallback).
+        if (Log != null)
+            RuleLoadWarnings.AttachLog(Log);
+        server.OnGameCompleted += PrintGameResult;
         server.OnGameEnded += result =>
         {
-            logUI.DisplayLogMessage($"Game ended: {result}");
+            logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
             gameEnded.TrySetResult();
         };
 
         Console.WriteLine("Game started.");
         await gameEnded.Task;
     }
+
+    /// <summary>
+    /// #167 --scenario: resumes an already-populated store (a compiled scenario or a loaded save)
+    /// headless, lobby-free: slot 0 drives via the CLI resolvers, every other saved slot is AI.
+    /// --all-ai makes slot 0 AI too (observation runs); --log-decisions interleaves each planning
+    /// AI's Choose Action narration into stdout as "[ai N] ..." lines (FdgLab's flag, here).
+    /// </summary>
+    public async Task RunScenarioAsync(GameDataStore loadedStore, bool allAi = false,
+        bool logDecisions = false)
+    {
+        Console.WriteLine("=== FDG Raylib - scenario ===");
+
+        var parts = ScenarioLauncher.BuildResume(loadedStore, _diceSeed, _aiProfile, allAi,
+            logDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null,
+            logSink: allAi ? Console.WriteLine : null);
+        _messageBus = parts.Bus;
+        _gameDataStore = parts.Store;
+        _localGame = parts.HumanGame;
+
+        ILogMessageUI logUI = new CliLogMessageUI();
+        if (!allAi)
+        {
+            // A human on slot 0: the human game owns the log/chat endpoint and the CLI resolvers.
+            // With --all-ai the human game owns NO player, and AssignInterfaces would throw building
+            // the chat endpoint - the narrative arrives through slot 0's controller logSink instead.
+            IStageResolverRegistry resolverRegistry = BuildResolverRegistry();
+            if (_slowDelayMs > 0)
+                resolverRegistry = new SlowModeResolverRegistry(resolverRegistry, _slowDelayMs);
+
+            _localGame.AssignInterfaces(
+                logMessageUI:          logUI,
+                playerMessageUI:       new CliPlayerMessageUI(),
+                stageResolverRegistry: resolverRegistry,
+                presentationSink:      null,
+                outstandingTaskDisplay: null);
+        }
+
+        var gameEnded = new TaskCompletionSource();
+        var server = new FDGServer(parts.Store, parts.Bus, parts.Slots); // resume constructor
+        server.OnGameCompleted += PrintGameResult;
+        server.OnGameEnded += result =>
+        {
+            logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
+            gameEnded.TrySetResult();
+        };
+
+        Console.WriteLine("Scenario resumed.");
+        await gameEnded.Task;
+    }
+
+    /// <summary>
+    /// #192: the one machine-readable line a headless run emits. Automated verification (smoke tests,
+    /// FdgLab benchmarks) keys off the "Game result:" prefix, so keep it single-line and stable.
+    /// </summary>
+    private static void PrintGameResult(GameResult result) =>
+        Console.WriteLine($"Game result: {result.ToSummaryLine()}");
 
     private PlayerSlot[] CreatePlayerSlots()
     {

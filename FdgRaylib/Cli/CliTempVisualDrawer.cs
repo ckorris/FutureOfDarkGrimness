@@ -1,3 +1,7 @@
+// RETIRED (work item 052): the TempVisual system is superseded by the presentation-beat stream
+// (FDG.Presentation). ITempVisualDrawer no longer exists, so this no-op drawer is disabled. Kept
+// for reference rather than deleted. See FutureOfDarkGrimness/TempVisuals/_RETIRED.md.
+#if false
 using FDG;
 using FDG.TempVisuals;
 using System.Drawing;
@@ -17,3 +21,4 @@ public class CliTempVisualDrawer : ITempVisualDrawer
     public void RemoveVisual(Guid id) { }
     public void ClearAllVisuals() { }
 }
+#endif

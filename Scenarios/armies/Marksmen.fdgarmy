@@ -1,0 +1,50 @@
+{
+  "name": "Marksmen (signal army)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Marksmen",
+      "modelCount": 5,
+      "quality": 2,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Marksman Rifle",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Rending Squad",
+      "modelCount": 5,
+      "quality": 2,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Render",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

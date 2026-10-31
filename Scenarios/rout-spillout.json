@@ -1,0 +1,31 @@
+{
+  "name": "#169 - Transport routs from melee morale, occupants spill out",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Realistic", "diceSeed": 42 },
+  "players": [
+    {
+      "army": "armies/TransportRout-Owner.fdgarmy",
+      "units": [
+        {
+          "unit": "Rhino",
+          "models": [[24, 20]],
+          "woundsDealt": [6]
+        },
+        {
+          "unit": "Riders",
+          "models": [[22, 17], [24, 17], [26, 17]]
+        }
+      ]
+    },
+    {
+      "army": "armies/TransportRout-Chargers.fdgarmy",
+      "units": [
+        {
+          "unit": "Berserkers",
+          "models": [[23, 27], [25, 27]]
+        }
+      ]
+    }
+  ]
+}

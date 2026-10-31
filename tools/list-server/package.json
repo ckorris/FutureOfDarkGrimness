@@ -1,0 +1,16 @@
+{
+  "name": "fdg-list-server",
+  "private": true,
+  "version": "0.1.0",
+  "description": "FDG master list server (#264): register/heartbeat/browse registry on Cloudflare Workers",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260722.1",
+    "typescript": "^5.5.0",
+    "wrangler": "^4.0.0"
+  }
+}

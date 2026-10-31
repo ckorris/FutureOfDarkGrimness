@@ -18,7 +18,7 @@ public class ChooseDeploymentZoneResolver : IStageResolver<ChooseDeploymentZoneR
         for (int i = 0; i < request.AvailableZones.Count; i++)
         {
             var zone = request.AvailableZones[i].GetValue();
-            Console.WriteLine($"  [{i + 1}] Zone {i + 1}  (X: {zone.Left:F1}\"–{zone.Right:F1}\", Z: {zone.Bottom:F1}\"–{zone.Top:F1}\")");
+            Console.WriteLine($"  [{i + 1}] Zone {i + 1}  (X: {zone.Left:F1}\"-{zone.Right:F1}\", Z: {zone.Bottom:F1}\"-{zone.Top:F1}\")");
         }
 
         if (request.UnavailableZones.Count > 0)
@@ -27,7 +27,7 @@ public class ChooseDeploymentZoneResolver : IStageResolver<ChooseDeploymentZoneR
             foreach (var zb in request.UnavailableZones)
             {
                 var zone = zb.GetValue();
-                Console.WriteLine($"      [taken] X: {zone.Left:F1}\"–{zone.Right:F1}\", Z: {zone.Bottom:F1}\"–{zone.Top:F1}\"");
+                Console.WriteLine($"      [taken] X: {zone.Left:F1}\"-{zone.Right:F1}\", Z: {zone.Bottom:F1}\"-{zone.Top:F1}\"");
             }
         }
 

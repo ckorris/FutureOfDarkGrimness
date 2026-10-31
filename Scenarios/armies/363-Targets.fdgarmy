@@ -1,0 +1,27 @@
+{
+  "name": "Targets (#363 wall-shadow victims)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Targets",
+      "modelCount": 5,
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Club",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

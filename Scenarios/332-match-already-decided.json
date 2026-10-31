@@ -1,0 +1,38 @@
+{
+  "name": "332 - opponent tabled and sole objective lead at the end of round 3: the match is called there",
+  "round": 3,
+  "activePlayer": 0,
+  "settings": { "randomness": "Realistic", "diceSeed": 332 },
+  "objectives": [[30, 16], [34, 16], [24, 44]],
+  "players": [
+    {
+      "army": "armies/Marksmen.fdgarmy",
+      "units": [
+        {
+          "unit": "Marksmen",
+          "models": [[30, 16], [32, 16], [34, 16], [36, 16], [38, 16]],
+          "activated": true
+        },
+        {
+          "unit": "Rending Squad",
+          "models": [[10, 12], [12, 12], [14, 12], [16, 12], [18, 12]]
+        }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [[30, 34], [32, 34], [34, 34], [36, 34], [38, 34]],
+          "woundsDealt": [1, 1, 1, 1, 1]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [[44, 34]],
+          "woundsDealt": [6]
+        }
+      ]
+    }
+  ]
+}
