@@ -46,7 +46,11 @@ the index lines for 449-457 are ticked and archived.
 - [ ] Delete the remote `feature/replay` branches after the merge (both repos).
 
 ## Notes
-- (none yet)
+- **From #456 (2026-10-31):** the viewer is built and was run end to end in Xephyr (see its Notes), but its acceptance
+  list is Chris's to tick - fold it into this item's hand-verify, including the one #456 could not run: a
+  client-recorded replay of a networked game opened in the viewer (other players' decisions listed). Known and left:
+  a step's deltas apply at once and its beats play afterwards, so the round HUD can read the next round while the last
+  shot of the previous one animates.
 
 ## Decisions
 - (none yet)

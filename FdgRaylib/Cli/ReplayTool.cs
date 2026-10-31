@@ -7,6 +7,7 @@ using FDG.Data;
 using FDG.Data.Containers;
 using FDG.Replay;
 using FDG.SaveLoad;
+using FdgRaylib.Rendering.Replays;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -59,8 +60,8 @@ public static class ReplayTool
                 _ => MakeSave(replay, args, output),
             };
         }
-        catch (Exception exception) when (exception is ToolException or ReplayFormatException or ReplayPlaybackException
-            or IOException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is ToolException or ReplayFileException or ReplayFormatException
+            or ReplayPlaybackException or IOException or UnauthorizedAccessException)
         {
             output.WriteLine($"Replay error: {Ascii(exception.Message)}");
             return 1;
@@ -89,13 +90,8 @@ public static class ReplayTool
 
         public static Loaded Open(string path)
         {
-            if (File.Exists(path) == false)
-            {
-                throw new ToolException($"File not found: {path}");
-            }
-
-            bool fromSave = path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase);
-            byte[] bytes = fromSave ? EmbeddedReplay(path) : File.ReadAllBytes(path);
+            bool fromSave = ReplayFiles.IsSave(path);
+            byte[] bytes = ReplayFiles.ReadGzip(path);
             using var stream = new MemoryStream(bytes);
             ReplayDocument document = ReplayReader.ReadGzip(stream);
             return new Loaded
@@ -106,27 +102,6 @@ public static class ReplayTool
                 Gzip = bytes,
                 Document = document,
                 Timeline = new ReplayTimeline(document),
-            };
-        }
-
-        // #453: the replay a save carries.
-        private static byte[] EmbeddedReplay(string path)
-        {
-            byte[]? replay;
-            try
-            {
-                replay = GameSaveSerializer.LoadWithReplay(File.ReadAllText(path)).ReplayGzip;
-            }
-            catch (InvalidOperationException exception)
-            {
-                throw new ToolException($"{path} does not load as a save: {exception.Message}");
-            }
-
-            return replay switch
-            {
-                null => throw new ToolException($"{path} carries no replay (a compiled scenario, a save of an unrecorded game, or one from before #453)."),
-                { Length: 0 } => throw new ToolException($"{path} carries a replay that is not valid base64."),
-                _ => replay,
             };
         }
 
@@ -288,8 +263,7 @@ public static class ReplayTool
         return 0;
     }
 
-    private static string Who(ReplayHeader header, ReplayStep step) =>
-        $"{PlayerLabel(header, step.PlayerId)} ({(step.Controller is EReplayController c ? Controller(c) : "?")})";
+    private static string Who(ReplayHeader header, ReplayStep step) => ReplayLabels.Who(header, step);
 
     private static string FoldedText(ReplayTimeline timeline, RequestEvent request)
     {
@@ -811,52 +785,26 @@ public static class ReplayTool
     private static string? TopLevelString(string json, string property) =>
         RecordedJsonObject(json)?[property] is JValue { Type: JTokenType.String } value ? value.Value<string>() : null;
 
-    /// <summary>The recorded CLR type name without namespace or generic arguments.</summary>
-    private static string ShortType(string recordedType)
-    {
-        string name = recordedType;
-        int generic = name.IndexOf('`');
-        if (generic >= 0) name = name.Substring(0, generic);
-        int dot = name.LastIndexOf('.');
-        return dot >= 0 ? name.Substring(dot + 1) : name;
-    }
+    // The shared replay wording (#456: the viewer says it the same way).
+    private static string ShortType(string recordedType) => ReplayLabels.ShortType(recordedType);
 
-    private static string PlayerLabel(ReplayHeader header, PlayerID player)
-    {
-        ReplaySlot? slot = header.Slots.FirstOrDefault(s => s.PlayerId == player);
-        return slot == null ? "P?" : $"P{slot.SlotId + 1}";
-    }
+    private static string PlayerLabel(ReplayHeader header, PlayerID player) => ReplayLabels.PlayerLabel(header, player);
 
-    private static string Controller(EReplayController controller) => controller switch
-    {
-        EReplayController.Ai => "AI",
-        _ => controller.ToString(),
-    };
+    private static string Controller(EReplayController controller) => ReplayLabels.Controller(controller);
 
     private static string Short(FDG.StageResolution.TaskID task) => task.ID.ToString().Substring(0, 8);
 
-    private static string Or(string? text) => string.IsNullOrEmpty(text) ? "(unknown)" : text;
+    private static string Or(string? text) => ReplayLabels.Or(text);
 
     private static string Cut(string text, int length) => text.Length <= length ? text : text.Substring(0, length - 3) + "...";
 
-    private static string Plural(long count, string noun) => $"{count} {noun}{(count == 1 ? "" : "s")}";
+    private static string Plural(long count, string noun) => ReplayLabels.Plural(count, noun);
 
-    private static string Bytes(long bytes) => bytes switch
-    {
-        < 1024 => $"{bytes} B",
-        < 1024 * 1024 => (bytes / 1024.0).ToString("0.0", CultureInfo.InvariantCulture) + " KB",
-        _ => (bytes / (1024.0 * 1024.0)).ToString("0.00", CultureInfo.InvariantCulture) + " MB",
-    };
+    private static string Bytes(long bytes) => ReplayLabels.Bytes(bytes);
 
-    private static string Duration(long milliseconds)
-    {
-        TimeSpan span = TimeSpan.FromMilliseconds(milliseconds);
-        return span.TotalHours >= 1
-            ? $"{(int)span.TotalHours}h {span.Minutes:00}m {span.Seconds:00}s"
-            : $"{span.Minutes}m {span.Seconds:00}s";
-    }
+    private static string Duration(long milliseconds) => ReplayLabels.Duration(milliseconds);
 
-    private static string Ascii(string text) => ReplayText.Ascii(text).Replace('\n', ' ');
+    private static string Ascii(string text) => ReplayLabels.Ascii(text);
 
     private static void CreateDirectoryFor(string path)
     {

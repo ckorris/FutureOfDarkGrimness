@@ -1,6 +1,6 @@
 # 456 — GUI replay viewer
 
-**Status**: todo (forks F1, F2 answered 2026-10-30 - see Decisions)
+**Status**: built 2026-10-31 (engine cc57a476 on `feature/replay`); Chris's hand-verify of the acceptance list open (forks F1, F2 answered 2026-10-30 - see Decisions)
 **Related**: plan `docs/replay-plan.md` sections 4.3, 4.4, 7; depends on #454, #452; reuses the in-game canvas (`RaylibRenderer.TransitionToGame`), `PresentationPlayer`, `GameLog`
 
 ## Goal
@@ -78,11 +78,66 @@ game, and the acceptance list below is ticked.
 `dotnet build`; FdgRaylib.Tests green; headless smoke unaffected; acceptance list above.
 
 ## Notes
-- (none yet)
+- 2026-10-31 - Built; verified by tests and in the GUI; the acceptance list stays Chris's.
+  - Engine: `ReplayWriter` stamps the summary of what it writes on the header line (`ReplayHeader.Summary`, format
+    v3); `ReplayReader.ReadHeaderGzip` reads that line alone; `ReplayTally` (shared by recorder and writer) counts
+    steps as `DefaultStepFilter` does. App: `FdgRaylib/Rendering/Replays/` - `ReplayLabels` + `ReplayFiles` (shared
+    with the `--replay` CLI), `ReplayCatalog` (browser rows), `ReplayListRows` (decision list), `ReplayTransport`,
+    `ReplaySession`, `ReplayScreen`, `ReplayBrowserScreen`; `RaylibRenderer.ShowReplay` / `ReplaceTableState`;
+    `PresentationPlayer.Reset`, `GameLog.Clear`; main-menu `Replays` button; `Program.cs` wiring.
+  - Tests: engine 3484 passed / 1 skipped (+1: the header carries the summary of what was written and reads alone;
+    the step-count assertions now compare with the timeline). App 3097 (+14 `ReplayViewerTests`: browser rows from
+    the header, newest first, an unreadable file a row saying why; the transport's dwell / stop at end / stop at a
+    resume; the decision list's order, markers, folded rows; the session over a real recorded game - step forward
+    queues beats in place, a seek lands on the worker and hands over the new table state with the log rebuilt,
+    latest-of-several seeks wins, Instant autoplay reaches the end in the same state a rebuild of the end has, and
+    stops at a resume; a `.fdgsave` opens). Smoke unaffected (exit 0, `Game result:`, `Replay saved to:`).
+  - GUI, Xephyr :5 (1280x720, llvmpipe), kit `~/Projects/fdg-lab-scratch/replay-456/`: main menu -> Replays listed
+    three v3 replays newest first (one "(1 resume)") and four older-format files as unreadable rows with the reason;
+    Open showed the table at step 0 with terrain and objectives, the decision list and the log; Right stepped
+    through deployment (models appear); End jumped to the game's end (round 4/4, "Game over: Tie", log rebuilt);
+    23 rapid Lefts chained seeks; stepping forward on a shot played the hit and save dice as in a game; the slider
+    jumped to the resume, where `-- Saved in round 2 --` / `-- Resumed ... --` separate the list and the notice says
+    the game was saved and resumed; 2x autoplay played melee dice and activation banners with the list following;
+    Esc returned to the browser; Delete asked, then removed a file; Open File (zenity) opened a `.fdgsave`, whose
+    replay ends `-- Saved in round 2 --` with "the game did not finish here". No exception in the logs.
+  - Fixed while looking: a doubled "(AI)" for scenario-named slots, clipped columns, the list too short at 720p
+    (the panel takes 68% of the column in a replay), 1-based "step 79" against the list's `#078` (now `#NNN`
+    everywhere, as `--at` takes it), the dice stack under the transport bar (now stands on it), the browser's
+    step count disagreeing with the viewer's (now one count).
 
 ## Decisions
 - F1 (Chris, 2026-10-30): beat-paced autoplay + 0.75 s dwell. F2: new `ReplayScreen` + main-menu `Replays` button.
-- (record the subscription re-seeding approach on `OnStoreReplaced`, any overlay left off)
+- **The viewer is a renderer mode, not an `IAppScreen.Draw`.** The table is drawn by `RaylibRenderer` outside ImGui,
+  so `ShowReplay` reuses `TransitionToGame` (no resolvers, task display, chat, save) and `ReplayScreen` draws only
+  what replaces the game's controls; Esc goes through the Escape arbiter and leaves to the browser without raising
+  `OnGameExited` (no game, no lobby, no replay to write).
+- **Re-seeding on a new store:** `TransitionToGame` / `ExitGame` were split around `AttachTableState` /
+  `DetachTableState` (overlays, model / terrain / objective subscriptions, the placed-model seed); a rebuilt store is
+  swapped in by `ReplaceTableState` on the main thread. The tooltip, army list, measurement and tactical overlays
+  come along for free and work read-only; the tactical overlay's toggle resets on a seek.
+- **Threads:** a step forward runs on the main thread so its beats are queued in the frame its deltas land (the
+  presentation player holds moving / dying models from the moment a beat is queued - a worker would let a model jump
+  first). A seek (jump, step back, slider, row click) rebuilds a NEW store on a worker; the renderer keeps drawing
+  the old, untouched one until `Update` hands the new one over. Moves asked for meanwhile are remembered, latest wins.
+  A step forward across a resume rebuilds on the main thread (one step, rare).
+- **The browser reads one line per file:** the plan's browser columns need steps / rounds / outcome, which no header
+  had, so the writer now stamps `ReplaySummary` on the header (format 3; plan rule 5). And `Summary.Steps` now counts
+  steps exactly as `DefaultStepFilter` does, so one number appears everywhere; #452's "no decision, no file" and the
+  #453 save summary follow it.
+- **Instant dwell is 0.05 s, not the plan's 0.1 s:** 300 steps x 0.1 s is already 30 s before frame rounding, and the
+  acceptance asks for under 30 s.
+- **After a seek the log is rebuilt** to every recorded line up to the new position (in sync with the table); log
+  lines carry no colour in the recording, so the replay's log is one colour.
+- **Colours** are the palette in slot order - a replay does not record lobby colour picks.
+- Steps are numbered `#NNN` from 0 in the list, the label, the slider and the details - the number `--at` takes.
 
 ## Outcome
-(open)
+Built 2026-10-31 on `feature/replay` (engine cc57a476): main menu -> Replays lists every recorded game from its header
+line; any replay or replay-carrying save opens on the real table view with its animations, pause / play at four speeds
+or Instant, step forward and back, seeks by list row, slider and Home / End, the decision list with markers and folded
+requests, and the current step's details and raw reply. Verified by 15 new tests and run through end to end in the
+GUI (Notes). **Open:** the acceptance list is Chris's hand-verify, including a client-recorded replay of a networked
+game, which no run here produced - carried into #457's Notes. Known and left: a step's deltas apply at once and its
+beats play after, so the round HUD can read the next round while the previous round's last shot animates; replays
+recorded before today (formats 1 and 2) list as unreadable.

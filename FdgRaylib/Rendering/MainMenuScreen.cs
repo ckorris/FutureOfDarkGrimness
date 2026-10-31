@@ -11,6 +11,7 @@ public class MainMenuScreen : IAppScreen
     public Action? OnArmyForgeClicked;
     public Action? OnCombatCalculatorClicked;
     public Action? OnLoadGameClicked;
+    public Action? OnReplaysClicked; // #456
     public Action? OnQuitClicked;
 
     private bool _modalOpen = false;
@@ -36,7 +37,7 @@ public class MainMenuScreen : IAppScreen
         // The button column shares out the band between the title and the disclaimer, so adding a
         // button shrinks them all a little instead of pushing Quit off the bottom. Capped at the
         // original size (0.08 tall, 0.03 gap), which is what six buttons got.
-        const int buttonCount = 7;
+        const int buttonCount = 8;
         const float columnTop = 0.24f, columnBottom = 0.90f;
         float slot        = screenH * (columnBottom - columnTop) / buttonCount;
         float btnW        = screenW * 0.40f;
@@ -61,7 +62,7 @@ public class MainMenuScreen : IAppScreen
         float startY  = screenH * columnTop;
 
         // Navigation buttons click with the neutral Navigate tone; Quit recedes with the Back tone - but
-        // every entry keeps the SAME colour: these are seven peers in a list, not an action beside its
+        // every entry keeps the SAME colour: these are eight peers in a list, not an action beside its
         // cancel, so #398's action-class tint is asked to sit this one out.
         void DrawButton(string label, Action? action, int order, bool back = false)
         {
@@ -79,13 +80,14 @@ public class MainMenuScreen : IAppScreen
         DrawButton("Client",       OnClientClicked,      1);
         // Army Builder button temporarily hidden - re-enable by uncommenting this line and bumping the
         // order arguments below back up by one (Army Forge -> 3, Combat Calculator -> 4, Load Game -> 5,
-        // Options -> 6, Quit -> 7) and buttonCount above to 8.
+        // Replays -> 6, Options -> 7, Quit -> 8) and buttonCount above to 9.
         // DrawButton("Army Builder", OnArmyBuilderClicked, 2);
         DrawButton("Army Forge",        OnArmyForgeClicked,        2);
         DrawButton("Combat Calculator", OnCombatCalculatorClicked, 3);
         DrawButton("Load Game",         OnLoadGameClicked,         4);
-        DrawButton("Options",           () => _optionsOpen = true, 5);
-        DrawButton("Quit",              OnQuitClicked,             6, back: true);
+        DrawButton("Replays",           OnReplaysClicked,          5); // #456
+        DrawButton("Options",           () => _optionsOpen = true, 6);
+        DrawButton("Quit",              OnQuitClicked,             7, back: true);
         ImGui.EndDisabled();
 
         if (useMenuFont) ImGui.PopFont();

@@ -303,6 +303,37 @@ public class PresentationPlayer : IPresentationSink
         }
     }
 
+    /// <summary>
+    /// #456: drops everything queued, playing or lingering - glides, deaths, attacks, dice, banners - so the board
+    /// draws the authoritative state at once. The replay viewer calls it when it jumps (a seek, a step back, a
+    /// step taken while the last one is still animating): nothing from the position it left may play on over
+    /// the one it arrived at. Render thread.
+    /// </summary>
+    public void Reset()
+    {
+        lock (_lock)
+        {
+            _incoming.Clear();
+            _active = null;
+            _elapsedSeconds = 0f;
+            _moveStepsCued = 0;
+            _glides.Clear();
+            _deaths.Clear();
+            _rollStack.Clear();
+            _banners.Clear();
+            _attacks.Clear();
+            _wounded.Clear();
+            _cascading.Clear();
+            _activeSave = null;
+            _saveProgress = 0f;
+            _activeSpell = null;
+            _spellProgress = 0f;
+            _activeArrival = null;
+            _arrivalProgress = 0f;
+            _hitStopRemaining = 0f;
+        }
+    }
+
     // ---------------- render thread ----------------
 
     public void Update(float realDt)

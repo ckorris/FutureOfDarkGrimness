@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording), #452 (files on every game exit) and #453 (replay inside saves, resumes continue it) done 2026-10-31. Umbrella work item: **#449**.
+**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording), #452 (files on every game exit) and #453 (replay inside saves, resumes continue it) done 2026-10-31; #456 (GUI viewer) built 2026-10-31, awaiting Chris's hand-verify. Umbrella work item: **#449**.
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -105,7 +105,8 @@ identical bytes go base64 into `GameSaveFile.Replay` (#453).
 ```
 header : { FormatVersion, BuildVersion, EngineVersion, GameId, Seed, RandomnessType, Settings,
            Slots:[{SlotId, PlayerId, Name, ArmyName, Team, Controller: Human|Ai|Remote}],
-           RecordedBy: Host|Client, RecordedByPlayerId, StartedUtc, ResumedUtc:[...] (#453) }
+           RecordedBy: Host|Client, RecordedByPlayerId, StartedUtc, ResumedUtc:[...] (#453),
+           Summary:{Steps, Rounds, Outcome, DurationMs, SizeBytes} (#456, stamped by the writer) }
 event  : { Seq, T (ms since start), Kind, ...payload }
 ```
 
@@ -249,6 +250,16 @@ replay keeps that `GameEnded` (Disconnect) and the resume follows it (Chris: rec
 session's end. `FormatVersion` is 2. `--replay` reads a save's replay; `--at STEP --make-save` embeds the replay cut
 before that step's request (before `GameEnded` for `end`), closed with `Saved`.
 
+**As built (#456; details in its Decisions).** Main menu -> `Replays` (`ReplayBrowserScreen`: `Replays/` newest first,
+one header line read per file - `ReplayWriter` now stamps the file's `ReplaySummary` on the header, `FormatVersion` 3 -
+plus Open File for any `.fdgreplay` or replay-carrying `.fdgsave`, and Delete) -> the viewer, which is the in-game table
+view (`RaylibRenderer.ShowReplay`) with `ReplayScreen`'s decision list, step details and transport bar in place of the
+game's controls. `ReplaySession` steps forward on the main thread (the step's beats are queued in the frame its deltas
+land, so nothing jumps) and seeks on a worker, handing the new table state over when it lands (latest seek wins).
+`ReplaySummary.Steps` now counts steps exactly as `DefaultStepFilter` does, so the browser, the viewer, a save's summary
+and #452's "no decision, no file" agree. Autoplay waits for the beats plus 0.75 s / speed; Instant plays no beats with a
+0.05 s dwell; it stops at the end and after a `Resumed`. Steps are numbered `#NNN` from 0 everywhere, as `--at` takes them.
+
 ---
 
 ## 5. Size estimate (measured 2026-10-30)
@@ -310,7 +321,7 @@ scope here (gzip already does most of that work).
 | 453 | Replay inside `.fdgsave`: save embeds, resume continues, clients receive history | 450, 451 | done 2026-10-31 |
 | 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | done 2026-10-30 |
 | 455 | Headless tooling: `--replay` dump / stats / verify / export / make-save | 454 | done 2026-10-30 |
-| 456 | GUI replay viewer: browser screen, playback screen, controls, decision list | 454, 452 | todo |
+| 456 | GUI replay viewer: browser screen, playback screen, controls, decision list | 454, 452 | built 2026-10-31; Chris's hand-verify open |
 | 457 | Verification + merge: networked hand-verify, size check, docs, merge `feature/replay` -> `master` | all | todo |
 
 Suggested order: 450 -> 454 -> 455 (an agent can now debug from a replay) -> 451 -> 452 -> 453 -> 456 -> 457.

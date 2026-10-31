@@ -29,6 +29,7 @@ Replays (#450/#451): every game is recorded on the host AND on each remote clien
 - Circles drawn at true scale: `BaseRadiusInches * scale px/inch`. Two circles visually touching = bases touching in the game world.
 - Player colours are assigned in `LobbyScreen.HandleLaunch` (palette-indexed) and read at draw time via `Func<PlayerID, Color>`.
 - The `Layout` record (scale + origin) is computed each frame from current screen size; resolver overlay receives it via `UpdateLayout`.
+- The replay viewer (#456, `FdgRaylib/Rendering/Replays/`) reuses the in-game table view: `ShowReplay` wires a replay's table state, log and `PresentationPlayer` in as a launch would, and `ReplayScreen` replaces the resolver panel, Menu button and Esc menu with its decision list and transport bar. A seek rebuilds the store on a worker, then `ReplaceTableState` swaps the overlays and subscriptions onto the new table state (`AttachTableState` / `DetachTableState`, shared with launch and exit).
 
 ## Game Termination
 

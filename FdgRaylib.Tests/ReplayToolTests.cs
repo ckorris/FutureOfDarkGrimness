@@ -241,7 +241,7 @@ public class ReplayToolTests
         }
     }
 
-    private static string FindRepoFile(string relative)
+    internal static string FindRepoFile(string relative)
     {
         for (var dir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); dir != null; dir = dir.Parent)
         {

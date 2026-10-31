@@ -5,6 +5,7 @@ using FdgRaylib.Config;
 using FdgRaylib.Import;
 using FdgRaylib.ListServer;
 using FdgRaylib.Rendering;
+using FdgRaylib.Rendering.Replays;
 using FDG;
 using FDG.ArmyBuilding;
 using FDG.Data;
@@ -833,6 +834,12 @@ else
         calculatorDwell.Left();
         renderer.NavigateTo(renderer.MainMenu);
     };
+
+    // ── Replays (#456): browser -> viewer -> back to the browser ──────────────────
+    renderer.MainMenu.OnReplaysClicked = () => renderer.NavigateTo(renderer.ReplayBrowser);
+    renderer.ReplayBrowser.OnBack = () => renderer.NavigateTo(renderer.MainMenu);
+    renderer.ReplayBrowser.OnOpened = session => renderer.ShowReplay(
+        new ReplayScreen(session, onExited: () => renderer.NavigateTo(renderer.ReplayBrowser)));
 
     // ── Host Modal ─────────────────────────────────────────────────────────────
     renderer.HostModal.OnCancel = () =>

@@ -114,6 +114,7 @@ Two top-level modes determined in `Program.cs`:
 MainMenu -+-> HostModal ----> LobbyScreen --> (in-game)
           +-> ClientModal --> LobbyScreen --> (in-game)
           +-> ArmyBuilder / ArmyForge
+          +-> ReplayBrowser --> (replay viewer: the in-game table, read-only, #456)
           +-> Quit
 ```
 

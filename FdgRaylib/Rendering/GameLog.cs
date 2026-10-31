@@ -26,6 +26,12 @@ public class GameLog
         lock (_lock) _messages.Add(new LogEntry(message, color, Interlocked.Increment(ref _globalSequence), isDebug));
     }
 
+    /// <summary>#456: empties the log - the replay viewer rebuilds it to match the position it jumped to.</summary>
+    public void Clear()
+    {
+        lock (_lock) _messages.Clear();
+    }
+
     public List<LogEntry> Snapshot()
     {
         lock (_lock) return new List<LogEntry>(_messages);

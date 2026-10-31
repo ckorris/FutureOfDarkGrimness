@@ -7,6 +7,7 @@ using FDG.StageResolution.Requests;
 using FdgRaylib.Audio;
 using FdgRaylib.Config;
 using FdgRaylib.Rendering.Presentation;
+using FdgRaylib.Rendering.Replays;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
@@ -14,7 +15,7 @@ using rlImGui_cs;
 
 namespace FdgRaylib.Rendering;
 
-public class RaylibRenderer
+public class RaylibRenderer : IReplayCanvas
 {
     // Populated once during Run() after fonts are loaded; null until then.
     public static ImGuiNET.ImFontPtr BodyFont;
@@ -54,6 +55,11 @@ public class RaylibRenderer
     public HostModal         HostModal    { get; } = new();
     public ClientModal       ClientModal  { get; } = new();
     public LobbyScreen       LobbyScreen  { get; } = new();
+    public ReplayBrowserScreen ReplayBrowser { get; } = new();
+
+    // #456: the replay being watched, or null in a game. The table view is shared; this replaces the game's
+    // controls (resolver panel, Menu button, Esc menu) with the viewer's.
+    private ReplayScreen? _replay;
 
     private IAppScreen _currentScreen;
 
@@ -220,11 +226,6 @@ public class RaylibRenderer
         // texture is regenerated lazily on the next draw when this differs from what it was baked for.
         _background         = resolverOverlay?.TableBackground ?? ETableBackground.Forest;
         _backgroundStyle    = TableBackgrounds.For(_background);
-        _tooltipOverlay.Attach(tableState, colorForPlayer, presentationPlayer);
-        // #329: local player IDs ride the task display (the one launch-path object that carries
-        // them), so the army list can put "your" tab first.
-        _armyListOverlay.Attach(tableState, colorForPlayer,
-            taskDisplay?.LocalPlayerIDs ?? [], resolverOverlay);
         _escapeMenu.AttachSave(saveGameToJson);
         // #226: the bug reporter captures this launch's log + chat and (on the host) the save hook,
         // so a report carries everything the session knows. The announce hook rides the chat relay
@@ -233,17 +234,6 @@ public class RaylibRenderer
             announce: playerMessageUI == null
                 ? null
                 : text => playerMessageUI.Submit(text, EChatMessageType.Global)));
-        _measurementOverlay.Attach(tableState);
-        // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
-        _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
-            pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); },
-            // #201/#384: the launched game's cover + LoS settings ride the resolver overlay
-            // (stamped in BuildGui).
-            coverProximityExceptions: resolverOverlay?.CoverProximityExceptions ?? true,
-            seeThroughFriendlyUnits: resolverOverlay?.SeeThroughFriendlyUnits ?? false);
-        _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
-        // #230: lets the field anchor on a placement's ghosts when no move job is running.
-        _tacticalOverlay.AttachResolverOverlay(resolverOverlay);
         // The menu's Options panel sets the master volume.
         _escapeMenu.AttachOptions(_audio);
         // #280: preview sharing rides the overlay (built at launch by GameGuiWiring.AttachPreviews).
@@ -276,6 +266,65 @@ public class RaylibRenderer
             };
         }
 
+        AttachTableState(tableState);
+        _inGame = true;
+    }
+
+    /// <summary>
+    /// #456: the replay viewer - the in-game table view over a replay's state, with the viewer's controls in place of
+    /// the game's: no resolvers, chat, save or Esc menu. Called from the replay browser's Draw (main thread); the
+    /// next frame draws the table.
+    /// </summary>
+    public void ShowReplay(ReplayScreen screen)
+    {
+        ReplaySession session = screen.Session;
+        TransitionToGame(session.Player.TableState, session.ColorFor, session.Log,
+            presentationPlayer: session.Presentation);
+        _background      = session.Background;
+        _backgroundStyle = TableBackgrounds.For(_background);
+        _showChat        = false;
+        _replay          = screen;
+        session.Attach(this);
+    }
+
+    /// <summary>#456 (<see cref="IReplayCanvas"/>): the replay rebuilt its store - draw the new table state. Main
+    /// thread, before the frame draws.</summary>
+    public void ReplaceTableState(ITableState tableState)
+    {
+        DetachTableState();
+        AttachTableState(tableState);
+    }
+
+    /// <summary>#456 (<see cref="IReplayCanvas"/>): the replay rebuilt its log for a jump - follow it to the end.</summary>
+    public void ScrollConsoleToEnd()
+    {
+        _lastLogCount = 0;
+        _autoScroll   = true;
+    }
+
+    // Everything that reads the table state: the overlays and the model / terrain / objective subscriptions. Split
+    // out of TransitionToGame / ExitGame so a replay can swap one table state for another (#456).
+    private void AttachTableState(ITableState tableState)
+    {
+        _tableState = tableState;
+        Func<PlayerID, Color> colorForPlayer = _colorForPlayer!;
+        _tooltipOverlay.Attach(tableState, colorForPlayer, _presentationPlayer);
+        // #329: local player IDs ride the task display (the one launch-path object that carries
+        // them), so the army list can put "your" tab first.
+        _armyListOverlay.Attach(tableState, colorForPlayer,
+            _taskDisplay?.LocalPlayerIDs ?? [], _resolverOverlay);
+        _measurementOverlay.Attach(tableState);
+        // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
+        _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
+            pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); },
+            // #201/#384: the launched game's cover + LoS settings ride the resolver overlay
+            // (stamped in BuildGui).
+            coverProximityExceptions: _resolverOverlay?.CoverProximityExceptions ?? true,
+            seeThroughFriendlyUnits: _resolverOverlay?.SeeThroughFriendlyUnits ?? false);
+        _tacticalOverlay.AttachMovementResolver(_resolverOverlay?.MovementResolver);
+        // #230: lets the field anchor on a placement's ghosts when no move job is running.
+        _tacticalOverlay.AttachResolverOverlay(_resolverOverlay);
+
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
             SubscribeToModel(model);
@@ -289,8 +338,25 @@ public class RaylibRenderer
         tableState.Objectives.OnObjectRemoved += RemoveObjective;
         foreach (var objective in tableState.Objectives.Objects)
             AddObjective(objective);
+    }
 
-        _inGame = true;
+    private void DetachTableState()
+    {
+        if (_tableState != null)
+        {
+            _tableState.Models.OnObjectCreated      -= SubscribeToModel;
+            _tableState.Terrain.OnObjectCreated     -= AddTerrain;
+            _tableState.Terrain.OnObjectRemoved     -= RemoveTerrain;
+            _tableState.Objectives.OnObjectCreated  -= AddObjective;
+            _tableState.Objectives.OnObjectRemoved  -= RemoveObjective;
+        }
+
+        _measurementOverlay.Reset();
+        _tacticalOverlay.Detach();
+        _placedModels.Clear();
+        lock (_terrainLock)    _terrain.Clear();
+        lock (_objectivesLock) _objectives.Clear();
+        _tableState = null;
     }
 
     private readonly List<ITerrain>   _terrain      = new();
@@ -353,25 +419,31 @@ public class RaylibRenderer
     /// </summary>
     private void ExitGame()
     {
-        if (_tableState != null)
-        {
-            _tableState.Models.OnObjectCreated      -= SubscribeToModel;
-            _tableState.Terrain.OnObjectCreated     -= AddTerrain;
-            _tableState.Terrain.OnObjectRemoved     -= RemoveTerrain;
-            _tableState.Objectives.OnObjectCreated  -= AddObjective;
-            _tableState.Objectives.OnObjectRemoved  -= RemoveObjective;
-        }
+        TeardownGameView();
 
-        _measurementOverlay.Reset();
-        _tacticalOverlay.Detach();
+        // Every game teardown funnels through here (game-over card, escape-menu quit-to-menu,
+        // escape-menu load). Program.cs uses this to stop the public-listing heartbeat (#271).
+        OnGameExited?.Invoke();
+    }
+
+    // #456: leaving the replay viewer tears the table view down like a game, but is not a game exit (no replay to
+    // write, no lobby to close), so OnGameExited stays quiet; the screen's own callback returns to the browser.
+    private void ExitReplay()
+    {
+        ReplayScreen screen = _replay!;
+        TeardownGameView();
+        screen.Exited();
+    }
+
+    // The table view's teardown, shared by a game's exit and the replay viewer's.
+    private void TeardownGameView()
+    {
+        DetachTableState();
         _escapeMenu.Close();
         _escapeMenu.AttachBugReport(null); // per-game refs (log, save hook) must not outlive the game
         _armyListOverlay.Close();
-        _placedModels.Clear();
-        lock (_terrainLock)    _terrain.Clear();
-        lock (_objectivesLock) _objectives.Clear();
 
-        _tableState            = null;
+        _replay                = null;
         _colorForPlayer        = null;
         _log                   = null;
         _playerMessageUI       = null;
@@ -394,10 +466,6 @@ public class RaylibRenderer
         _gameOverResult        = null;
         _gameOverNote          = null;
         _inGame                = false;
-
-        // Every game teardown funnels through here (game-over card, escape-menu quit-to-menu,
-        // escape-menu load). Program.cs uses this to stop the public-listing heartbeat (#271).
-        OnGameExited?.Invoke();
     }
 
     private void SubscribeToModel(IModel model)
@@ -528,7 +596,11 @@ public class RaylibRenderer
 
             if (_inGame)
             {
-                _presentationPlayer?.Update(Raylib.GetFrameTime());
+                float frameSeconds = Raylib.GetFrameTime();
+                // #456: a replay moves before the frame draws - a finished seek swaps its table state in here - and
+                // its animations run at the viewer's speed.
+                _replay?.Session.Update(frameSeconds);
+                _presentationPlayer?.Update(frameSeconds * (_replay?.Session.TimeScale ?? 1f));
 
                 HandleTableViewInput(screenW, screenH);
                 var layout = ComputeLayout(screenW, screenH);
@@ -600,8 +672,10 @@ public class RaylibRenderer
                     // Hovering it freezes every panel's timer; the bounds it reports are what the pointer
                     // is tested against next frame (a frame of lag is invisible and avoids measuring the
                     // stack twice).
+                    // #456: in a replay the stack stands on the transport bar rather than under it.
                     rollStackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetRollStack(),
-                        layout.AreaW, screenH, diceAvoid, _presentationPlayer.IsRollStackHovered);
+                        layout.AreaW, screenH - (_replay?.TransportHeight ?? 0), diceAvoid,
+                        _presentationPlayer.IsRollStackHovered);
                     // #386: GetMousePosition only updates from in-window motion, so once the pointer
                     // leaves the window (second monitor, OBS) it reports the last in-window position
                     // forever — a stale point the growing stack can reach and "hover" with nobody there.
@@ -629,7 +703,9 @@ public class RaylibRenderer
                 // Right-column regions: resolver panel (top half) + log/chat console (bottom half).
                 int rightW    = RightColumnWidth(screenW);
                 int rightX    = screenW - rightW;
-                int panelH    = (int)(screenH * ResolverPanelLayout.ScreenHeightFraction);
+                // #456: a replay's decision list is what gets read, so its panel takes more of the column.
+                int panelH    = (int)(screenH * (_replay != null ? ReplayScreen.PanelHeightFraction
+                                                                 : ResolverPanelLayout.ScreenHeightFraction));
                 ResolverPanelLayout.Set(rightX, 0, rightW, panelH);
 
                 rlImGui.Begin();
@@ -639,6 +715,7 @@ public class RaylibRenderer
                 // resolver Esc-cancels and canvas hotkeys must not fire underneath it — the overlay
                 // handles its own Escape/L directly, like the Esc menu does.
                 EscapeRouter.BeginFrame(_escapeMenu.IsOpen || _armyListOverlay.IsOpen);
+                if (_replay != null && !_armyListOverlay.IsOpen) _replay.HandleKeys();
                 // Runs before the hit tester / resolvers so its Alt-measure WantCaptureMouse override
                 // lands before they read that flag (see MeasurementOverlay).
                 _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -685,12 +762,19 @@ public class RaylibRenderer
                 _previewPublisher?.Tick(Raylib.GetTime());
                 // Fill the resolver panel with an idle placeholder whenever nothing is prompting, so the
                 // top-right region always reads as an intentional panel rather than empty space.
-                if (!resolverShown) DrawIdleResolverPanel();
+                // #456: a replay's decision list and step details fill the panel instead.
+                if (!resolverShown)
+                {
+                    if (_replay != null) _replay.DrawPanel();
+                    else DrawIdleResolverPanel();
+                }
                 DrawGameOverOverlay(screenW, screenH);
 
                 // Standalone "Menu" button in the bottom-left corner (where the retired toolbar sat),
                 // the discoverable way into the Esc menu. Drawn before the menu so its dim covers it.
-                DrawMenuButton(screenH);
+                // #456: a replay's transport bar sits there instead.
+                if (_replay != null) _replay.DrawTransport(layout.AreaW, screenH, _armyListOverlay.Toggle);
+                else DrawMenuButton(screenH);
 
                 // #329: the army list overlay, sized to the table area so the right column stays
                 // visible beside it. Drawn before the Esc menu so the menu's dim sits above it; its
@@ -701,13 +785,21 @@ public class RaylibRenderer
                 // In-game menu (Esc). Opens only when no context claimed Escape this frame, and never
                 // over the game-over card (that has its own Return to Main Menu button). Drawn last so
                 // its dim + window sit above every other in-game overlay.
-                bool justOpenedMenu = false;
-                if (_gameOverResult == null && EscapeRouter.ShouldOpenMenu())
+                // #456: in a replay, the Escape nothing else claimed leaves the viewer.
+                if (_replay != null)
                 {
-                    _escapeMenu.Open();
-                    justOpenedMenu = true;
+                    if (EscapeRouter.ShouldOpenMenu()) _replay.RequestExit();
                 }
-                _escapeMenu.Draw(screenW, screenH, justOpenedMenu);
+                else
+                {
+                    bool justOpenedMenu = false;
+                    if (_gameOverResult == null && EscapeRouter.ShouldOpenMenu())
+                    {
+                        _escapeMenu.Open();
+                        justOpenedMenu = true;
+                    }
+                    _escapeMenu.Draw(screenW, screenH, justOpenedMenu);
+                }
 
                 rlImGui.End();
             }
@@ -723,6 +815,8 @@ public class RaylibRenderer
             }
 
             Raylib.EndDrawing();
+
+            if (_replay is { WantsExit: true }) ExitReplay();
         }
 
         rlImGui.Shutdown();
@@ -1292,9 +1386,13 @@ public class RaylibRenderer
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
 
-        // Source toggles: Chat (left), then Log, then Debug (developer detail, off by default).
-        DrawConsoleToggle((_chatUnread ? "Chat *" : "Chat") + "##chattoggle", ref _showChat, isChat: true);
-        ImGui.SameLine();
+        // Source toggles: Chat (left), then Log, then Debug (developer detail, off by default). A replay has no
+        // chat (#456), so no Chat toggle.
+        if (_playerMessageUI != null)
+        {
+            DrawConsoleToggle((_chatUnread ? "Chat *" : "Chat") + "##chattoggle", ref _showChat, isChat: true);
+            ImGui.SameLine();
+        }
         DrawConsoleToggle("Log##logtoggle", ref _showLog, isChat: false);
         ImGui.SameLine();
         bool debugWasOn = _showDebug;
