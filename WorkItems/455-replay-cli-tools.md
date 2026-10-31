@@ -1,6 +1,6 @@
 # 455 — Headless replay tooling: dump / stats / verify / export / make-save
 
-**Status**: todo
+**Status**: in progress (2026-10-30)
 **Related**: plan `docs/replay-plan.md` ("useful for an agent to debug"); depends on #454; sibling of the #167 scenario tools (`--make-scenario`, `--scenario`)
 
 ## Goal
@@ -54,10 +54,32 @@ is NOT the right flag set - check `ScenarioLauncher` accepts a `.fdgsave` direct
 scenarios are accepted, add `--resume FILE` as the headless twin of the GUI's Load Game, and say so).
 
 ## Notes
-- (none yet)
+- 2026-10-30 slice 1 (engine 5212670a): `FDG.Replay.ReplayVerifier` + `ReplayJsonDiff`. Checks: `Seq` from 0 and
+  dense; every request answered or failed unless still open at the end; no reply without its request (host) and
+  no second answer; at most one `GameEnded` (none = a note); every snapshot after the first rebuilt from its
+  predecessor + deltas and compared as a re-saved store (not across `Resumed`), with a per-entry divergence
+  report; every delta applies and every beat reads back at its position. 7 engine tests: a clean scripted
+  recording, a removed update (gap at its Seq + the divergence it causes), a corrupted update (anchored to its
+  Seq, names the field), request/marker tampering, no snapshot, a real in-process game verifies clean, the diff.
+  Engine 3454 passed / 1 skipped.
 
 ## Decisions
-- (record the field-diff approach and the resume-from-save headless flag outcome)
+- **Verifier lives in the engine** (`FDG.Replay.ReplayVerifier`), the CLI only formats it: it needs playback's
+  exact snapshot load (`stampLegacyReserves: false`, internal) and `EDeltaGenerationPolicy.Adopt`, and an
+  engine test can pin it against a real in-process game. Results are structured (`Seq`, check, message,
+  details) so tests assert on the Seq rather than parse text.
+- **Field diff = top-level JSON properties compared as token trees** (`ReplayJsonDiff.ChangedProperties`),
+  shared by `--verify` and `--events`. Key order is not a change; non-object values (a bare `Float2`, a
+  string entry) differ as `(value)`. No nested paths: the top-level name (`_tokens`, `Position3D`) is enough to
+  point at the bug, and the full JSON is one `--verbose` away.
+- **"Unanswered" is judged per player**: a request with no reply/error fails only when the same player answered
+  a later request (it was skipped, not pending); ones still open at the end are one note. A `RequestError` is
+  a note (it is a recorded fact, not a broken recording). A reply to an unknown task fails on a host
+  recording, a note on a client one (#451 clients may join mid-request).
+- **Divergence anchoring**: each differing entry carries the Seq of its last recorded change in the window
+  ("no change recorded since snapshot N" when none); the issue is anchored to the earliest. A removed event
+  is reported exactly by the dense-Seq check; a corrupted one by its own Seq. After a divergence the check
+  reloads the recorded snapshot and carries on, so one bad delta is one failure.
 
 ## Outcome
 (open)
