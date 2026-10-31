@@ -65,6 +65,9 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
 
 ## Notes
 
+**2026-10-31 (orchestrator)** - Chris ruled on D1-D4: ship the rebuilt Random Army catalog as it stands (quote in
+Outcome). The #440 decisions still open for his eyes: D5, D6, D10. GUI hand-verify still owed via #445 section 9.
+
 - 2026-10-31: **done.** Summary per goal (decisions below; per-army and per-scenario tables follow this bullet).
   (1) Random Army catalog: all 33 `armies/` files and the 8 `FdgLab/armies` 2k files rebuilt against the 3.6
   books by the new `--reforge` dev flag (`FdgRaylib/Cli/ArmyReforge.cs`): 33 units solved exactly, 128 by label
@@ -226,7 +229,7 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
 
 ## Decisions
 
-- **D1 (OWNER REVIEW) - the catalog is rebuilt mechanically, not by hand.** Alternatives: (a) re-import Chris's original
+- **D1 (OWNER REVIEW - ACCEPTED 2026-10-31, ship as is) - the catalog is rebuilt mechanically, not by hand.** Alternatives: (a) re-import Chris's original
   Army Forge share links against 3.6 (the files carry no link; not available); (b) hand-rebuild 41 lists (~400 units)
   in the Forge; (c) a dev tool that recovers each unit's picks against the 3.6 book and recompiles. Chose (c),
   `--reforge` (`FdgRaylib/Cli/ArmyReforge.cs`, beside the other retrofit flags; `--dry-run` reports only). Per unit, in
@@ -236,7 +239,7 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
   nearest fit (`SelectionSolver.SolveNearest`, new, D2); the substitution table (D3). Then `ListCompiler.Compile`
   with the 3.6 book, so stats, rules, spells, effect sets and points are 3.6 and the file reopens in the Forge. The
   per-unit ledger at the bottom lists every translated/nearest/substituted unit with its weapon diff.
-- **D2 (OWNER REVIEW) - nearest fit for units 3.6 reprinted.** 201 of the 366 unit rebuilds (41 files) have no exact or label counterpart:
+- **D2 (OWNER REVIEW - ACCEPTED 2026-10-31, ship as is) - nearest fit for units 3.6 reprinted.** 201 of the 366 unit rebuilds (41 files) have no exact or label counterpart:
   3.6 moved options into base loadouts (Human Empire Marksmen now carry Matchlock Rifles), renamed profiles (Rifle ->
   Battle Rifle, CCW -> Strike / Hand Weapon) or merged sections. `SolveNearest` walks the same option space as the
   exact solver and keeps the pick-set that `ArmyReforge.Closeness` rates highest: size first (-2 per model), then each
@@ -247,14 +250,14 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
   ledger for review; outliers worth a look: `3k - Saurian Starhosts` Raptor Riders (5 -> 6 models, 400 pts; one of
   the two was then cut by the fit), `3k - Soul-Snatcher Cults` Neophyte Bikers (Combined) 6 -> 10 models (3.6's
   bikers come in fives), `2k - High Elf Fleets` Elven Noble 115 -> 250 (the nearest jetbike-mounted noble).
-- **D3 (OWNER REVIEW) - hand substitutions for units 3.6 removed** (`ArmyReforge.Substitutions`; the loadout then
+- **D3 (OWNER REVIEW - ACCEPTED 2026-10-31, ship as is) - hand substitutions for units 3.6 removed** (`ArmyReforge.Substitutions`; the loadout then
   follows by nearest fit): `1k - Prime Brothers` Blaster Brothers (5 models, plasma, Relentless; 270) -> Support Prime
   Brothers as a combined pair with Plasma Rifles (6 models; 350). `2k - Alien Hives - Horde Melee` (and its FdgLab
   twin) Winged Grunts (10, Bio-Borer + Razor Claws, Flying; 125) -> Shooter Grunts combined pair with Wings (10,
   Bio-Ravager + Claws, Flying; 160); `4k - Alien Hives` Winged Grunts (10, Bio-Ravager; 155) -> the same (160).
   Candidates offered: Assault Grunts and Shooter Grunts (3.6 makes Wings an upgrade on both); the closeness chose
   Shooter Grunts for all three.
-- **D4 (OWNER REVIEW) - bracket fit.** Every rebuilt list is brought to 95-100% of its file-name bracket (the lobby's
+- **D4 (OWNER REVIEW - ACCEPTED 2026-10-31, ship as is) - bracket fit.** Every rebuilt list is brought to 95-100% of its file-name bracket (the lobby's
   `BotArmyPicker.BandPercentUnderLimit` band, so Random Army still offers it at that size): over, cut upgrade picks
   before units (the cut landing closest under; if none gets under, the largest non-hero unit); under, add upgrade
   picks before copies of existing non-hero units (the addition landing closest to the bracket without passing it).
@@ -314,7 +317,13 @@ brackets, rebuilt by `--reforge` with every recovery, substitution and bracket a
 above, ledger below); scenarios are on 3.6 and all 28 run headless; the EOF army is 3.6-legal and catalog Very Fast is
 gone; 3.5 lists keep loading and playing, proven by `Legacy35ArmyTests` over six original catalog lists (exact #168
 drops, both renamed GDF families plus the AoF one), with the Q5 amber notice in the lobby and CLI. Owner review: D1,
-D2, D3, D4, D5, D6, D10. Awaiting Chris's hand-verify of Random Army in the lobby (GDF and AoF) and one Forge reopen.
+D2, D3, D4, D5, D6, D10.
+
+**Owner ruling 2026-10-31 (D1-D4): ship the rebuilt catalog as is.** Chris: "let's ship. We're not completely
+supporting older armies anyway, so it sounds like you just did the closest you could." The mechanical rebuild, the
+201 nearest fits, the four substitutions and the bracket fit are accepted for 0.4.0; anything he dislikes is a Forge
+touch-up after the release. Still owed: his GUI hand-verify of Random Army in the lobby (GDF and AoF) and one Forge
+reopen (the #445 section 9 list).
 
 Commits - engine: a32a897b, f38dcd6f, e3b0311c, 8576e3f9, 97ea3cf0; superproject: 4a5fc0f, 7a882d6, 6953436, 5dd21a7,
 fa70650, 60044a0 (+ the docs commit).
