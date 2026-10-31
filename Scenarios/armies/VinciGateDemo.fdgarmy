@@ -1,6 +1,7 @@
 {
   "name": "Vinci Tech gate demo",
   "faction": "Duchies of Vinci",
+  "gameSystem": "age-of-fantasy",
   "pointsLimit": 0,
   "units": [
     {
@@ -62,8 +63,9 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "effect": {
             "kind": "rollModifier",
@@ -78,7 +80,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "AP(+1) when shooting or charging enemies over 9 inches away, for this activation."
+      "description": "AP(+1) when shooting/charging enemies over 9\"/6\" away, for this activation."
     },
     {
       "name": "Vinci Tech (Precision)",
@@ -86,8 +88,9 @@
         {
           "hookID": "Shooting_OnHitRollModifier",
           "condition": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "effect": {
             "kind": "rollModifier",
@@ -102,7 +105,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "+1 to hit when shooting or charging enemies over 9 inches away, for this activation."
+      "description": "+1 to hit rolls when shooting/charging enemies over 9\"/6\" away, for this activation."
     },
     {
       "name": "Vinci Tech",
@@ -121,7 +124,8 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "addRule",
@@ -146,7 +150,8 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "addRule",
@@ -162,7 +167,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(+1) or +1 to hit rolls."
+      "description": "When this unit is activated, pick one effect: until the end of the activation, when shooting/charging enemies over 9\"/6\" away, all models with this rule in it either get AP(+1) or get +1 to hit rolls."
     }
   ],
   "spells": []
