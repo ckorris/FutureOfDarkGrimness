@@ -291,7 +291,7 @@ public static class RuleTextFlow
     private static void SetWrappedTooltip(string text)
     {
         ImGui.BeginTooltip();
-        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 28f);
+        ImGui.PushTextWrapPos(ImGui.GetFontSize() * RuleHoverText.TooltipWrapEm);
         ImGui.TextUnformatted(text);
         ImGui.PopTextWrapPos();
         ImGui.EndTooltip();

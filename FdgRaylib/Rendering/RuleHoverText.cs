@@ -128,12 +128,18 @@ public static class RuleHoverText
         return tooltip;
     }
 
+    /// <summary>#441: the one wrap width for every rule hover - the Army Forge's (<see cref="RuleTextFlow"/>), the
+    /// in-game ones here, and the menus' companion-action hovers - in em, so it reads the same at every UI scale.
+    /// 3.6's rule texts run 2-4x longer than 3.5's (Transport, the longest shipped, is ~580 characters: about a
+    /// dozen lines here), which is what the wrap is for.</summary>
+    public const float TooltipWrapEm = 28f;
+
     /// <summary>Raises a wrapped tooltip. Rule descriptions are full sentences; without a wrap they
     /// render as one very wide tooltip. Same wrap width as the Army Forge's.</summary>
     public static void ShowTooltip(string text)
     {
         ImGui.BeginTooltip();
-        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 28f);
+        ImGui.PushTextWrapPos(ImGui.GetFontSize() * TooltipWrapEm);
         ImGui.TextUnformatted(text);
         ImGui.PopTextWrapPos();
         ImGui.EndTooltip();

@@ -295,7 +295,7 @@ public class GuiAssignWoundsResolver
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 28f);
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * RuleHoverText.TooltipWrapEm);
                 ImGui.TextUnformatted(WoundAssignmentText.ChipTooltip(results, i, RowOf));
                 ImGui.PopTextWrapPos();
                 ImGui.EndTooltip();

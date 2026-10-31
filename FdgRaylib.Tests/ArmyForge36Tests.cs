@@ -286,4 +286,109 @@ public class ArmyForge36Tests
             Assert.That(all, Does.Contain($"; 1 model or Tough per {perModel})."));
         });
     }
+    // ── Goal 5: the hover glossary ──────────────────────────────────────────────────────────────────
+
+    // Every rule name the Forge can print for a shipped book - unit rules, weapon rules, item rules, the weapons an
+    // item carries (#438 D4), and everything an upgrade option grants - has a description in that book's glossary.
+    // So no shipped rule underlines faintly with the #259 "not enforced" note; that marker stays for what the engine
+    // cannot resolve (RuleGlossaryTests.Describe_IsSilentExactlyWhenTheResolverCannotResolve), which for the shipped
+    // data is --rule-coverage's Dead 0.
+    [Test]
+    public void EveryRuleAShippedBookCanPrint_HasA36Description_InAscii()
+    {
+        var undocumented = new SortedSet<string>(StringComparer.Ordinal);
+        var nonAscii = new SortedSet<string>(StringComparer.Ordinal);
+        int checkedNames = 0;
+        foreach (BookFile book in AllBooks())
+        {
+            RuleGlossary glossary = RuleGlossary.Build(book);
+            foreach (SpecialRuleEntry rule in RulesPrintedBy(book))
+            {
+                checkedNames++;
+                string? description = glossary.Describe(rule);
+                if (description is null) undocumented.Add($"{book.Name}: {rule.PrintableName}");
+                else if (glossary.Tooltip(rule).Any(c => c >= 0x80)) nonAscii.Add($"{book.Name}: {rule.PrintableName}");
+            }
+        }
+
+        Assert.That(checkedNames, Is.GreaterThan(10000), "the walk reaches the corpus");
+        Assert.That(undocumented, Is.Empty, "would hover as \"not enforced\":\n  " + string.Join("\n  ", undocumented));
+        Assert.That(nonAscii, Is.Empty, "the ImGui atlas would print '?':\n  " + string.Join("\n  ", nonAscii));
+    }
+
+    private static IEnumerable<SpecialRuleEntry> RulesPrintedBy(BookFile book)
+    {
+        IEnumerable<SpecialRuleEntry> Weapons(IEnumerable<WeaponFileEntry>? weapons) =>
+            (weapons ?? Enumerable.Empty<WeaponFileEntry>()).SelectMany(w => w.SpecialRules);
+        IEnumerable<SpecialRuleEntry> Items(IEnumerable<ItemEntry> items) =>
+            items.SelectMany(i => i.Rules.Concat(Weapons(i.Weapons)));
+
+        foreach (RosterUnit unit in book.Units)
+        {
+            foreach (SpecialRuleEntry r in unit.Rules.Concat(Weapons(unit.Weapons)).Concat(Items(unit.Items)))
+                yield return r;
+            foreach (UpgradeOption option in unit.Sections.SelectMany(s => s.Options))
+                foreach (SpecialRuleEntry r in option.RulesGained.Concat(Weapons(option.WeaponsGained)).Concat(Items(option.ItemsGained)))
+                    yield return r;
+        }
+    }
+
+    // The tooltip carries the whole 3.6 sentence - nothing in the formatter clips the 2-4x longer texts (#426); the
+    // wrap is ImGui's, at RuleHoverText.TooltipWrapEm, for every rule hover in the Forge and in game.
+    [Test]
+    public void TheLongest36Description_ReachesTheTooltipWhole()
+    {
+        (string Name, string Description) longest = AllBooks()
+            .SelectMany(b => b.RuleDefinitions)
+            .Concat(FDG.Rules.Dispatch.CoreRuleCatalog.All)
+            .Where(d => !string.IsNullOrEmpty(d.Description))
+            .Select(d => (d.Name, d.Description))
+            .OrderByDescending(d => d.Description.Length)
+            .First();
+
+        BookFile owner = AllBooks().FirstOrDefault(b => b.RuleDefinitions.Any(d => d.Name == longest.Name)) ?? Book("BattleBrothers");
+        Assert.That(longest.Description.Length, Is.GreaterThan(300), "3.6 texts are long - this is what the wrap is for");
+        Assert.That(RuleGlossary.Build(owner).Tooltip(longest.Name), Is.EqualTo($"{longest.Name}\n{longest.Description}"));
+
+        // Laid out at the shared wrap width with a half-em average glyph (the body font's), it wraps at word
+        // boundaries into a readable block: every line inside the width, nothing lost, about a dozen lines.
+        const float em = 18f;
+        IReadOnlyList<RuleTextFlow.PlacedChunk> placed = RuleTextFlow.Layout(
+            new[] { new RuleTextFlow.RuleSegment(longest.Description, null) },
+            RuleHoverText.TooltipWrapEm * em, text => text.Length * em * 0.5f);
+        Assert.That(string.Concat(placed.Select(c => c.Text)), Is.EqualTo(longest.Description), "nothing clipped");
+        Assert.That(placed.Where(c => c.Text.Trim().Length > 0).All(c => c.X + c.Width <= RuleHoverText.TooltipWrapEm * em + em),
+            Is.True, "no line runs past the wrap (a trailing space may hang)");
+        Assert.That(placed[^1].Line + 1, Is.InRange(8, 20), "a tall-but-readable tooltip, not a one-line banner");
+    }
+
+    // An "Enhanced X" hover explains the rule it lifts: its description names X ("If most models in this unit have
+    // Shadowborn, ..."). Three 3.6.0 texts name the MECHANIC instead ("If this model has Versatile Attack ... from
+    // Versatile Attack") for Versatile Warrior / Watchborn / Vinci Tech - kept verbatim by #436 D3; whether the hover
+    // should add the base rule's name is fork F7 in WorkItems/441. Pinned exactly, so a re-bake that changes the
+    // set shows up here.
+    [Test]
+    public void EnhancedHovers_NameTheBaseRuleTheyLift_ExceptTheThreeVersatileTexts()
+    {
+        var shipped = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (BookFile book in AllBooks())
+            foreach (var d in book.RuleDefinitions.Where(d => d.Name.StartsWith("Enhanced ", StringComparison.Ordinal)))
+                shipped[d.Name] = d.Description;
+
+        var silent = shipped
+            .Where(kv => !kv.Value.Contains(BaseOfEnhanced(kv.Key), StringComparison.OrdinalIgnoreCase))
+            .Select(kv => kv.Key).OrderBy(n => n, StringComparer.Ordinal).ToList();
+
+        Assert.That(shipped.Count, Is.GreaterThan(50), "the books embed the Enhanced family");
+        Assert.That(silent, Is.EqualTo(new[] { "Enhanced Vinci Tech", "Enhanced Watchborn" }),
+            "OPR's 3.6.0 text for these says \"Versatile Attack\" (F7); Enhanced Versatile Warrior is in no shipped book");
+    }
+
+    private static string BaseOfEnhanced(string name)
+    {
+        string rest = name["Enhanced ".Length..];
+        foreach (string suffix in new[] { " Aura", " Buff", " Debuff" })
+            if (rest.EndsWith(suffix, StringComparison.Ordinal)) return rest[..^suffix.Length];
+        return rest;
+    }
 }

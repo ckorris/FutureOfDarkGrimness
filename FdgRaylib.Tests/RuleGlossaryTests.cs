@@ -63,6 +63,19 @@ public class RuleGlossaryTests
         Assert.That(glossary.Describe(tough), Is.EqualTo(CoreRuleCatalog.Tough.Description));
     }
 
+    // #441: a text-valued rule (Spawn / Split) hovers with its definition, not the "not enforced" note - the
+    // printable "Spawn(Spores [5])" is no glossary key, the canonical name is.
+    [Test]
+    public void Describe_TextEntry_LooksUpTheCanonicalNameNotThePrintableOne()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith(Definition("Spawn", "Places a new unit.")));
+        var spawn = new SpecialRuleEntry_Text("Spawn", "Spores [5]");
+
+        Assert.That(spawn.PrintableName, Is.EqualTo("Spawn(Spores [5])"));
+        Assert.That(glossary.Describe(spawn), Is.EqualTo("Places a new unit."));
+        Assert.That(glossary.Tooltip(spawn), Is.EqualTo("Spawn(Spores [5])\nPlaces a new unit."));
+    }
+
     [Test]
     public void Describe_Alias_FallsThroughToTheRuleItRenames()
     {

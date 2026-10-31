@@ -69,12 +69,15 @@ public sealed class RuleGlossary
     /// <summary>
     /// The description for a rule as an army/book file carries it. Looks up the CANONICAL name rather than
     /// the printable one, so "Tough(3)" finds Tough; an alias ("Medical Training (Regeneration)") falls
-    /// through to the rule it renames, since that is what actually describes its behavior.
+    /// through to the rule it renames, since that is what actually describes its behavior. #441: a text-valued
+    /// rule ("Spawn(Hive Swarms [3])", "Split(Changelings [10])") is looked up by its name too - it used to fall
+    /// through to the printable name and hover as "not enforced", though the engine resolves it.
     /// </summary>
     public string? Describe(SpecialRuleEntry entry) => entry switch
     {
         SpecialRuleEntry_Core core => Describe(core.Name),
         SpecialRuleEntry_CoreNumeric numeric => Describe(numeric.Name),
+        SpecialRuleEntry_Text text => Describe(text.Name),
         SpecialRuleEntry_Alias alias => Describe(alias.Name) ?? Describe(alias.AliasedRule),
         _ => Describe(entry.PrintableName),
     };

@@ -378,7 +378,9 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                 if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
                 {
                     string? tip = row.SecondaryDisabledReason ?? SecondaryDescription(request, row);
-                    if (tip != null) ImGui.SetTooltip(tip);
+                    // #441: wrapped like every rule hover - the description is the companion rule's own text,
+                    // and a 3.6 sentence unwrapped ran the tooltip across the screen.
+                    if (tip != null) RuleHoverText.ShowTooltip(tip);
                 }
 
                 bool secondaryKey = secondaryEnabled && enabled && keysLive
