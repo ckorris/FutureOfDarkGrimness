@@ -45,7 +45,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
   Done 2026-10-30; Assault / Parry / Enhanced halves -> #424 / #423 / #433; owner review asked on D7, D9.
 - [ ] 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed). Design fork; blocked on Q3. ([WorkItems/443](WorkItems/443-terrain-3-6.md))
 - [~] 444 — Version, docs, release: 0.4.0 / OPR_3_6_0, README/CLAUDE.md/docs, archive, release-notes draft done on the branch 2026-10-31; merge + tag wait for hand-verify, fork sign-off and #445. ([WorkItems/444](WorkItems/444-version-docs-release-3-6.md))
-- [ ] 445 — Final verification: coverage Dead 0, per-book smokes, share-link gate, hand-verify checklist. ([WorkItems/445](WorkItems/445-final-verification-3-6.md))
+- [~] 445 — Final verification: pass 1 done 2026-10-31 (14 green / 0 red / 4 amber); consolidated GUI hand-verify list for Chris in the file; pass 2 after sign-off changes. ([WorkItems/445](WorkItems/445-final-verification-3-6.md))
 - [x] 446 — Dangerous terrain: a unit that activates in Dangerous terrain takes the test first thing in its activation; one test per activation on either trigger. Done 2026-10-30; owner review asked on D1, D2, D3, D4. ([WorkItems/446](WorkItems/446-activate-in-dangerous-terrain.md))
 - [x] 447 — Impact(X) is per model: X dice per living model carrying it (a joined hero's own Impact adds), Brace subtracts from the total. Done 2026-10-30; owner review asked on D1, D3. ([WorkItems/447](WorkItems/447-impact-per-model.md))
 

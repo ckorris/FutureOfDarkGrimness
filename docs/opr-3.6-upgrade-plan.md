@@ -267,7 +267,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 442 | Tactician AI + Combat Calculator parity with 3.6 | 5 | phase 2 | O | high | done 2026-10-30 (Assault / Parry / Enhanced halves deferred to #424 / #423 / #433; bench 85.9% vs 85.6%; awaiting GUI hand-verify; owner review: D7, D9) |
 | 443 | Terrain 3.6: Dense, Unstable, Steep, Climbable (design fork; Q3) | 5 | - | O | high | deferred past the 3.6 release (Q3 answered 2026-10-29) |
 | 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | steps 1-7 done 2026-10-31; merge + tag pending |
-| 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | todo |
+| 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | pass 1 done 2026-10-31 (14 green / 0 red; 4 amber: 5 new warnings net 0, GUI hand-verify list, Random Army hand-verify, #441 F1-F9); pass 2 pending |
 | 446 | Units that activate in Dangerous terrain take the test (pre-existing gap found by #420) | 2 | #420 | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4) |
 | 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | done 2026-10-30 (owner review: D1, D3) |
 
