@@ -15,7 +15,9 @@ using TinyDialogsNet;
 namespace FdgRaylib.Rendering;
 
 /// <summary>#307: how a Save/Load status line should read. A failure must never share the success channel.</summary>
-internal enum EForgeStatusKind { Info, Success, Error }
+/// <summary>The status line's colour. <see cref="Notice"/> (#441 F2) is the amber advisory of the lobby's legacy
+/// lines (LobbyScreen.LegacyNoticeColor): the list opened fine, and there is something the player should know.</summary>
+internal enum EForgeStatusKind { Info, Success, Error, Notice }
 
 /// <summary>What a load attempt did. Anything but <see cref="Adopted"/> means the screen still holds its
 /// previous list, and the caller owes the user a modal saying so.</summary>
@@ -65,6 +67,7 @@ public class ArmyForgeScreen : IAppScreen
     private static readonly Vector4 RedText    = new(0.90f, 0.40f, 0.40f, 1f);
     private static readonly Vector4 YellowText = new(0.90f, 0.80f, 0.35f, 1f);
     private static readonly Vector4 GreenText  = new(0.45f, 0.85f, 0.45f, 1f);
+    private static readonly Vector4 AmberText  = new(1f, 0.7f, 0.2f, 1f); // the lobby's legacy-notice amber (#440)
     private static readonly Vector4 WhiteText  = new(1f, 1f, 1f, 1f);
     private static readonly Vector4 CyanText   = new(0.45f, 0.80f, 0.90f, 1f);
 
@@ -362,6 +365,7 @@ public class ArmyForgeScreen : IAppScreen
     {
         EForgeStatusKind.Error => RedText,
         EForgeStatusKind.Success => GreenText,
+        EForgeStatusKind.Notice => AmberText,
         _ => ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled],
     };
 
@@ -1524,9 +1528,19 @@ public class ArmyForgeScreen : IAppScreen
         }
         _loadFailureMessage = null;
         _failedLoadFingerprint = null;
-        SetStatus(EForgeStatusKind.Success, $"Loaded {fileName}");
+        (EForgeStatusKind kind, string text) = LoadedStatus(loaded, fileName);
+        SetStatus(kind, text);
         return true;
     }
+
+    /// <summary>The status line after a list is opened. #441 F2 (signed off B): a list whose embedded book is stamped
+    /// for an older OPR ruleset gets the lobby's / CLI's legacy line (<see cref="LegacyArmyNotice.Line(ArmyListFile)"/>)
+    /// in amber - the Forge edits it against its own embedded book, and the player should know it plays under the
+    /// current rules. A current list says only that it loaded. Pure, unit-tested.</summary>
+    internal static (EForgeStatusKind Kind, string Text) LoadedStatus(BuiltArmyFile loaded, string fileName) =>
+        LegacyArmyNotice.Line(loaded) is string legacy
+            ? (EForgeStatusKind.Notice, $"Loaded {fileName} - {legacy}")
+            : (EForgeStatusKind.Success, $"Loaded {fileName}");
 
     private void RecordLoadFailure(string fileName, string reason)
     {
