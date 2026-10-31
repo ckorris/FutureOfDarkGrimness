@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; #450 (format + host recorder) and #454 (playback engine) done 2026-10-30. Umbrella work item: **#449**.
+**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30. Umbrella work item: **#449**.
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -191,6 +191,12 @@ filled by one forward walk in the player's constructor (the timeline stays store
 (Debug): worst seek 49 ms, player construction 0.3 s warm; played back from snapshot 0 it equals the live
 final save.
 
+**As built (#455).** `FDG.Replay.ReplayVerifier` (engine) checks dense `Seq`, closed requests, one `GameEnded`, every
+snapshot rebuilt from its predecessor's deltas (not across `Resumed`), deltas apply, beats read; the app's
+`FdgRaylib/Cli/ReplayTool.cs` is the `--replay` CLI over it and the player (see `Scenarios/README.md`). The build
+warning ignores the commit the SDK appends to a `-dev` stamp. A `.fdgsave` input and the cut save's embedded
+replay are #453's; `--scenario` already resumes a cut save, so there is no `--resume` flag.
+
 ### 4.4 Steps (D4)
 
 A step is a `Request` event that has a matching `Reply`. Folded (not a step, shown inside the previous
@@ -266,7 +272,7 @@ scope here (gzip already does most of that work).
 | 452 | App: auto-write `.fdgreplay` on every game exit (host, client, headless, scenario, crash best-effort) | 450, 451 | todo |
 | 453 | Replay inside `.fdgsave`: save embeds, resume continues, clients receive history | 450, 451 | todo |
 | 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | done 2026-10-30 |
-| 455 | Headless tooling: `--replay` dump / stats / verify / export / make-save | 454 | todo |
+| 455 | Headless tooling: `--replay` dump / stats / verify / export / make-save | 454 | done 2026-10-30 |
 | 456 | GUI replay viewer: browser screen, playback screen, controls, decision list | 454, 452 | todo |
 | 457 | Verification + merge: networked hand-verify, size check, docs, merge `feature/replay` -> `master` | all | todo |
 

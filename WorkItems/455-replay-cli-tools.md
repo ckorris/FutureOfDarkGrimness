@@ -1,6 +1,6 @@
 # 455 — Headless replay tooling: dump / stats / verify / export / make-save
 
-**Status**: in progress (2026-10-30)
+**Status**: done (2026-10-30)
 **Related**: plan `docs/replay-plan.md` ("useful for an agent to debug"); depends on #454; sibling of the #167 scenario tools (`--make-scenario`, `--scenario`)
 
 ## Goal
@@ -114,4 +114,13 @@ scenarios are accepted, add `--resume FILE` as the headless twin of the GUI's Lo
   reloads the recorded snapshot and carries on, so one bad delta is one failure.
 
 ## Outcome
-(open)
+Done 2026-10-30 on `feature/replay` (engine 5212670a, db9862e4; superproject ede90fc, 5a83c41, + the close-out
+commit). `--replay FILE` with `--dump`, `--events`, `--stats`, `--verify`, `--export OUT.jsonl` and
+`--at STEP|end --make-save OUT.fdgsave` works headless on a real 2k replay and on a headless-smoke replay;
+a cut save resumes with `--headless --scenario` (human slot on EOF defaults, or `--all-ai`) to a Game result.
+Documented in CLAUDE.md "Build & Run" and `Scenarios/README.md` ("From a replay"). Integrity checking lives in
+the engine (`ReplayVerifier`, 7 tests); the CLI has 7 app tests on an in-process recorded scenario game.
+Found and fixed on the way: the #454 build-mismatch warning fired between dev builds of different commits.
+Not done here, by design and handed over explicitly: `.fdgsave` input and the embedded truncated replay with
+a `Saved` marker (#453's scope, now listed there); re-running the checks on a replay the headless smoke writes
+for real (#452's verification, now listed there).

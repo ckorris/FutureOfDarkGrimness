@@ -91,6 +91,11 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --trace-rules
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --make-scenario Scenarios/example-shootout.json out.fdgsave
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/example-shootout.json
 
+# Replay tools (#455, see Scenarios/README.md): read a recorded game headless (--dump | --events | --stats |
+# --verify | --export OUT.jsonl), or cut a resumable save at a step and play it with --scenario.
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --dump
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --at 20 --make-save repro.fdgsave
+
 # Run engine tests
 dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj
 ```

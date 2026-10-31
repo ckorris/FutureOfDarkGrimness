@@ -20,6 +20,35 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/example-
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --scenario Scenarios/example-shootout.json
 ```
 
+## From a replay (#455)
+
+A recorded game (`.fdgreplay`) turns into a repro save in one command, so a reported bug becomes a
+scenario without replaying the game by hand. Find the decision with `--dump`, then cut there:
+
+```bash
+# The step timeline: one line per decision ("#012  R2 A05  P1 (AI)  ChooseActionRequest  Warriors: Shoot"),
+# with the log lines, beats, markers and store changes that followed it. --from/--to pick steps; --folded
+# also lists one-option picks; --no-log / --no-beats / --debug-log tune the noise.
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --dump
+
+# A save of the state step 20 was asked in; then play it like any scenario (add --all-ai to watch bots).
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --at 20 --make-save repro.fdgsave
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --scenario repro.fdgsave
+
+# Every event one line each (store updates name the fields they changed; --verbose prints the JSON),
+# a size breakdown, an integrity check, or the raw JSON Lines for grep/jq.
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --events --from 1500 --to 1600 --kind StoreUpdate,Marker
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --stats
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --verify
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --export game.jsonl
+```
+
+Caveats: a resume restarts at the activation boundary the save's progress record points at (#052),
+so a cut in the middle of an activation re-plays that activation from its start on the board as it
+stood at the cut - cut at the activation's first decision (the tool names it) for a clean repro. A
+step before round 1 cannot be resumed (the tool says which step is the first that can). Until #453 the
+cut save carries no replay, and `--replay` reads only `.fdgreplay` files, not saves.
+
 ## Scenario JSON
 
 ```jsonc

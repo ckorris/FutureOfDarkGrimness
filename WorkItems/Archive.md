@@ -263,3 +263,7 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
   `ReplayPlayer` (seek via snapshot + deltas, step forward/back), shared `StoreDeltaApplier`, decision
   describer. **Done 2026-10-30** on `feature/replay`; a 2k replay plays back to the live final state, worst
   seek 49 ms. ([WorkItems/454](WorkItems/454-replay-playback-engine.md))
+- [x] 455 — Headless `--replay` tools: `--dump` (step timeline with log/beats/markers/store changes), `--events`
+  (field diff), `--stats`, `--verify` (engine `ReplayVerifier`), `--export`, `--at N --make-save` (resumes with
+  `--scenario`). **Done 2026-10-30** on `feature/replay`; `.fdgsave` input handed to #453.
+  ([WorkItems/455](WorkItems/455-replay-cli-tools.md))
