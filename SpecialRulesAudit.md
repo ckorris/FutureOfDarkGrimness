@@ -1,5 +1,12 @@
 # Special Rules Audit
 
+> **Historical (note added 2026-10-31, #444).** This audit was written against the OPR 3.5 corpus. The engine,
+> the rule supplements and all 88 bundled books now implement **OPR 3.6.0** (the 3.6 upgrade, items #415-#447,
+> record in `docs/opr-3.6-upgrade-plan.md`). Rule wording, rule names, file/line anchors and counts quoted below
+> are 3.5-era and many no longer match the code or the data (several rules named here were rewritten or deleted
+> by #428-#436). Read it as the history of the special-rules system's design, not as a description of current
+> behaviour; for the current rules use the supplements, `CoreRuleCatalog` and the 3.6 work items.
+
 Date: 2026-07-06
 Scope: engine special-rules system (`FutureOfDarkGrimness/Rules/`), its stage integration points, the test suite, and rule data in army files / `GdfRuleSupplement.json`.
 

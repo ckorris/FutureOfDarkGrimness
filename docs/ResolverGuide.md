@@ -56,7 +56,7 @@ In Group mode (movement, consolidation, deployment/teleport placement) **Ctrl+Wh
 unit's formation**; plain Wheel / R / Shift+R still rotate, and Shift-hold stays "stay within
 Advance". The shapes come from the engine's `FormationLibrary` (`RowPartitions` -> `LayoutOffsets`,
 shared with `CohesiveFormation.PackGrid`), filtered to those whose span respects the 9" all-pairs
-rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
+rule (Core Rules v3.6.0 coherency: within 1" of one member and 9" of all others, unchanged from 3.5); app-side state lives in `FormationCycle`, input in `GroupInput` (both
 `FdgRaylib/Rendering/Resolvers/`). Conventions:
 
 - **Index 0 = the unit's current shape, unchanged** wherever the unit already stands (movement,
@@ -241,7 +241,7 @@ the same `ResolverHotkeys.CycleDelta()` keys, but has no roster panel yet — th
     a hold by an already-overlapping model would self-flag (the same reason zero-length legs are skipped).
   - **Hazard detection** (Dangerous / Difficult): unchanged, the arriving attitude alone. "Does this ground
     affect the model" is not "is this move legal", and widening it changes how often units take terrain
-    wounds or hit the 6" cap.
+    wounds or hit the 6" cap (Difficult terrain, `DIFFICULT_TERRAIN_MOVE_CAP_INCHES`; 3.6 unchanged).
 
   A preview clamp must follow the same rule or it re-introduces the bug one layer up: `EnemyClampTravel`
   allows the farther of the two attitudes. `ClampTravelToTable` (a node-pose constraint) and the
@@ -249,7 +249,7 @@ the same `ResolverHotkeys.CycleDelta()` keys, but has no roster panel yet — th
   delegates to `FindFirstTerrainCrossing`, so the Done gate and the red "show me why" ghost are literally
   one walk.
 - **Enemy keep-outs that exempt some enemies (#426)**: Scout ("over 9" away from non-Scout enemy units") and Vanguard / Fanatic / Drakesworn ("non-Vanguard") put their clause on the request as `EnemyKeepOutDiscs` + `EnemyKeepOutNote`, never as `MinDistanceFromEnemiesInches` (which would push off the exempt enemies too). Judge them only through `PlacementDistanceRules.ViolatesEnemyDistance` (it reads the discs even when the flat minimum is 0, so don't gate the check on `minEnemyDist > 0`), word a refusal with `PlacementKeepOutText.Reason(request)` (the stage's note, else the Repel Ambushers wording), and let the GUI draw them through `TryGetEnemyExclusion` like Repel discs - the Scout band (request zone) and the Vanguard reach ring (`MaxDistanceFromStartInches`) come off the same request, so no front end restates 9". The AI answers a deploy-time reposition (`RepositionPlacement.DeployRepositionTaskName`) by advancing rigidly toward the nearest enemy as far as legal; every other reposition placement it still declines. #434: the 3.6 activation-time family (Wolfborn / Bounding / Rapid Blink / Nimble at activation start, Dash at activation end) is no longer a placement - a `repositionAtActivation` with `move: true` raises the optional `DefineMovementPathRequest` of a triggered move (the Harassing request: one ring of the rolled D3(+1)", Cancel declines), so every resolver answers it as it answers a post-combat move.
-- **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.
+- **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base (the 3.6 coherency figure, unchanged). Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.
 - **Movement float precision**: `AutoAdvance` caps `step` at `MaxAdvanceDistance - 0.001f`. Without this margin, the resulting 3D move distance can come out fractionally above `MaxAdvanceDistance` and `ChooseActionStage.GetCanShoot` will block shooting after a legal advance.
 - **Back / cancel sentinel**: `GuiSelectionResolver<T>` and `GuiChooseRangedAttackResolver` resolve with `null` when the player clicks Back — as does the CLI `SelectionResolver<T>` on `[0]` (#335). Any stage that awaits those requests must null-check the result and activate its `BackToChooseAction` binding rather than proceeding. `ChooseMeleeDefenderStage` and `ChooseRangedAttackStage` already do this.
 - **A cancel that isn't a back-out**: a `null` reply does not always mean "rewind". `ChooseDeployActionStage`'s embark prompt treats it as the *other* deployment (place on the table), which is why the button says what the stage's `CancelLabel` says rather than "Back". When a cancel does something, name it — a player who never presses Back must still be able to find the action (#335).
