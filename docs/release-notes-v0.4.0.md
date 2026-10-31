@@ -78,7 +78,14 @@ Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
 - The Tactician reads the 3.6 rules: 3" melee reach, Assault threat, Parry and Brace, Cumbersome, Indirect on a Hold,
   the range / charge-distance rules, Ravage, Hazardous, Scourge and Tag tokens. It uses Spell Drain and prices its
   Versatile picks and the 3.6 activation-start moves.
-- The Combat Calculator takes a charge distance and shows Ravage.
+- The Combat Calculator takes a charge distance and shows Ravage; a defender's Parry is a "Parry" chip on the volley's
+  save line, with the dice and hits ignored in its hover.
+- The lobby flags an army over the optional force-org caps for the game's points limit with one amber line per army
+  ("Army 'X' is over 2 force-org caps"; the caps in its hover). Advice only, it never blocks the launch.
+- The Army Forge says so, in amber, when it opens a list built for an older ruleset ("... was built for OPR v3.5.3; it
+  plays with 3.6 rules").
+- The Army Builder warns when a unit carries an Enhanced rule without the rule it enhances ("Enhanced Lustbound does
+  nothing without Lustbound").
 - The Strategist's learned leaf was trained on 3.5 armies and has not been re-trained yet (planned after the release).
 
 ## Known gaps
@@ -92,5 +99,3 @@ Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
 - Spell edge cases: Hazardous on spell hits does not wound the caster on 1s (Ratmen Power Surge, Goblin Pow!, AoF
   Ratmen Lightning Blast); a one-shot "when shooting" grant can be spent by its holder's damage spell; a claimed mark
   can linger to the claimer's next damage spell; the Tactician may drain an enemy caster holding no tokens.
-- [Delete or update before release] Army Forge and glossary display questions F1-F9 (#441) were still open for Chris
-  when this draft was written, and the GUI hand-verifies of the upgrade items were pending.

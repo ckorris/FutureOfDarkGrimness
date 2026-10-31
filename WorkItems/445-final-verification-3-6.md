@@ -283,7 +283,20 @@ Army Forge / lobby / calculator screens:
       scale); share link `UGDhJMMH0QBP` import (no "RULES NOT ENFORCED"; the grey stale-"Replace X" note under the
       2380-vs-2465 row); in-game #424 pistol melee line and #438 D5 Stinger Dagger Takedown pick; AoF 750 start, Dwarves
       Gamharl twice, Shadow Stalkers' 5 spells + amber Combat Possession line, Sky-City Dwarves "Loses 2 spell tokens",
-      Army Builder AoF warnings, lobby amber Q5 line for a 3.5 fixture. Plus the F1-F9 fork sign-offs.
+      Army Builder AoF warnings, lobby amber Q5 line for a 3.5 fixture. Forks: F1, F2, F4, F5 built (below); F8, F9
+      status quo; F3, F6, F7 still open.
+- [ ] **#441 F1** (lobby, "Forks built 2026-10-31") - GDF lobby at 1000 pts, an army with 3 Heroes -> amber "Army '<name>'
+      is over 1 force-org cap" under the roster, hover "Too many Heroes: 3 (max 2 at 1000 pts; 1 per 500)."; Army Points
+      2000 -> gone; LAUNCH never greyed by it; a joined client sees the same line.
+- [ ] **#441 F2** (Forge) - Load `FdgRaylib.Tests/Fixtures/legacy-3.5/1k - Ogres.fdgarmy` -> amber status "Loaded 1k -
+      Ogres.fdgarmy - Army 'Ogres' was built for OPR v3.5.3; it plays with 3.6 rules"; a list saved by this build ->
+      green "Loaded <file>".
+- [ ] **#441 F4** (Combat Calculator) - melee vs an AoF Hand Weapon (Parry(1)) unit -> the volley's Save chip line starts
+      with a "Parry" chip, hover "N dice ignored M of K hits before the saves."; no "Parry: ..." note; no chip without
+      Parry.
+- [ ] **#441 F5** (Army Builder) - a Daemons of Lust list, "Enhanced Lustbound" on a unit without Lustbound -> amber "!
+      <unit>: Enhanced Lustbound does nothing without Lustbound" under the points box; add Lustbound -> gone; nothing
+      blocked.
 - [ ] **#430** ("Forge hand-verify (Chris)") - Forge GDF at 1000 with six squads -> amber "Too many units: 6 (max 5 at
       1000 pts; 1 per 200)." and the copies line; switch to AoF (1000 -> 750; caps 5 / 2); hover "pts limit" for the
       suggested sizes; a unit over 35% -> "is too large"; a 20+ model unit -> "Too many models/Tough"; lobby (host) Army

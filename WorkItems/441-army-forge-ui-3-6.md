@@ -46,6 +46,14 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-31 **forks ruled and built** (Chris: "I agree with you on: F1, F2, F4, F5, F8, F9. Haven't decided on the rest,
+  not enough context or time."). Built the recommended option of each: F1 B (lobby force-org line; engine `e610806e`, app
+  `1e60fd2`), F2 B (Forge legacy notice; app `6b670f2`), F4 B (Parry chip; engine `f88e2e05`, app `251f518`), F5 B (Army
+  Builder "Enhanced X does nothing without X"; engine + app, hashes in the Outcome). F2 C (the "Rebuild against the 3.6
+  book" button) waits on #440 D1-D4; F5 C (the launch-time #168 summary) not built. F8, F9 = A, nothing to build. F3, F6,
+  F7 stay open. Decisions D10-D15 below; hand-verify lines added here and to #445 section 9. One app-suite run hung at
+  100% CPU for 9+ minutes during F4's verification (the same suite passes in ~37 s before and after, 4051 green on the
+  rerun); not reproduced, not chased - noted for #445 pass 2.
 - 2026-10-31 **built** (engine `494cd8d0`; app `c0eadb9`, `2b0b49d`, `bf59959`, `e969e93`, `e5098e4`). Every goal and
   hand-off checked; the UI choices are written up as forks F1-F9 below, NOT built. Per goal:
   1. Assault: the Forge card prints the shipped 3.6 Assault Brothers' Heavy Pistol once (`5x Heavy Pistol (9", A1,
@@ -224,8 +232,44 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   test imports the share-link way by hand (every roster unit of every shipped book, units + the bundled book's
   definitions attached, `OprListImporter.UnresolvedRuleNames`) and also runs the #168 audit line. The live link
   (`UGDhJMMH0QBP`, #437) is in the hand-verify checklist.
+- **D10 - F1's cap report rides the roster, measured at the lobby's points limit (2026-10-31).** The host computes
+  `ForceOrgValidator.CompositionWarnings(army, ArmyPoints)` into a new optional `ArmyListSummary.ForceOrgWarnings`
+  (the `RulesVersion` precedent: positional record field, Newtonsoft round-trip pinned) and re-runs the roster sync in
+  `SetArmyPoints`, so a client sees the host's line and the line follows the limit. The points-limit cap is left out of
+  that report - the Pts cell and the launch gate already say it, and it would double-count. Alternatives: host-side
+  only (clients would miss it; the precedent was cheap to follow); re-sending the whole army file (heavy, and the
+  summary exists for exactly this).
+- **D11 - F1 shows one line per distinct army, hover verbatim.** Two slots fielding the same list collapse to one
+  line, as the #440 lines do (`Distinct` on line + hover); the hover is the cap strings unchanged, so the lobby, the
+  Forge and the Army Builder read the same words. Line and hover are an ImGui-free `LobbyScreen.LobbyNotice` record,
+  `RosterNotices` is the drawing loop's single source (legacy lines first, then force-org).
+- **D12 - F2 is a new amber status kind, on both open paths, not on import.** `EForgeStatusKind.Notice` paints the
+  lobby's `LegacyNoticeColor`; `Adopt` (direct open and the #356 drift-confirmed reopen both end there) sets "Loaded
+  <file> - <LegacyArmyNotice.Line>". Not shown for an import (the share-link gate admits 3.6 only) and not a modal (the
+  list opened fine). Alternative: the grey Info kind (would hide it among routine status text).
+- **D13 - F4's chip sits first on the Save line, labelled "Parry", numbers in the hover. OWNER REVIEW (placement).**
+  Parry acts between the hits landing and the saves, and what it changes is how many hits the save buckets carry, so
+  the Save line is where its chip explains a number the player sees change. The engine now reports it structured
+  (`VolleyReport.Parry`, a `ParrySummary` whose `Describe()` is the old sentence minus the "Parry: " prefix) and emits
+  no note; chips gained a hover (`ChipView(Label, Hover)`, `UiChrome.DrawChip(text, hover)` - the `Dummy` item is the
+  hover target). Alternatives: the To-hit line (Parry does not change the hit roll either, and the Hits column is
+  pre-Parry by #423's design); a third chip line for one rule (a new line type).
+- **D14 - F5 reads the base rule off the definition's gate, never the name.** `EnhancedRuleAudit.BaseRuleNames` walks
+  the Enhanced rule's passive conditions and activated availability for `UnitHasRule` / `WeaponHasRule` (through
+  And/Or, not under Not - a negative gate is not a dependency). So "Enhanced Lustbound Aura" (no gate of its own; it
+  grants) says nothing, an unresolvable "Enhanced X" says nothing (that is `ArmyRuleAudit`'s drop), and F7's oddly
+  worded hovers do not matter. "Carries X" is what `UnitHasRule.Holds` sees at game time: unit rules, weapon rules,
+  #407 model grants, and the rules of a joined Hero (or of the unit a Hero joins) - both ways. Aura-GRANTED bases are
+  invisible from a list, so a unit whose X arrives by aura may get a false advisory; accepted for an advisory pane and
+  pinned in the class summary. Alternative: parse "Enhanced " + name (the `ArmyForge36Tests.BaseOfEnhanced` test
+  convention) - rejected, it would flag the Aura variants and anything not named after its base.
+- **D15 - F5 lives in the engine beside `ArmyRuleAudit` and prints through the pane's `Warn`.** `SaveLoad/EnhancedRuleAudit`
+  (same resolver recipe: core catalog + the list's embedded definitions, validation failure tolerated), recomputed per
+  frame like the #168 audit (dictionary lookups). The line is "<unit>: Enhanced X does nothing without X" in the pane's
+  amber "!" style - advisory, not an Error, not launch-blocking. The headless/launch-time summary (fork option C) is
+  not built.
 
-## Forks for sign-off (written up, NOT built)
+## Forks (F1, F2, F4, F5, F8, F9 signed off 2026-10-31; F3, F6, F7 open)
 
 - **F1 - A force-org line in the lobby (#430 hand-off).** Today the lobby shows only `LaunchGate` blockers and, on
   launch, the Errors as a confirm; the amber caps live in the Forge and the Army Builder. (A) Nothing (status quo).
@@ -233,29 +277,50 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   "Army 'X' is over 2 force-org caps", the lines themselves in its hover; advisory, never blocking. (C) Every warning
   line inline under the player table (tall with four armies). **Recommend B** - visible where the game is agreed,
   compact, and the same shape players already know from the Q5 notice.
+  **Signed off B, built 2026-10-31:** "Army 'X' is over 2 force-org caps" (singular "1 force-org cap") in the lobby's
+  amber, under the roster beside the #440 / #444 lines, the cap lines (the Forge's / Army Builder's strings) in its
+  hover. The host measures the caps against the LOBBY's points limit (`ForceOrgValidator.CompositionWarnings`) and the
+  report rides the roster summary (`ArmyListSummary.ForceOrgWarnings`), so a client sees the same line; re-synced when
+  the host changes the limit. Never blocks. D10, D11. Tests: engine `LobbyForceOrgNoticeTests`, `ForceOrgValidatorTests`;
+  app `LobbyForceOrgNoticeTests`.
 - **F2 - The Forge and 3.5 lists (#440 hand-off).** The Forge reopens a 3.5 list against its own embedded 3.5 book and
   says nothing. (A) Nothing. (B) Show `LegacyArmyNotice.Line` (the lobby/CLI amber line) in the Forge status line when
   the opened book is stamped 3.5. (C) B plus a "Rebuild against the 3.6 book" button backed by `ArmyReforge.Reforge`
   (solver, label translation, nearest fit), landing as an unsaved list with its substitution report. **Recommend B
   now and C after Chris rules on #440 D1-D4** (Reforge's substitutions are themselves owner-review decisions).
+  **Signed off B, built 2026-10-31** (C deferred until Chris rules on #440 D1-D4): opening a list whose embedded book
+  is stamped for an older ruleset sets the Forge status line to "Loaded <file> - Army 'X' was built for OPR v3.5.3; it
+  plays with 3.6 rules" in a new amber `EForgeStatusKind.Notice`; a 3.6 list says "Loaded <file>" in green as before.
+  D12. Tests: `ForgeLegacyNoticeTests` (the `1k - Ogres` 3.5 fixture vs a Demo-book 3.6 list).
 - **F3 - OPR's printed spell text (#439 hand-off; schema).** (A) Keep `SpellText.Describe` everywhere (one renderer,
   always what the engine does). (B) Store the printed text at import (an optional `SpellDefinition.Description`, a
   re-bake) and show it in the Forge, with the canonical line beneath it as "plays as". (C) Store it and show only the
   printed text. **Recommend B** - players compare against the Army Forge list they built, and the canonical line keeps
   the mechanics honest; it is a schema field plus a re-bake, so its own item after the release.
+  **Open - not yet ruled (2026-10-31).**
 - **F4 - Parry in the Combat Calculator (#423 / #442 hand-off).** (A) Keep the volley note ("Parry: 4 dice ignored
   0.67 of 4 hits before the saves."). (B) A "Parry" chip on the volley row like the other rule chips, the numbers in
   its hover. (C) A "parried" column in the save buckets. **Recommend B** - consistent with how the calculator already
   shows rules, no new column.
+  **Signed off B, built 2026-10-31:** a "Parry" chip, first on the volley's Save chip line, hover "4 dice ignored 0.67
+  of 4 hits before the saves."; the "Parry: ..." note is gone. Chips gained an optional hover (`ChipView`,
+  `UiChrome.DrawChip(text, hover)`); the engine's `VolleyReport.Parry` (`ParrySummary`) replaces the note string. D13.
+  Tests: engine `CombatCalculatorTests` (Parry cases), app `CombatReportViewTests`.
 - **F5 - "Enhanced X without X" (#433 hand-off).** Army Forge only offers Enhanced X where X is present, so this only
   arises in hand-edited lists - which are edited in the Army Builder, not the Forge. (A) Nothing (loads silently
   inert). (B) An advisory line in the Army Builder's validation pane ("Unit: Enhanced X does nothing without X") from
   a small check beside `ArmyRuleAudit`. (C) B plus the launch-time #168 summary. **Recommend B.**
+  **Signed off B, built 2026-10-31** (C, the launch-time summary, not built): "Lust Daemons: Enhanced Lustbound does
+  nothing without Lustbound" as an amber "!" line in the Army Builder's validation pane, from the engine's
+  `EnhancedRuleAudit` beside `ArmyRuleAudit`. The base rule is read off the Enhanced definition's own
+  `unitHasRule` / `weaponHasRule` gate - the evaluator's gate - never parsed from the name. D14, D15. Tests: engine
+  `EnhancedRuleAuditTests`; app `EnhancedRuleAuditShippedDataTests` (Daemons of Lust's shipped definitions).
 - **F6 - How a mount/crew item and its weapons show (#438 D4 hand-off).** Today the item is listed by name ("1x Beast
   Rider") and its weapons are ordinary rows in the weapon table. (A) As now. (B) One line: the item with its weapons
   nested, the weapons left out of the table. (C) Keep the weapons in the table but tag them with the item ("Explosive
   Spear (Beast Rider)") and drop the bare item line when the item has no rules of its own. **Recommend C** - the table
   stays complete for comparing guns and the origin stays visible.
+  **Open - not yet ruled (2026-10-31).**
 - **F7 - (new) The two "Enhanced" hovers that do not name their base rule.** Enhanced Watchborn (Watch Brothers, Watch
   Prime Brothers) and Enhanced Vinci Tech (AoF Duchies of Vinci) read "If this model has Versatile Attack ... from
   Versatile Attack" (OPR 3.6.0 verbatim; #436 D3 keeps grammar verbatim); the unit carries Watchborn / Vinci Tech, not
@@ -263,13 +328,16 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   never names its base (display-only, every rule-hover surface, OPR text untouched). (C) Normalise the texts in the
   supplements and re-bake (reverses #436 D3 for these). **Recommend B.** Pinned by
   `ArmyForge36Tests.EnhancedHovers_NameTheBaseRuleTheyLift_ExceptTheVersatileFamilyTexts`.
+  **Open - not yet ruled (2026-10-31).**
 - **F8 - (new, #430 hand-off item 5) Cap numbers inline or in a hover.** (A) Inline as now: "Too many Heroes: 3 (max
   2 at 1000 pts; 1 per 500)." (B) A short line ("Too many Heroes: 3 of 2") with the basis and the rule in a hover.
   **Recommend A** - plain strings already read well, and a hover would add a hit target per line in two screens.
+  **Signed off A (status quo) 2026-10-31.**
 - **F9 - (new, #424 hand-off) "Also melee" on the Forge card.** (A) As now: one row, RNG 9", Assault in SPE, the
   glossary explains the melee use - the printed Army Forge list's spelling. (B) RNG cell "9\"/melee", matching the
   in-game hover's `RangeLabel`. (C) An "also melee" tag after the weapon name, attributed via
   `WeaponRoleQueries.MeleeUseSource`. **Recommend A** - match the printed list; the in-game surfaces already say it.
+  **Signed off A (status quo) 2026-10-31.**
 
 ## Hand-verify checklist (Chris)
 
@@ -315,13 +383,30 @@ AoF (Dwarves, Shadow Stalkers, Sky-City Dwarves):
       (1 per 375) and say "Unique Hero "Gamharl" taken 2 times (once per army)."
 - [ ] Lobby: field a 3.5 file (e.g. `FdgRaylib.Tests/Fixtures/legacy-3.5/`) - the amber Q5 line appears (#440).
 
+Forks built 2026-10-31 (F1, F2, F4, F5):
+- [ ] F1, lobby: Host a GDF lobby at 1000 pts and assign an army with three Heroes (e.g. the HDF list from the Rixxon
+      step above, saved; or any Forge list with 3 Heroes) -> under the roster an amber "Army '<name>' is over 1
+      force-org cap"; hovering it shows "Too many Heroes: 3 (max 2 at 1000 pts; 1 per 500)."; set Army Points to 2000
+      -> the line goes; LAUNCH is never greyed by it. With a client joined, the client sees the same line.
+- [ ] F2, Forge: Load `FdgRaylib.Tests/Fixtures/legacy-3.5/1k - Ogres.fdgarmy` -> the status line reads, in amber,
+      "Loaded 1k - Ogres.fdgarmy - Army 'Ogres' was built for OPR v3.5.3; it plays with 3.6 rules"; load a list saved
+      from this build -> green "Loaded <file>" as before.
+- [ ] F4, Combat Calculator: melee, defender an AoF Hand Weapon unit (Parry(1): Dwarves / High Elf warriors), any
+      attacker -> under the volley row the Save chip line starts with a "Parry" chip; hovering it reads "N dice
+      ignored M of K hits before the saves."; no "Parry: ..." note under the row; the defender without Parry shows no
+      chip.
+- [ ] F5, Army Builder: open a Daemons of Lust list, add the rule "Enhanced Lustbound" to a unit that has no Lustbound
+      -> amber "! <unit>: Enhanced Lustbound does nothing without Lustbound" under the points box; add "Lustbound" to
+      the unit (or to a Hero joined to it) -> the line goes; Save and the lobby launch are not blocked either way.
+
 ## Outcome
 
 Built 2026-10-31, **done pending hand-verify and forks**. Goals 1-8 checked against the shipped 3.6 books in
 `FdgRaylib.Tests/ArmyForge36Tests.cs` (19 test cases) plus `RuleGlossaryTests` and an engine `ArmyForgeCompilerTests`
 case. Two defects found and fixed: Spawn/Split hovered as "not enforced" (D2) and the Forge grayed a pass-through
 combo after a counted swap (D1). Three wording/layout choices made with one obvious reading, for owner review: D3,
-D4, D5. Nine UI forks (F1-F9) written up and not built. Not built, by design: naming each stale #262 selection
+D4, D5. Nine UI forks (F1-F9) written up; 2026-10-31 Chris ruled six (F1, F2, F4, F5 = B, built: engine `e610806e`, `f88e2e05`,
+`54341597`; app `1e60fd2`, `6b670f2`, `251f518`, `568dce7`; F8, F9 = A), F3, F6, F7 open. Not built, by design: naming each stale #262 selection
 (plan section 7 post-release). Gates: engine 4455 passed / 1 skipped (+1), app 4036 (+20), build 0 errors,
 `--validate-rules` OK 401, shipped Dead 0, headless smoke exit 0.
 
