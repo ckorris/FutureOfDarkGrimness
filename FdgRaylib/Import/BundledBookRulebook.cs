@@ -39,7 +39,7 @@ public sealed class BundledBookRulebook : ICurrentRulebook
     {
         lock (_lock)
         {
-            string key = $"{GameSystems.Normalize(gameSystem)}|{faction}";
+            string key = $"{GameSystems.Normalize(gameSystem)}|{OprBookNames.Current(faction, gameSystem)}";
             if (_byFaction.TryGetValue(key, out IReadOnlyList<SpecialRuleDefinition>? cached))
             {
                 return cached;
@@ -72,7 +72,8 @@ public sealed class BundledBookRulebook : ICurrentRulebook
     // Faction, but a hand-authored list may name the book instead — within the army's game system
     // (#378: absent means GDF on both sides, so pre-#378 armies keep finding their GDF books). Same
     // tolerance for a malformed book as the Forge screen and ArmyForgeShareService: skip it, never
-    // fail the load.
+    // fail the load. #437: across OPR's book renames (OprBookNames) - a 3.5 "Rift Daemons of War" list keeps
+    // finding its book once the bundled one is the 3.6 "Daemons of War".
     private static IReadOnlyList<SpecialRuleDefinition> LoadFactionDefinitions(string faction, string? gameSystem)
     {
         if (string.IsNullOrWhiteSpace(faction) || !Directory.Exists(BooksDirectory))
@@ -94,10 +95,7 @@ public sealed class BundledBookRulebook : ICurrentRulebook
             }
 
             if (book == null) continue;
-            if (!GameSystems.SameSystem(book.GameSystem, gameSystem)) continue;
-
-            if (string.Equals(book.Faction, faction, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(book.Name, faction, StringComparison.OrdinalIgnoreCase))
+            if (OprBookNames.Matches(book, faction, gameSystem))
             {
                 return book.RuleDefinitions.Count == 0 ? None : book.RuleDefinitions;
             }

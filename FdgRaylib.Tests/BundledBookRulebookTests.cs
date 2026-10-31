@@ -91,6 +91,47 @@ public class BundledBookRulebookTests
             "the GDF book of the same name must stay the GDF book");
     }
 
+    // #437: OPR 3.6 renamed books (OprBookNames). Whichever generation the bundled book is (3.5 until #438
+    // re-bakes, 3.6 after), a list naming either generation finds it - a 3.6 share import and a 3.5 saved army -
+    // and the now-shared "Daemons of X" name still splits by game system.
+    [TestCase("Saurian Starhost", "Saurian Starhosts", null)]
+    [TestCase("Wormhole Daemons of War", "Daemons of War", null)]
+    [TestCase("Rift Daemons of War", "Daemons of War", FDG.ArmyBuilding.GameSystems.AgeOfFantasy)]
+    public void ARenamedBook_IsFoundUnderEitherName(string name35, string name36, string? system)
+    {
+        BundledBookRulebook.Install();
+
+        var byOld = CurrentRulebook.DefinitionsForFaction(name35, system);
+        var byNew = CurrentRulebook.DefinitionsForFaction(name36, system);
+
+        Assert.That(byOld, Is.Not.Empty, $"the bundled {name36} book backfills a list saved as '{name35}'");
+        Assert.That(byNew.Select(d => d.Name), Is.EqualTo(byOld.Select(d => d.Name)), "one book, two names");
+    }
+
+    // Each system's answer is the definitions of THAT system's bundled daemon book (told apart by the AoF- file
+    // prefix, the bake's naming contract - see ShippedBooks), whichever generation of name it carries.
+    [Test]
+    public void TheShared36DaemonsName_StillSplitsByGameSystem()
+    {
+        BundledBookRulebook.Install();
+
+        List<string> DefinitionsOfTheBundled(bool aofFile) => System.IO.Directory
+            .EnumerateFiles(ShippedBooks.Directory, "*" + FDG.ArmyBuilding.BookFile.EXTENSION_WITH_PERIOD)
+            .Where(p => System.IO.Path.GetFileName(p).StartsWith("AoF-", StringComparison.OrdinalIgnoreCase) == aofFile)
+            .Select(p => System.Text.Json.JsonSerializer.Deserialize<FDG.ArmyBuilding.BookFile>(
+                System.IO.File.ReadAllText(p), FDG.Rules.Serialization.RuleJson.Options)!)
+            .Single(b => FDG.ArmyBuilding.OprBookNames.Current(b.Name, b.GameSystem) == "Daemons of Change")
+            .RuleDefinitions.Select(d => d.Name).ToList();
+
+        var gdf = CurrentRulebook.DefinitionsForFaction("Daemons of Change").Select(d => d.Name).ToList();
+        var aof = CurrentRulebook.DefinitionsForFaction("Daemons of Change", FDG.ArmyBuilding.GameSystems.AgeOfFantasy)
+            .Select(d => d.Name).ToList();
+
+        Assert.That(gdf, Is.Not.Empty);
+        Assert.That(gdf, Is.EqualTo(DefinitionsOfTheBundled(aofFile: false)), "a GDF list gets the GDF daemon book");
+        Assert.That(aof, Is.EqualTo(DefinitionsOfTheBundled(aofFile: true)), "an AoF list gets the AoF daemon book");
+    }
+
     [Test]
     public void AnUnknownFaction_BackfillsNothing_AndDoesNotThrow()
     {

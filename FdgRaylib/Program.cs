@@ -217,7 +217,9 @@ if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
             if (!indexBySystem.TryGetValue(system, out var index))
                 indexBySystem[system] = index =
                     FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
-            if (!index.TryGetValue(book.Name, out string? uid))
+            // #437: a pre-rename bundled book finds its renamed OPR entry (OprBookNames).
+            if (!index.TryGetValue(book.Name, out string? uid)
+                && !index.TryGetValue(OprBookNames.Current(book.Name, book.GameSystem), out uid))
             {
                 Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
                 missing++;
@@ -268,7 +270,9 @@ if (shapesIdx >= 0 && shapesIdx + 1 < args.Length)
             if (!indexBySystem.TryGetValue(system, out var index))
                 indexBySystem[system] = index =
                     FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
-            if (!index.TryGetValue(book.Name, out string? uid))
+            // #437: a pre-rename bundled book finds its renamed OPR entry (OprBookNames).
+            if (!index.TryGetValue(book.Name, out string? uid)
+                && !index.TryGetValue(OprBookNames.Current(book.Name, book.GameSystem), out uid))
             {
                 Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
                 missing++;
@@ -317,6 +321,9 @@ if (spellsIdx >= 0 && spellsIdx + 2 < args.Length)
             string before = File.ReadAllText(path);
             BookFile book = JsonSerializer.Deserialize<BookFile>(before, RuleJson.Options)!;
             string snapshotPath = Path.Combine(snapshotDir, book.Name + ".json");
+            // #437: a pre-rename bundled book reads its renamed snapshot (OprBookNames).
+            if (!File.Exists(snapshotPath))
+                snapshotPath = Path.Combine(snapshotDir, OprBookNames.Current(book.Name, book.GameSystem) + ".json");
             if (!File.Exists(snapshotPath))
             {
                 Console.WriteLine($"  {book.Name}: no snapshot '{snapshotPath}' - skipped.");
@@ -459,10 +466,8 @@ if (editableIdx >= 0 && editableIdx + 1 < args.Length)
 
         // #378: the faction-name match is gated on the army's game system (absent = GDF), because four
         // AoF faction names collide with GDF books and the wrong book solves to the wrong upgrades.
-        BookFile? book = books.FirstOrDefault(b =>
-            (string.Equals(b.Faction, army.Faction, StringComparison.OrdinalIgnoreCase)
-             || string.Equals(b.Name, army.Faction, StringComparison.OrdinalIgnoreCase))
-            && FDG.ArmyBuilding.GameSystems.SameSystem(b.GameSystem, army.GameSystem));
+        // #437: and it holds across OPR's book renames (OprBookNames).
+        BookFile? book = books.FirstOrDefault(b => OprBookNames.Matches(b, army.Faction, army.GameSystem));
         if (book is null)
         {
             Console.WriteLine($"  NO BOOK    {name}: no bundled book matches faction '{army.Faction}'.");

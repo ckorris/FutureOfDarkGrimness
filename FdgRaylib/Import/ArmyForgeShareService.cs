@@ -146,7 +146,9 @@ public static class ArmyForgeShareService
 
     // The same bundled snapshots the Forge screen offers (Assets/Books). Name match is case-insensitive
     // and system-gated (#378: four AoF faction names collide with GDF books; absent system means GDF);
-    // OPR book names and our imported book names come from the same source strings.
+    // OPR book names and our imported book names come from the same source strings - across OPR's renames
+    // too (#437: OprBookNames, so a 3.6 "Daemons of War" list finds a bundled 3.5 "Wormhole Daemons of War"
+    // book until #438 re-bakes, and vice versa).
     private static BookFile? MatchBundledBook(string factionName, string? gameSystem)
     {
         if (string.IsNullOrWhiteSpace(factionName)) return null;
@@ -158,8 +160,7 @@ public static class ArmyForgeShareService
             try
             {
                 BookFile? book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options);
-                if (book is not null && string.Equals(book.Name, factionName, StringComparison.OrdinalIgnoreCase)
-                    && GameSystems.SameSystem(book.GameSystem, gameSystem))
+                if (book is not null && OprBookNames.SameBook(book.Name, book.GameSystem, factionName, gameSystem))
                     return book;
             }
             catch { /* skip a malformed book, same tolerance as the Forge screen */ }
