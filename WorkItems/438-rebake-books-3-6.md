@@ -1,6 +1,6 @@
 # 438 — Re-bake all 88 books from the 3.6.0 snapshots
 
-**Status**: todo
+**Status**: done 2026-10-30 (owner review: D1, D2, D3, D4, D5)
 **Related**: #415, #437 (importer first), #436 (supplements final first), #378 (`bake-aof-books.sh`), #219/#383/#239/#225/#357/#377 (post-bake passes), #440 (derived data), #441
 **Branch**: `feature/opr-3.6`. Model/effort: Sonnet 5.5 / medium.
 
@@ -72,6 +72,85 @@ get none until the tables are updated).
   GroundedAof) - every one is re-pinned against the 3.6 books in this item.
 
 ## Notes
+
+- 2026-10-30 (done): the 88 books are the OPR 3.6.0 books, baked by `scripts/bake-books.sh` from the 2026-10-30
+  re-fetch. Commits: engine `70fa2c08` (effect-set keywords, Crossing Strike bombs, Voidspace Stalkers row, section
+  uid), `dd6f5661` (Forge compile: pass-through reservation, item-bundled weapons), `9b521899` (Unique arm),
+  `2ec1f520` (StormStage family); superproject `2a3335b` (bump), `396d72d` (bake script), `31f8632` (rename-only
+  git mv), `e196560` (re-baked books + test re-pins + allowlists), `75cc6e8` (Unique supplement entry + bump),
+  `98bdde4` (bump). Each pair verified green before committing; the rename-only commit was built in the index and
+  verified in a throwaway worktree (app 3578 green with the 3.5 content under the new names).
+  - **Bake command**: `scripts/bake-books.sh [gdfSnapshotDir] [aofSnapshotDir] [outDir]` (defaults: the two
+    `opr-json-snapshots-3.6.0-refetch-2026-10-30` folders and `FdgRaylib/Assets/Books`; `OFFLINE=1` skips the one
+    live-API pass). Usage is documented at the top of the script. A second bake into a scratch dir is byte-identical
+    to the shipped books (88/88 `cmp` clean) - the bake is reproducible from the snapshots.
+  - **Pass-by-pass summary lines** (shipped bake):
+    1. `--import-opr` x 90: "baked 88 book(s)"; the two parent entries print "Skipped 'Wormhole Daemons' / 'Rift
+       Daemons' OPR v3.6.0: an Army Forge parent entry ... nothing written". Warnings exactly as #437 predicted: 113
+       "no base declared ... estimated", 11 "Spell ... skipped" (#439, list below), nothing else.
+    2. `--import-book`: SKIPPED (#437 D7 - every 3.6.0 (unit, option) pair has a per-unit price).
+    3. `--import-section-shapes` (live API): "Done: 88/88 book(s) checked, 0 section(s) stamped per-model." (every
+       section matched the live book; the importer already classifies the 16 per-model sections).
+    4. `--retrofit-effects`: "Retrofit complete: 0/88 file(s) patched." (the import stamps the defaults; every book
+       has both default sets, Voidspace Stalkers included).
+    5. `--retrofit-bases`: "Base retrofit complete: 0/88 file(s) patched, 0 base(s) estimated" - confirmed no-op.
+    6. `--import-spells`: "Spell re-stamp complete: 88 book(s) checked, 517 spell(s) stamped, 0 book(s) changed."
+    7. `--rule-coverage FdgRaylib/Assets/Books`: "Total references: 30862 / Dead: 0" (before: Dead 475).
+  - **The 11 skipped spells** (#439): GDF Blessed Sisters "Burn the Heretic"; GDF Change Disciples, Daemons of
+    Change, Titan Lords Change Disciples and AoF Change Disciples, Daemons of Change, Giant Tribes Change Disciples
+    "Shifting Form" (x6); GDF Machine Cults "Corrode Weapons"; AoF Dragon Empire "Ancestral Guidance"; AoF Shadow
+    Stalkers "Combat Possession"; AoF Sky-City Dwarves "Aether-Cloud Rune".
+  - **Post-bake checks** (hand-offs): no `.fdgbook` contains `allModelsHaveThisRule`, and HumanInquisition's
+    Inquisitorial Agent carries `everyModelHasThisRule` (#428); `grep -lE "each moving model rolls|each of its models
+    rolls"` is empty (#420); Spell Drain is `moraleTestThen -> onFailure consumeToken(SpellTokens, 2)`, the shape the
+    Tactician reads (#442); every one of the 1706 embedded supplement-backed definitions equals its supplement
+    definition (GDF, or GDF + AoF for AoF books; 15 more are importer-synthesized spell effects), which covers the
+    #435 AoF list (Banner, Great Sergeant / Banner, Ossified, Warden, Wave-Step, Ethereal, Grounded Speed, the five new
+    AoF names, Piercing Charge Buff, and the GDF Difficult Terrain Debuff / Fortified Growth / Melee Slayer copies),
+    #434 (the reposition family's `move: true`, Regenerative Strength's 3.6 consumer, Ravage Aura, the bare Dangerous
+    Terrain Debuff name) and #422 (gated Heavy Impact, Counter-only Counter in Melee); Impact per-model sites
+    re-pinned (#447, below); `LC_ALL=C grep -lP '[^\x00-\x7F]'` over the books is empty; 88 books, every `version`
+    "OPR v3.6.0".
+  - **Forge compile of every unit**: `--book-to-army` over all 88 books - 88/88 succeed, 1850 units, no failures.
+  - **Smokes** (headless, `--army`, exit 0, "Game result:"): GDF Daemons of War (Blood Warriors first; Parry(1) on
+    the Hand Weapons in play), GDF Battle Brothers (Assault Brothers first; Heavy Pistol Assault), AoF High Elves
+    (Warriors first; `--trace-rules` shows "Warriors's Parry(1) at Melee_OnHitsTaken/Subject: fired -> ParryDice"),
+    AoF Daemons of Lust with "Enhanced Lustbound" hand-added to the Avatar of Lust (the #433 recipe; loads and plays,
+    though movement modifiers are not narrated by `--trace-rules`, Lustbound's own included). Default
+    `printf "2\n2\n" | --headless` smoke exit 0 after every engine slice.
+  - **Shipped-data re-pins** (every new number checked against the 2026-10-30 snapshots with a census script, not
+    copied from the failure): Armor 11 -> 233 option-item grants across 45 GDF books (ratings 2 x207, 3 x12, 4 x11,
+    5 x3; renamed `EveryReference_IsAnItemGrant_The36Census`); Extended Buff Range 9 -> 14 (HDF 9 + Voidspace Stalkers'
+    5 "Radio Operator"); Hazardous 15 -> 30 (Ratmen Clans 14 + Goblin Reclaimers 16); Inquisitorial Agent 20 -> 21;
+    Unpredictable Marks 5 -> 9 (Fighter 7 = Alien Hives 4 + Voidspace Stalkers 3; Shooter 2); per-model Tough 16 -> 18
+    Weapon Teams; per-model sections 22 -> 16 (all "Any model may take ... attachment", 15 GDF books; named cases
+    re-pointed, the 3.5 Hive Warriors / Robot Snakes sections are gone); per-model Impact items = the #447 four (Orc
+    Hover Bikers, AoF Ratmen Storm Ogres -> grants; the two Trample swaps unit-wide), plus a prerequisite pick in the
+    test (the Hover Bikers' "Replace one Hand Weapon" needs the all-swap that hands out the Hand Weapon); Regenerative
+    Strength carriers Engine of Suffering + Carnivo-Rex (3.5 Psycho-Rex), wound-ignore source read from the same grant
+    (Spell Resistance), marker entry picked by hook; Takedown Strike 5 / Shot 3 (coreNumeric "Takedown X(1)", Elven
+    Jesters added), melee-Takedown invariant -> exactly HEF Stingers' Stinger Dagger (D5); Sergeant / Split read the
+    Daemons of X files, Sergeant's embedded copy is the 3.6 AP(+1) body; Terrain Debuff: no Immediate variant left,
+    11 deferred Dangerous sites (Lust / War Disciples included); Forge cross-section census 54 -> 47 (25 books), mutual
+    pairs checked from the naked unit's price (D12); Forge screen: War Errant Mini-Titan -> HDF Combat Walker (the
+    3.6 holder of the #323 shape, 350 pts), Tactical Grunts re-pinned to Long Rifles / Carbine / 120 pts, Hive Warriors
+    -> Veteran Battle Brothers' attachment section; Strafing test reads Crossing Strike only.
+  - **Retired** (subject gone from 3.6): `ArmyForgeScreenTests.Guardians_ReplaceAllPistolsAndBashes_TakesTheBashesToo`
+    (no "-es" plural target in any 3.6 book; the plural rule stays pinned engine-side), `BookRuleScopeTests.
+    SniperDrones_DroneController_UpgradesOnlyThePulseRifle` (no targeted weapon-scoped wargear left; owner ruling stays
+    pinned by `WeaponScopedWargearRoutingTests`), engine `StormRuleIntegrationTests` (with the stage), the three 3.5
+    `ListValidatorTests` Unique cases.
+  - **Allowlists removed**: `BookRuleCensusTests` all 20 (#422 Counter-Attack + Aura, #436's 18); `BookSpellCoverage
+    Tests` and `BookSpellCastProbeTests` 6 each (Counter-Attack, Crack, Harassing Boost, Piercing Assault, Piercing
+    Hunter, Resistance); `BookRuleFireLintTests` "Counter in Melee" and "Unique"; `RuleSupplementLintTests` "Unique".
+    "Ethereal" stays (#435).
+  - **Gates**: engine 4389 -> 4417 passed / 1 skipped (+32 effect-keyword cases, +3 importer, +2 compiler; -5 Storm,
+    -3 Unique); app 3578 -> 4033 (the per-book / per-embedded-rule fixtures grow with the 3.6 corpus; 2 retired);
+    `dotnet build` 0 errors; `--validate-rules` both files "OK: 417" -> "OK: 416 definitions, no problems."; shipped
+    Dead 475 -> 0.
+  - Not run here: the Strategist-vs-Tactician / #442 benches (the orchestrator runs them), #424's GUI hand-verify
+    (Chris: a Battle Brothers unit with Heavy Pistols shoots at 9"/12" and then charges and strikes with the same
+    pistols in one round).
 
 - 2026-10-30 (from #437): the importer is ready; what changes for the bake: (1) **Parent entries** - `--import-opr` on
   "Wormhole Daemons" / "Rift Daemons" prints "Skipped ... an Army Forge parent entry ... nothing written" and exits 0,
@@ -202,11 +281,97 @@ get none until the tables are updated).
 
 ## Decisions
 
-(none yet)
+- **D1 - Snapshot provenance: re-fetch all 90, bake every book from the re-fetch (2026-10-30). OWNER REVIEW.** The
+  #437 hand-off named three stale books; a full re-fetch into new sibling folders
+  (`~/Projects/GDF Armies/opr-json-snapshots-3.6.0-refetch-2026-10-30/` and the AoF twin; the 2026-10-29 folders are
+  untouched) showed seven with real content changes: High Elf Fleets (Strafing AA-Laser Beamer 30" -> 15", 280 -> 265
+  pts, a section re-targeted), Saurian Starhosts (Pistol -> Shock Pistol AP(2)), AoF Orcs (a base size), and FOUR
+  edited without an `editedAt` bump (only `modifiedAt` moved): Alien Hives (Strafing Stalker-Bugs 30" -> 15"), Machine
+  Cults (a Tail Gunner option re-cut: Archangel AA-System at 5 pts), Robot Legions (Strafing Radium Ray Cannon 30" -> 15", 60 ->
+  30 pts), Orc Marauders (a unit 230 -> 225). Every other book differs only in section `id`s, which Army Forge
+  regenerates on every request (D2). Provenance: **all 88 books come from the 2026-10-30 re-fetch** (48 GDF + 40 AoF;
+  for the 81 unchanged books that is content-identical to 2026-10-29). Alternatives: re-fetch only the three (misses
+  the four silent edits), or bake 2026-10-29 (a day stale).
+- **D2 - Section Id = OPR section `uid`, not `id` (engine importer). OWNER REVIEW.** Two fetches of an unchanged book
+  disagree on every section `id`; the `uid` is stable across requests and unique per unit in the whole 3.6.0 corpus
+  (5880 sections, 0 duplicates). Keying on it means a re-fetch no longer re-keys every saved Forge pick, and a share
+  list's `selectedUpgrades` (which carry the uid) hit the section directly. Caveat: OPR does mint a new uid when it
+  edits a section (High Elf Fleets' "Replace all Ancient Swords" -> "Replace all Shard Pistols and Ancient Swords").
+  Every section Id in the shipped books changed anyway with the 3.6 bake. Alternative: keep the volatile `id`.
+- **D3 - A counted Replace yields to a later PASS-THROUGH rival (engine ListCompiler). OWNER REVIEW.** The 3.6
+  Assault Brothers (9 GDF chapters) put "Replace any Heavy Pistol" above a combo "Replace one Heavy Pistol and Hand
+  Weapon -> Heavy Pistol, Energy Hammer"; Havoc Destroyers (5 books) do the same with Hand Weapons. Book order let the
+  any-swap take every pistol, starving the combo forever - the Energy Hammer was silently dropped and unpaid (the
+  #323 corpus test caught it, 15 books red). Now a One/Any swap leaves copies for later-bought rivals whose option
+  hands the target BACK; the parked remainder is retried after (#323's fixpoint), so the any-swap still lands in full
+  and both purchases are charged. Alternatives: allowlist the 15 pairs (ships the dropped purchase), reorder choices
+  globally, or reserve for every counted rival (changes book-order outcomes where the pool genuinely cannot cover
+  both - pinned unchanged by `ReplaceAny_DoesNotYieldToAConsumingRival`).
+- **D4 - Base-loadout items keep their nested weapons; removing the item removes them (engine). OWNER REVIEW.** OPR
+  3.6 bundles mounts' and crews' weapons inside items (12 sites: Jackals' Charger Beast had NO weapon left, the
+  Goblin Pump Plane lost its Bombing Run, Saurian Starhosts' Dread Titan its tail and claws, Duchies of Vinci's titan
+  its guns...). The importer dropped them for base-loadout items (option-gained items were already routed; the 3.5
+  books had the same gap at 19 sites). Now they join the unit's weapons (one copy per item), and the new optional
+  `ItemEntry.Weapons` records them so "Replace Beast Gunner" takes the Fumigator with it. Old books and army files
+  parse unchanged (the field is null and omitted). Alternatives: route only (a replaced mount leaves its weapons
+  behind), or leave the gap.
+- **D5 - Melee Takedown is accepted for High Elf Fleets' Stinger Dagger. OWNER REVIEW.** The #197 P16 invariant said
+  no melee weapon carries Takedown and "the ruling needs revisiting" if one does. 3.6 has exactly one (Stingers'
+  Stinger Dagger, A2, Bane, Takedown); the 3.6 text ("may pick any model in the target unit as its individual target
+  for this weapon's attacks") applies to melee, and the lifted melee gate is what Takedown Strike already uses, so the
+  pick in close combat is the rule. The test now pins exactly that one carrier.
+- **D6 - Effect-set keywords for the 3.6 names (engine).** GDF: "cyclic" (storm rifles), "anti-matter" / "dark-matter"
+  (gravity guns), "arc-charger" / "taser" (gauss), "psy-" (psychic guns; DaemonArcaneMelee "staff" / "psy-" for the
+  psychic staffs), "magma" (plasma blades), "overrun" (TitanImpact), "chem-" (bio). AoF: "teeth", "sickle", "overrun",
+  "titan strike", "barbed / trapper net". Generic words go in TRAILING rows so an established match keeps priority
+  ("Acid Launcher" stays bio, "Soul Cannon" a cannon, "Sword & Staff" a sword): GDF launcher / "nade" / "mini-gl" /
+  "gl-" / "demo charge" (mortar), "phosphor" (flame), "radium" (gauss); AoF caster "blast" / "spirit" / "soul" / "god
+  strike" / "banshee" / "howl" / "shockwave" (arcane bolt), "rocks" / "boulder" / "toss" (sling), "staff" (melee
+  energy). A diff of every old vs new match over both corpora changed only previously-unmatched names plus the
+  intended Magma blades and Crossing Strike bombs. Known approximation: "Hook-Claw / Harpoon / Spear Launcher" read as
+  mortar. `CarriesStrafing` matches "Crossing Strike" (#431) and still "Strafing" (old army files). Voidspace
+  Stalkers ("Space Horrors": trench guns, mutant claws) = (ballistic-slug, claw-rend). No Assault per-phase default
+  was needed (#424 B1 derives the melee key at load).
+- **D7 - StormStage family deleted; catalog phrase helpers deferred to #439, "Very Fast" kept for #440.** Usage check
+  over the shipped 3.6 books (and the 3.5 books, for embedded legacy JSON): `stormOfHits` / `invokeStorm` appear
+  nowhere (3.5's Storm of X was catalog-only, deleted by #436), so StormStage, `Effect.StormOfHits`,
+  `RuleOperation.InvokeStorm`, ChooseActionStage's routing and their lint / reference arms are gone (#436 D7). The
+  three legacy JSON kinds stay. "AP(+1) in melee", "AP(1) when shooting", "Bane when attacking", "Shred when
+  attacking", "+6\" range when shooting": no 3.6 book reaches them today, but they are spell-phrase targets
+  (`SpellPhraseCloneTests`) and one of the 11 skipped spells (Corrode Weapons, "loses AP(1) when shooting") is exactly
+  that phrase - the decision belongs to #439's parser. "Very Fast" is still used by the built-in EOF army (#440).
+- **D8 - Unique deleted per the #436 list.** GDF entry, `ListValidator`'s Unique arm, both lint exemptions, the
+  ListValidator / LaunchGate / DefaultBaseEstimator fixtures (re-pointed at Unique Hero where the test's subject
+  survives). Consequence: a reopened 3.5 Forge army (which embeds its 3.5 book) no longer gets a duplicate-Unique
+  Error - accepted (3.6 replaces 3.5; old files must load, not validate).
+- **D9 - `scripts/bake-aof-books.sh` retired, not delegated.** The new script bakes both systems in one pass; a
+  wrapper would have to re-implement "AoF only". Historical mentions in work-item files stay as history;
+  `ShippedBooks.cs`' comment points at the new script.
+- **D10 - Commit shape.** The renamed books went in a rename-only commit first (3.5 content under the new names +
+  filename-only edits to three tests, built in the index, verified green in a worktree): in one combined commit git's
+  similarity pairing crossed the GDF and AoF Daemons books, so `git log --follow` would have followed the wrong file.
+  Books and test re-pins share one commit (splitting them would commit red).
+- **D11 - Bake script shape.** Optional `outDir` (scratch bakes), `OFFLINE=1`, stale books LISTED not deleted, the
+  importer's own parent-entry skip relied on. The section-shape / effects / bases / spells passes are no-ops on a
+  fresh import and kept anyway so a future importer regression shows up as a non-zero summary.
+- **D12 - Mutual cross-section pairs are checked from the naked unit's price (test).** 3.6 Biker Sisters' "Replace one
+  Energy Lance -> Sgt. Pistol, Sgt. Hand Weapon" feeds "Replace Sgt. Hand Weapon -> Energy Lance", which hands the
+  lance back; the grantor is starved in the baseline, so neither the leftover pool nor the granted price compares.
+  Both purchases landing is asserted as naked + grant + swap x n.
+
 
 ## Outcome
 
-(open)
+Done 2026-10-30. `FdgRaylib/Assets/Books/` holds exactly the 48 GDF + 40 AoF OPR 3.6.0 books, every one stamped "OPR
+v3.6.0", baked by one command (`scripts/bake-books.sh`, reproducible byte-for-byte) from the 2026-10-30 re-fetch;
+the five renamed books followed their history by `git mv`, Voidspace Stalkers is new, and the 3.5 books live on
+off-repo in `~/Projects/GDF Armies/fdgbooks-3.5-final/` (87 files + `SOURCE-COMMIT.txt`) for #440. Shipped
+`--rule-coverage` Dead 475 -> 0; every unit of every book compiles; four book smokes and the default smoke exit 0.
+The bake surfaced three engine defects, fixed with tests (D2 volatile section ids, D3 dropped combo purchases, D4
+dropped item weapons), and the #436 deletions are done (Unique, the stale allowlists, the StormStage family);
+the catalog phrase helpers wait for #439 (D7). Awaiting: #424's GUI hand-verify (Chris), the AI benches (orchestrator),
+owner review of D1-D5.
+
 
 ## Rules for the agent (plan section 1, restated)
 

@@ -65,6 +65,16 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
 
 ## Notes
 
+- 2026-10-30 (from #438): (1) the 3.5 books are off-repo at `~/Projects/GDF Armies/fdgbooks-3.5-final/` (87
+  `.fdgbook` + `SOURCE-COMMIT.txt`, the superproject commit they were copied from) for the legacy tests. (2) Section Ids
+  in the 3.6 books are OPR's stable section `uid` (#438 D2), so EVERY section Id differs from the 3.5 books (unit ids
+  mostly survive: 1671 of the 1828 3.6 units in renamed-or-kept books match a 3.5 id); anything derived that stores Forge picks (`SectionId` / `OptionId`) against a bundled book -
+  scenarios, fixtures, the Random Army catalog - must be regenerated, not patched. Old `.fdgarmy` files embed their own
+  book, so they keep loading. (3) Keep catalog "Very Fast" until the built-in EOF army (`FdgRaylib/Cli/ArmyLoader.cs`)
+  is rebuilt - it is that rule's last user (#438 D7). (4) `ItemEntry` gained an optional `weapons` list (a 3.6 mount /
+  crew item's own attack profiles; null and omitted otherwise) - old files parse unchanged (#438 D4). (5) `ListValidator`
+  no longer knows 3.5 "Unique" (#438 D8): a reopened 3.5 Forge army does not get its duplicate-Unique Error any more -
+  include that in the legacy-load check's expectations.
 - 2026-10-30 (from #437): legacy `.fdgarmy` files whose Faction is a 3.5 book name ("Wormhole Daemons of X", "Rift
   Daemons of X", "Saurian Starhost") keep finding the re-baked "Daemons of X" / "Saurian Starhosts" books - the
   rulebook backfill (`BundledBookRulebook`), `--retrofit-editable`, the share-link book match and the effect-set

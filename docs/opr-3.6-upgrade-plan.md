@@ -199,7 +199,7 @@ Army Forge API (verified 2026-10-29): book index `GET /api/army-books?filters=of
 Repo tooling: `scripts/census-opr-books.py` (this plan's section 2.2 numbers); `FdgRaylib --import-opr`,
 `--apply-rules`, `--validate-rules`, `--rule-coverage`, `--import-spells`, `--import-section-shapes`,
 `--import-book`, `--retrofit-effects`, `--book-to-army` (see `FdgRaylib/Program.cs`); `scripts/
-bake-aof-books.sh` (to be generalised by #438). The scratch 3.6 import used for the coverage numbers is
+bake-books.sh` (#438: bakes all 88 books and runs the post-bake passes; replaced `bake-aof-books.sh`). The scratch 3.6 import used for the coverage numbers is
 reproducible: import every snapshot with `--import-opr <book.json> <out.fdgbook> <supplements...>` into a
 folder outside the repo and run `--rule-coverage` on it.
 
@@ -258,7 +258,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 435 | AoF supplement sweep + book overrides + AoF-specific core (Sergeant/Banner/Musician/Brace in Melee) | 3 | #422 #431 #432 #433 | O | high | done 2026-10-30 (Enhanced family deferred to #433; overrides all moot, deleted; owner review: D2, D3, D7) |
 | 436 | Remove dropped 3.5 definitions; catalog/supplement text parity with 3.6 wording | 3 | #434 #435 | S | medium | done 2026-10-30 (20 catalog + 30 supplement definitions dropped, Unique -> #438; parity 0 mismatches; shipped Dead 475 until #438; owner review: D1, D2, D3, D5, D6) |
 | 437 | Importer 3.6: shape, version stamp, renamed/parent books, share-link gate, Assault weapons | 4 | #424 | O | medium | done 2026-10-30 (gate 3.6.x, `OprBookNames` rename table, parent entries skipped, list importer per-unit prices, live share link imports; owner review: D1, D2) |
-| 438 | Re-bake all 88 books; unified bake script; post-bake passes; effect-set keywords | 4 | #436 #437 | S | medium | todo |
+| 438 | Re-bake all 88 books; unified bake script; post-bake passes; effect-set keywords | 4 | #436 #437 | S | medium | done 2026-10-30 (`scripts/bake-books.sh`, 2026-10-30 re-fetch, shipped Dead 0; section uid, pass-through swaps, item weapons fixed; Unique + StormStage deleted; owner review: D1-D5) |
 | 439 | Spells 3.6: parser grammar, re-import, per-book parity verification | 4 | #429 #438 | O | high | todo |
 | 440 | Regenerate derived data (Random Army catalog, scenarios, fixtures, built-in army); legacy .fdgarmy load check | 4 | #438 | S | medium | todo |
 | 441 | Army Forge + glossary UI for 3.6 (Assault display, roster, Unique Hero, import summary) | 5 | #437 #438 | O | medium | todo |
@@ -277,7 +277,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433, #423, #436, #437) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433, #423, #436, #437, #438) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file

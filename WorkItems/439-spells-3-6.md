@@ -63,6 +63,19 @@ so trailing clauses (including "in line of sight") are silently ignored today; L
 
 ## Notes
 
+- 2026-10-30 (from #438): the shipped books are the 3.6.0 bake (`scripts/bake-books.sh`, from
+  `~/Projects/GDF Armies/opr-json-snapshots-3.6.0-refetch-2026-10-30/` and the AoF twin - use these, not the 10-29
+  folders; seven books changed overnight, #438 D1). (1) The 11 spells the importer skips today: GDF Blessed Sisters
+  "Burn the Heretic"; "Shifting Form" x6 (GDF Change Disciples, Daemons of Change, Titan Lords Change Disciples; AoF
+  Change Disciples, Daemons of Change, Giant Tribes Change Disciples); GDF Machine Cults "Corrode Weapons"; AoF Dragon
+  Empire "Ancestral Guidance", Shadow Stalkers "Combat Possession", Sky-City Dwarves "Aether-Cloud Rune". (2) After the
+  parser lands, re-run `scripts/bake-books.sh` (a full re-import re-stamps every spell; its `--import-spells` pass is a
+  no-op on a fresh import, so a parser change only shows through the import itself) and re-pin what moves.
+  (3) `BookSpellCoverageTests` / `BookSpellCastProbeTests` allowlists are EMPTY now - any newly parsed grant that does
+  not resolve fails loudly. (4) Yours to decide (#438 D7): the catalog spell-phrase helpers "AP(+1) in melee", "AP(1)
+  when shooting", "Bane when attacking", "Shred when attacking", "+6\" range when shooting" - no 3.6 book reaches them
+  today, but `SpellPhraseCloneTests` pins them and Corrode Weapons ("loses AP(1) when shooting") is exactly one; delete
+  any your parser does not emit (shipped Dead must stay 0).
 - 2026-10-30 (from #433): the 45 spells that grant an Enhanced name once (29 AoF names / the GDF Boon family and
   friends: Lust / Change / Plague / War Boon, Litanies of War, Blessed Ammo, Righteous Fury, Banishing Sigil, Blessed
   Shroud, Burst of Rage, ..., Vigorous Return, Great Hunt) now resolve at import - none of the 90 import logs prints

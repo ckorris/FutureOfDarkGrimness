@@ -46,6 +46,17 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-30 (from #438): (1) a 3.6 mount / crew item now carries its weapons (`ItemEntry.Weapons`, #438 D4): the
+  weapons appear in the unit's weapon list AND the item stays listed by name (Jackals Charger Beast "Beast Rider" +
+  Explosive Spear, Goblin "Spider Mounts" + Poison Fangs) - the roster may want to show them as one line; "Replace
+  <item>" now removes the item's weapons too. (2) ListCompiler lets a counted swap yield to a later pass-through combo
+  (#438 D3: 3.6 Assault Brothers' "Replace any Heavy Pistol" + "Replace one Heavy Pistol and Hand Weapon -> Heavy
+  Pistol, Energy Hammer"); the compile now lands both, so check the Forge stepper offers the full count with the combo
+  bought. (3) Every 3.6 per-model section is an "Any model may take ... attachment" (16 across 15 GDF books, none
+  Replace) - `ArmyForgeScreenTests.VeteranBattleBrothers_AnyModelMayTakeAnAttachment_TakesThreeOfTheSameMod` pins the
+  stepper. (4) High Elf Fleets' Stinger Dagger is the one melee Takedown weapon (#438 D5): the individual-model pick now
+  appears in close combat for Stingers - the GUI melee target flow should be hand-verified once. (5) Voidspace
+  Stalkers is a new GDF book in the Forge list.
 - 2026-10-30 (from #437): share-link import works for 3.6 lists (live check `UGDhJMMH0QBP`, exit 0, playable). For
   the import summary: (1) `OprVersionMismatchException` now has two remedies by direction - an older book: "That book
   has not been updated to this OPR version yet, so lists using it cannot be imported."; a newer one: "The game's data
