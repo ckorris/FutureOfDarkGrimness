@@ -1,6 +1,6 @@
 # 451 — Engine: decision payloads to clients + ClientReplayRecorder
 
-**Status**: in progress (slice 1 of 3 done)
+**Status**: in progress (slices 1-2 of 3 done)
 **Related**: plan `docs/replay-plan.md` section 4.2 (client column); depends on #450; reverses part of #088 (decision D2); #452 writes what this records
 
 ## Goal
@@ -63,7 +63,23 @@ one machine (host GUI + client GUI, or host headless + client GUI) and confirm b
 report the same step count at game end (print it to the console for now; #452 writes files).
 
 ## Notes
-- **2026-10-31 - slice 1: the resolved notice carries the decision (engine `f24bdef6`).**
+- **2026-10-31 - slice 2: `ClientReplayRecorder` (engine `bc804b5f`).** `Replay/ClientReplayRecorder.cs`, built in
+  `FDGGame_AsClient`'s constructor between the `GameDataUpdateReceiver` and its catch-up request; exposed as
+  `FDGGame_AsClient.Replay` and `LobbyViewModel_Client.Replay` (disposed with the lobby). It wraps a
+  `ReplayRecorder` (same lock, Seq, tallies, export, failure policy) and translates messages into its `Record*`
+  calls; `ReplayRecorder` gained `Snapshot(store, index)` and `RecordBeatJson`, and `Fail` became internal.
+  `GameDataUpdateReceiver.OnFullStateApplied` fires after the join rebuild -> snapshot 0. `LaunchGameMessage.Replay`
+  carries the host recorder's header (both lobby launch paths). `ReplayHeader.Settings` is now nullable (a client
+  without a host header). `LobbyViewModel_Host.PresentationClockFactory` is a new internal test seam: the lobby
+  launches with the real-time clock, which made the two-unit networked test take 41 s instead of 2.
+  Tests (`ClientReplayRecordingTests`, all over the loopback transport with lobby VMs and the solo-rules AI on both
+  sides): a fresh networked game - same GameId/seed, client's markers == host's minus GameStart, same TaskIds and
+  step count, the same beats and log lines in order, rounds + 1 snapshots with the host's indexes AND identical
+  SaveJson at every index, played-back final save == the host's live final save, `ReplayVerifier` PASS; a resumed
+  game a client rejoins - its first event is snapshot 0 and equals the host's resumed snapshot 0, GameId minted
+  and shared, final state equal; a scripted message sequence for the bookkeeping (dedupe, error close, cue before
+  join, GameEnded stops). No normalisation of `GameProgressData` was needed: the client's snapshots are
+  byte-identical to the host's. Engine 3462 passed / 1 skipped, app 3066, build clean, smoke exit 0.- **2026-10-31 - slice 1: the resolved notice carries the decision (engine `f24bdef6`).**
   `StageTaskNotifyResolvedMessage` has the ticket's eight fields; `RequestMessageSender` keeps the request half
   (`ResolvedDecision`: type names, display name, request JSON) in its pending entry and fills the notice on all
   THREE ways a task ends - reply, resolver error, disconnect. `NetworkProtocol.Version` 4 -> 5. Tests:
@@ -90,6 +106,23 @@ report the same step count at game end (print it to the console for now; #452 wr
 - **#088 text changed:** only the routing comment in `RequestMessageSender.RequestDecision` ("no client
   receives another player's request payload while the decision is open; once it resolves the notice carries
   it to everyone"). The message's own doc comment records the D2 loosening. The awaiting message is unchanged.
+- **Header source (Chris, 2026-10-31): the launch message.** The ticket said "GameId from the synced
+  `GameProgressData`", but in a new game that record only reaches the client at the first activation (after
+  setup and deployment), so a game abandoned earlier would have no game ID or seed. `LaunchGameMessage.Replay`
+  carries the host recorder's `ReplayHeader` instead; the client copies GameId, Seed, RandomnessType, Settings
+  and the slots from it. No host header (its recording failed to start) -> empty GameId, null Settings, no slots.
+- **Controllers from the client's point of view: own slot `Human`, every other `Remote`** - no AI distinction
+  (Chris: the label is cosmetic, playback never reads it, and a save/load can swap AI and human anyway).
+- **Snapshot 0 = a save of the client's own store right after the join rebuild** (one snapshot shape), taken
+  on `GameDataUpdateReceiver.OnFullStateApplied` rather than by ordering bus handlers; no scratch-store rebuild.
+  Snapshot cues are saves of the client store under the HOST's index (so both recordings number a round's
+  snapshot alike); a cue that arrives before the join snapshot is ignored. The host's GameStart and cue 0 go out
+  before the launch message, so a client never records them - its join snapshot stands in.
+- **Where another player's request lands:** at its resolved notice, next to its reply (the awaiting notice
+  carries no payload, D2). Deltas made while that decision was open - only when two decisions are in flight at
+  once, as in army setup - therefore precede it in a client recording and follow it in the host's. Own requests
+  are recorded on arrival, with the display name from the awaiting notice (`StageTaskRequestMessage` has none).
+- **`GameEnded` closes the client recording** (the recorder disposes itself), mirroring the host.
 - **Protocol v5** covers both replay wire changes (#450's `ReplayMarkerMessage` never bumped it): an older
   peer would otherwise join and record half-empty replays instead of being refused with a reason.
 
