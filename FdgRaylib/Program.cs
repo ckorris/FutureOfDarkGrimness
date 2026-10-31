@@ -539,15 +539,34 @@ if (reforgeIdx >= 0 && reforgeIdx + 1 < args.Length)
     foreach (string p in Directory.EnumerateFiles(booksDir, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p, StringComparer.Ordinal))
         books.Add(JsonSerializer.Deserialize<BookFile>(File.ReadAllText(p), RuleJson.Options)!);
 
-    int written = 0, incomplete = 0, failed = 0;
-    foreach (string path in targets)
+    // Each file is independent and the search is CPU-bound, so files run in parallel; the reports print in
+    // file order once all are in. Every worker reads its own copy of the books (the compiler never mutates them,
+    // but a shared mutable list is not worth trusting across threads for a dev tool).
+    var reports = new ArmyReforge.Report?[targets.Count];
+    var unreadable = new string?[targets.Count];
+    Parallel.For(0, targets.Count, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount / 2) }, i =>
     {
-        BuiltArmyFile? army;
-        try { army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options); }
-        catch (Exception ex) { Console.WriteLine($"== {Path.GetFileName(path)}\n   UNREADABLE: {ex.Message}"); failed++; continue; }
-        if (army is null) { failed++; continue; }
+        try
+        {
+            BuiltArmyFile? army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(targets[i]), RuleJson.Options);
+            if (army is null) { unreadable[i] = "not an army list"; return; }
+            List<BookFile> ownBooks = books.Select(b =>
+                JsonSerializer.Deserialize<BookFile>(JsonSerializer.Serialize(b, RuleJson.Options), RuleJson.Options)!).ToList();
+            reports[i] = ArmyReforge.Reforge(Path.GetFileName(targets[i]), army, ownBooks);
+        }
+        catch (Exception ex) { unreadable[i] = ex.Message; }
+    });
 
-        ArmyReforge.Report report = ArmyReforge.Reforge(Path.GetFileName(path), army, books);
+    int written = 0, incomplete = 0, failed = 0;
+    for (int i = 0; i < targets.Count; i++)
+    {
+        string path = targets[i];
+        if (reports[i] is not { } report)
+        {
+            Console.WriteLine($"== {Path.GetFileName(path)}\n   UNREADABLE: {unreadable[i]}");
+            failed++;
+            continue;
+        }
         foreach (string line in ArmyReforge.Format(report)) Console.WriteLine(line);
         if (report.Rebuilt is null) { failed++; continue; }
         if (report.Unsolved > 0) incomplete++;

@@ -107,31 +107,29 @@ public class ArmyReforgeTests
     [Test]
     public void TheBracketFit_CutsUpgradesBeforeUnits_AndAddsUpgradesBeforeCopies()
     {
-        BookFile book = Book("OPR v3.6.0", "Rifle", 480);
-        BuilderUnit Upgraded() => new()
+        // Three distinct 110-pt squads, each with a 20-pt swap, so no step trips a copies or 35% force-org line.
+        RosterUnit Squad(string id) { RosterUnit u = Warriors("Rifle", 24, 110); u.Id = id; u.Name = id; return u; }
+        var book = new BookFile { Name = "Demo Legion", Faction = "Demo Legion", Version = "OPR v3.6.0", Units = { Squad("A"), Squad("B"), Squad("C") } };
+        BuilderUnit Unit(string id, bool swapped) => new()
         {
-            RosterUnitId = "warriors", ModelCount = 5,
-            Choices = { new UpgradeChoice { SectionId = "w-heavy", OptionId = "w-heavy-opt" } },
+            RosterUnitId = id, ModelCount = 5,
+            Choices = swapped ? new() { new UpgradeChoice { SectionId = "w-heavy", OptionId = "w-heavy-opt" } } : new(),
         };
 
-        // 2 x (480 + 20) = 1000 in a 990 bracket: dropping one 20-pt swap lands at 980, inside the band.
-        var over = new BuilderList { BookName = book.Name, PointsLimit = 990, Units = { Upgraded(), Upgraded() } };
+        // 3 x 130 = 390 in a 370 bracket (floor 352): one swap cut lands on 370; a unit cut would overshoot to 260.
+        var over = new BuilderList { BookName = book.Name, PointsLimit = 370, Units = { Unit("A", true), Unit("B", true), Unit("C", true) } };
         var cut = new List<string>();
-        ArmyReforge.FitBracket(book, over, 990, cut);
-        Assert.That(cut, Has.Count.EqualTo(1));
+        ArmyReforge.FitBracket(book, over, 370, cut);
+        Assert.That(cut, Has.Count.EqualTo(1), string.Join("; ", cut));
         Assert.That(cut[0], Does.StartWith("cut upgrade"));
-        Assert.That(ListCompiler.Compile(book, over).TotalPoints, Is.EqualTo(980));
+        Assert.That(ListCompiler.Compile(book, over).TotalPoints, Is.EqualTo(370));
 
-        // 480 in a 520 bracket is under its 494 floor: the 20-pt swap lands at 500, inside; a copy (960) does not fit.
-        var under = new BuilderList
-        {
-            BookName = book.Name, PointsLimit = 520,
-            Units = { new BuilderUnit { RosterUnitId = "warriors", ModelCount = 5 } },
-        };
+        // 3 x 110 = 330 in a 400 bracket (floor 380): swaps (+20 each) come before a copy, and stop inside the band.
+        var under = new BuilderList { BookName = book.Name, PointsLimit = 400, Units = { Unit("A", false), Unit("B", false), Unit("C", false) } };
         var added = new List<string>();
-        ArmyReforge.FitBracket(book, under, 520, added);
-        Assert.That(added, Has.Count.EqualTo(1));
-        Assert.That(added[0], Does.StartWith("add upgrade"));
-        Assert.That(ListCompiler.Compile(book, under).TotalPoints, Is.EqualTo(500));
+        ArmyReforge.FitBracket(book, under, 400, added);
+        Assert.That(added, Is.Not.Empty);
+        Assert.That(added, Has.All.StartWith("add upgrade"), string.Join("; ", added));
+        Assert.That(ListCompiler.Compile(book, under).TotalPoints, Is.InRange(380, 400));
     }
 }

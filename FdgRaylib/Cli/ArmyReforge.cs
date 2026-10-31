@@ -168,8 +168,10 @@ public static class ArmyReforge
             FitBracket(book, list, bracket, report.FitActions);
         }
 
+        // An army still called by its book's name follows a book rename (#437: "Saurian Starhost" -> "Saurian
+        // Starhosts"); a name the user chose is kept.
+        list.Name = string.Equals(old.Name, old.Faction, StringComparison.OrdinalIgnoreCase) ? book.Name : old.Name;
         BuiltArmyFile rebuilt = ListCompiler.Compile(book, list);
-        rebuilt.Name = old.Name;
         report.Rebuilt = rebuilt;
         report.NewTotal = rebuilt.TotalPoints;
         if (report.Recompiled)
@@ -254,13 +256,14 @@ public static class ArmyReforge
     /// rebuilt army is still a pick for a game of that size. Greedy and recorded: over the bracket, drop upgrade
     /// picks before units (the cut that lands closest under the bracket; if no single cut gets under, the largest
     /// non-hero unit goes); under the band, add upgrade picks before copies of existing non-hero units (the
-    /// addition that lands closest to the bracket without passing it). No step may add a catalog Error the list
-    /// did not already have. Stops when inside, or when nothing legal fits.
+    /// addition that lands closest to the bracket without passing it). No step may make the catalog validation
+    /// worse: an addition may not raise any Error or force-org Warning the list does not already show word for
+    /// word (so it never adds a fourth copy or pushes a unit over the 35% cap), and a cut may not raise a new KIND
+    /// of issue (its numbers may only move with the cut). Stops when inside, or when nothing legal fits.
     /// </summary>
     public static void FitBracket(BookFile book, BuilderList list, int bracket, List<string> actions)
     {
         int lower = bracket - bracket * Rendering.BotArmyPicker.BandPercentUnderLimit / 100;
-        HashSet<string> baseline = Errors(book, list);
 
         for (int step = 0; step < 80; step++)
         {
@@ -268,10 +271,14 @@ public static class ArmyReforge
             if (total <= bracket && total >= lower) return;
 
             bool over = total > bracket;
+            HashSet<string> current = Issues(book, list);
+            HashSet<string> currentKinds = current.Select(IssueKind).ToHashSet();
             var options = new List<(string Label, BuilderList Result, int Rank, int Total)>();
             foreach ((string label, BuilderList result, int rank) in over ? Cuts(book, list) : Additions(book, list))
             {
-                if (!Errors(book, result).IsSubsetOf(baseline)) continue;
+                HashSet<string> after = Issues(book, result);
+                bool legal = over ? after.Select(IssueKind).All(currentKinds.Contains) : after.IsSubsetOf(current);
+                if (!legal) continue;
                 options.Add((label, result, rank, ListCompiler.Compile(book, result).TotalPoints));
             }
 
@@ -302,11 +309,19 @@ public static class ArmyReforge
         }
     }
 
-    private static HashSet<string> Errors(BookFile book, BuilderList list) =>
+    /// <summary>Every catalog issue except the points line the fit itself is moving, as "Severity: message".</summary>
+    private static HashSet<string> Issues(BookFile book, BuilderList list) =>
         ListValidator.Validate(book, list, ListCompiler.Compile(book, list))
-            .Where(i => i.Severity == ListIssueSeverity.Error && !i.Message.StartsWith("Over points limit", StringComparison.Ordinal))
-            .Select(i => i.Message)
+            .Where(i => !i.Message.StartsWith("Over points limit", StringComparison.Ordinal))
+            .Select(i => $"{i.Severity}: {i.Message}")
             .ToHashSet();
+
+    // 'Warning: Too many units: 7 (max 5 ...)' -> 'Warning: Too many units' - the issue without its numbers.
+    private static string IssueKind(string issue)
+    {
+        int colon = issue.IndexOf(": ", issue.IndexOf(": ", StringComparison.Ordinal) + 2, StringComparison.Ordinal);
+        return colon > 0 ? issue[..colon] : issue;
+    }
 
     private static BuilderList With(BuilderList list, List<BuilderUnit> units) => new()
     {
@@ -357,7 +372,9 @@ public static class ArmyReforge
                 UpgradeChoice? taken = unit.Choices.FirstOrDefault(c => c.SectionId == section.Id);
                 foreach (UpgradeOption option in section.Options)
                 {
-                    if (taken != null && (!section.IsCounted || taken.OptionId != option.Id)) continue;
+                    // One more application of a pick already taken only for added models: a second medic or
+                    // banner in the same squad is legal but adds nothing a player would buy it for.
+                    if (taken != null && (section.Variant != UpgradeVariant.AddModels || taken.OptionId != option.Id)) continue;
                     List<BuilderUnit> units = list.Units.Select(Copy).ToList();
                     UpgradeChoice? existing = units[i].Choices.FirstOrDefault(c => c.SectionId == section.Id);
                     if (existing != null) existing.Count++;

@@ -17,8 +17,10 @@ namespace FdgRaylib.Rendering;
 ///   launch gate blocks it, so it is not a usable pick at all.</item>
 ///   <item>Among the legal ones, prefer those CLOSE to the limit, closest first.</item>
 ///   <item>Treat everything inside the band (#388) as equally good and pick one at RANDOM. Closest-first
-///   alone made the opening pick of every lobby the same file - the bundled folder has five armies at
-///   exactly 1000 points, so the path tiebreak decided it, and it was the same one every game.</item>
+///   alone made the opening pick of every lobby the same file - the bundled folder had five armies at
+///   exactly 1000 points, so the path tiebreak decided it, and it was the same one every game. (Since the
+///   #440 OPR 3.6 rebuild one 1k list sits at exactly 1000 and the other eight spread over 955-995, all
+///   inside the band.)</item>
 ///   <item>Skip armies another player is already using - unless that would leave nothing, in which case
 ///   a duplicate is better than no army.</item>
 ///   <item>Don't show a player the same army twice until it has cycled through all of them; the cycle
