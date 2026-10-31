@@ -517,6 +517,51 @@ if (editableIdx >= 0 && editableIdx + 1 < args.Length)
     return;
 }
 
+// --reforge <fileOrDir> [more...] [--dry-run]  (#440): rebuild saved Forge armies against the CURRENT bundled
+// books (ArmyReforge): recover each unit's picks (SelectionSolver, then label translation of the file's own
+// selections), recompile, and write the result in place - stats, rules, spells, effect sets and points all the
+// bundled edition's, and the file reopens in the Forge. A file already on the bundled edition is recompiled from
+// its own selections (the hand-substitution loop). Prints a per-army report; units nothing could recover are
+// listed as UNSOLVED and left out of the written file. --dry-run reports without writing.
+int reforgeIdx = Array.IndexOf(args, "--reforge");
+if (reforgeIdx >= 0 && reforgeIdx + 1 < args.Length)
+{
+    bool dryRun = args.Contains("--dry-run");
+    List<string> targets = args.Skip(reforgeIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories)
+                .OrderBy(p => p, StringComparer.Ordinal).ToArray()
+            : new[] { t })
+        .ToList();
+
+    var books = new List<BookFile>();
+    string booksDir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
+    foreach (string p in Directory.EnumerateFiles(booksDir, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p, StringComparer.Ordinal))
+        books.Add(JsonSerializer.Deserialize<BookFile>(File.ReadAllText(p), RuleJson.Options)!);
+
+    int written = 0, incomplete = 0, failed = 0;
+    foreach (string path in targets)
+    {
+        BuiltArmyFile? army;
+        try { army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options); }
+        catch (Exception ex) { Console.WriteLine($"== {Path.GetFileName(path)}\n   UNREADABLE: {ex.Message}"); failed++; continue; }
+        if (army is null) { failed++; continue; }
+
+        ArmyReforge.Report report = ArmyReforge.Reforge(Path.GetFileName(path), army, books);
+        foreach (string line in ArmyReforge.Format(report)) Console.WriteLine(line);
+        if (report.Rebuilt is null) { failed++; continue; }
+        if (report.Unsolved > 0) incomplete++;
+        if (!dryRun)
+        {
+            File.WriteAllText(path, JsonSerializer.Serialize(report.Rebuilt, report.Rebuilt.GetType(), RuleJson.Options));
+            written++;
+        }
+    }
+    Console.WriteLine($"Reforge complete: {(dryRun ? "[dry run - nothing written]" : $"{written} written")}, "
+        + $"{incomplete} with unsolved units, {failed} failed (of {targets.Count}).");
+    return;
+}
+
 // --retrofit-effects <fileOrDir> [more...]  (#239): stamp weapon effect-set keys into existing data.
 // Books get their faction's default sets; armies get army-level defaults plus per-weapon keyword keys
 // (explicit keys already in a file are never touched). Idempotent — re-run after a keyword-table change.
