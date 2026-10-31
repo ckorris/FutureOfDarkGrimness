@@ -108,7 +108,9 @@ public static class ArmyLoader
                     SpecialRules = new List<SpecialRuleEntry>
                     {
                         new SpecialRuleEntry_Core("Stealth"),
-                        new SpecialRuleEntry_Core("Very Fast"),
+                        // #440: every rule here is a 3.6 rule. Very Fast is not (no 3.6 book prints it,
+                        // and the catalog no longer has it), so Fast keeps the movement-rule coverage.
+                        new SpecialRuleEntry_Core("Fast"),
                         new SpecialRuleEntry_Core("Vanguard"),
                         new SpecialRuleEntry_Core("Thrust"),
                         new SpecialRuleEntry_CoreNumeric("Impact", 2),

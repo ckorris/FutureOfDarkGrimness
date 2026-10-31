@@ -41,8 +41,9 @@ public static class Armies
     /// <summary>
     /// Lab-side copy of the CLI's EOF fallback army (`FdgRaylib.Cli.ArmyLoader.MakeTestArmy`) — kept in
     /// sync by eye, duplicated because FdgLab does not reference FdgRaylib. Exercises a broad rule
-    /// spread: Stealth/Very Fast/Vanguard/Thrust/Impact/Furious/Strafing, Scout/Martial Prowess,
-    /// Surge/Blast/Counter/Takedown weapon rules, and an Ambush unit.
+    /// spread: Stealth/Fast/Vanguard/Thrust/Impact/Furious, Scout/Martial Prowess,
+    /// Surge/Blast/Counter/Takedown weapon rules, and an Ambush unit. (#440: every rule 3.6-legal - Very Fast is
+    /// Fast now, and Strafing, deleted by #436, is gone, as in the CLI copy.)
     /// </summary>
     public static ArmyListFile Builtin(string name) => new ArmyListFile
     {
@@ -57,12 +58,11 @@ public static class Armies
                 SpecialRules = new List<SpecialRuleEntry>
                 {
                     new SpecialRuleEntry_Core("Stealth"),
-                    new SpecialRuleEntry_Core("Very Fast"),
+                    new SpecialRuleEntry_Core("Fast"),
                     new SpecialRuleEntry_Core("Vanguard"),
                     new SpecialRuleEntry_Core("Thrust"),
                     new SpecialRuleEntry_CoreNumeric("Impact", 2),
                     new SpecialRuleEntry_Core("Furious"),
-                    new SpecialRuleEntry_Core("Strafing"),
                 },
                 Weapons = new List<WeaponFileEntry>
                 {
