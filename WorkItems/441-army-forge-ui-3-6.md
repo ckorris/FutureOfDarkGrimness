@@ -46,6 +46,13 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-31 (from #439): spell display. (1) Spells carry no prose (`SpellDefinition`), and the Forge / picker text
+  comes from `SpellText.Describe`; with #439 the grants read as canonical names ("Grants Shred when shooting (next
+  time)") rather than OPR's "gets Shred on its weapons when shooting" - if the glossary / spell list should show the
+  printed text, store it at import (a schema decision for this item). (2) New effect kind on the spell path:
+  `Effect.ConsumeToken` - `SpellText` renders "Loses 2 spell tokens - one enemy unit within 18\", in line of sight";
+  check it reads well in the Forge spell list. (3) AoF Shadow Stalkers ships 5 spells: Combat Possession's 3.6.0
+  source text is truncated (#439 D1) - the Forge could say so rather than silently list five.
 - 2026-10-30 (from #438): (1) a 3.6 mount / crew item now carries its weapons (`ItemEntry.Weapons`, #438 D4): the
   weapons appear in the unit's weapon list AND the item stays listed by name (Jackals Charger Beast "Beast Rider" +
   Explosive Spear, Goblin "Spider Mounts" + Poison Fangs) - the roster may want to show them as one line; "Replace

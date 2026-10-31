@@ -69,6 +69,23 @@ Deferred names also get a player-visible diagnostic (#168 path).
 
 ## Notes
 
+- 2026-10-31 (from #439, follow-up list - behaviour gaps the spell parity pass found, new-number candidates, not
+  reopened here): (1) **Hazardous on spell hits never self-wounds.** GDF Ratmen Clans Power Surge, GDF Goblin
+  Reclaimers Pow! and AoF Ratmen Lightning Blast read "... takes N hits with Hazardous. Roll as many dice as hits to see
+  if \"on rolls of 1\" effects trigger." - the caster should take wounds on 1s; `SyntheticHitResolution` drops
+  `InflictSelfWounds` and `ResolveSpellDamageStage` never sets `RollToHitResults.SelfWounds`, so they get only
+  Hazardous's AP(4). Applying it needs a "this model" for a spell (the caster model, not a weapon carrier) and must NOT
+  apply to AoF Goblins' Biting Bat (Deadly(3) + Hazardous, no roll-dice clause). (2) **A one-shot "when shooting" /
+  "when attacking" grant is spent by its holder's spell hits.** `RuleEvaluator` spends a NextTrigger grant at the first
+  hook+seat occurrence regardless of its condition (#101); the spell-damage pipeline fires the caster's rules at
+  Shooting_OnHitRollComplete / OnSaveRollComplete, so e.g. Blessed Ammo's "Shred when shooting" on a caster that then
+  casts a damage spell is wasted although `IsNotSpell` (your D2) blocks the effect - spell hits are arguably not "the
+  next time the effect would apply". Same for Corrode Weapons Effect. (3) **A claimed mark lingers until the claimer's
+  next attack** (`ClaimTargetMarks` retires AttackEnd grants lazily), so a bare-name mark (Relentless, and Surge since
+  #439 D6) claimed in one activation can fire on the claimer's next damage spell before it attacks again. (4) **AI:**
+  the Tactician values the 8 token-drain spells (`Effect.ConsumeToken`) by `SpellValuation`'s flat non-damage fraction,
+  so it may drain an enemy holding no tokens; `TacticianPlanner.ExpectedDrain` (your Spell Drain helper) is the
+  natural valuation.
 - 2026-10-30 (from #436, follow-up list - new-number candidates, not reopened here): #436 put the 3.6 text on every
   description (D6) and left behaviour alone, so these now read differently from what the engine does: (1) Teleport (+
   Aura) 3"/6" by action vs flat 6"; (2) Reinforcement "all models" text vs the most-models gate; (3) Swift (+ Aura,

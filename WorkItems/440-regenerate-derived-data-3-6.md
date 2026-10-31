@@ -65,6 +65,20 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
 
 ## Notes
 
+- 2026-10-31 (from #439): (1) the books were re-baked with the 3.6 spell grammar (45 books changed, 527 spells): spell
+  grants and marks now carry canonical names ("Shred when shooting", "Bane when attacking", Increased Shooting Range,
+  ...), 8 new token-drain spells, Corrode Weapons and Ancestral Guidance - regenerate derived data from these books,
+  not the 10-30 bake. (2) Legacy-load check: names a saved army may still grant that NO LONGER RESOLVE from the catalog
+  or supplements - the catalog helper "+6\" range when shooting" (deleted, #439 D8; a 3.5 Battle Rune / Eternal
+  Guidance / Clearview Leaves grants it) and the 15 supplement phrase clones ("Shred on its weapons when shooting",
+  "Unstoppable on their weapons when shooting", "AP(1) on their weapons when shooting", "Indirect on their weapons",
+  "Rending on their weapons in melee", "+6\" range on its/their weapons when shooting", "Bane on their weapons when
+  attacking", "Shred on its weapons in melee", "Shred on their weapons when attacking", "Unwieldy on its weapons in
+  melee", "AP(+1) / Bane / Unstoppable on its weapons in melee", "Surge on their weapons"; #439 D9). An army saved
+  between #438 and #439 embeds the clone definitions it used, so it still resolves them; a 3.5 army naming
+  "+6\" range when shooting" drops that one grant at load (warns, no crash) - decide whether the Q5 notice should say so.
+  (3) `Scenarios/377-spell-verify.json` exercises 3.5 spell shapes (Burn the Heretic as "-3 to casting rolls") - 3.6's
+  Burn the Heretic is a 2-token drain; re-author it with the scenarios.
 - 2026-10-30 (from #438): (1) the 3.5 books are off-repo at `~/Projects/GDF Armies/fdgbooks-3.5-final/` (87
   `.fdgbook` + `SOURCE-COMMIT.txt`, the superproject commit they were copied from) for the legacy tests. (2) Section Ids
   in the 3.6 books are OPR's stable section `uid` (#438 D2), so EVERY section Id differs from the 3.5 books (unit ids
