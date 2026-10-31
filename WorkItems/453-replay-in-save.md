@@ -35,6 +35,12 @@ load -> finish produces one replay whose dump (#455) shows `... Saved, Resumed, 
   its `Snapshot` #0 (the `AddAllDataMessage`) becomes the post-`Resumed` snapshot. Size: a resumed 2k
   game carries ~0.5 MB, well under `CommandProtocol.MAX_PAYLOAD_BYTES` (16 MB), but assert that and fall
   back to "start fresh at `Resumed`" with a log line if the history is ever larger.
+- **From #451:** the client's `ClientReplayRecorder` is built in `FDGGame_AsClient`'s constructor, i.e. while the
+  client handles `LaunchGameMessage`, before it even asks for the join sync - so a history message sent right after
+  the launch message finds it. It is started with its header at construction (`ReplayRecorder.Start` runs once), so
+  seeding from history needs a new entry point that takes the prior events (and their header) before snapshot 0.
+  The launch message already carries the host's header (`LaunchGameMessage.Replay`). A rejoining client's
+  recording today simply starts at its join snapshot (pinned by `ClientReplayRecordingTests`).
 - Half-activation semantics: document in `docs/replay-plan.md` 4.1 (already there) and in the recorder
   code that deltas between the last `ActivationStart` and `Saved` were undone by the resume; #454's
   player never applies across `Resumed`.

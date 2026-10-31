@@ -12,7 +12,8 @@ the index lines for 449-457 are ticked and archived.
 ## Checklist
 - [ ] Two-machine networked game (host + remote client over the real `FDGHost`/`FDGClient`): both write a
       `.fdgreplay` at game end; both open in the viewer; the client's file lists the host's decisions;
-      `--verify` passes on both; step counts match.
+      `--verify` passes on both; step counts match. (#451's two-process GUI check - until #452 lands, compare
+      the `Replay recorded: N decisions ...` console lines both sides print at game end.)
 - [ ] Save -> quit -> load -> finish on the host with a client reconnecting to the resumed game: one
       continuous replay on both sides (`Saved`, `Resumed` markers present, `--verify` passes).
 - [ ] Disconnect mid-game: the host writes both the #187 recovery save (with embedded replay) and the

@@ -267,3 +267,6 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
   (field diff), `--stats`, `--verify` (engine `ReplayVerifier`), `--export`, `--at N --make-save` (resumes with
   `--scenario`). **Done 2026-10-30** on `feature/replay`; `.fdgsave` input handed to #453.
   ([WorkItems/455](WorkItems/455-replay-cli-tools.md))
+- [x] 451 — Engine: resolved notice carries the decision (D2) + `ClientReplayRecorder`: remote clients record the
+  whole game under the host's game ID (header on the launch message). **Done 2026-10-31** on `feature/replay`;
+  client snapshots byte-identical to the host's. GUI two-process check in #457. ([WorkItems/451](WorkItems/451-replay-client-recording.md))

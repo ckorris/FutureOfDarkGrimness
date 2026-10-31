@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30. Umbrella work item: **#449**.
+**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording) done 2026-10-31. Umbrella work item: **#449**.
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -153,6 +153,15 @@ marker the host records it also broadcasts as `ReplayMarkerMessage` so clients r
 `AddAllDataMessage` becomes `Snapshot` #0. Own-player requests arrive twice (the `StageTaskRequestMessage`
 and the broadcast `StageTaskNotifyResolvedMessage`); dedupe by `TaskId`.
 
+**As built (#451; details in its Decisions).** The resolved notice is sent on all three ways a task ends (reply,
+resolver error, disconnect); protocol v5. The client's header comes from the host's, carried on
+`LaunchGameMessage.Replay` (in a new game the synced `GameProgressData` arrives only at the first activation); its own
+slot is `Human`, every other `Remote`. Snapshot 0 is a save of the client store on
+`GameDataUpdateReceiver.OnFullStateApplied`; each host snapshot cue is a save of the client store under the host's
+index. Another player's request is recorded at its resolved notice. Measured on in-process networked games (loopback
+and real sockets): every client snapshot is byte-identical to the host's at the same index, and the played-back final
+state equals the host's live one.
+
 **Exposure:** `IFDGGame.Replay` (`IReplaySource? { bool IsRecording; byte[] ExportGzip(); ReplaySummary Summary; }`)
 on both `FDGGame_AsLocal` and `FDGGame_AsClient`; `ILobbyViewModel.Replay` forwards to the launched game
 (host) or the client game. The app never touches the recorder's internals.
@@ -268,7 +277,7 @@ scope here (gzip already does most of that work).
 |---|-------|------------|--------|
 | 449 | Umbrella: plan, ground rules, master merges, release gate | - | planning done |
 | 450 | Engine: replay format + host-side `ReplayRecorder` (store, requests, beats, log, markers, snapshots, seed materialisation) | - | done 2026-10-30 |
-| 451 | Engine: decision payloads to clients (D2) + `ClientReplayRecorder` + `ReplayMarkerMessage` | 450 | todo |
+| 451 | Engine: decision payloads to clients (D2) + `ClientReplayRecorder` + `ReplayMarkerMessage` | 450 | done 2026-10-31 |
 | 452 | App: auto-write `.fdgreplay` on every game exit (host, client, headless, scenario, crash best-effort) | 450, 451 | todo |
 | 453 | Replay inside `.fdgsave`: save embeds, resume continues, clients receive history | 450, 451 | todo |
 | 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | done 2026-10-30 |

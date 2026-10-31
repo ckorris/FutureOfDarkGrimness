@@ -12,6 +12,8 @@ When LAUNCH fires, **both** sides invoke `OnLaunched` with an `IFDGGame`. Both s
 
 The launch message carries a host-minted game ID (`ILobbyViewModel.LaunchedGameId`, #412), used only to pair the host's anonymous `game_start`/`game_end` with each client's `game_join`. It is optional on the wire in both directions, so it did not bump `NetworkProtocol.Version`.
 
+Replays (#450/#451): every game is recorded on the host AND on each remote client (`ILobbyViewModel.Replay`). A decision request still goes to its target player alone while it is open (#088), but once it resolves the broadcast `StageTaskNotifyResolvedMessage` carries the whole decision - request and reply, or the error - so each client records every player's decisions. The launch message also carries the host's replay header (`LaunchGameMessage.Replay`: game ID, seed, settings, slots). Plan: `docs/replay-plan.md`.
+
 ## Engine Concepts
 
 - **`ITableState`**: Live observable view of the game world. Has `Units`, `Models`, `Armies`, `Teams`, `Terrain` — each with `OnObjectCreated`/`OnObjectRemoved` events and an `Objects` enumerable.

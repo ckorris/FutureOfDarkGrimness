@@ -1,6 +1,6 @@
 # 451 — Engine: decision payloads to clients + ClientReplayRecorder
 
-**Status**: in progress (slices 1-2 of 3 done)
+**Status**: done 2026-10-31
 **Related**: plan `docs/replay-plan.md` section 4.2 (client column); depends on #450; reverses part of #088 (decision D2); #452 writes what this records
 
 ## Goal
@@ -63,7 +63,19 @@ one machine (host GUI + client GUI, or host headless + client GUI) and confirm b
 report the same step count at game end (print it to the console for now; #452 writes files).
 
 ## Notes
-- **2026-10-31 - slice 2: `ClientReplayRecorder` (engine `bc804b5f`).** `Replay/ClientReplayRecorder.cs`, built in
+- **2026-10-31 - slice 3: real sockets, the console line, docs (engine `1f53ede0`).** The fresh-game test also runs
+  over a real `FDGHost`/`FDGClient` on 127.0.0.1 (client read thread, host write locks, engine and read threads
+  both sending): same assertions, byte-identical snapshots; 10/10 repeat runs green. The only change it needed was
+  in the test - over sockets the host's roster catches up asynchronously, so it waits for the client's slot and
+  army before launching. App: `LobbyScreen` prints `Replay recorded: N decisions, R rounds, outcome X (not written
+  to disk yet - #452).` at game end on host and client (the ticket's "print it to the console for now").
+  Docs: `docs/EngineNotes.md` networking paragraph, `docs/ResolverGuide.md` ("a decision is public once it
+  resolves"), plan status / row / "As built (#451)". Hand-offs written into #452 (the client's `Replay`, replace
+  the console line) and #453 (where the client recorder exists, how to seed it from history). Engine 3463 passed /
+  1 skipped, app 3066, build clean, smoke exit 0.
+- **Not run: the two-process GUI game** from Verification (host GUI + client GUI, compare the printed step
+  counts). It needs a person at two windows; the in-process real-socket test is the automated stand-in. It is
+  covered by #457's first checklist item (two-machine networked game, step counts match), which now names it.- **2026-10-31 - slice 2: `ClientReplayRecorder` (engine `bc804b5f`).** `Replay/ClientReplayRecorder.cs`, built in
   `FDGGame_AsClient`'s constructor between the `GameDataUpdateReceiver` and its catch-up request; exposed as
   `FDGGame_AsClient.Replay` and `LobbyViewModel_Client.Replay` (disposed with the lobby). It wraps a
   `ReplayRecorder` (same lock, Seq, tallies, export, failure policy) and translates messages into its `Record*`
@@ -127,4 +139,14 @@ report the same step count at game end (print it to the console for now; #452 wr
   peer would otherwise join and record half-empty replays instead of being refused with a reason.
 
 ## Outcome
-(open)
+Done 2026-10-31 on `feature/replay` (engine f24bdef6, bc804b5f, 1f53ede0; superproject db101c2, 3528b99, + the
+close-out commit). The host's resolved notice carries the whole decision on every way a task ends (reply,
+resolver error, disconnect; protocol v5), and every remote client records the game with a `ClientReplayRecorder`
+(`ILobbyViewModel.Replay`): store deltas verbatim, its join sync and each round's cue as snapshots of its own
+store, every player's requests and replies, beats, log lines and the host's markers, under the host's game ID and
+seed (carried on the launch message - Chris's call over the synced store). On in-process networked games, over
+loopback and over real sockets, the client's recording has the host's markers (less GameStart), TaskIds, step
+count, beats and log lines, snapshots byte-identical to the host's at every index, and plays back to the host's
+live final state; `--verify` logic passes on it. A client rejoining a resumed game records from its join
+snapshot. Not done here, named: the two-process GUI hand-verify (#457 item 1); writing the files (#452); history
+for a rejoining client (#453).

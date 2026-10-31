@@ -15,6 +15,8 @@ There are **two parallel sets of resolvers**:
 
 `ResolverRegistryFactory.Build(tableState)` builds the headless registry; `BuildGui(tableState)` returns `(registry, GuiResolverOverlay)`.
 
+**A decision is public once it resolves (#451, replay decision D2).** While a request is open only its target player has it (#088). Once the host acts on the reply, `StageTaskNotifyResolvedMessage` broadcasts the request JSON and the reply JSON (or the error) to every client, and every recording - host and clients - keeps them in its replay. So a reply must hold nothing that should stay private after the fact, and a request type's JSON is what the replay viewer will describe (`ReplayDecisionDescriber`).
+
 ## GUI resolver overlay (`FdgRaylib/Rendering/Resolvers/`)
 
 GUI resolvers implement `IGuiResolver`:

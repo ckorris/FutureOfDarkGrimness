@@ -7,6 +7,7 @@ using FDG.EngineInterface;
 using FDG.Network.Connection.Lobby;
 using FDG.Network.Messages;
 using FDG.Players;
+using FDG.Replay;
 using FDG.SaveLoad;
 using FdgRaylib.Cli;
 using FdgRaylib.Config;
@@ -98,6 +99,11 @@ public class LobbyScreen : IAppScreen
         {
             // #412: a client's only end signal - no game_end from a client, but no abandon may follow.
             GameAnalyticsSession.Current?.EndedRemotely();
+            // #451: until #452 writes the replay to disk, say what was recorded, so a networked game's host and
+            // client can be compared - both count every answered decision, whoever made it.
+            ReplaySummary? replay = viewModel.Replay?.Summary;
+            if (replay != null)
+                Console.WriteLine($"Replay recorded: {replay.Steps} decisions, {replay.Rounds} rounds, outcome {replay.Outcome ?? "none"} (not written to disk yet - #452).");
             OnGameEnded?.Invoke(result);
         };
         // Also the engine thread, and deliberately handled synchronously there: the recovery save must be

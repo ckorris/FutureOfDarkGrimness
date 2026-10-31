@@ -38,6 +38,10 @@ per game.
     `Program.cs`/`CliApp` so the recorder is in reach.
   - Crash: `Program.WriteCrash` tries `WriteReplayIfAny()` first, in its own try/catch; the GUI's
     `renderer.Run()` catch and the top-level handler both go through `WriteCrash`.
+- **From #451:** a client's recording is `LobbyViewModel_Client.Replay` (so `activeLobby?.Replay` covers host and
+  client alike); it closes itself on the host's `GameEnded` marker, which arrives before the client's
+  `OnGameEnded`. `LobbyScreen`'s `viewModel.OnGameEnded` handler prints a temporary `Replay recorded: N decisions,
+  R rounds, outcome X (not written to disk yet - #452).` line on both sides - replace it with the write.
 - Headless smoke must keep exiting 0: `printf "2\n2\n" | dotnet run ... --headless` now also prints
   `Replay saved to: Replays/replay-....fdgreplay`. Add that line to the expected-output check in
   CLAUDE.md's smoke instructions once it exists.
