@@ -7893,48 +7893,6 @@
       "description": "This model and its unit get Speed Feat."
     },
     {
-      "name": "Rending on their weapons in melee",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "isMelee"
-            },
-            "right": {
-              "kind": "unmodifiedRollEquals",
-              "dieValue": 6
-            }
-          },
-          "effect": {
-            "kind": "perHitSaveModifier",
-            "onRollValue": 6,
-            "delta": -4
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "ignoreRule",
-            "ruleName": "Regeneration"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Rending on its weapons in melee."
-    },
-    {
       "name": "Ravage Aura",
       "passive": [
         {
@@ -8375,7 +8333,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Rending on their weapons in melee"
+        "ruleName": "Rending in melee"
       }
     },
     {

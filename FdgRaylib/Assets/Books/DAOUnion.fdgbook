@@ -7513,38 +7513,6 @@
       "description": "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed within 6\u0022 of this model."
     },
     {
-      "name": "AP(1) on their weapons when shooting",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "isNotSpell"
-            }
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Save",
-            "delta": -1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets AP(1) on its weapons when shooting."
-    },
-    {
       "name": "Anti-Cover",
       "passive": [
         {
@@ -7861,7 +7829,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "AP(1) on their weapons when shooting"
+        "ruleName": "AP(1) when shooting"
       }
     },
     {

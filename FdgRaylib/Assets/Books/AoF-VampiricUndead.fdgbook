@@ -9029,7 +9029,7 @@
           "kind": "triggeredMove",
           "maxInches": 6,
           "isOptional": true,
-          "oncePerRoundKey": null
+          "oncePerRoundKey": "Seductive Invocation"
         }
       }
     },

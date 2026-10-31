@@ -3218,29 +3218,6 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "If a unit where most models have this rule is Shaken at the beginning of the round, roll one die. On a 4\u002B, it stops being Shaken."
-    },
-    {
-      "name": "AP(\u002B1) on its weapons in melee",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Save",
-            "delta": -1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets AP(\u002B1) on its weapons in melee."
     }
   ],
   "spells": [
@@ -3344,7 +3321,7 @@
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "AP(\u002B1) on its weapons in melee",
+        "ruleName": "AP(\u002B1) in melee",
         "scope": "NextTrigger"
       }
     },

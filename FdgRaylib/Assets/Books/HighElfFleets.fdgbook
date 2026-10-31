@@ -8564,7 +8564,7 @@
       "description": "Once per activation, before attacking, pick one enemy unit within 30\u0022 and in line of sight of this model and roll one die, on a 4\u002B place a token on it. When attacking, friendly units may remove tokens from their target before rolling to block to get \u002BAP(X) on their weapons, where X is the number of removed tokens."
     },
     {
-      "name": "Unwieldy on its weapons in melee",
+      "name": "Unwieldy in melee",
       "passive": [
         {
           "hookID": "Melee_OnCounterTrigger",
@@ -8582,7 +8582,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Negative",
-      "description": "Gets Unwieldy on its weapons in melee: strikes last when charging."
+      "description": "Strikes last when charging - the charged unit swings first."
     },
     {
       "name": "Unwieldy Debuff",
@@ -8606,7 +8606,7 @@
           },
           "effect": {
             "kind": "addRule",
-            "ruleName": "Unwieldy on its weapons in melee",
+            "ruleName": "Unwieldy in melee",
             "scope": "NextTrigger"
           },
           "availableWhen": {
@@ -8819,7 +8819,7 @@
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Unwieldy on its weapons in melee",
+        "ruleName": "Unwieldy in melee",
         "scope": "NextTrigger"
       }
     },

@@ -7163,29 +7163,6 @@
       "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\u0022 of it. Units placed via Spawn can\u0027t seize or contest objectives on the round they are placed."
     },
     {
-      "name": "Shred on their weapons when attacking",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isNotSpell"
-          },
-          "effect": {
-            "kind": "addExtraWound",
-            "onRollValue": 1,
-            "count": 1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Shred on its weapons when attacking."
-    },
-    {
       "name": "Anti-Cover",
       "passive": [
         {
@@ -7541,7 +7518,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Shred on their weapons when attacking"
+        "ruleName": "Shred when attacking"
       }
     },
     {

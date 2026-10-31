@@ -12268,6 +12268,28 @@
   ],
   "spells": [
     {
+      "name": "Burn the Heretic",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "consumeToken",
+        "tType": {
+          "id": "SpellTokens"
+        },
+        "count": 2
+      }
+    },
+    {
       "name": "Eternal Flame",
       "threshold": 1,
       "target": {

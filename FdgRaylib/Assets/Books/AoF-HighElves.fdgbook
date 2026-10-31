@@ -6464,44 +6464,6 @@
       "description": "This model and its unit get Enhanced Highborn."
     },
     {
-      "name": "Bane on its weapons in melee",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "reroll",
-            "roll": "Save",
-            "condition": {
-              "kind": "onUnmodifiedValue",
-              "minValue": 6
-            }
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "ignoreRule",
-            "ruleName": "Regeneration"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Bane on its weapons in melee."
-    },
-    {
       "name": "Precision Shooting",
       "passive": [
         {
@@ -6628,7 +6590,7 @@
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Bane on its weapons in melee",
+        "ruleName": "Bane in melee",
         "scope": "NextTrigger"
       }
     },

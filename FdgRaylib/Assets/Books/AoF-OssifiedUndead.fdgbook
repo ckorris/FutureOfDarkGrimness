@@ -4565,50 +4565,6 @@
       "description": "Once per game, when this unit attacks, you may use this rule so that all models with this rule in it get \u002B1 to hit rolls."
     },
     {
-      "name": "Unstoppable on its weapons in melee",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "ignoreRule",
-            "ruleName": "Regeneration"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnHitRollModifier",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "ignoreNegativeWeaponModifiers"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "ignoreNegativeWeaponModifiers"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Unstoppable on its weapons in melee."
-    },
-    {
       "name": "Enhanced Ossified",
       "passive": [
         {
@@ -4803,7 +4759,7 @@
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Unstoppable on its weapons in melee",
+        "ruleName": "Unstoppable in melee",
         "scope": "NextTrigger"
       }
     },

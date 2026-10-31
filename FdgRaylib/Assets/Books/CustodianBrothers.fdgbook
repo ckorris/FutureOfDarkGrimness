@@ -9246,29 +9246,6 @@
       "description": "This model and its unit get Dash."
     },
     {
-      "name": "Shred on their weapons when attacking",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isNotSpell"
-          },
-          "effect": {
-            "kind": "addExtraWound",
-            "onRollValue": 1,
-            "count": 1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Shred on its weapons when attacking."
-    },
-    {
       "name": "Anti-Cover",
       "passive": [
         {
@@ -9468,7 +9445,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Shred on their weapons when attacking"
+        "ruleName": "Shred when attacking"
       }
     },
     {

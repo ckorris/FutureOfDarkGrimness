@@ -11877,71 +11877,6 @@
       "description": "Counts as having Defense X\u002B."
     },
     {
-      "name": "Unstoppable on their weapons when shooting",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "isNotSpell"
-            }
-          },
-          "effect": {
-            "kind": "ignoreRule",
-            "ruleName": "Regeneration"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnHitRollModifier",
-          "condition": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "effect": {
-            "kind": "ignoreNegativeWeaponModifiers"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "isNotSpell"
-            }
-          },
-          "effect": {
-            "kind": "ignoreNegativeWeaponModifiers"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Unstoppable on its weapons when shooting."
-    },
-    {
       "name": "Anti-Cover",
       "passive": [
         {
@@ -12297,7 +12232,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Unstoppable on their weapons when shooting"
+        "ruleName": "Unstoppable when shooting"
       }
     },
     {

@@ -5335,44 +5335,6 @@
       "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
     },
     {
-      "name": "Bane on their weapons when attacking",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isNotSpell"
-          },
-          "effect": {
-            "kind": "reroll",
-            "roll": "Save",
-            "condition": {
-              "kind": "onUnmodifiedValue",
-              "minValue": 6
-            }
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isNotSpell"
-          },
-          "effect": {
-            "kind": "ignoreRule",
-            "ruleName": "Regeneration"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Bane on its weapons when attacking."
-    },
-    {
       "name": "No Retreat Aura",
       "passive": [
         {
@@ -5808,7 +5770,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Bane on their weapons when attacking"
+        "ruleName": "Bane when attacking"
       }
     },
     {

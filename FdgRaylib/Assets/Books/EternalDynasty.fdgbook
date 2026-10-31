@@ -7168,30 +7168,6 @@
       "description": "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed within 6\u0022 of this model."
     },
     {
-      "name": "\u002B6\u0022 range on their weapons when shooting",
-      "passive": [
-        {
-          "hookID": "Shooting_OnRangeCheck",
-          "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "rangeModifier",
-            "delta": 6,
-            "minResultInches": 0,
-            "chargeDelta": 0
-          },
-          "lifetime": "ThisActivation",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets \u002B6\u0022 range on its weapons when shooting."
-    },
-    {
       "name": "Vengeance",
       "passive": [
         {
@@ -7550,7 +7526,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "\u002B6\u0022 range on their weapons when shooting"
+        "ruleName": "Increased Shooting Range"
       }
     },
     {

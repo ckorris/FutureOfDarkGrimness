@@ -10574,29 +10574,6 @@
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which counts as being in Dangerous terrain once (next time the effect would apply)."
     },
     {
-      "name": "Shred on its weapons in melee",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "addExtraWound",
-            "onRollValue": 1,
-            "count": 1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Shred on its weapons in melee."
-    },
-    {
       "name": "Anti-Cover",
       "passive": [
         {
@@ -11098,7 +11075,7 @@
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Shred on its weapons in melee",
+        "ruleName": "Shred in melee",
         "scope": "NextTrigger"
       }
     },

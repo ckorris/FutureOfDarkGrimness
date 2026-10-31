@@ -5708,7 +5708,7 @@
       "description": "Counts as having Impact(X) with hits that have AP(1)."
     },
     {
-      "name": "Unwieldy on its weapons in melee",
+      "name": "Unwieldy in melee",
       "passive": [
         {
           "hookID": "Melee_OnCounterTrigger",
@@ -5726,7 +5726,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Negative",
-      "description": "Gets Unwieldy on its weapons in melee: strikes last when charging."
+      "description": "Strikes last when charging - the charged unit swings first."
     },
     {
       "name": "Unwieldy Debuff",
@@ -5750,7 +5750,7 @@
           },
           "effect": {
             "kind": "addRule",
-            "ruleName": "Unwieldy on its weapons in melee",
+            "ruleName": "Unwieldy in melee",
             "scope": "NextTrigger"
           },
           "availableWhen": {
@@ -6151,7 +6151,7 @@
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Unwieldy on its weapons in melee",
+        "ruleName": "Unwieldy in melee",
         "scope": "NextTrigger"
       }
     },

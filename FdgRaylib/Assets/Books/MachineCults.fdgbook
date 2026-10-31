@@ -6611,6 +6611,37 @@
   ],
   "ruleDefinitions": [
     {
+      "name": "Corrode Weapons Effect",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          },
+          "effect": {
+            "kind": "reduceArmorPenetration",
+            "amount": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This unit\u0027s shooting has its AP reduced by 1, to a minimum of AP(0) (from Corrode Weapons)."
+    },
+    {
       "name": "Melee Slayer",
       "passive": [
         {
@@ -7219,6 +7250,26 @@
         "count": 2,
         "withRules": [],
         "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Corrode Weapons",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Corrode Weapons Effect",
+        "scope": "NextTrigger"
       }
     },
     {

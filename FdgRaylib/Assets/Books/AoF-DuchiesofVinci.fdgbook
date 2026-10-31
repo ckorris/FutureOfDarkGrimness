@@ -5930,30 +5930,6 @@
       "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
     },
     {
-      "name": "\u002B6\u0022 range on their weapons when shooting",
-      "passive": [
-        {
-          "hookID": "Shooting_OnRangeCheck",
-          "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "rangeModifier",
-            "delta": 6,
-            "minResultInches": 0,
-            "chargeDelta": 0
-          },
-          "lifetime": "ThisActivation",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets \u002B6\u0022 range on its weapons when shooting."
-    },
-    {
       "name": "Takedown Strike",
       "passive": [],
       "activated": [
@@ -6374,7 +6350,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "\u002B6\u0022 range on their weapons when shooting"
+        "ruleName": "Increased Shooting Range"
       }
     },
     {

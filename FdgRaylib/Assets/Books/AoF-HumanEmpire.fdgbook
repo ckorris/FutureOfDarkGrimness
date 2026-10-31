@@ -6904,29 +6904,6 @@
       "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets \u002B1 to Defense rolls once (next time the effect would apply)."
     },
     {
-      "name": "AP(\u002B1) on its weapons in melee",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Save",
-            "delta": -1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets AP(\u002B1) on its weapons in melee."
-    },
-    {
       "name": "Precision Fighting",
       "passive": [
         {
@@ -7099,7 +7076,7 @@
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "AP(\u002B1) on its weapons in melee",
+        "ruleName": "AP(\u002B1) in melee",
         "scope": "NextTrigger"
       }
     },

@@ -4911,36 +4911,6 @@
       "description": "This model gets Brace(1) on its weapons in melee."
     },
     {
-      "name": "Surge on their weapons",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "unmodifiedRollEquals",
-              "dieValue": 6
-            },
-            "right": {
-              "kind": "isNotSpell"
-            }
-          },
-          "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
-            "count": 1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Surge on its weapons."
-    },
-    {
       "name": "Enhanced Vale Oath",
       "passive": [
         {
@@ -5163,7 +5133,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Surge on their weapons"
+        "ruleName": "Surge"
       }
     },
     {

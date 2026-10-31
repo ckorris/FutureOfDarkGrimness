@@ -7619,44 +7619,6 @@
       "description": "Counts as having Ambush, and its weapons get AP(\u002B1) when shooting on the round in which it deploys via this rule."
     },
     {
-      "name": "Indirect on their weapons",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollModifier",
-          "condition": {
-            "kind": "not",
-            "inner": {
-              "kind": "afterMoving"
-            }
-          },
-          "effect": {
-            "kind": "ignoreLineOfSight"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnSaveRollModifier",
-          "condition": {
-            "kind": "not",
-            "inner": {
-              "kind": "afterMoving"
-            }
-          },
-          "effect": {
-            "kind": "ignoreSightBlockerCover"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Gets Indirect on its weapons."
-    },
-    {
       "name": "No Retreat Aura",
       "passive": [
         {
@@ -7943,7 +7905,7 @@
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Indirect on their weapons"
+        "ruleName": "Indirect"
       }
     },
     {

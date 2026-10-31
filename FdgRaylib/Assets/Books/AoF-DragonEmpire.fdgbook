@@ -6743,6 +6743,25 @@
       }
     },
     {
+      "name": "Ancestral Guidance",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "markTarget",
+        "ruleName": "Indirect"
+      }
+    },
+    {
       "name": "Astral Storm",
       "threshold": 2,
       "target": {
