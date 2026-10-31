@@ -5694,3 +5694,5 @@ the benchmark army pool (~8 armies, archetype spread); (4) start #192/#193/#194.
 ## Outcome
 
 (open)
+
+- 2026-10-31 (orchestrator): post-#438 engine re-bench, same #442 pool and seeds: tactician vs solorules 86.4% (was 85.9%); Strategist net 71.9% vs hand leaf 66.6% against the Tactician (N = 160 each, small-game pool). Numbers and caveats in WorkItems/442 Notes (2026-10-30 orchestrator bullet). The 2,000-point measurement on the shipped 3.6 books waits for #440's regenerated 2k pool. The hand-leaf arm's FIRST launch segfaulted (exit 139) in both #442 and this run and succeeded on relaunch - a lab-tool flake worth its own look.

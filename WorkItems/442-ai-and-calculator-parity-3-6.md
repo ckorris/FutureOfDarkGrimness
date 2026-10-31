@@ -51,6 +51,20 @@ with no illegal-action retries in the log.
 
 ## Notes
 
+
+- 2026-10-30 (orchestrator, after #438): re-bench on the #438 engine (super ebb4e47 / engine 2ec1f520, Release FdgLab
+  copied out of tree), SAME #442 pool (scratchpad/442/pool, 8 armies compiled from the #435 scratch books, 630-830
+  pts) and SAME seeds (9000+, 64 ordered matchups x 100, DOP 16, realistic dice), tactician vs solorules:
+  5172-519-709 = **86.4%** (hash 0F825F1913CDD4CF), 0 faults, 0 timeouts, decision mean 2.12 ms, worst p95 112 ms,
+  game wall mean 623 ms / p95 914 ms. #442 read 85.9% on its own build; no regression from #424 D3 / #433 / #423 Parry /
+  #436 / #438's engine changes. Caveat: the pool armies predate #433 (they embed a Great Hunt that grants "Enhanced
+  Vale Oath" with no definition -> "Skipping unimplemented special rule" at load), so this isolates the ENGINE; the
+  armies-from-shipped-3.6-books measurement needs #440's regenerated pool.
+- Strategist leaf check, same recipe as #442 D11 ({wolf, ck, ogres, deepsea}, 16 x 10, seeds 7000+, DOP 4): shipped
+  net 107-37-16 = **71.9%** (hash B7807B9F08145EE0; was 69.4% at #442) vs the Tactician; hand-leaf control arm:
+  first launch died with exit 139 (SIGSEGV, the same symptom #442 saw on its first hand-arm launch); re-run result:
+  97-44-19 = **66.6%** (hash 1B9593D2A1ED6EA9), 0 faults - identical to the #442 hand-arm figure, so the net keeps its edge (71.9 vs 66.6, N = 160 each, SE ~3.5 points). The 2,000-point measurement (plan section 7 / #191) waits for #440's 2k armies on the
+  shipped 3.6 books.
 - 2026-10-30 (from #423): the Parry half landed in #423 itself - `CombatMath.ParryBudgetFor` (the stage's own
   `MeleeHitsTakenContext` evaluation and `ParryHitsStage.HitsTakenParticipants`, read-only) sizes one pool per side in
   `EstimateMelee` and `ApplyParry` runs the stage's `RemoveWorstHitsFirst` on the volley's groups (B1: threaded through
