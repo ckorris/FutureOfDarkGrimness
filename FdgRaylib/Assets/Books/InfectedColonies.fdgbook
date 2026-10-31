@@ -1,21 +1,22 @@
 {
   "name": "Infected Colonies",
   "faction": "Infected Colonies",
-  "version": "OPR v3.5.3",
+  "version": "OPR v3.6.0",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
+  "gameSystem": "grimdark-future",
   "defaultRangedEffectSet": "bio-organic",
   "defaultMeleeEffectSet": "toxic-melee",
   "units": [
     {
       "id": "navlwQ_",
-      "name": "Monstrous Tyrant",
-      "quality": 3,
-      "defense": 2,
+      "name": "Superior Infected Brute ",
+      "quality": 4,
+      "defense": 4,
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 155,
+      "basePointCost": 110,
       "base": {
         "shape": "Circle",
         "diameterInches": 2.3622048,
@@ -24,25 +25,26 @@
       },
       "weapons": [
         {
-          "name": "Monstrous Claws",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        },
-        {
           "name": "Stomp",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
           "specialRules": []
+        },
+        {
+          "name": "Whip Arm",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
         }
       ],
       "rules": [
@@ -56,24 +58,24 @@
           "name": "Hero"
         },
         {
+          "kind": "core",
+          "name": "Infected"
+        },
+        {
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "tc2UwC1",
-          "label": "Replace Monstrous Claws",
+          "id": "HGXOt3c",
+          "label": "Replace any Whip Arm",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
-            "Monstrous Claws"
+            "Whip Arm"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -81,16 +83,131 @@
           "options": [
             {
               "id": "gKcCM",
-              "label": "Monstrous Stinger (A2, AP(2), Deadly(3))",
+              "label": "Sharp Claws (A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sharp Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "nexUw9Doe-",
+              "label": "Vicious Fist (A3, Bane)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Vicious Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "8yJ8-8tw2b",
+              "label": "Shattering Limb (A3, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shattering Limb",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "wWQUb",
+              "label": "Hardened Fist (A3, AP(2))",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Monstrous Stinger",
+                  "name": "Hardened Fist",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 3,
                   "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dKi-o2rtf2",
+              "label": "Mutated Fist (A3, AP(1), Surge)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mutated Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Kmbxg19udT",
+              "label": "Piercing Stinger (A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Piercing Stinger",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -103,20 +220,71 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "0HUEwZS9-5",
+          "label": "Replace Stomp",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Stomp"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "uT5OxyJDLa",
+              "label": "Spew Bile (9\u0022, A2, Assault, Bane)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spew Bile",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
             },
             {
-              "id": "wWQUb",
-              "label": "Monstrous Fists (A4, AP(4))",
+              "id": "hjTopwVgsv",
+              "label": "Spit Spores (9\u0022, A2, AP(1), Assault, Decimate)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Monstrous Fists",
+                  "name": "Spit Spores",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 4,
-                  "specialRules": []
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Decimate"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -126,7 +294,7 @@
           ]
         },
         {
-          "id": "YAP35KK",
+          "id": "sIPPvmF",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -157,9 +325,30 @@
               "modelsGained": 0
             },
             {
+              "id": "mZQq17VPhK",
+              "label": "Spore Carrier (Enhanced Infected Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spore Carrier",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Infected Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "pvxFd",
               "label": "Frenzy Virus (Fast Aura)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -180,7 +369,7 @@
             {
               "id": "skpcm",
               "label": "Terror Genus (Thrust in Melee Aura)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -199,30 +388,9 @@
               "modelsGained": 0
             },
             {
-              "id": "mZQq17VPhK",
-              "label": "Spore Carrier (Infected Boost Aura)",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Spore Carrier",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Infected Boost Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "EQdk1Bx",
               "label": "Enlarged Brain (Caster(3))",
-              "cost": 75,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -247,7 +415,7 @@
     },
     {
       "id": "2Dk-V1m",
-      "name": "Great Hunter",
+      "name": "Hybrid Elite Leader",
       "quality": 3,
       "defense": 4,
       "baseModelCount": 1,
@@ -262,25 +430,20 @@
       },
       "weapons": [
         {
-          "name": "Barbed Claw",
+          "name": "Great Infected Claws",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 2,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
+              "kind": "core",
+              "name": "Bane"
             }
           ]
         }
       ],
       "rules": [
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
         {
           "kind": "core",
           "name": "Hero"
@@ -302,35 +465,38 @@
       "items": [],
       "sections": [
         {
-          "id": "6_ETCix",
-          "label": "Replace Barbed Claw",
+          "id": "v11ViQbI2H",
+          "label": "Replace Great Infected Claws",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Barbed Claw"
+            "Great Infected Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "_gc4H",
-              "label": "Toxic Claw (A4, Bane)",
+              "id": "kMVAEZFVGE",
+              "label": "Burst Battle Rifle (24\u0022, A3), Hand Weapon (A1)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Toxic Claw",
+                  "name": "Burst Battle Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 4,
+                  "attacks": 1,
                   "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Bane"
-                    }
-                  ]
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -338,17 +504,85 @@
               "modelsGained": 0
             },
             {
-              "id": "hsx2B",
-              "label": "Great Sharp Claw (A4, AP(1), Rending)",
+              "id": "CAJ0w8ikY5",
+              "label": "Burst Shotgun (12\u0022, A4, AP(1)), Hand Weapon (A1)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Burst Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "5lJOoh6u8R",
+              "label": "Burst Energy Rifle (18\u0022, A3, AP(2)), Hand Weapon (A1)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Sharp Claw",
+                  "name": "Burst Energy Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "V2G50jg",
+          "label": "Replace Great Infected Claws",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Great Infected Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "PprZXQxQ29",
+              "label": "Great Sharp Claws (A4, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Sharp Claws",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 4,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -362,17 +596,65 @@
               "modelsGained": 0
             },
             {
-              "id": "aRM9G",
-              "label": "Hardened Claw (A4, AP(4))",
-              "cost": 30,
+              "id": "321dUOM0nE",
+              "label": "Great Shattering Limb (A4, Shred)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hardened Claw",
+                  "name": "Great Shattering Limb",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 4,
-                  "armorPenetration": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "4tBXz9jULQ",
+              "label": "Great Mutated Claws (A4, AP(1), Surge)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Mutated Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "_GytMMgcZk",
+              "label": "Great Hardened Claws (A4, AP(2))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Hardened Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 2,
                   "specialRules": []
                 }
               ],
@@ -383,7 +665,61 @@
           ]
         },
         {
-          "id": "kIZco9Z",
+          "id": "MmJo5l82fP",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XM9-aPsfSH",
+              "label": "Advanced Tactics (Hit \u0026 Run Shooter)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Advanced Tactics",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Hit \u0026 Run Shooter"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ZAlJK2V6gV",
+              "label": "Warrior Master (Ambush)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Warrior Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "cR57wXMg",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -414,9 +750,30 @@
               "modelsGained": 0
             },
             {
+              "id": "HwaMjJEx",
+              "label": "Spore Carrier (Enhanced Infected Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spore Carrier",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Infected Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "ylXEW_8s",
               "label": "Frenzy Virus (Fast Aura)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -428,27 +785,6 @@
                     {
                       "kind": "core",
                       "name": "Fast Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "uPEIKzW1",
-              "label": "Terror Genus (Thrust in Melee Aura)",
-              "cost": 30,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Terror Genus",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Thrust in Melee Aura"
                     }
                   ]
                 }
@@ -477,20 +813,20 @@
               "modelsGained": 0
             },
             {
-              "id": "HwaMjJEx",
-              "label": "Spore Carrier (Infected Boost Aura)",
-              "cost": 45,
+              "id": "uPEIKzW1",
+              "label": "Terror Genus (Thrust in Melee Aura)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Spore Carrier",
+                  "name": "Terror Genus",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Infected Boost Aura"
+                      "name": "Thrust in Melee Aura"
                     }
                   ]
                 }
@@ -509,7 +845,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 30,
+      "basePointCost": 40,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -518,18 +854,23 @@
       },
       "weapons": [
         {
-          "name": "Leader Pistol",
+          "name": "Pistol",
           "quantity": 1,
           "rangeInches": 12,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         },
         {
-          "name": "CCW",
+          "name": "Hand Weapon",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 3,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -552,28 +893,37 @@
       "items": [],
       "sections": [
         {
-          "id": "m7kVMqB",
-          "label": "Replace Leader Pistol",
+          "id": "8z8F2rAL5A",
+          "label": "Replace Pistol and Hand Weapon",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Leader Pistol"
+            "Pistol",
+            "Hand Weapon"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "9gvLs",
-              "label": "Leader Carbine (18\u0022, A3)",
+              "id": "T4oFfYXpB-",
+              "label": "Burst Carbine (18\u0022, A4), Hand Weapon (A1)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Leader Carbine",
+                  "name": "Burst Carbine",
                   "quantity": 1,
                   "rangeInches": 18,
-                  "attacks": 3,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": []
                 }
@@ -583,40 +933,21 @@
               "modelsGained": 0
             },
             {
-              "id": "9Rt12Gu",
-              "label": "Leader Plasma Pistol (12\u0022, A2, AP(4))",
+              "id": "iW7qK8P44P",
+              "label": "Brainiac Staff (A2, Spell Amplifier)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Leader Plasma Pistol",
+                  "name": "Brainiac Staff",
                   "quantity": 1,
-                  "rangeInches": 12,
+                  "rangeInches": 0,
                   "attacks": 2,
-                  "armorPenetration": 4,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "YarGU",
-              "label": "Leader Shred Pistol (9\u0022, A3, Rending)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Leader Shred Pistol",
-                  "quantity": 1,
-                  "rangeInches": 9,
-                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Spell Amplifier"
                     }
                   ]
                 }
@@ -626,16 +957,16 @@
               "modelsGained": 0
             },
             {
-              "id": "CvLGy_5",
-              "label": "Leader Sniper Carbine (18\u0022, A2, AP(1), Reliable, Takedown)",
-              "cost": 40,
+              "id": "UdDuMiOyKj",
+              "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown), Hand Weapon (A1)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Leader Sniper Carbine",
+                  "name": "Sniper Rifle",
                   "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
+                  "rangeInches": 30,
+                  "attacks": 1,
                   "armorPenetration": 1,
                   "specialRules": [
                     {
@@ -647,6 +978,14 @@
                       "name": "Takedown"
                     }
                   ]
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -656,12 +995,134 @@
           ]
         },
         {
-          "id": "PKWRhL1",
-          "label": "Replace CCW",
+          "id": "mPvPwT8",
+          "label": "Replace Pistol",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "CCW"
+            "Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "YarGU",
+              "label": "Shredder Pistol (9\u0022, A1, Rending, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shredder Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "t1YTfl7DGA",
+              "label": "Plasma Pistol (12\u0022, A1, AP(2), Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "QpunhYXUkz",
+              "label": "Fusion Pistol (6\u0022, A1, AP(4), Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "9Rt12Gu",
+              "label": "Flamer Pistol (6\u0022, A1, Reliable, Anti-Cover, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "pYGaHCI",
+          "label": "Replace Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hand Weapon"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -669,21 +1130,20 @@
           "options": [
             {
               "id": "w-DUg",
-              "label": "Energy Hammer (A1, Blast(3))",
+              "label": "Infected Claws (A3, Bane)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Energy Hammer",
+                  "name": "Infected Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 1,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Bane"
                     }
                   ]
                 }
@@ -694,16 +1154,35 @@
             },
             {
               "id": "ljvnJSD",
-              "label": "Energy Sword (A2, AP(1), Rending)",
+              "label": "Hardened Claws (A3, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hardened Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "0mNYIfl",
+              "label": "Sharp Claws (A3, Rending)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Energy Sword",
+                  "name": "Sharp Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
+                  "attacks": 3,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -717,18 +1196,24 @@
               "modelsGained": 0
             },
             {
-              "id": "0mNYIfl",
-              "label": "Energy Fist (A2, AP(4))",
+              "id": "nkTe-dXltZ",
+              "label": "Piercing Claws (A1, AP(4), Deadly(3))",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Energy Fist",
+                  "name": "Piercing Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 1,
                   "armorPenetration": 4,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -738,7 +1223,7 @@
           ]
         },
         {
-          "id": "mnCFSqE",
+          "id": "EM1m5vQ_J2",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -748,7 +1233,7 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "12_KbbQEi-",
+              "id": "pEZkqyleKg",
               "label": "Evolving Strain (Precision Growth)",
               "cost": 5,
               "costUnpriced": false,
@@ -771,73 +1256,7 @@
           ]
         },
         {
-          "id": "xj1NO7s",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "M3vWkJFUlX",
-              "label": "Runners Leader (Fearless, Strider)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Runners Leader",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Fearless"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Strider"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "QxpdRcUdk8",
-              "label": "Zombies Leader (Fearless, Regeneration, Slow)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Zombies Leader",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Fearless"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Regeneration"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Slow"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "FGDN4by",
+          "id": "ZItjjsfV",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -868,20 +1287,42 @@
               "modelsGained": 0
             },
             {
-              "id": "kDqiDZ-V",
-              "label": "Terror Genus (Thrust in Melee Aura)",
-              "cost": 30,
+              "id": "2ORAmSG9",
+              "label": "Spore Carrier (Enhanced Infected Aura)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Terror Genus",
+                  "name": "Spore Carrier",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Thrust in Melee Aura"
+                      "name": "Enhanced Infected Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "CfCAPSdd",
+              "label": "Enlarged Brain (Caster(2))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Enlarged Brain",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
                     }
                   ]
                 }
@@ -910,6 +1351,27 @@
               "modelsGained": 0
             },
             {
+              "id": "kDqiDZ-V",
+              "label": "Terror Genus (Thrust in Melee Aura)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Terror Genus",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust in Melee Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "4zyy7Cz0",
               "label": "Rapid Mutator (Unpredictable Shooter Aura)",
               "cost": 40,
@@ -929,49 +1391,6 @@
                 }
               ],
               "modelsGained": 0
-            },
-            {
-              "id": "2ORAmSG9",
-              "label": "Spore Carrier (Infected Boost Aura)",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Spore Carrier",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Infected Boost Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "CfCAPSdd",
-              "label": "Enlarged Brain (Caster(2))",
-              "cost": 50,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Enlarged Brain",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Caster",
-                      "numericValue": 2
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
             }
           ]
         }
@@ -985,7 +1404,7 @@
       "baseModelCount": 10,
       "minModels": 10,
       "maxModels": 10,
-      "basePointCost": 125,
+      "basePointCost": 110,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -994,19 +1413,20 @@
       },
       "weapons": [
         {
-          "name": "Claws",
+          "name": "Infected Claws",
           "quantity": 10,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
         }
       ],
       "rules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
         {
           "kind": "core",
           "name": "Fearless"
@@ -1014,12 +1434,16 @@
         {
           "kind": "core",
           "name": "Infected"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "m575RP_",
+          "id": "_VGXO",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1031,7 +1455,7 @@
             {
               "id": "qI70F",
               "label": "Evolving Strain (Precision Growth)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1050,6 +1474,63 @@
               "modelsGained": 0
             }
           ]
+        },
+        {
+          "id": "XJvnF8jB9d",
+          "label": "Replace all Infected Claws",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Infected Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8JX0ATHwOT",
+              "label": "Zombie Claws (A2)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Zombie Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "f3qtxuSMJP",
+              "label": "Mutated Claws (A1, AP(1), Surge)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mutated Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
         }
       ]
     },
@@ -1061,7 +1542,7 @@
       "baseModelCount": 10,
       "minModels": 10,
       "maxModels": 10,
-      "basePointCost": 130,
+      "basePointCost": 115,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1070,12 +1551,17 @@
       },
       "weapons": [
         {
-          "name": "Claws",
+          "name": "Infected Claws",
           "quantity": 10,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
         }
       ],
       "rules": [
@@ -1099,7 +1585,7 @@
       "items": [],
       "sections": [
         {
-          "id": "m575RP_",
+          "id": "_VGXO",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1111,7 +1597,7 @@
             {
               "id": "qI70F",
               "label": "Evolving Strain (Precision Growth)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1130,6 +1616,63 @@
               "modelsGained": 0
             }
           ]
+        },
+        {
+          "id": "XJvnF8jB9d",
+          "label": "Replace all Infected Claws",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Infected Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8JX0ATHwOT",
+              "label": "Zombie Claws (A2)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Zombie Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "f3qtxuSMJP",
+              "label": "Mutated Claws (A1, AP(1), Surge)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mutated Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
         }
       ]
     },
@@ -1138,10 +1681,10 @@
       "name": "Infected Soldiers",
       "quality": 5,
       "defense": 5,
-      "baseModelCount": 10,
-      "minModels": 10,
-      "maxModels": 10,
-      "basePointCost": 170,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 80,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1151,15 +1694,15 @@
       "weapons": [
         {
           "name": "Carbine",
-          "quantity": 10,
+          "quantity": 5,
           "rangeInches": 18,
           "attacks": 2,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "CCW",
-          "quantity": 10,
+          "name": "Strike",
+          "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -1175,14 +1718,14 @@
       "items": [],
       "sections": [
         {
-          "id": "NR1_kAq",
-          "label": "Replace up to two Carbines",
+          "id": "U5ghStP",
+          "label": "Replace one Carbine",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Carbines"
+            "Carbine"
           ],
-          "maxApplications": 2,
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1212,21 +1755,26 @@
               "modelsGained": 0
             },
             {
-              "id": "mazcLjw",
-              "label": "Shred Rifle (18\u0022, A2, Rending)",
+              "id": "AkwNo",
+              "label": "Spore Shooter (18\u0022, A1, AP(1), Blast(3), Decimate)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Shred Rifle",
+                  "name": "Spore Shooter",
                   "quantity": 1,
                   "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Decimate"
                     }
                   ]
                 }
@@ -1252,35 +1800,6 @@
                       "kind": "coreNumeric",
                       "name": "Deadly",
                       "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "AkwNo",
-              "label": "Spore Shooter (18\u0022, A1, AP(1), Blast(3), Lacerate)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Spore Shooter",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Lacerate"
                     }
                   ]
                 }
@@ -1319,9 +1838,33 @@
               "modelsGained": 0
             },
             {
+              "id": "mazcLjw",
+              "label": "Shredder Rifle (18\u0022, A3, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shredder Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "4ytmUmV",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1338,40 +1881,76 @@
               "modelsGained": 0
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "UqaaDf5",
+      "name": "Infected Brutes",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 120,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Dual Infected Fists",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
         },
         {
-          "id": "e4RFaE0",
-          "label": "Replace one Carbine and CCW",
+          "kind": "core",
+          "name": "Infected"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "azWZFzy",
+          "label": "Replace all Dual Infected Fists",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "All",
           "targets": [
-            "Carbine",
-            "CCW"
+            "Dual Infected Fists"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "INjajzK2",
-              "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "id": "tQczm1pOwI",
+              "label": "Dual Sharp Claws (A3, Rending)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Sgt. Pistol",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                },
-                {
-                  "name": "Energy Sword",
+                  "name": "Dual Sharp Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
+                  "attacks": 3,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -1383,33 +1962,19 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "aXerCn1",
-          "label": "Replace Sgt. Pistol",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Sgt. Pistol"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
+            },
             {
-              "id": "wlnxqKQT",
-              "label": "Plasma Pistol (12\u0022, A1, AP(4))",
-              "cost": 5,
+              "id": "QkLaJx6",
+              "label": "Dual Hardened Fists (A3, AP(2))",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Plasma Pistol",
+                  "name": "Dual Hardened Fists",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 1,
-                  "armorPenetration": 4,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
                   "specialRules": []
                 }
               ],
@@ -1418,21 +1983,21 @@
               "modelsGained": 0
             },
             {
-              "id": "gDgcx3fd",
-              "label": "Shred Pistol (9\u0022, A2, Rending)",
-              "cost": 5,
+              "id": "R5A2G2cuG2",
+              "label": "Dual Mutated Claws (A3, AP(1), Surge)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Shred Pistol",
+                  "name": "Dual Mutated Claws",
                   "quantity": 1,
-                  "rangeInches": 9,
-                  "attacks": 2,
-                  "armorPenetration": 0,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Surge"
                     }
                   ]
                 }
@@ -1444,30 +2009,123 @@
           ]
         },
         {
-          "id": "Pqfu91_",
-          "label": "Replace Energy Sword",
+          "id": "oNUTO",
+          "label": "Replace one Dual Infected Fists",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Energy Sword"
+            "Dual Infected Fists"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "cveRRrke",
-              "label": "Energy Fist (A2, AP(4))",
-              "cost": 5,
+              "id": "lCaGc",
+              "label": "Dual Whip Arms (A2, AP(1), Blast(3))",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Energy Fist",
+                  "name": "Dual Whip Arms",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Jn1UH",
+              "label": "Dual Piercing Stingers (A2, AP(4), Deadly(3))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Piercing Stingers",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 2,
                   "armorPenetration": 4,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "YsoM-sME",
+          "label": "Upgrade all models with one",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "iWHmgJfGgx",
+              "label": "Bloated Time Bomb (Deathstrike(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Bloated Time Bomb",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deathstrike",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "fw36SYNM",
+              "label": "Spew Bile (9\u0022, A1, Assault, Bane)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spew Bile",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -1480,13 +2138,13 @@
     },
     {
       "id": "eFF0JJq",
-      "name": "Weapon Teams",
+      "name": "Infected Gunners",
       "quality": 5,
-      "defense": 5,
+      "defense": 4,
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 150,
+      "basePointCost": 135,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -1503,10 +2161,10 @@
           "specialRules": []
         },
         {
-          "name": "Crew",
+          "name": "Strike",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -1525,7 +2183,7 @@
       "items": [],
       "sections": [
         {
-          "id": "XpiF0mE",
+          "id": "OE2oyWP",
           "label": "Replace any Heavy Machinegun",
           "variant": "Replace",
           "affects": "Any",
@@ -1536,6 +2194,84 @@
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
+            {
+              "id": "ZMbAueRjID",
+              "label": "Shredder Cannon (30\u0022, A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shredder Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "1elhUiSDjV",
+              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-K97np5h_b",
+              "label": "Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
             {
               "id": "pHWmvxm",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
@@ -1557,6 +2293,68 @@
                     {
                       "kind": "core",
                       "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "FfQqThg",
+              "label": "Spore Mortar (24\u0022, A1, AP(1), Blast(3), Indirect, Decimate)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spore Mortar",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Decimate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "k6OF-kLLUE",
+              "label": "Mortar (30\u0022, A1, AP(1), Blast(3), Indirect)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mortar",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
                     }
                   ]
                 }
@@ -1608,87 +2406,49 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
-            {
-              "id": "e41R-xamAH",
-              "label": "Spore Mortar (30\u0022, A1, AP(1), Blast(3), Indirect, Lacerate)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Spore Mortar",
-                  "quantity": 1,
-                  "rangeInches": 30,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Indirect"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Lacerate"
-                    },
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
             }
           ]
         }
       ]
     },
     {
-      "id": "IMWo3hw",
-      "name": "Infected Gunners",
-      "quality": 5,
-      "defense": 5,
-      "baseModelCount": 3,
-      "minModels": 3,
-      "maxModels": 3,
-      "basePointCost": 85,
+      "id": "CFZyeQL",
+      "name": "Hybrid Warriors",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 100,
       "base": {
         "shape": "Circle",
-        "diameterInches": 0.984252,
+        "diameterInches": 1.2598425,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
       "weapons": [
         {
-          "name": "Grenade Launcher",
-          "quantity": 3,
-          "rangeInches": 24,
+          "name": "Infected Claws",
+          "quantity": 5,
+          "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
+              "kind": "core",
+              "name": "Bane"
             }
           ]
-        },
-        {
-          "name": "CCW",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
         }
       ],
       "rules": [
         {
           "kind": "core",
-          "name": "Relentless"
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
         },
         {
           "kind": "core",
@@ -1698,82 +2458,28 @@
       "items": [],
       "sections": [
         {
-          "id": "sTT8zRd",
-          "label": "Replace any Grenade Launcher",
+          "id": "F2nqAQI",
+          "label": "Replace all Infected Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "All",
           "targets": [
-            "Grenade Launcher"
+            "Infected Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "sb6aGUt",
-              "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "id": "mgy0EbTq3_",
+              "label": "Sharp Claws (A1, Rending)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Fusion Rifle",
+                  "name": "Sharp Claws",
                   "quantity": 1,
-                  "rangeInches": 12,
+                  "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 4,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "0RFjgRyy_b",
-              "label": "Spore Shooter (18\u0022, A1, AP(1), Blast(3), Lacerate)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Spore Shooter",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Lacerate"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "WK39r",
-              "label": "Shred Rifle (18\u0022, A2, Rending)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Shred Rifle",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
@@ -1788,17 +2494,240 @@
               "modelsGained": 0
             },
             {
-              "id": "VVL6a",
-              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 10,
+              "id": "jex-xdO9xG",
+              "label": "Hardened Claws (A1, AP(2))",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Flamer",
+                  "name": "Hardened Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dMQMdJoC3G",
+              "label": "Razor Claws (A2)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Razor Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "UZWAK",
+          "label": "Replace one Infected Claws",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Infected Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "UTjKuMK7NN",
+              "label": "Piercing Claws (A1, AP(4), Deadly(3))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Piercing Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "y0bgdqnRq7",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "FbK2-oBlr_",
+              "label": "Bio-Mimic Pattern (Stealth)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Bio-Mimic Pattern",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ev4ZGEe",
+      "name": "Hybrid Elites",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 120,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Battle Rifle",
+          "quantity": 5,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Infected"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "KmuaElRox1",
+          "label": "Replace all Battle Rifles",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Battle Rifles"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "5cTl4tRyOs",
+              "label": "Energy Rifle (18\u0022, A1, AP(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "BCu19OCJRU",
+              "label": "Shotgun (12\u0022, A2, AP(1))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "aogqjVMd",
+          "label": "Replace one Battle Rifle",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Battle Rifle"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "A0-WZdZH",
+              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flamer",
                   "quantity": 1,
                   "rangeInches": 12,
                   "attacks": 1,
-                  "armorPenetration": 0,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -1817,9 +2746,9 @@
               "modelsGained": 0
             },
             {
-              "id": "smcoxRL",
+              "id": "xqXf6Zo95c",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 15,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1834,138 +2763,19 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "CFZyeQL",
-      "name": "Hunters",
-      "quality": 3,
-      "defense": 4,
-      "baseModelCount": 5,
-      "minModels": 5,
-      "maxModels": 5,
-      "basePointCost": 150,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Toxic Claw",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Bane"
-            }
-          ]
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "lNwbFET",
-          "label": "Replace any Toxic Claws",
-          "variant": "Replace",
-          "affects": "Any",
-          "targets": [
-            "Toxic Claws"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "SxDBv",
-              "label": "Sharp Claw (A2, AP(1), Rending)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Sharp Claw",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
             },
             {
-              "id": "zi8C8",
-              "label": "Hardened Claw (A2, AP(4))",
-              "cost": 15,
+              "id": "73g53n-O",
+              "label": "Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(3))",
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hardened Claw",
+                  "name": "Heavy Fusion Rifle",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 4,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "znJrQM6",
-          "label": "Replace one Toxic Claw",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Toxic Claw"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "dLzR8",
-              "label": "Barbed Claw (A1, AP(2), Deadly(3))",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Barbed Claw",
-                  "quantity": 1,
-                  "rangeInches": 0,
+                  "rangeInches": 18,
                   "attacks": 1,
-                  "armorPenetration": 2,
+                  "armorPenetration": 4,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -1980,107 +2790,9 @@
               "modelsGained": 0
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "j0HIteF",
-      "name": "Boomers",
-      "quality": 4,
-      "defense": 4,
-      "baseModelCount": 3,
-      "minModels": 3,
-      "maxModels": 3,
-      "basePointCost": 160,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Putrid Fists",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Bane"
-            }
-          ]
-        }
-      ],
-      "rules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Deathstrike",
-          "numericValue": 3
         },
         {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
-        }
-      ],
-      "items": [],
-      "sections": []
-    },
-    {
-      "id": "wFIjWHd",
-      "name": "Leech Swarms",
-      "quality": 5,
-      "defense": 6,
-      "baseModelCount": 3,
-      "minModels": 3,
-      "maxModels": 3,
-      "basePointCost": 80,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Swarm Attacks",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Bane"
-            }
-          ]
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "m575RP_",
+          "id": "nAMzXmuN3S",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2090,97 +2802,20 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "qI70F",
-              "label": "Evolving Strain (Precision Growth)",
-              "cost": 15,
+              "id": "9jG_KI0I0y",
+              "label": "Advanced Tactics (Hit \u0026 Run Shooter)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Evolving Strain",
+                  "name": "Advanced Tactics",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Precision Growth"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "AdJjRz-",
-      "name": "Crazed Ravens",
-      "quality": 5,
-      "defense": 5,
-      "baseModelCount": 3,
-      "minModels": 3,
-      "maxModels": 3,
-      "basePointCost": 90,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Beak Attack",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Flying"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "m575RP_",
-          "label": "Upgrade all models with",
-          "variant": "Upgrade",
-          "affects": "All",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "qI70F",
-              "label": "Evolving Strain (Precision Growth)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Evolving Strain",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Precision Growth"
+                      "name": "Hit \u0026 Run Shooter"
                     }
                   ]
                 }
@@ -2193,13 +2828,13 @@
     },
     {
       "id": "4tJy4mK",
-      "name": "Rabid Dogs",
-      "quality": 4,
+      "name": "Infected Bug-Hounds",
+      "quality": 5,
       "defense": 5,
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 115,
+      "basePointCost": 60,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -2208,10 +2843,10 @@
       },
       "weapons": [
         {
-          "name": "Vicious Jaws",
+          "name": "Sharp Teeth",
           "quantity": 5,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
@@ -2224,49 +2859,61 @@
       "rules": [
         {
           "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
           "name": "Infected"
         }
       ],
-      "items": [
-        {
-          "name": "Rabid Hound",
-          "quantity": 5,
-          "rules": [
-            {
-              "kind": "core",
-              "name": "Fast"
-            }
-          ]
-        }
-      ],
+      "items": [],
       "sections": [
         {
-          "id": "YP1gfk5",
-          "label": "Replace all Rabid Hounds",
-          "variant": "Replace",
+          "id": "cJ2BCDTxx5",
+          "label": "Upgrade all models with one",
+          "variant": "Upgrade",
           "affects": "All",
-          "targets": [
-            "Rabid Hounds"
-          ],
+          "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "gsznEf4eSJ",
-              "label": "Frenzied Advance (Scout)",
+              "id": "SEyOe8DRbf",
+              "label": "Hybrid Combat Handler (Unpredictable Fighter)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Frenzied Advance",
+                  "name": "Hybrid Combat Handler",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Scout"
+                      "name": "Unpredictable Fighter"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "cB5sbOYjar",
+              "label": "Hybrid Vanguard Handler (Vanguard)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Hybrid Vanguard Handler",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Vanguard"
                     }
                   ]
                 }
@@ -2278,14 +2925,14 @@
       ]
     },
     {
-      "id": "LFBzHhZ",
-      "name": "Infected Vultures",
-      "quality": 4,
-      "defense": 4,
+      "id": "AdJjRz-",
+      "name": "Infected Bug-Ravens",
+      "quality": 5,
+      "defense": 5,
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 180,
+      "basePointCost": 100,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -2294,19 +2941,15 @@
       },
       "weapons": [
         {
-          "name": "Sharp Talons",
+          "name": "Overwhelming Swarm",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 1,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": []
         }
       ],
       "rules": [
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
         {
           "kind": "core",
           "name": "Flying"
@@ -2324,34 +2967,75 @@
       "items": [],
       "sections": [
         {
-          "id": "9Ir1xVN",
-          "label": "Replace any Sharp Talon",
+          "id": "_VGXO",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "qI70F",
+              "label": "Evolving Strain (Precision Growth)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Evolving Strain",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Precision Growth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "kKOj8Vno0h",
+          "label": "Replace all Overwhelming Swarms",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "All",
           "targets": [
-            "Sharp Talon"
+            "Overwhelming Swarms"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "JQN4D",
-              "label": "Piercing Beak (A1, AP(2), Deadly(3))",
-              "cost": 5,
+              "id": "z2AceLw-YY",
+              "label": "Spore Spitter (9\u0022, A1, AP(1), Blast(3), Assault, Decimate)",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Piercing Beak",
+                  "name": "Spore Spitter",
                   "quantity": 1,
-                  "rangeInches": 0,
+                  "rangeInches": 9,
                   "attacks": 1,
-                  "armorPenetration": 2,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
-                      "name": "Deadly",
+                      "name": "Blast",
                       "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Decimate"
                     }
                   ]
                 }
@@ -2363,7 +3047,7 @@
           ]
         },
         {
-          "id": "lvVFw3o",
+          "id": "-JlMkH_CwS",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2373,21 +3057,20 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "5CjLmmW",
-              "label": "Swoop Attack (Impact(1))",
+              "id": "HMItgfkBSA",
+              "label": "Sky Raider (Ambush)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Swoop Attack",
+                  "name": "Sky Raider",
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Impact",
-                      "numericValue": 1
+                      "kind": "core",
+                      "name": "Ambush"
                     }
                   ]
                 }
@@ -2399,14 +3082,14 @@
       ]
     },
     {
-      "id": "UqaaDf5",
-      "name": "Corrupted Beasts",
-      "quality": 3,
-      "defense": 3,
+      "id": "wFIjWHd",
+      "name": "Infected Bug-Swarms",
+      "quality": 5,
+      "defense": 6,
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 230,
+      "basePointCost": 90,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -2415,20 +3098,24 @@
       },
       "weapons": [
         {
-          "name": "Dual Sharp Claws",
+          "name": "Infected Claws",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 1,
+          "attacks": 3,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Rending"
+              "name": "Bane"
             }
           ]
         }
       ],
       "rules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
         {
           "kind": "coreNumeric",
           "name": "Tough",
@@ -2442,29 +3129,75 @@
       "items": [],
       "sections": [
         {
-          "id": "ecxRXLG",
-          "label": "Replace any Dual Sharp Claw",
+          "id": "_VGXO",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "qI70F",
+              "label": "Evolving Strain (Precision Growth)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Evolving Strain",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Precision Growth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ANo6ZAIGtr",
+          "label": "Replace all Infected Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "All",
           "targets": [
-            "Dual Sharp Claw"
+            "Infected Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "QkLaJx6",
-              "label": "Dual Smashing Fists (A4, AP(4))",
+              "id": "NVJTrqqGdY",
+              "label": "Spit Bile (9\u0022, A4, Bane), Strike (A1)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Dual Smashing Fists",
+                  "name": "Spit Bile",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 4,
+                  "attacks": 1,
+                  "armorPenetration": 0,
                   "specialRules": []
                 }
               ],
@@ -2473,160 +3206,18 @@
               "modelsGained": 0
             }
           ]
-        },
-        {
-          "id": "ANkwTNs",
-          "label": "Replace one Dual Sharp Claw",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Dual Sharp Claw"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "lCaGc",
-              "label": "Heavy Dual Serrated Claws (A2, AP(1), Blast(3))",
-              "cost": 0,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Dual Serrated Claws",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "Jn1UH",
-              "label": "Dual Piercing Stingers (A2, AP(2), Deadly(3))",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Dual Piercing Stingers",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 2,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "PJ2M66A",
-      "name": "Great Beast",
-      "quality": 3,
-      "defense": 3,
-      "baseModelCount": 1,
-      "minModels": 1,
-      "maxModels": 1,
-      "basePointCost": 140,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Heavy Claws",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 2,
-          "specialRules": []
-        }
-      ],
-      "rules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 1
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "tavysgL",
-          "label": "Upgrade with",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "kvpvw",
-              "label": "Contamination Cloud (Precision Debuff)",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Contamination Cloud",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Precision Debuff"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
         }
       ]
     },
     {
       "id": "KK8LQag",
-      "name": "Attack Buggy",
+      "name": "Recon Buggy",
       "quality": 4,
-      "defense": 2,
+      "defense": 3,
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 170,
+      "basePointCost": 140,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -2635,20 +3226,23 @@
       },
       "weapons": [
         {
-          "name": "Heavy Spore Shooter",
+          "name": "Heavy Machinegun",
           "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 2,
+          "rangeInches": 30,
+          "attacks": 3,
           "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
               "kind": "core",
-              "name": "Lacerate"
+              "name": "Thrust"
             }
           ]
         }
@@ -2659,29 +3253,37 @@
           "name": "Fast"
         },
         {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 3
+          "kind": "core",
+          "name": "Infected"
         },
         {
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Cargo Space",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Transport",
+              "numericValue": 6
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "MN1fgFr",
-          "label": "Replace Heavy Spore Shooter",
+          "id": "i-Cvhjq",
+          "label": "Replace Heavy Machinegun and Cargo Space",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Heavy Spore Shooter"
+            "Heavy Machinegun",
+            "Cargo Space"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -2690,7 +3292,7 @@
             {
               "id": "3JSD6",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2707,9 +3309,57 @@
               "modelsGained": 0
             },
             {
+              "id": "bEUbA7eCLv",
+              "label": "Twin Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Missile Launcher",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Vwd7xum",
+              "label": "Twin Autocannon (36\u0022, A6, AP(2))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Autocannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 6,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "2H4T5gY",
               "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
-              "cost": 60,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2730,54 +3380,56 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
-            {
-              "id": "Vwd7xum",
-              "label": "Twin Autocannon (36\u0022, A6, AP(2))",
-              "cost": 60,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Twin Autocannon",
-                  "quantity": 1,
-                  "rangeInches": 36,
-                  "attacks": 6,
-                  "armorPenetration": 2,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "gaZYyzT",
+          "id": "wFVhC7G",
           "label": "Upgrade with any",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 2,
+          "maxPicks": 4,
           "options": [
             {
-              "id": "ZgXj2ew",
-              "label": "Cargo Extension (Transport(11))",
-              "cost": 35,
+              "id": "fsD7C1XKpE",
+              "label": "Forward Deployment (Vanguard)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Cargo Extension",
+                  "name": "Forward Deployment",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Vanguard"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "5MHB8hQuqM",
+              "label": "Cargo Trailer (Transport(6))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cargo Trailer",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "coreNumeric",
                       "name": "Transport",
-                      "numericValue": 11
+                      "numericValue": 6
                     }
                   ]
                 }
@@ -2787,7 +3439,7 @@
             {
               "id": "8hc86vH7Zi",
               "label": "Contamination Cloud (Precision Debuff)",
-              "cost": 45,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2804,159 +3456,27 @@
                 }
               ],
               "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Yss19LW",
-      "name": "Battle Tank",
-      "quality": 4,
-      "defense": 2,
-      "baseModelCount": 1,
-      "minModels": 1,
-      "maxModels": 1,
-      "basePointCost": 400,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "weapons": [
-        {
-          "name": "Battle Cannon",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 2,
-          "armorPenetration": 2,
-          "specialRules": [
+            },
             {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        },
-        {
-          "name": "Twin Heavy Machinegun",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 6,
-          "armorPenetration": 1,
-          "specialRules": []
-        }
-      ],
-      "rules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 6
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Infected"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "i7YZwj_",
-          "label": "Replace Battle Cannon",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Battle Cannon"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "9LV2g",
-              "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
+              "id": "JIX57jLXG7",
+              "label": "Extra Armor (Armor(2))",
               "cost": 30,
               "costUnpriced": false,
-              "weaponsGained": [
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "name": "Twin Laser Cannon",
+                  "name": "Extra Armor",
                   "quantity": 1,
-                  "rangeInches": 36,
-                  "attacks": 2,
-                  "armorPenetration": 3,
-                  "specialRules": [
+                  "rules": [
                     {
                       "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
+                      "name": "Armor",
+                      "numericValue": 2
                     }
                   ]
                 }
               ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "J6DkA",
-              "label": "Twin Autocannon (36\u0022, A6, AP(2))",
-              "cost": 30,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Twin Autocannon",
-                  "quantity": 1,
-                  "rangeInches": 36,
-                  "attacks": 6,
-                  "armorPenetration": 2,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "-4rtV",
-              "label": "Heavy Spore Mortar (30\u0022, A3, AP(1), Blast(3), Indirect, Lacerate)",
-              "cost": 70,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Spore Mortar",
-                  "quantity": 1,
-                  "rangeInches": 30,
-                  "attacks": 3,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Indirect"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Lacerate"
-                    },
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2965,13 +3485,13 @@
     },
     {
       "id": "Yua0QBl",
-      "name": "Combat Walker",
+      "name": "Sentinel Walker",
       "quality": 4,
-      "defense": 2,
+      "defense": 3,
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 165,
+      "basePointCost": 130,
       "base": {
         "shape": "Circle",
         "diameterInches": 2.3622048,
@@ -2980,16 +3500,16 @@
       },
       "weapons": [
         {
-          "name": "Super-Heavy Fusion Rifle",
+          "name": "Grenade Launcher",
           "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 4,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 6
+              "name": "Blast",
+              "numericValue": 3
             }
           ]
         },
@@ -3016,41 +3536,66 @@
         {
           "kind": "core",
           "name": "Infected"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "Vgf4Xeb",
-          "label": "Replace Super-Heavy Fusion Rifle",
+          "id": "Aq-p-CM",
+          "label": "Replace Grenade Launcher",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Super-Heavy Fusion Rifle"
+            "Grenade Launcher"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "v6ChMzz",
-              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable), Walker Chainsaw (A6, AP(1))",
-              "cost": 10,
+              "id": "YNq2YMwmlM",
+              "label": "Spore Shooter (18\u0022, A2, AP(1), Blast(3), Decimate)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Walker Chainsaw",
+                  "name": "Spore Shooter",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 6,
+                  "rangeInches": 18,
+                  "attacks": 2,
                   "armorPenetration": 1,
-                  "specialRules": []
-                },
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Decimate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "v6ChMzz",
+              "label": "Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
                 {
                   "name": "Heavy Flamer",
                   "quantity": 1,
                   "rangeInches": 12,
-                  "attacks": 1,
+                  "attacks": 2,
                   "armorPenetration": 1,
                   "specialRules": [
                     {
@@ -3070,17 +3615,590 @@
               "modelsGained": 0
             },
             {
-              "id": "4WSdOn3",
-              "label": "Twin Plasma Cannon (30\u0022, A2, AP(4), Blast(3))",
-              "cost": 55,
+              "id": "axLqIPvxl6",
+              "label": "Heavy Machinegun (30\u0022, A6, AP(1))",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Twin Plasma Cannon",
+                  "name": "Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "W1X3Ajj2p4",
+              "label": "Shredder Cannon (30\u0022, A6, Rending)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shredder Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "rLWku51N3t",
+              "label": "Heavy Fusion Rifle (18\u0022, A2, AP(4), Deadly(3))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "rv7xzFtX3b",
+          "label": "Replace Stomp",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Stomp"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "amCH-_lPGF",
+              "label": "Walker Fist (A3, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Walker Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CuQRp8zUWC",
+              "label": "Walker Chainsaw (A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Walker Chainsaw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "3HdCMT4q5n",
+          "label": "Upgrade with any",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 2,
+          "options": [
+            {
+              "id": "9bAVt-wE-E",
+              "label": "Extra Armor (Armor(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Extra Armor",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Armor",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "lRM1iS0s-y",
+              "label": "Repair Arms (Regeneration Buff)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Repair Arms",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Buff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OiD96fH",
+      "name": "Harvester Walker",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 380,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Dual Super-Heavy Fusion Rifles",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 4,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 6
+            },
+            {
+              "kind": "core",
+              "name": "Anti-Regen"
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Infected"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "q8lkjFwN4z",
+          "label": "Replace Dual Super-Heavy Fusion Rifles",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Super-Heavy Fusion Rifles"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KlWOHXEolW",
+              "label": "Dual Heavy Missile Launchers (30\u0022, A2, AP(3), Deadly(6), Unstoppable)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Heavy Missile Launchers",
                   "quantity": 1,
                   "rangeInches": 30,
                   "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "PrdTkQWaZe",
+              "label": "Dual Heavy Flamer Cannons (18\u0022, A2, AP(2), Blast(6), Reliable)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Heavy Flamer Cannons",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "M0dCsAw6L-",
+              "label": "Dual Heavy Spore Mortars (24\u0022, A2, AP(2), Blast(6), Indirect, Decimate)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Heavy Spore Mortars",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Decimate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "XJEv0CqfyU",
+              "label": "Dual Heavy Mortars (30\u0022, A2, AP(2), Blast(6), Indirect)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Heavy Mortars",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "BodASj-i",
+          "label": "Replace Stomp",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Stomp"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "OfUpMkKO",
+              "label": "Walker Fist (A6, AP(2))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Walker Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "4AflXPkO",
+              "label": "Walker Chainsaw (A2, AP(4), Deadly(3))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Walker Chainsaw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
                   "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "SkwXyMT6",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "PnQtwYk7",
+              "label": "Zombie Hauler (Spawn(Infected Zombies [10]))",
+              "cost": 125,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Zombie Hauler",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Infected Zombies [10]"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Yss19LW",
+      "name": "Destroyer Tank",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 355,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Spore Cannon",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Decimate"
+            }
+          ]
+        },
+        {
+          "name": "Hull Heavy Flamer",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        },
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Infected"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "FPpqEZw",
+          "label": "Replace Spore Cannon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Spore Cannon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "tvDpuphEIR",
+              "label": "Battle Cannon (30\u0022, A3, AP(1), Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Battle Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -3095,18 +4213,203 @@
               "modelsGained": 0
             },
             {
-              "id": "ABhM6",
-              "label": "Twin Laser Machinegun (30\u0022, A6, AP(3))",
+              "id": "-4rtV",
+              "label": "Spore Mortar (24\u0022, A3, AP(1), Blast(3), Indirect, Decimate)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spore Mortar",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Decimate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "EWfloWE0-B",
+              "label": "Twin Missile Launcher (30\u0022, A3, AP(2), Deadly(3), Unstoppable)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Missile Launcher",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CaCs5lT6gd",
+              "label": "Mortar (30\u0022, A3, AP(1), Blast(3), Indirect)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mortar",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "J6DkA",
+              "label": "Twin Autocannon (36\u0022, A9, AP(2))",
               "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Twin Laser Machinegun",
+                  "name": "Twin Autocannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 9,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "9LV2g",
+              "label": "Twin Laser Cannon (36\u0022, A3, AP(3), Deadly(3))",
+              "cost": 60,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Laser Cannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 3,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "-z_9TG23UF",
+          "label": "Replace Hull Heavy Flamer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hull Heavy Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "0pSwQWdnon",
+              "label": "Hull Heavy Machinegun (30\u0022, A3, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hull Heavy Machinegun",
                   "quantity": 1,
                   "rangeInches": 30,
-                  "attacks": 6,
-                  "armorPenetration": 3,
+                  "attacks": 3,
+                  "armorPenetration": 1,
                   "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "UkXoYE7uYf",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "1lEdH1mHrr",
+              "label": "Pintle Heavy Machinegun (15\u0022, A3, AP(1), Assault)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pintle Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 15,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -3118,14 +4421,14 @@
       ]
     },
     {
-      "id": "c_ks7oX",
-      "name": "Abomination",
+      "id": "PJ2M66A",
+      "name": "Combat Beast",
       "quality": 3,
-      "defense": 2,
+      "defense": 3,
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 340,
+      "basePointCost": 130,
       "base": {
         "shape": "Circle",
         "diameterInches": 2.3622048,
@@ -3137,9 +4440,146 @@
           "name": "Heavy Claws",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 8,
-          "armorPenetration": 3,
+          "attacks": 6,
+          "armorPenetration": 1,
           "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Infected"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Xw-5sRl9",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XS1o6U2B",
+              "label": "Hybrid Combat Handler (Unpredictable Fighter)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Hybrid Combat Handler",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "kjbza6yG",
+              "label": "Hybrid Vanguard Handler (Scout)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Hybrid Vanguard Handler",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "zijE2ujq",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "nFKtKHqk",
+              "label": "Contamination Cloud (Precision Debuff)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Contamination Cloud",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Precision Debuff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c_ks7oX",
+      "name": "Great Combat Beast",
+      "quality": 3,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 270,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Great Putrid Fist",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
         },
         {
           "name": "Stomp",
@@ -3169,7 +4609,166 @@
       "items": [],
       "sections": [
         {
-          "id": "tavysgL",
+          "id": "OorTtHXpet",
+          "label": "Replace any Great Putrid Fist",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Great Putrid Fist"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ErG-M1APAt",
+              "label": "Great Sharp Claws (A4, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Sharp Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "XMVfxvSPQB",
+              "label": "Great Shattering Limb (A4, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Shattering Limb",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "wD79_46qn0",
+              "label": "Great Mutated Fist (A4, AP(1), Surge)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Mutated Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "gSAPKCux4n",
+              "label": "Great Hardened Fist (A4, AP(2))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Hardened Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Xw-5sRl9",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XS1o6U2B",
+              "label": "Hybrid Combat Handler (Unpredictable Fighter)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Hybrid Combat Handler",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "kjbza6yG",
+              "label": "Hybrid Vanguard Handler (Scout)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Hybrid Vanguard Handler",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "zijE2ujq",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3179,9 +4778,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "kvpvw",
+              "id": "nFKtKHqk",
               "label": "Contamination Cloud (Precision Debuff)",
-              "cost": 45,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3205,13 +4804,13 @@
     },
     {
       "id": "qSo1oZA",
-      "name": "Light Dropship",
+      "name": "Skimmer Gunship",
       "quality": 4,
-      "defense": 2,
+      "defense": 3,
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 340,
+      "basePointCost": 210,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3220,18 +4819,24 @@
       },
       "weapons": [
         {
-          "name": "Twin Heavy Machinegun",
+          "name": "Strafing Battle Cannons",
           "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 6,
+          "rangeInches": 15,
+          "attacks": 2,
           "armorPenetration": 1,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
         },
         {
-          "name": "Minigun",
+          "name": "Strafing Heavy Machineguns",
           "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 4,
+          "rangeInches": 15,
+          "attacks": 3,
           "armorPenetration": 1,
           "specialRules": []
         }
@@ -3247,11 +4852,6 @@
           "numericValue": 6
         },
         {
-          "kind": "coreNumeric",
-          "name": "Transport",
-          "numericValue": 11
-        },
-        {
           "kind": "core",
           "name": "Infected"
         }
@@ -3259,12 +4859,12 @@
       "items": [],
       "sections": [
         {
-          "id": "IDNviD6",
-          "label": "Replace Twin Heavy Machinegun",
+          "id": "CuMNoPh",
+          "label": "Replace Strafing Battle Cannons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Twin Heavy Machinegun"
+            "Strafing Battle Cannons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -3272,14 +4872,14 @@
           "options": [
             {
               "id": "Sj-5W",
-              "label": "Twin Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 5,
+              "label": "Strafing Missile Launchers (15\u0022, A2, AP(2), Deadly(3), Unstoppable)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Twin Missile Launcher",
+                  "name": "Strafing Missile Launchers",
                   "quantity": 1,
-                  "rangeInches": 30,
+                  "rangeInches": 15,
                   "attacks": 2,
                   "armorPenetration": 2,
                   "specialRules": [
@@ -3300,15 +4900,39 @@
               "modelsGained": 0
             },
             {
+              "id": "vGknZD9FWa",
+              "label": "Strafing Shredder Cannons (15\u0022, A6, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Strafing Shredder Cannons",
+                  "quantity": 1,
+                  "rangeInches": 15,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "Tibux",
-              "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
+              "label": "Strafing Laser Cannons (18\u0022, A2, AP(3), Deadly(3))",
               "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Twin Laser Cannon",
+                  "name": "Strafing Laser Cannons",
                   "quantity": 1,
-                  "rangeInches": 36,
+                  "rangeInches": 18,
                   "attacks": 2,
                   "armorPenetration": 3,
                   "specialRules": [
@@ -3322,6 +4946,118 @@
               ],
               "rulesGained": [],
               "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ewtve3sdfB",
+              "label": "Strafing Autocannons (18\u0022, A6, AP(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Strafing Autocannons",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 6,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "1c-71h3Y4u",
+          "label": "Replace Strafing Heavy Machineguns",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Strafing Heavy Machineguns"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KQFz2Ad8j6",
+              "label": "Cluster Bombs (A3, AP(1), Crossing Strike, Surge)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cluster Bombs",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Crossing Strike"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "pUOcJiLtNz",
+              "label": "Fusion Bombs (A1, AP(4), Deadly(3), Crossing Strike)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Bombs",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Crossing Strike"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "hiI76QHihI",
+              "label": "Cargo Hold (Transport(11))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cargo Hold",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Transport",
+                      "numericValue": 11
+                    }
+                  ]
+                }
+              ],
               "modelsGained": 0
             }
           ]
@@ -3347,7 +5083,8 @@
             "requireLineOfSight": true,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "statModifier",
@@ -3367,12 +5104,50 @@
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which gets -1 to hit rolls when attacking once (next time the effect would apply)."
     },
     {
+      "name": "Regeneration Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Regeneration",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets Regeneration once (next time the effect would apply)."
+    },
+    {
       "name": "Infected",
       "passive": [
         {
           "hookID": "Shooting_OnSaveRollComplete",
           "condition": {
-            "kind": "always"
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "effect": {
             "kind": "addExtraWound",
@@ -3387,7 +5162,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Each of the defender\u0027s unmodified Defense rolls of 1 deals an extra wound."
+      "description": "When this model shoots/charges enemies over 9\u0022/6\u0022 away, unmodified results of 1 to block hits from weapons deal 1 extra wound."
     },
     {
       "name": "Thrust in Melee Aura",
@@ -3399,7 +5174,7 @@
           },
           "effect": {
             "kind": "aura",
-            "ruleName": "Thrust"
+            "ruleName": "Thrust in Melee"
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -3409,34 +5184,10 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Thrust."
+      "description": "This model and its unit get Thrust on its weapons in melee."
     },
     {
-      "name": "Infected Boost",
-      "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
-          },
-          "effect": {
-            "kind": "addExtraWound",
-            "onRollValue": 2,
-            "count": 1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "If this model has Infected and shoots or charges enemies over 9 inches away, the defender\u0027s unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
-    },
-    {
-      "name": "Infected Boost Aura",
+      "name": "Armor",
       "passive": [
         {
           "hookID": "Lifecycle_OnUnitCreated",
@@ -3444,8 +5195,11 @@
             "kind": "always"
           },
           "effect": {
-            "kind": "aura",
-            "ruleName": "Infected Boost"
+            "kind": "setDefense",
+            "defense": {
+              "kind": "arg",
+              "index": 0
+            }
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -3453,9 +5207,9 @@
       ],
       "activated": [],
       "scope": "Unit",
-      "engineArgumentCount": 0,
+      "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "This model and its unit gain Infected Boost."
+      "description": "Counts as having Defense X\u002B."
     },
     {
       "name": "Precision Growth",
@@ -3554,7 +5308,42 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Gains a marker at the start of each round while on the table and not Shaken (max 4); every two markers add \u002B1 to its hit rolls."
+      "description": "Place one token on this unit at the beginning of each round if it\u0027s on the table and isn\u0027t Shaken, up to a max. of four tokens. For every two tokens, models with this rule in this unit get \u002B1 to hit rolls."
+    },
+    {
+      "name": "Spawn",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "spawnUnit",
+            "radiusInches": 6
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "Spawn"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\u0022 of it. Units placed via Spawn can\u0027t seize or contest objectives on the round they are placed."
     },
     {
       "name": "No Retreat Aura",
@@ -3579,6 +5368,241 @@
       "description": "This model and its unit get No Retreat."
     },
     {
+      "name": "Anti-Cover",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon ignores Cover."
+    },
+    {
+      "name": "Anti-Regen",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon ignores Regeneration."
+    },
+    {
+      "name": "Decimate",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "targetAboveHalfStrength"
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue",
+              "minValue": 6
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When attacking units with more than half of their total size or Tough value (for single-model units), the target must re-roll unmodified Defense results of 6."
+    },
+    {
+      "name": "Crossing Strike",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Movement_OnMoveThroughEnemy",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 1,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "attackWithThisWeapon"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, when this model moves through enemy units, pick one of them and attack it with this weapon as if it was shooting. This weapon may only be used in this way."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
+    },
+    {
+      "name": "Enhanced Infected",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Infected"
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackingFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "isNotSpell"
+              }
+            }
+          },
+          "effect": {
+            "kind": "addExtraWound",
+            "onRollValue": 1,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Infected, enemies always take wounds on unmodified results of 1 to block from Infected (instead of only when shooting/charging enemies over 9\u0022/6\u0022 away)."
+    },
+    {
+      "name": "Enhanced Infected Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Enhanced Infected"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Enhanced Infected."
+    },
+    {
+      "name": "Thrust in Melee",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isMelee"
+            },
+            "right": {
+              "kind": "isCharging"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isMelee"
+            },
+            "right": {
+              "kind": "isCharging"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model gets Thrust on its weapons in melee."
+    },
+    {
       "name": "No Retreat",
       "passive": [
         {
@@ -3598,63 +5622,23 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When a unit where most models have this rule fails a morale test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can\u0027t be ignored."
+      "description": "When a unit where most models have this rule fails a Morale Test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can\u0027t be ignored."
     }
   ],
   "spells": [
     {
-      "name": "Violent Onslaught",
+      "name": "Brain Infestation",
       "threshold": 1,
       "target": {
-        "rangeInches": 12,
-        "minCount": 1,
-        "maxCount": 1,
-        "targetAffinity": "Friend",
-        "requireLineOfSight": false,
-        "requiredToken": null,
-        "singleModel": false,
-        "requiredRule": null
-      },
-      "effect": {
-        "kind": "addRule",
-        "ruleName": "Infected Boost",
-        "scope": "NextTrigger"
-      }
-    },
-    {
-      "name": "Bio-Horror",
-      "threshold": 1,
-      "target": {
-        "rangeInches": 12,
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
-      },
-      "effect": {
-        "kind": "dealHits",
-        "count": 2,
-        "withRules": [
-          "Surge"
-        ],
-        "armorPenetration": 1
-      }
-    },
-    {
-      "name": "Brain Infestation",
-      "threshold": 2,
-      "target": {
-        "rangeInches": 18,
-        "minCount": 1,
-        "maxCount": 2,
-        "targetAffinity": "Foe",
-        "requireLineOfSight": false,
-        "requiredToken": null,
-        "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "statModifier",
@@ -3665,7 +5649,7 @@
     },
     {
       "name": "Spread Plague",
-      "threshold": 2,
+      "threshold": 1,
       "target": {
         "rangeInches": 18,
         "minCount": 1,
@@ -3674,30 +5658,32 @@
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 2,
+        "count": 1,
         "withRules": [
           "Blast(3)",
-          "Lacerate"
+          "Decimate"
         ],
         "armorPenetration": 0
       }
     },
     {
       "name": "Rapid Mutation",
-      "threshold": 3,
+      "threshold": 2,
       "target": {
         "rangeInches": 12,
         "minCount": 1,
-        "maxCount": 3,
+        "maxCount": 2,
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
@@ -3707,24 +5693,68 @@
     },
     {
       "name": "Volatile Infection",
-      "threshold": 3,
+      "threshold": 2,
       "target": {
         "rangeInches": 6,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [
+          "Deadly(3)"
+        ],
+        "armorPenetration": 2
+      }
+    },
+    {
+      "name": "Violent Onslaught",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Enhanced Infected",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Bio-Horror",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 3,
+        "count": 6,
         "withRules": [
-          "Deadly(3)"
+          "Surge"
         ],
-        "armorPenetration": 2
+        "armorPenetration": 0
       }
     }
   ]

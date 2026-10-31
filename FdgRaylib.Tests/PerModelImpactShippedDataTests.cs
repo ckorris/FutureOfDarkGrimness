@@ -49,7 +49,7 @@ public class PerModelImpactShippedDataTests
                 int perModel = roster.Rules.Select(ImpactValue).Sum(v => v ?? 0);
                 if (perModel == 0) continue;
 
-                VolleyReport? impact = ChargeImpactRow(book.File, roster.Id, roster.BaseModelCount, choice: null);
+                VolleyReport? impact = ChargeImpactRow(book.File, roster.Id, roster.BaseModelCount);
                 string where = $"{book.Name} / {roster.Name} [{roster.BaseModelCount}]";
                 Assert.That(impact, Is.Not.Null, $"{where}: no Impact row on the charge");
                 Assert.That(impact!.AttackDice, Is.EqualTo(perModel * roster.BaseModelCount), where);
@@ -57,7 +57,7 @@ public class PerModelImpactShippedDataTests
             }
         }
 
-        Assert.That(checkedUnits, Is.GreaterThanOrEqualTo(42), "the census found 73 such units in the bundled books");
+        Assert.That(checkedUnits, Is.GreaterThanOrEqualTo(42), "the census found 73 such units in the bundled 3.5 books, 42 in the 3.6.0 ones");
     }
 
     private record ItemSite(Book Book, RosterUnit Unit, UpgradeSection Section, UpgradeOption Option, string Item, int X)
@@ -80,16 +80,22 @@ public class PerModelImpactShippedDataTests
                 }
     }
 
+    // #438: the 3.6.0 population (the #447 hand-off's four, checked against the 2026-10-30 snapshots): the Orc
+    // Hover Bikers' and AoF Ratmen Storm Ogres' items become one-model grants; the two Trample swaps stay
+    // unit-wide (the profile already gives every model Trample). The 3.5 Dark Elf Raiders Razor Caltrops is gone.
     [Test]
-    public void ThePerModelItemPopulation_IsTheTwoBikers()
+    public void ThePerModelItemPopulation_IsTheFour36Sites()
     {
         List<ItemSite> sites = OneModelItemSites().ToList();
 
         Assert.That(sites.Select(s => $"{s.Book.Name} / {s.Unit.Name} / {s.Option.Label}"), Is.EquivalentTo(new[]
         {
-            "DarkElfRaiders / Jetbike Riders / Razor Caltrops (Impact(3))",
             "OrcMarauders / Hover Bikers / Rotor Blade Attack (Impact(3))",
+            "AoF-Ratmen / Storm Ogres / Roller-Fists (Heavy Impact(3))",
+            "AoF-DragonEmpire / Dragonkin Horsemen / Dragon Glaive (A1, AP(2), Deadly(3), Thrust), Trample (Impact(1))",
+            "AoF-GhostlyUndead / Dread Knights / Death Bell (A1, AP(1), Blast(3)), Trample (Impact(1))",
         }), "a new site means a new per-model Impact shape - check it compiles the same way before re-pinning");
+        Assert.That(sites.Count(s => s.EveryModelHoldsIt), Is.EqualTo(2), "the two Trample swaps");
     }
 
     [Test]
@@ -98,10 +104,11 @@ public class PerModelImpactShippedDataTests
         foreach (ItemSite site in OneModelItemSites())
         {
             var choice = new UpgradeChoice { SectionId = site.Section.Id, OptionId = site.Option.Id, Count = 1 };
+            UpgradeChoice[] choices = Prerequisites(site).Append(choice).ToArray();
             UnitFileEntry unit = ListCompiler.Compile(site.Book.File,
-                ListOf(site.Book.File, site.Unit.Id, site.Unit.BaseModelCount, choice)).Units.Single();
+                ListOf(site.Book.File, site.Unit.Id, site.Unit.BaseModelCount, choices)).Units.Single();
             string where = $"{site.Book.Name} / {site.Unit.Name} / {site.Option.Label}";
-            VolleyReport? impact = ChargeImpactRow(site.Book.File, site.Unit.Id, site.Unit.BaseModelCount, choice);
+            VolleyReport? impact = ChargeImpactRow(site.Book.File, site.Unit.Id, site.Unit.BaseModelCount, choices);
 
             if (site.EveryModelHoldsIt)
             {
@@ -119,17 +126,34 @@ public class PerModelImpactShippedDataTests
 
     // ---- harness --------------------------------------------------------------------------------------------
 
-    private static BuilderList ListOf(BookFile book, string rosterId, int models, UpgradeChoice? choice)
+    // #438: a 3.6 item section may replace something the base loadout lacks - the Orc Hover Bikers' "Replace one
+    // Hand Weapon -> Rotor Blade Attack" needs the "Replace all ... -> Assault Bike-Gun, Pistol, Hand Weapon" swap
+    // first. Buy the first option of another section that supplies the target, so the item has something to replace.
+    private static IEnumerable<UpgradeChoice> Prerequisites(ItemSite site)
+    {
+        if (ListCompiler.AvailableApplications(site.Unit.Weapons, site.Unit.Items, site.Section.Targets) > 0)
+            yield break;
+        foreach (UpgradeSection other in site.Unit.Sections.Where(s => !ReferenceEquals(s, site.Section)))
+            foreach (UpgradeOption option in other.Options)
+                if (ListCompiler.AvailableApplications(option.WeaponsGained.Select(w => new WeaponFileEntry
+                        { Name = w.Name, Quantity = 1000 }).ToList(), option.ItemsGained, site.Section.Targets) > 0)
+                {
+                    yield return new UpgradeChoice { SectionId = other.Id, OptionId = option.Id, Count = 1 };
+                    yield break;
+                }
+    }
+
+    private static BuilderList ListOf(BookFile book, string rosterId, int models, params UpgradeChoice[] choices)
     {
         var unit = new BuilderUnit { RosterUnitId = rosterId, ModelCount = models };
-        if (choice != null) unit.Choices.Add(choice);
+        unit.Choices.AddRange(choices);
         return new BuilderList { Name = "447", BookName = book.Name, PointsLimit = 100000, Units = { unit } };
     }
 
     // The real compile, army load and ResolveImpactHitsStage, read back through the Combat Calculator.
-    private static VolleyReport? ChargeImpactRow(BookFile book, string rosterId, int models, UpgradeChoice? choice)
+    private static VolleyReport? ChargeImpactRow(BookFile book, string rosterId, int models, params UpgradeChoice[] choices)
     {
-        BuiltArmyFile army = ListCompiler.Compile(book, ListOf(book, rosterId, models, choice));
+        BuiltArmyFile army = ListCompiler.Compile(book, ListOf(book, rosterId, models, choices));
         var targets = new ArmyListFile
         {
             Name = "Targets", Faction = "Test",

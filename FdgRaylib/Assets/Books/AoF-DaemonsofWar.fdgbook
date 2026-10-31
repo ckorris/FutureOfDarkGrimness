@@ -1,7 +1,7 @@
 {
-  "name": "Rift Daemons of War",
-  "faction": "Rift Daemons of War",
-  "version": "OPR v3.5.3",
+  "name": "Daemons of War",
+  "faction": "Daemons of War",
+  "version": "OPR v3.6.0",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
   "gameSystem": "age-of-fantasy",
@@ -16,7 +16,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 795,
+      "basePointCost": 705,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -25,16 +25,16 @@
       },
       "weapons": [
         {
-          "name": "Exalted Flame Hammer",
+          "name": "Heavy Daemon Hammer",
           "quantity": 2,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 1,
+          "attacks": 1,
+          "armorPenetration": 2,
           "specialRules": [
             {
               "kind": "coreNumeric",
               "name": "Blast",
-              "numericValue": 3
+              "numericValue": 6
             }
           ]
         },
@@ -52,10 +52,6 @@
           "kind": "coreNumeric",
           "name": "Fear",
           "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
         },
         {
           "kind": "core",
@@ -78,33 +74,33 @@
       "items": [],
       "sections": [
         {
-          "id": "HbLLElc",
-          "label": "Replace any Exalted Flame Hammer",
+          "id": "vfGu2fBREd",
+          "label": "Replace 2x Heavy Daemon Hammer",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Exalted Flame Hammer"
+            "2x Heavy Daemon Hammer"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "6RF1L",
-              "label": "Exalted Blood Sword (A9, Crack)",
-              "cost": 10,
+              "id": "BekJZZrNnp",
+              "label": "Daemon Loremaster Staff (A12, Spell Amplifier)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted Blood Sword",
+                  "name": "Daemon Loremaster Staff",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 9,
+                  "attacks": 12,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Crack"
+                      "name": "Spell Amplifier"
                     }
                   ]
                 }
@@ -114,18 +110,41 @@
               "modelsGained": 0
             },
             {
-              "id": "sFF2gtstOH",
-              "label": "Exalted Long Whip (18\u0022, A6, AP(2))",
-              "cost": 45,
+              "id": "lhSkiwqc6F",
+              "label": "Heavy War Whip (9\u0022, A9, Rending, Assault), Heavy Daemon Hammer (A1, AP(2), Blast(6))",
+              "cost": 125,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted Long Whip",
+                  "name": "Heavy War Whip",
                   "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 6,
+                  "rangeInches": 9,
+                  "attacks": 9,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Heavy Daemon Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
                   "armorPenetration": 2,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -133,17 +152,17 @@
               "modelsGained": 0
             },
             {
-              "id": "KBY7tnd",
-              "label": "Exalted Flame Axe (A9, AP(1), Rending)",
-              "cost": 50,
+              "id": "KIplr4iIeL",
+              "label": "Heavy Long Whip (18\u0022, A18, Rending)",
+              "cost": 150,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted Flame Axe",
+                  "name": "Heavy Long Whip",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 9,
-                  "armorPenetration": 1,
+                  "rangeInches": 18,
+                  "attacks": 18,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -155,24 +174,37 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "zbvhH54",
+          "label": "Replace any Heavy Daemon Hammer",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Heavy Daemon Hammer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "fUmEf",
-              "label": "Exalted Flame Spear (A3, AP(3), Deadly(3))",
-              "cost": 55,
+              "id": "KBY7tnd",
+              "label": "Flame Axe (A6, Thrust)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted Flame Spear",
+                  "name": "Flame Axe",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 3,
+                  "attacks": 6,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Thrust"
                     }
                   ]
                 }
@@ -182,18 +214,28 @@
               "modelsGained": 0
             },
             {
-              "id": "YJDle",
-              "label": "Exalted War Whip (12\u0022, A12, AP(1))",
-              "cost": 65,
+              "id": "fUmEf",
+              "label": "Heavy Daemon Spear (A1, AP(4), Deadly(6), Anti-Regen)",
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted War Whip",
+                  "name": "Heavy Daemon Spear",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 12,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Regen"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -202,17 +244,41 @@
             },
             {
               "id": "RGp-Rab",
-              "label": "Exalted Flame Gauntlet (A9, AP(4))",
-              "cost": 105,
+              "label": "Daemon Gauntlet (A6, AP(2))",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted Flame Gauntlet",
+                  "name": "Daemon Gauntlet",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 9,
-                  "armorPenetration": 4,
+                  "attacks": 6,
+                  "armorPenetration": 2,
                   "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "6RF1L",
+              "label": "Blood Sword (A6, AP(1), Purge)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Blood Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -222,7 +288,7 @@
           ]
         },
         {
-          "id": "ssSilh9",
+          "id": "XLU7veud",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -232,9 +298,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "RiTY3efJ",
+              "id": "XyCmD9lp",
               "label": "Daemonic Incursion (Ambush)",
-              "cost": 100,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -255,7 +321,7 @@
           ]
         },
         {
-          "id": "gLNb4I9",
+          "id": "pBa-lJju",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -265,9 +331,30 @@
           "maxPicks": 1,
           "options": [
             {
+              "id": "Dr1ioOLj",
+              "label": "War Favour (Enhanced Warbound)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "War Favour",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Warbound"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "NFoksqgv",
               "label": "Envoy of War (Furious)",
-              "cost": 5,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -286,9 +373,41 @@
               "modelsGained": 0
             },
             {
+              "id": "jCaqIEcbok",
+              "label": "Storm of War (15\u0022, A6, Limited, Rending, Assault)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Storm of War",
+                  "quantity": 1,
+                  "rangeInches": 15,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "-7oZhGpR",
               "label": "Gift of War (Shielded)",
-              "cost": 35,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -307,51 +426,9 @@
               "modelsGained": 0
             },
             {
-              "id": "5QbtnKs_",
-              "label": "War God\u0027s Power (Storm of War)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "War God\u0027s Power",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Storm of War"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "Dr1ioOLj",
-              "label": "War Favour (Warbound Boost)",
-              "cost": 50,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "War Favour",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Warbound Boost"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "psbJyJby",
               "label": "Lore of War (Caster(5))",
-              "cost": 110,
+              "cost": 95,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -382,7 +459,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 320,
+      "basePointCost": 350,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -391,16 +468,15 @@
       },
       "weapons": [
         {
-          "name": "Great Flame Hammer",
+          "name": "Heavy Flame Axe",
           "quantity": 2,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
+              "kind": "core",
+              "name": "Thrust"
             }
           ]
         },
@@ -436,77 +512,74 @@
       "items": [],
       "sections": [
         {
-          "id": "Sv0RNbX",
-          "label": "Replace any Great Flame Hammer",
+          "id": "nYpS3zXDYm",
+          "label": "Replace 2x Heavy Flame Axe",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Great Flame Hammer"
+            "2x Heavy Flame Axe"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "PwGy4",
-              "label": "Great Blood Sword (A6, Crack)",
+              "id": "K5rDeTM5aP",
+              "label": "Daemon Loremaster Staff (A8, Spell Amplifier)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Blood Sword",
+                  "name": "Daemon Loremaster Staff",
                   "quantity": 1,
                   "rangeInches": 0,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "DhJypG-Q1r",
+              "label": "Heavy War Whip (9\u0022, A6, Rending, Assault), Heavy Flame Axe (A4, Thrust)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy War Whip",
+                  "quantity": 1,
+                  "rangeInches": 9,
                   "attacks": 6,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Crack"
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "z1fdxuVSVM",
-              "label": "Great Long Whip (18\u0022, A4, AP(2))",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
+                },
                 {
-                  "name": "Great Long Whip",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 4,
-                  "armorPenetration": 2,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "HH8lcjE",
-              "label": "Great Flame Spear (A2, AP(3), Deadly(3))",
-              "cost": 25,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Great Flame Spear",
+                  "name": "Heavy Flame Axe",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 3,
+                  "attacks": 4,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Thrust"
                     }
                   ]
                 }
@@ -516,17 +589,17 @@
               "modelsGained": 0
             },
             {
-              "id": "NucZXky",
-              "label": "Great Flame Axe (A6, AP(1), Rending)",
-              "cost": 25,
+              "id": "fiYGxMz4EM",
+              "label": "Heavy Long Whip (18\u0022, A12, Rending)",
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Flame Axe",
+                  "name": "Heavy Long Whip",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 6,
-                  "armorPenetration": 1,
+                  "rangeInches": 18,
+                  "attacks": 12,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -538,20 +611,40 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "HGhU4md",
+          "label": "Replace any Heavy Flame Axe",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Heavy Flame Axe"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "2SllI",
-              "label": "Great War Whip (12\u0022, A8, AP(1))",
-              "cost": 30,
+              "id": "NucZXky",
+              "label": "Heavy Daemon Hammer (A1, AP(2), Blast(6))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great War Whip",
+                  "name": "Heavy Daemon Hammer",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 8,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -560,17 +653,70 @@
             },
             {
               "id": "kJ2s0om",
-              "label": "Great Flame Gauntlet (A6, AP(4))",
-              "cost": 45,
+              "label": "Heavy Daemon Gauntlet (A4, AP(2))",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Flame Gauntlet",
+                  "name": "Heavy Daemon Gauntlet",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 6,
-                  "armorPenetration": 4,
+                  "attacks": 4,
+                  "armorPenetration": 2,
                   "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "lIXaoLR5kt",
+              "label": "Heavy Blood Sword (A4, AP(1), Purge)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Blood Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "HH8lcjE",
+              "label": "Heavy Daemon Spear (A1, AP(4), Deadly(6), Anti-Regen)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Regen"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -580,17 +726,38 @@
           ]
         },
         {
-          "id": "wT_9h2r",
-          "label": "Upgrade with any",
+          "id": "isUx7pJ",
+          "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 2,
+          "maxPicks": 1,
           "options": [
             {
-              "id": "l3COpVoQET",
+              "id": "nAngmzB",
+              "label": "Wings (Flying)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Wings",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "krnwDIstAn",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 45,
               "costUnpriced": false,
@@ -609,32 +776,11 @@
                 }
               ],
               "modelsGained": 0
-            },
-            {
-              "id": "nAngmzB",
-              "label": "Wings (Flying)",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Wings",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Flying"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "hhch0O7",
+          "id": "90P6QkyF",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -644,9 +790,30 @@
           "maxPicks": 1,
           "options": [
             {
+              "id": "pB9WJEkC",
+              "label": "War Favour (Enhanced Warbound)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "War Favour",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Warbound"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "ZsXigUb3",
               "label": "Symbol of War (Rapid Charge)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -665,30 +832,9 @@
               "modelsGained": 0
             },
             {
-              "id": "qdvoQ70x",
-              "label": "Gift of War (Shielded)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Gift of War",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Shielded"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "C_UAHzRPdZ",
               "label": "Curse of War (Fatigue Debuff)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -707,20 +853,20 @@
               "modelsGained": 0
             },
             {
-              "id": "pB9WJEkC",
-              "label": "War Favour (Warbound Boost)",
-              "cost": 25,
+              "id": "qdvoQ70x",
+              "label": "Gift of War (Shielded)",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "War Favour",
+                  "name": "Gift of War",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Warbound Boost"
+                      "name": "Shielded"
                     }
                   ]
                 }
@@ -730,7 +876,7 @@
             {
               "id": "IDwBMGu1",
               "label": "Lore of War (Caster(4))",
-              "cost": 85,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -761,7 +907,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 140,
+      "basePointCost": 150,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.968504,
@@ -770,7 +916,7 @@
       },
       "weapons": [
         {
-          "name": "Flame Spear",
+          "name": "Daemon Hammer",
           "quantity": 2,
           "rangeInches": 0,
           "attacks": 1,
@@ -778,7 +924,7 @@
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Deadly",
+              "name": "Blast",
               "numericValue": 3
             }
           ]
@@ -815,25 +961,66 @@
       "items": [],
       "sections": [
         {
-          "id": "3IpzfdG",
-          "label": "Replace any Flame Spear",
+          "id": "lIhyZDY_xd",
+          "label": "Replace 2x Daemon Hammer",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Flame Spear"
+            "2x Daemon Hammer"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "Q1-3U",
-              "label": "Flame Hammer (A1, AP(1), Blast(3))",
-              "cost": 0,
+              "id": "u2ERlbpSsh",
+              "label": "Daemon Loremaster Staff (A4, Spell Amplifier)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Flame Hammer",
+                  "name": "Daemon Loremaster Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "sPJIQwIH_k",
+              "label": "Heavy War Whip (9\u0022, A3, Rending, Assault), Daemon Hammer (A1, AP(1), Blast(3))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy War Whip",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
@@ -852,41 +1039,17 @@
               "modelsGained": 0
             },
             {
-              "id": "MXCIe",
-              "label": "Heavy Blood Sword (A3, Crack)",
-              "cost": 5,
+              "id": "0QBXHNi8OZ",
+              "label": "Heavy Long Whip (18\u0022, A6, Rending)",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Blood Sword",
+                  "name": "Heavy Long Whip",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 3,
+                  "rangeInches": 18,
+                  "attacks": 6,
                   "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Crack"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "4otRd",
-              "label": "Heavy Flame Axe (A3, AP(1), Rending)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Flame Axe",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -898,18 +1061,80 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "p6hGf",
+          "label": "Replace any Daemon Hammer",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Daemon Hammer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "Qfl7ePy3Xh",
-              "label": "Long Whip (18\u0022, A2, AP(2))",
-              "cost": 10,
+              "id": "4otRd",
+              "label": "Flame Axe (A3, Thrust)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Long Whip",
+                  "name": "Flame Axe",
                   "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "MXCIe",
+              "label": "Blood Sword (A3, AP(1), Purge)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Blood Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "eVxru",
+              "label": "Daemon Gauntlet (A3, AP(2))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
                   "armorPenetration": 2,
                   "specialRules": []
                 }
@@ -919,37 +1144,24 @@
               "modelsGained": 0
             },
             {
-              "id": "r7IAt",
-              "label": "War Whip (12\u0022, A4, AP(1))",
+              "id": "Q1-3U",
+              "label": "Daemon Spear (A1, AP(4), Deadly(3))",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "War Whip",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "eVxru",
-              "label": "Heavy Flame Gauntlet (A3, AP(4))",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Flame Gauntlet",
+                  "name": "Daemon Spear",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 3,
+                  "attacks": 1,
                   "armorPenetration": 4,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -959,8 +1171,8 @@
           ]
         },
         {
-          "id": "cKfQSBQ",
-          "label": "Upgrade with one",
+          "id": "7QXAX4pI-0",
+          "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
@@ -969,9 +1181,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "oGr-v1lMNm",
+              "id": "7opW_QpzE_",
               "label": "War Boon (Defensive Frenzy)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -988,11 +1200,23 @@
                 }
               ],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "nxGvh_y810",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "flNGf",
+              "id": "vEkmRSPP2p",
               "label": "Wings (Flying)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1011,7 +1235,7 @@
               "modelsGained": 0
             },
             {
-              "id": "lmgPY38zMB",
+              "id": "LpcoX4rJgY",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 35,
               "costUnpriced": false,
@@ -1032,9 +1256,9 @@
               "modelsGained": 0
             },
             {
-              "id": "1QQchK__e4",
+              "id": "diX9k_0SoA",
               "label": "Fury Wings (Flying, Scout)",
-              "cost": 45,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1059,7 +1283,7 @@
           ]
         },
         {
-          "id": "xEXp79L",
+          "id": "lLNDmBWW",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1069,30 +1293,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "m0TEqFhx",
-              "label": "Envoy of War (Furious Aura)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Envoy of War",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Furious Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "BcOdrSTz",
               "label": "Symbol of War (Rapid Charge Aura)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1111,9 +1314,30 @@
               "modelsGained": 0
             },
             {
+              "id": "rlrNr3Zr",
+              "label": "War Favour (Enhanced Warbound Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "War Favour",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Warbound Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "4N77P1tj",
               "label": "Gift of War (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1132,20 +1356,20 @@
               "modelsGained": 0
             },
             {
-              "id": "rlrNr3Zr",
-              "label": "War Favour (Warbound Boost Aura)",
-              "cost": 45,
+              "id": "m0TEqFhx",
+              "label": "Envoy of War (Furious Aura)",
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "War Favour",
+                  "name": "Envoy of War",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Warbound Boost Aura"
+                      "name": "Furious Aura"
                     }
                   ]
                 }
@@ -1155,7 +1379,7 @@
             {
               "id": "ZkAPsvkH",
               "label": "Lore of War (Caster(3))",
-              "cost": 65,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1186,7 +1410,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 45,
+      "basePointCost": 50,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1195,26 +1419,12 @@
       },
       "weapons": [
         {
-          "name": "Axe",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": []
-        },
-        {
-          "name": "Flame Spear",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            }
-          ]
         }
       ],
       "rules": [
@@ -1235,30 +1445,29 @@
       "items": [],
       "sections": [
         {
-          "id": "j9QaClI",
-          "label": "Replace Axe and Flame Spear",
+          "id": "U253yogOgb",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Axe",
-            "Flame Spear"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "i8bQg0nTcy",
-              "label": "Axe (A1, AP(1)), Flame Hammer (A1, AP(1), Blast(3))",
-              "cost": 0,
+              "id": "NRMP0e09MQ",
+              "label": "Master Daemon Hammer (A1, AP(2), Blast(3))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Flame Hammer",
+                  "name": "Master Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 2,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -1266,14 +1475,6 @@
                       "numericValue": 3
                     }
                   ]
-                },
-                {
-                  "name": "Axe",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -1281,123 +1482,22 @@
               "modelsGained": 0
             },
             {
-              "id": "XBxqW",
-              "label": "2x Blood Sword (A2, Crack)",
+              "id": "NWmmtXJd7f",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Blood Sword",
-                  "quantity": 2,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Crack"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "YQ6n-FVjEP",
-              "label": "Long Whip (18\u0022, A2, AP(2)), Blood Sword (A2, Crack)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Long Whip",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 2,
-                  "specialRules": []
-                },
-                {
-                  "name": "Blood Sword",
+                  "name": "Master Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Crack"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "DVGFK",
-              "label": "War Whip (12\u0022, A4, AP(1)), Blood Sword (A2, Crack)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "War Whip",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                },
-                {
-                  "name": "Blood Sword",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Crack"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "dNFdQEb",
-          "label": "Replace any Blood Sword",
-          "variant": "Replace",
-          "affects": "Any",
-          "targets": [
-            "Blood Sword"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "-51Ip",
-              "label": "Flame Axe (A2, AP(1), Rending)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Flame Axe",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 3,
                   "armorPenetration": 1,
                   "specialRules": [
                     {
-                      "kind": "core",
-                      "name": "Rending"
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
                     }
                   ]
                 }
@@ -1407,16 +1507,93 @@
               "modelsGained": 0
             },
             {
-              "id": "dsTcp",
-              "label": "Flame Gauntlet (A2, AP(4))",
+              "id": "vYOO6wvaSe",
+              "label": "Master Blood Sword (A3, AP(2), Purge)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Flame Gauntlet",
+                  "name": "Master Blood Sword",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "tA0Fp7oytx",
+              "label": "Master Daemon Spear (A1, AP(4), Deadly(3), Anti-Regen)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Regen"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "nYe-5FMnHH",
+              "label": "Master Flame Axe (A3, AP(1), Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Flame Axe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "7uNPOdFn-d",
+              "label": "Master Daemon Gauntlet (A3, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
                   "armorPenetration": 4,
                   "specialRules": []
                 }
@@ -1428,7 +1605,250 @@
           ]
         },
         {
-          "id": "VIcurLK",
+          "id": "wgZoJaIA33",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "OKgR9a4viq",
+              "label": "War Whip (9\u0022, A1, Rending, Assault), Daemon Hammer (A1, AP(1), Blast(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "War Whip",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Daemon Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "5w15pObKMI",
+              "label": "Daemon Loremaster Staff (A2, Spell Amplifier)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Loremaster Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-DhEpZ85dG",
+              "label": "Heavy Long Whip (18\u0022, A3, Rending), Strike (A1)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Long Whip",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "alruA",
+          "label": "Replace Daemon Hammer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Daemon Hammer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "i8bQg0nTcy",
+              "label": "Flame Axe (A3, Thrust)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Axe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "HQwdlbdzOg",
+              "label": "Hand Weapon (A3, Parry(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "XBxqW",
+              "label": "Blood Sword (A3, AP(1), Purge)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Blood Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YQ6n-FVjEP",
+              "label": "Daemon Gauntlet (A3, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "DVGFK",
+              "label": "Daemon Spear (A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "QkCe1",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1438,7 +1858,7 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "eBIXnXQzJE",
+              "id": "rfT_4R2UOj",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 5,
               "costUnpriced": false,
@@ -1459,7 +1879,7 @@
               "modelsGained": 0
             },
             {
-              "id": "Z951q4nmX1",
+              "id": "lymzPUUf8p",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 35,
               "costUnpriced": false,
@@ -1481,23 +1901,14 @@
             },
             {
               "id": "riUJi",
-              "label": "Great Beast (Heavy Claws (A1, AP(1)), Armor(3), Fast, Impact(2), Tough(3))",
+              "label": "Blood Beast (Armor(3), Fast, Impact(3), Tough(3))",
               "cost": 65,
               "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Claws",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
+              "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Great Beast",
+                  "name": "Blood Beast",
                   "quantity": 1,
                   "rules": [
                     {
@@ -1512,7 +1923,7 @@
                     {
                       "kind": "coreNumeric",
                       "name": "Impact",
-                      "numericValue": 2
+                      "numericValue": 3
                     },
                     {
                       "kind": "coreNumeric",
@@ -1526,17 +1937,22 @@
             },
             {
               "id": "xwhSK",
-              "label": "Throne of Blood (Claws (A6, AP(1)), Armor(3), Fear(1), Tough(6))",
-              "cost": 115,
+              "label": "Throne of Blood (Throne Crew (A6, Thrust), Armor(3), Fear(1), Tough(6))",
+              "cost": 125,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Claws",
+                  "name": "Throne Crew",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 6,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -1560,6 +1976,21 @@
                       "name": "Tough",
                       "numericValue": 6
                     }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Throne Crew",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 6,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "core",
+                          "name": "Thrust"
+                        }
+                      ]
+                    }
                   ]
                 }
               ],
@@ -1568,7 +1999,7 @@
           ]
         },
         {
-          "id": "7ELB8EG",
+          "id": "rfZvv",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1578,30 +2009,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "f_6St",
-              "label": "Envoy of War (Furious Aura)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Envoy of War",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Furious Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "p4PbD",
               "label": "Symbol of War (Rapid Charge Aura)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1613,6 +2023,27 @@
                     {
                       "kind": "core",
                       "name": "Rapid Charge Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "1164d",
+              "label": "War Favour (Enhanced Warbound Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "War Favour",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Warbound Aura"
                     }
                   ]
                 }
@@ -1642,9 +2073,30 @@
               "modelsGained": 0
             },
             {
+              "id": "f_6St",
+              "label": "Envoy of War (Furious Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Envoy of War",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "ZrMm_",
               "label": "Lore of War (Caster(2))",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1664,30 +2116,9 @@
               "modelsGained": 0
             },
             {
-              "id": "1164d",
-              "label": "War Favour (Warbound Boost Aura)",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "War Favour",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Warbound Boost Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "Yxld0",
               "label": "Icon of War (Piercing Shooter Aura)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1726,26 +2157,12 @@
       },
       "weapons": [
         {
-          "name": "Axe",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": []
-        },
-        {
-          "name": "Flame Spear",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            }
-          ]
         }
       ],
       "rules": [
@@ -1774,34 +2191,177 @@
       "items": [],
       "sections": [
         {
-          "id": "KrjntEH",
-          "label": "Replace Axe and Flame Spear",
+          "id": "8knZMnCcEp",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Axe",
-            "Flame Spear"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "n1l9V9owt4",
-              "label": "Axe (A1, AP(1)), Flame Hammer (A1, AP(1), Blast(3))",
-              "cost": 0,
+              "id": "IUnamLuvBw",
+              "label": "Master Daemon Hammer (A1, AP(2), Blast(3))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Axe",
+                  "name": "Master Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "3VSWNBzvss",
+              "label": "Master Daemon Spear (A1, AP(4), Deadly(3), Anti-Regen)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Regen"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "zMC95EtdYV",
+              "label": "Master Blood Sword (A3, AP(2), Purge)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Blood Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ABa1tggsxg",
+              "label": "Master Daemon Gauntlet (A3, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
                   "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "MD8jVd86r8",
+              "label": "Master Flame Axe (A3, AP(1), Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Flame Axe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "gXQP_tMzbf",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "YvDL_JBZ",
+              "label": "War Whip (9\u0022, A1, Rending, Assault), Daemon Hammer (A1, AP(1), Blast(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "War Whip",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
                 },
                 {
-                  "name": "Flame Hammer",
+                  "name": "Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
@@ -1820,87 +2380,31 @@
               "modelsGained": 0
             },
             {
-              "id": "778Ti",
-              "label": "2x Blood Sword (A2, Crack)",
-              "cost": 5,
+              "id": "kkrmWzwL",
+              "label": "Heavy Long Whip (18\u0022, A3, Rending), Strike (A1)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Blood Sword",
-                  "quantity": 2,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Crack"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "YhzQyGgNDO",
-              "label": "Long Whip (18\u0022, A2, AP(2)), Blood Sword (A2, Crack)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Long Whip",
+                  "name": "Heavy Long Whip",
                   "quantity": 1,
                   "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 2,
-                  "specialRules": []
-                },
-                {
-                  "name": "Blood Sword",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Crack"
+                      "name": "Rending"
                     }
                   ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "J4cT9",
-              "label": "War Whip (12\u0022, A4, AP(1)), Blood Sword (A2, Crack)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "War Whip",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
-                  "armorPenetration": 1,
-                  "specialRules": []
                 },
                 {
-                  "name": "Blood Sword",
+                  "name": "Strike",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 1,
                   "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Crack"
-                    }
-                  ]
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -1910,20 +2414,39 @@
           ]
         },
         {
-          "id": "BUOc5Q3",
-          "label": "Replace any Blood Sword",
+          "id": "XbKs0MXz",
+          "label": "Replace Daemon Hammer",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Blood Sword"
+            "Daemon Hammer"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "DW-Eh",
-              "label": "Flame Axe (A2, AP(1), Rending)",
+              "id": "WAexndXp",
+              "label": "Daemon Gauntlet (A3, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "AQs-adqJ",
+              "label": "Flame Axe (A3, Thrust)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
@@ -1931,12 +2454,12 @@
                   "name": "Flame Axe",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
+                  "attacks": 3,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Thrust"
                     }
                   ]
                 }
@@ -1946,18 +2469,48 @@
               "modelsGained": 0
             },
             {
-              "id": "pCGDH",
-              "label": "Flame Gauntlet (A2, AP(4))",
+              "id": "HXnmSYTV",
+              "label": "Blood Sword (A3, AP(1), Purge)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Flame Gauntlet",
+                  "name": "Blood Sword",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "DG1Ey7hl",
+              "label": "Daemon Spear (A1, AP(4), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
                   "armorPenetration": 4,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -1967,7 +2520,7 @@
           ]
         },
         {
-          "id": "QWdIW1w",
+          "id": "y8Mfke0z",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1977,30 +2530,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "SfI6j7JS",
-              "label": "Envoy of War (Furious Aura)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Envoy of War",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Furious Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "JhkKDlJM",
               "label": "Symbol of War (Rapid Charge Aura)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2021,7 +2553,7 @@
             {
               "id": "xCL_-RtI",
               "label": "Gift of War (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2040,9 +2572,30 @@
               "modelsGained": 0
             },
             {
+              "id": "SfI6j7JS",
+              "label": "Envoy of War (Furious Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Envoy of War",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "07Qf1Umj",
               "label": "Icon of War (Piercing Shooter Aura)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2072,7 +2625,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 135,
+      "basePointCost": 145,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.968504,
@@ -2081,12 +2634,17 @@
       },
       "weapons": [
         {
-          "name": "Frenzied Bites",
+          "name": "Flame Claws",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 6,
-          "armorPenetration": 1,
-          "specialRules": []
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
         }
       ],
       "rules": [
@@ -2123,14 +2681,49 @@
       ],
       "sections": [
         {
-          "id": "TR8hB4-",
-          "label": "Upgrade with any",
+          "id": "3D6prVsypz",
+          "label": "Replace Malicious Predator",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Malicious Predator"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "7d3vHz0NQM",
+              "label": "Bounding Advance (Scout)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Bounding Advance",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "IpPRcDU",
+          "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 4,
+          "maxPicks": 1,
           "options": [
             {
               "id": "t4gFJgCC7E",
@@ -2155,8 +2748,8 @@
             },
             {
               "id": "SAxzitc",
-              "label": "Spiked Collar (Ravage(3))",
-              "cost": 10,
+              "label": "Spiked Collar (Ravage(6))",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2168,7 +2761,7 @@
                     {
                       "kind": "coreNumeric",
                       "name": "Ravage",
-                      "numericValue": 3
+                      "numericValue": 6
                     }
                   ]
                 }
@@ -2177,8 +2770,41 @@
             },
             {
               "id": "8Gw4z",
+              "label": "Anti-Wizard Collar (Spell Resistance)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Anti-Wizard Collar",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Resistance"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "gHBM4SAFTs",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "BftSKCcb-z",
               "label": "Guard Beast (Repel Ambushers)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2195,62 +2821,6 @@
                 }
               ],
               "modelsGained": 0
-            },
-            {
-              "id": "5NXJ1IC",
-              "label": "Anti-Wizard Collar (Resistance)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Anti-Wizard Collar",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Resistance"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "qdvMjRs",
-          "label": "Replace Malicious Predator",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Malicious Predator"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "2s7hAXHqiq",
-              "label": "Bounding Advance (Scout)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Bounding Advance",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Scout"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
             }
           ]
         }
@@ -2261,10 +2831,10 @@
       "name": "War Furies",
       "quality": 5,
       "defense": 5,
-      "baseModelCount": 5,
-      "minModels": 5,
-      "maxModels": 5,
-      "basePointCost": 90,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 130,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2273,15 +2843,15 @@
       },
       "weapons": [
         {
-          "name": "Blood Claws",
-          "quantity": 5,
+          "name": "Flame Claws",
+          "quantity": 10,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Crack"
+              "name": "Thrust"
             }
           ]
         }
@@ -2303,30 +2873,35 @@
       "items": [],
       "sections": [
         {
-          "id": "AoBUm97",
-          "label": "Replace all Blood Claws",
+          "id": "b3CEu",
+          "label": "Replace all Flame Claws",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Blood Claws"
+            "Flame Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "KTr50",
-              "label": "Armblades (A2, AP(2))",
+              "id": "EfnMybJ",
+              "label": "Blood Claws (A1, AP(1), Purge)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Armblades",
+                  "name": "Blood Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 2,
-                  "specialRules": []
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -2334,23 +2909,18 @@
               "modelsGained": 0
             },
             {
-              "id": "EfnMybJ",
-              "label": "Rending Claws (A2, AP(1), Rending)",
-              "cost": 20,
+              "id": "KTr50",
+              "label": "Dual Armblades (A2)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Rending Claws",
+                  "name": "Dual Armblades",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    }
-                  ]
+                  "armorPenetration": 0,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -2369,7 +2939,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 65,
+      "basePointCost": 60,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2378,15 +2948,16 @@
       },
       "weapons": [
         {
-          "name": "Blood Sword",
+          "name": "Hand Weapon",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Crack"
+              "kind": "coreNumeric",
+              "name": "Parry",
+              "numericValue": 1
             }
           ]
         }
@@ -2400,7 +2971,7 @@
       "items": [],
       "sections": [
         {
-          "id": "lEpToj8",
+          "id": "PCrKoJL",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -2425,24 +2996,9 @@
               "modelsGained": 0
             },
             {
-              "id": "vR4Qvvz",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "B8jhWQO",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2453,44 +3009,40 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "vR4Qvvz",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "0HdLveP",
-          "label": "Replace all Blood Swords",
+          "id": "-e4L6hc",
+          "label": "Replace all Hand Weapons",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Blood Swords"
+            "Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "X2JIN",
-              "label": "Hand Weapon (A1, AP(1))",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Hand Weapon",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "z8uJfVm",
-              "label": "Halberd (A1, AP(1), Rending)",
-              "cost": 15,
+              "label": "Halberd (A1, Rending)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2498,7 +3050,7 @@
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -2512,40 +3064,21 @@
               "modelsGained": 0
             },
             {
-              "id": "8H6O13e",
-              "label": "Great Weapon (A1, AP(3))",
-              "cost": 15,
+              "id": "0JsbV9ZYrq",
+              "label": "Flame Axe (A1, Thrust)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Weapon",
+                  "name": "Flame Axe",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 3,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "EbbYYHJ",
-              "label": "Spear (A1, AP(1), Counter)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Spear",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Counter"
+                      "name": "Thrust"
                     }
                   ]
                 }
@@ -2555,9 +3088,81 @@
               "modelsGained": 0
             },
             {
+              "id": "EbbYYHJ",
+              "label": "Spear (A1, Counter, Brace(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "GdMWYIH2h7",
+              "label": "Blood Sword (A1, AP(1), Purge)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Blood Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "8H6O13e",
+              "label": "Great Weapon (A1, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "T7vfJVp",
-              "label": "Dual Hand Weapons (A2, AP(1))",
-              "cost": 35,
+              "label": "Dual Hand Weapons (A2)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2565,7 +3170,7 @@
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 2,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": []
                 }
               ],
@@ -2576,7 +3181,7 @@
           ]
         },
         {
-          "id": "Mrd-vZw",
+          "id": "nCSVgK0k",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2609,7 +3214,7 @@
           ]
         },
         {
-          "id": "6KV1vgH",
+          "id": "dMI9WK7",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -2621,7 +3226,7 @@
             {
               "id": "gNzidJP",
               "label": "Banner of War (Piercing Fighter Aura)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2664,11 +3269,16 @@
           "quantity": 5,
           "rangeInches": 18,
           "attacks": 1,
-          "armorPenetration": 2,
-          "specialRules": []
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         },
         {
-          "name": "Claws",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2693,7 +3303,7 @@
       "items": [],
       "sections": [
         {
-          "id": "xPCmjb2",
+          "id": "VN1pdCPsN_",
           "label": "Replace all Long Whips",
           "variant": "Replace",
           "affects": "All",
@@ -2706,17 +3316,22 @@
           "options": [
             {
               "id": "ugqlMwmx0N",
-              "label": "War Whip (12\u0022, A2, AP(1))",
-              "cost": 5,
+              "label": "War Whip (9\u0022, A2, Rending)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "War Whip",
                   "quantity": 1,
-                  "rangeInches": 12,
+                  "rangeInches": 9,
                   "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -2735,7 +3350,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 115,
+      "basePointCost": 105,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2748,11 +3363,16 @@
           "quantity": 5,
           "rangeInches": 18,
           "attacks": 1,
-          "armorPenetration": 2,
-          "specialRules": []
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2769,7 +3389,7 @@
       "items": [],
       "sections": [
         {
-          "id": "lEpToj8",
+          "id": "PCrKoJL",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -2794,24 +3414,9 @@
               "modelsGained": 0
             },
             {
-              "id": "vR4Qvvz",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "B8jhWQO",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2822,11 +3427,26 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "vR4Qvvz",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "-W1iSAe",
+          "id": "v_useRq1",
           "label": "Replace all Long Whips",
           "variant": "Replace",
           "affects": "All",
@@ -2838,18 +3458,23 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "tN-80w0Y",
-              "label": "War Whip (12\u0022, A2, AP(1))",
-              "cost": 10,
+              "id": "EmAUVqqiWm",
+              "label": "War Whip (9\u0022, A2, Rending)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "War Whip",
                   "quantity": 1,
-                  "rangeInches": 12,
+                  "rangeInches": 9,
                   "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -2859,7 +3484,7 @@
           ]
         },
         {
-          "id": "nVz53C0",
+          "id": "BEQmU",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2895,13 +3520,13 @@
     },
     {
       "id": "sGax-Sg",
-      "name": "Beast Riders",
+      "name": "Blood Beast Riders",
       "quality": 4,
       "defense": 3,
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 175,
+      "basePointCost": 165,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -2910,24 +3535,11 @@
       },
       "weapons": [
         {
-          "name": "Blood Sword",
+          "name": "Dual Hand Weapons",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 1,
+          "attacks": 2,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Crack"
-            }
-          ]
-        },
-        {
-          "name": "Heavy Claws",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
           "specialRules": []
         }
       ],
@@ -2935,11 +3547,6 @@
         {
           "kind": "core",
           "name": "Fast"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 2
         },
         {
           "kind": "coreNumeric",
@@ -2951,10 +3558,22 @@
           "name": "Warbound"
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Trample",
+          "quantity": 3,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Impact",
+              "numericValue": 2
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "lEpToj8",
+          "id": "PCrKoJL",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -2979,24 +3598,9 @@
               "modelsGained": 0
             },
             {
-              "id": "vR4Qvvz",
-              "label": "Banner",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "B8jhWQO",
               "label": "Musician",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3007,43 +3611,76 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "vR4Qvvz",
+              "label": "Banner",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "9AdK6m0",
-          "label": "Replace all Blood Swords",
+          "id": "nP18c1ScOS",
+          "label": "Replace all Dual Hand Weapons and Tramples",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Blood Swords"
+            "Dual Hand Weapons",
+            "Tramples"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "R7R5t",
-              "label": "Hand Weapon (A1, AP(1))",
+              "id": "V47FWpv4Rn",
+              "label": "Flame Axe (A1, Thrust), Heavy Trample (Impact(3))",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hand Weapon",
+                  "name": "Flame Axe",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
-              "itemsGained": [],
+              "itemsGained": [
+                {
+                  "name": "Heavy Trample",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
               "modelsGained": 0
             },
             {
-              "id": "XBDL7H4",
-              "label": "Halberd (A1, AP(1), Rending)",
+              "id": "Q0J62vtSMf",
+              "label": "Halberd (A1, Rending), Heavy Trample (Impact(3))",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3052,7 +3689,7 @@
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -3062,12 +3699,60 @@
                 }
               ],
               "rulesGained": [],
-              "itemsGained": [],
+              "itemsGained": [
+                {
+                  "name": "Heavy Trample",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
               "modelsGained": 0
             },
             {
-              "id": "N7wzvan",
-              "label": "Great Weapon (A1, AP(3))",
+              "id": "CZPlpwzETg",
+              "label": "Blood Sword (A1, AP(1), Purge), Heavy Trample (Impact(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Blood Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Heavy Trample",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "HLwFP-SPHj",
+              "label": "Great Weapon (A1, AP(2)), Heavy Trample (Impact(3))",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3076,18 +3761,30 @@
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 3,
+                  "armorPenetration": 2,
                   "specialRules": []
                 }
               ],
               "rulesGained": [],
-              "itemsGained": [],
+              "itemsGained": [
+                {
+                  "name": "Heavy Trample",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
               "modelsGained": 0
             }
           ]
         },
         {
-          "id": "U3AcTYK",
+          "id": "-gU2jVQA",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -3099,7 +3796,7 @@
             {
               "id": "66Z0I5cd",
               "label": "War Boon (Defensive Frenzy)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3124,12 +3821,12 @@
     {
       "id": "exTlY0u",
       "name": "Blood Hounds",
-      "quality": 3,
-      "defense": 4,
+      "quality": 4,
+      "defense": 5,
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 145,
+      "basePointCost": 70,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3138,12 +3835,17 @@
       },
       "weapons": [
         {
-          "name": "Claws",
+          "name": "Flame Claws",
           "quantity": 5,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "specialRules": []
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
         }
       ],
       "rules": [
@@ -3166,14 +3868,49 @@
       ],
       "sections": [
         {
-          "id": "IJo5Qt6",
-          "label": "Upgrade all models with any",
+          "id": "wKzG82CvoN",
+          "label": "Replace all Malicious Predators",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Malicious Predators"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "draOTVFfbm",
+              "label": "Bounding Advance (Scout)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Bounding Advance",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "v8kryNt",
+          "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 3,
+          "maxPicks": 1,
           "options": [
             {
               "id": "hKJeJnKYtq",
@@ -3198,8 +3935,8 @@
             },
             {
               "id": "ynkiu",
-              "label": "Anti-Wizard Collar (Resistance)",
-              "cost": 10,
+              "label": "Anti-Wizard Collar (Spell Resistance)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3210,7 +3947,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Resistance"
+                      "name": "Spell Resistance"
                     }
                   ]
                 }
@@ -3240,41 +3977,6 @@
               "modelsGained": 0
             }
           ]
-        },
-        {
-          "id": "ZW0mMAN",
-          "label": "Replace all Malicious Predators",
-          "variant": "Replace",
-          "affects": "All",
-          "targets": [
-            "Malicious Predators"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "kl6XEXNghG",
-              "label": "Bounding Advance (Scout)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Bounding Advance",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Scout"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
         }
       ]
     },
@@ -3286,7 +3988,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 190,
+      "basePointCost": 170,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -3295,15 +3997,15 @@
       },
       "weapons": [
         {
-          "name": "Mutated Blood Claws",
+          "name": "Flame Axe",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 4,
+          "attacks": 3,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Crack"
+              "name": "Thrust"
             }
           ]
         }
@@ -3330,12 +4032,12 @@
       "items": [],
       "sections": [
         {
-          "id": "R4QKquK",
-          "label": "Replace all Mutated Blood Claws",
+          "id": "Bugbm",
+          "label": "Replace all Flame Axes",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Mutated Blood Claws"
+            "Flame Axes"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -3343,22 +4045,17 @@
           "options": [
             {
               "id": "psBJg",
-              "label": "Heavy Flame Axe (A3, AP(1), Rending)",
-              "cost": 5,
+              "label": "Soul Claws (A3, AP(2))",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Flame Axe",
+                  "name": "Soul Claws",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    }
-                  ]
+                  "armorPenetration": 2,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -3366,18 +4063,23 @@
               "modelsGained": 0
             },
             {
-              "id": "-9VKJ",
-              "label": "Mutated Claws (A4, AP(1))",
-              "cost": 5,
+              "id": "KQYvT2KURT",
+              "label": "Blood Sword (A3, AP(1), Purge)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Mutated Claws",
+                  "name": "Blood Sword",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 4,
+                  "attacks": 3,
                   "armorPenetration": 1,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -3390,13 +4092,13 @@
     },
     {
       "id": "Nehog41",
-      "name": "Cannon Chariot",
+      "name": "Cannon Wagon",
       "quality": 4,
       "defense": 3,
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 150,
+      "basePointCost": 140,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3405,28 +4107,24 @@
       },
       "weapons": [
         {
-          "name": "Horn-Shot Cannon",
+          "name": "Skull-Shot Cannon",
           "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 2,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 1,
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 6
-            },
-            {
-              "kind": "core",
-              "name": "Unstoppable"
+              "name": "Blast",
+              "numericValue": 3
             }
           ]
         },
         {
-          "name": "Crew Attacks",
+          "name": "Great Beasts",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 2,
           "armorPenetration": 1,
           "specialRules": []
         }
@@ -3450,12 +4148,12 @@
       "items": [],
       "sections": [
         {
-          "id": "UOwIUSN",
-          "label": "Replace Horn-Shot Cannon",
+          "id": "y971g-bgpP",
+          "label": "Replace Skull-Shot Cannon",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Horn-Shot Cannon"
+            "Skull-Shot Cannon"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -3463,21 +4161,25 @@
           "options": [
             {
               "id": "pZ46ycnLFd",
-              "label": "Skull-Shot Cannon (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 20,
+              "label": "Horn-Shot Cannon (18\u0022, A2, AP(2), Deadly(3), Unstoppable)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Skull-Shot Cannon",
+                  "name": "Horn-Shot Cannon",
                   "quantity": 1,
-                  "rangeInches": 30,
+                  "rangeInches": 18,
                   "attacks": 2,
                   "armorPenetration": 2,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
-                      "name": "Blast",
+                      "name": "Deadly",
                       "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
                     }
                   ]
                 }
@@ -3489,7 +4191,7 @@
           ]
         },
         {
-          "id": "upDXSJf",
+          "id": "b0_lMQUV",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3499,9 +4201,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "9RETH",
+              "id": "1gfvQGGD",
               "label": "Curse of War (Fatigue Debuff)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3531,7 +4233,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 220,
+      "basePointCost": 195,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3540,12 +4242,17 @@
       },
       "weapons": [
         {
-          "name": "Frenzied Bites",
+          "name": "Flame Claws",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 9,
-          "armorPenetration": 1,
-          "specialRules": []
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
         },
         {
           "name": "Stomp",
@@ -3575,8 +4282,8 @@
       "items": [],
       "sections": [
         {
-          "id": "upDXSJf",
-          "label": "Upgrade with",
+          "id": "wNx_ktse",
+          "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
@@ -3585,64 +4292,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "9RETH",
-              "label": "Curse of War (Fatigue Debuff)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Curse of War",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Fatigue Debuff"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "bEXjQ9j",
-          "label": "Upgrade with any",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 4,
-          "options": [
-            {
-              "id": "uw0aZAML",
-              "label": "Spiked Collar (Ravage(3))",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Spiked Collar",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Ravage",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "k1qD1s1U",
+              "id": "enbWgNVX",
               "label": "War Boon (Defensive Frenzy)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3661,9 +4313,64 @@
               "modelsGained": 0
             },
             {
-              "id": "xUP11l4m",
+              "id": "BrXYX5UJ",
+              "label": "Spiked Collars (Ravage(6))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spiked Collars",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Ravage",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "DAx8vpmp",
+              "label": "Anti-Wizard Collar (Spell Resistance)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Anti-Wizard Collar",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Resistance"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "20QTQ5Qz",
+          "label": "Upgrade with any",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 3,
+          "options": [
+            {
+              "id": "YGmWkCUB",
               "label": "Guard Beast (Repel Ambushers)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3682,24 +4389,57 @@
               "modelsGained": 0
             },
             {
-              "id": "7J-mDUmO",
-              "label": "Anti-Wizard Collar (Resistance)",
-              "cost": 30,
+              "id": "MnGMYBEcEh",
+              "label": "Curse of War (Fatigue Debuff)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Anti-Wizard Collar",
+                  "name": "Curse of War",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Resistance"
+                      "name": "Fatigue Debuff"
                     }
                   ]
                 }
               ],
+              "modelsGained": 0
+            },
+            {
+              "id": "FFdwpEywEC",
+              "label": "Flame Breath (6\u0022, A1, Blast(3), Reliable, Assault)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Breath",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3714,7 +4454,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 805,
+      "basePointCost": 550,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3723,28 +4463,15 @@
       },
       "weapons": [
         {
-          "name": "Blood Cannon",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 18,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Crack"
-            }
-          ]
-        },
-        {
-          "name": "Giant Blood Sword",
-          "quantity": 1,
+          "name": "Flame Axe",
+          "quantity": 2,
           "rangeInches": 0,
-          "attacks": 18,
+          "attacks": 6,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Crack"
+              "name": "Thrust"
             }
           ]
         },
@@ -3770,39 +4497,35 @@
         },
         {
           "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
           "name": "Warbound"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "jlWG5bq",
-          "label": "Replace Giant Blood Sword",
+          "id": "Kgh8PZ1",
+          "label": "Replace any Flame Axe",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
-            "Giant Blood Sword"
+            "Flame Axe"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "OBq1p21",
-              "label": "Heavy War Axe (A12, AP(3))",
-              "cost": 5,
+              "id": "Ui1LN",
+              "label": "Soul Sword (A6, AP(2))",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy War Axe",
+                  "name": "Soul Sword",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 12,
-                  "armorPenetration": 3,
+                  "attacks": 6,
+                  "armorPenetration": 2,
                   "specialRules": []
                 }
               ],
@@ -3811,18 +4534,23 @@
               "modelsGained": 0
             },
             {
-              "id": "Ui1LN",
-              "label": "War Sword (A18, AP(1))",
-              "cost": 15,
+              "id": "jq1-ddix8r",
+              "label": "Blood Sword (A6, AP(1), Purge)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "War Sword",
+                  "name": "Blood Sword",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 18,
+                  "attacks": 6,
                   "armorPenetration": 1,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Purge"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -3832,33 +4560,38 @@
           ]
         },
         {
-          "id": "dfw3XpD",
-          "label": "Replace Blood Cannon",
+          "id": "Ivr8kIT",
+          "label": "Replace one Flame Axe",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Blood Cannon"
+            "Flame Axe"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "T-jUc",
-              "label": "War Cannon (24\u0022, A12, AP(1), Rending)",
-              "cost": 45,
+              "id": "tJA_DXG",
+              "label": "Soul Cannon (15\u0022, A3, AP(2), Blast(3), Assault)",
+              "cost": 120,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "War Cannon",
+                  "name": "Soul Cannon",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 12,
-                  "armorPenetration": 1,
+                  "rangeInches": 15,
+                  "attacks": 3,
+                  "armorPenetration": 2,
                   "specialRules": [
                     {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -3868,18 +4601,52 @@
               "modelsGained": 0
             },
             {
-              "id": "tJA_DXG",
-              "label": "Heavy War Cannon (24\u0022, A12, AP(3))",
-              "cost": 90,
+              "id": "zDIsKLIwDy",
+              "label": "Flame Cannon (15\u0022, A9, AP(1), Assault)",
+              "cost": 120,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy War Cannon",
+                  "name": "Flame Cannon",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 12,
-                  "armorPenetration": 3,
-                  "specialRules": []
+                  "rangeInches": 15,
+                  "attacks": 9,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "HQKDs5i3sr",
+              "label": "Heavy Soul Cannon (15\u0022, A3, AP(2), Deadly(3), Assault)",
+              "cost": 130,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Soul Cannon",
+                  "quantity": 1,
+                  "rangeInches": 15,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -3898,7 +4665,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 195,
+      "basePointCost": 180,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.968504,
@@ -3907,7 +4674,7 @@
       },
       "weapons": [
         {
-          "name": "Frenzied Fangs",
+          "name": "Frenzied Bites",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 6,
@@ -3915,7 +4682,7 @@
           "specialRules": [
             {
               "kind": "core",
-              "name": "Rending"
+              "name": "Surge"
             }
           ]
         }
@@ -3931,17 +4698,13 @@
           "numericValue": 1
         },
         {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 6
         },
         {
           "kind": "core",
-          "name": "Unique"
+          "name": "Unique Hero"
         },
         {
           "kind": "core",
@@ -3955,96 +4718,48 @@
           "rules": [
             {
               "kind": "core",
-              "name": "Bounding Aura"
+              "name": "Bounding"
             }
           ]
         }
       ],
-      "sections": []
-    },
-    {
-      "id": "zaNDLrK",
-      "name": "Chainrend",
-      "quality": 5,
-      "defense": 5,
-      "baseModelCount": 1,
-      "minModels": 1,
-      "maxModels": 1,
-      "basePointCost": 115,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
+      "sections": [
         {
-          "name": "Arcane Blast",
-          "quantity": 1,
-          "rangeInches": 9,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": [
+          "id": "KTKO3QsbyS",
+          "label": "Replace Packmaster",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Packmaster"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        },
-        {
-          "name": "Arcane Spear",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Flying"
-        },
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
-          "kind": "core",
-          "name": "Scout"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Unique"
-        },
-        {
-          "kind": "core",
-          "name": "Warbound"
-        }
-      ],
-      "items": [
-        {
-          "name": "Pilfered Relics",
-          "quantity": 1,
-          "rules": [
-            {
-              "kind": "core",
-              "name": "Reckless Piercing Aura"
+              "id": "0-QO7d8jI_",
+              "label": "Packmaster - Leader (Bounding Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Packmaster - Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bounding Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
             }
           ]
         }
-      ],
-      "sections": []
+      ]
     },
     {
       "id": "OUuyNGH",
@@ -4054,7 +4769,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 65,
+      "basePointCost": 75,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -4071,16 +4786,12 @@
           "specialRules": [
             {
               "kind": "core",
-              "name": "Crack"
+              "name": "Purge"
             }
           ]
         }
       ],
       "rules": [
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
         {
           "kind": "coreNumeric",
           "name": "Tough",
@@ -4088,7 +4799,7 @@
         },
         {
           "kind": "core",
-          "name": "Unique"
+          "name": "Unique Hero"
         },
         {
           "kind": "core",
@@ -4107,18 +4818,211 @@
           ]
         }
       ],
-      "sections": []
+      "sections": [
+        {
+          "id": "JZQxwG55gK",
+          "label": "Replace Devious One",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Devious One"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "QK0iN8DzCV",
+              "label": "Devious One - Leader (Unpredictable Fighter Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Devious One - Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R4Qg5dl",
+      "name": "Chainrend",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 60,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Arcane Blast",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
+        },
+        {
+          "name": "Arcane Spear",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Warbound"
+        },
+        {
+          "kind": "core",
+          "name": "Unique Hero"
+        }
+      ],
+      "items": [
+        {
+          "name": "Pilfered Relics",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Reckless Piercing"
+            }
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "SUw_g25Thv",
+          "label": "Replace Pilfered Relics",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Pilfered Relics"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "BF6L-dv_Nm",
+              "label": "Pilfered Relics - Leader (Reckless Piercing Aura)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Pilfered Relics - Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Reckless Piercing Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     }
   ],
   "ruleDefinitions": [
     {
-      "name": "Unique",
-      "passive": [],
+      "name": "Spell Resistance",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isSpell"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        },
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isNotSpell"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 6
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
       "activated": [],
       "scope": "Unit",
       "engineArgumentCount": 0,
-      "valence": "Neutral",
-      "description": "Your army may only include one copy of this unit."
+      "valence": "Positive",
+      "description": "When a unit where most models have this rule takes wounds, roll one die for each. If the wound was from a spell, then it is ignored on a 2\u002B. If the wound was not from a spell, then it is ignored on a 6\u002B instead."
     },
     {
       "name": "Warbound",
@@ -4126,7 +5030,9 @@
         {
           "hookID": "Shooting_OnSaveRollComplete",
           "condition": {
-            "kind": "always"
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
           },
           "effect": {
             "kind": "addExtraWound",
@@ -4141,7 +5047,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Each of the defender\u0027s unmodified Defense rolls of 1 deals an extra wound."
+      "description": "When this model shoots/charges enemies over 9\u0022/6\u0022 away, unmodified results of 1 to block hits from weapons deal 1 extra wound."
     },
     {
       "name": "Piercing Fighter Aura",
@@ -4163,7 +5069,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Piercing Fighter."
+      "description": "This model and its unit get AP(\u002B1) on its weapons in melee."
     },
     {
       "name": "Piercing Shooter Aura",
@@ -4185,45 +5091,25 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Piercing Shooter."
+      "description": "This model and its unit get AP(\u002B1) on its weapons when shooting."
     },
     {
-      "name": "Warbound Boost",
+      "name": "Bounding",
       "passive": [
         {
-          "hookID": "Shooting_OnSaveRollComplete",
+          "hookID": "Activation_OnActivationStart",
           "condition": {
-            "kind": "attackedFromOverInches",
-            "distanceInches": 9
+            "kind": "mostModelsHaveThisRule"
           },
           "effect": {
-            "kind": "addExtraWound",
-            "onRollValue": 2,
-            "count": 1
+            "kind": "repositionAtActivation",
+            "distance": {
+              "kind": "d3"
+            },
+            "plusInches": 1,
+            "move": true
           },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "If this model has Warbound and shoots or charges enemies over 9 inches away, the defender\u0027s unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
-    },
-    {
-      "name": "Warbound Boost Aura",
-      "passive": [
-        {
-          "hookID": "Lifecycle_OnUnitCreated",
-          "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "aura",
-            "ruleName": "Warbound Boost"
-          },
-          "lifetime": "UntilEndOfGame",
+          "lifetime": "ThisActivation",
           "seat": "Actor"
         }
       ],
@@ -4231,7 +5117,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Warbound Boost."
+      "description": "When this unit is activated, you may move all models with this rule in it by up to D3\u002B1\u0022."
     },
     {
       "name": "Bounding Aura",
@@ -4253,7 +5139,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Bounding."
+      "description": "This model and its unit get Bounding."
     },
     {
       "name": "Banner",
@@ -4261,7 +5147,7 @@
         {
           "hookID": "Morale_OnPreMoraleTest",
           "condition": {
-            "kind": "always"
+            "kind": "moraleTestFromShootingOrMelee"
           },
           "effect": {
             "kind": "rollModifier",
@@ -4276,7 +5162,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit gets \u002B1 to morale test rolls."
+      "description": "This model and its unit get \u002B1 to Morale Test rolls triggered by shooting or melee."
     },
     {
       "name": "Musician",
@@ -4331,7 +5217,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit moves \u002B1 inch on Advance, Rush and Charge actions."
+      "description": "This model and its unit move \u002B1\u0022 when using move actions."
     },
     {
       "name": "Sergeant",
@@ -4339,13 +5225,12 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
+            "kind": "always"
           },
           "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
-            "count": 1
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -4355,7 +5240,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model attacks, unmodified results of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
+      "description": "This model gets AP(\u002B1) when attacking."
     },
     {
       "name": "Armor",
@@ -4380,7 +5265,7 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+      "description": "Counts as having Defense X\u002B."
     },
     {
       "name": "Defensive Frenzy",
@@ -4388,7 +5273,7 @@
         {
           "hookID": "Shooting_OnUnitDestroyed",
           "condition": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "effect": {
             "kind": "grantToken",
@@ -4412,7 +5297,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "tokenPresent",
@@ -4439,7 +5324,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "If all models have this rule: gains a marker when it fully destroys an enemy unit (max 2); each marker adds \u002B1 to Defense rolls for the rest of the game."
+      "description": "If most models in this unit have this rule, place one token on this unit when it fully destroys an enemy unit, up to a max. of two tokens. For each token this unit gets \u002B1 to Defense rolls until the end of the game."
     },
     {
       "name": "Repel Ambushers",
@@ -4480,7 +5365,8 @@
             "requireLineOfSight": true,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "moraleTestThen",
@@ -4497,10 +5383,117 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which must take a morale test. If failed, it becomes fatigued."
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which must take a Morale Test. If failed, it becomes Fatigued."
     },
     {
-      "name": "Reckless Piercing Aura",
+      "name": "Anti-Regen",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon ignores Regeneration."
+    },
+    {
+      "name": "Purge",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "targetShakenOrFatigued"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When attacking units that are Shaken or Fatigued, this weapon gets AP(\u002B2)."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
+    },
+    {
+      "name": "Enhanced Warbound",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Warbound"
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackingFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "isNotSpell"
+              }
+            }
+          },
+          "effect": {
+            "kind": "addExtraWound",
+            "onRollValue": 1,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Warbound, enemies always take wounds on unmodified results of 1 to block from Warbound (instead of only when shooting/charging enemies over 9\u0022/6\u0022 away)."
+    },
+    {
+      "name": "Enhanced Warbound Aura",
       "passive": [
         {
           "hookID": "Lifecycle_OnUnitCreated",
@@ -4509,7 +5502,7 @@
           },
           "effect": {
             "kind": "aura",
-            "ruleName": "Reckless Piercing"
+            "ruleName": "Enhanced Warbound"
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -4519,81 +5512,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Reckless Piercing."
-    },
-    {
-      "name": "Piercing Fighter",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "isMelee"
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Save",
-            "delta": -1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "AP(\u002B1) in melee."
-    },
-    {
-      "name": "Piercing Shooter",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Save",
-            "delta": -1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "AP(\u002B1) when shooting."
-    },
-    {
-      "name": "Bounding",
-      "passive": [
-        {
-          "hookID": "Activation_OnActivationStart",
-          "condition": {
-            "kind": "allModelsHaveThisRule"
-          },
-          "effect": {
-            "kind": "repositionAtActivation",
-            "distance": {
-              "kind": "d3"
-            },
-            "plusInches": 1
-          },
-          "lifetime": "ThisActivation",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
+      "description": "This model and its unit get Enhanced Warbound."
     },
     {
       "name": "Reckless Piercing",
@@ -4603,7 +5522,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "tokenPresent",
@@ -4626,7 +5545,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "tokenPresent",
@@ -4659,7 +5578,8 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "grantTokenOnRoll",
@@ -4690,7 +5610,7 @@
             }
           },
           "availableWhen": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "label": "Reckless Piercing"
         }
@@ -4698,7 +5618,84 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Neutral",
-      "description": "When this unit is activated, it may roll one die. On a 2\u002B its weapons get AP(\u002B1) when attacking until the end of the round, but on a 1 enemy units get AP(\u002B1) on their weapons when attacking it instead."
+      "description": "When a unit where most models have this rule is activated, you may roll one die. On a 2\u002B their weapons get AP(\u002B1) when attacking until the end of the round, but on a 1 enemy units get AP(\u002B1) on their weapons when attacking them instead."
+    },
+    {
+      "name": "Reckless Piercing Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Reckless Piercing"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Reckless Piercing."
+    },
+    {
+      "name": "Piercing Fighter",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "isMelee"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model gets AP(\u002B1) on its weapons in melee."
+    },
+    {
+      "name": "Piercing Shooter",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "AP(\u002B1) when shooting."
     }
   ],
   "spells": [
@@ -4710,10 +5707,11 @@
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
-        "requireLineOfSight": false,
+        "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "moraleTestThen",
@@ -4723,25 +5721,26 @@
       }
     },
     {
-      "name": "Flame of Destruction",
+      "name": "Brutal Massacre",
       "threshold": 1,
       "target": {
-        "rangeInches": 18,
+        "rangeInches": 6,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
-        "requireLineOfSight": true,
+        "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 1,
+        "count": 3,
         "withRules": [
-          "Blast(3)"
+          "Purge"
         ],
-        "armorPenetration": 0
+        "armorPenetration": 1
       }
     },
     {
@@ -4755,7 +5754,8 @@
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
@@ -4764,64 +5764,67 @@
       }
     },
     {
-      "name": "Brutal Massacre",
+      "name": "Headtaker Strike",
       "threshold": 2,
       "target": {
         "rangeInches": 6,
         "minCount": 1,
-        "maxCount": 1,
+        "maxCount": 2,
         "targetAffinity": "Foe",
-        "requireLineOfSight": true,
+        "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 6,
-        "withRules": [
-          "Crack"
-        ],
-        "armorPenetration": 0
+        "count": 4,
+        "withRules": [],
+        "armorPenetration": 2
       }
     },
     {
       "name": "War Boon",
       "threshold": 3,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 3,
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Warbound Boost",
+        "ruleName": "Enhanced Warbound",
         "scope": "NextTrigger"
       }
     },
     {
-      "name": "Headtaker Strike",
+      "name": "Flame of Destruction",
       "threshold": 3,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 24,
         "minCount": 1,
-        "maxCount": 2,
+        "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
         "count": 3,
-        "withRules": [],
-        "armorPenetration": 2
+        "withRules": [
+          "Blast(3)"
+        ],
+        "armorPenetration": 0
       }
     }
   ]

@@ -1,7 +1,7 @@
 {
   "name": "Dragon Empire",
   "faction": "Dragon Empire",
-  "version": "OPR v3.5.3",
+  "version": "OPR v3.6.0",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
   "gameSystem": "age-of-fantasy",
@@ -16,7 +16,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 60,
+      "basePointCost": 75,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -25,11 +25,11 @@
       },
       "weapons": [
         {
-          "name": "Heavy Hand Weapon",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 1,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": []
         }
       ],
@@ -55,25 +55,25 @@
       "items": [],
       "sections": [
         {
-          "id": "Zw9Ba50",
-          "label": "Replace Heavy Hand Weapon",
+          "id": "kT63fzzF8L",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Heavy Hand Weapon"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "jgqkltl6",
-              "label": "Heavy Halberd (A3, AP(1), Rending)",
-              "cost": 5,
+              "id": "QOZwjkf5Sm",
+              "label": "Master Halberd (A3, AP(1), Rending)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Halberd",
+                  "name": "Master Halberd",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
@@ -91,18 +91,24 @@
               "modelsGained": 0
             },
             {
-              "id": "5dL_1Ijk",
-              "label": "Dual Heavy Hand Weapons (A4, AP(1))",
+              "id": "75HrlAJ2as",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Dual Heavy Hand Weapons",
+                  "name": "Master Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 4,
+                  "attacks": 3,
                   "armorPenetration": 1,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -110,13 +116,13 @@
               "modelsGained": 0
             },
             {
-              "id": "i5QON3yB",
-              "label": "Heavy Lance (A3, AP(1), Thrust)",
+              "id": "qpNFHMxO6h",
+              "label": "Master Lance (A3, AP(1), Thrust)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Lance",
+                  "name": "Master Lance",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
@@ -134,32 +140,13 @@
               "modelsGained": 0
             },
             {
-              "id": "WaDykWzp",
-              "label": "Heavy Great Weapon (A3, AP(3))",
-              "cost": 15,
+              "id": "85BFEbmnaW",
+              "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Great Weapon",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 3,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "-CRHfx_S",
-              "label": "Heavy Spear (A3, AP(1), Counter)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Spear",
+                  "name": "Master Spear",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
@@ -168,6 +155,140 @@
                     {
                       "kind": "core",
                       "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "QdoOWwOovX",
+              "label": "Master Great Weapon (A3, AP(4))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "7ya-DM3Cuf",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "5Y6NZHYM",
+              "label": "Rapid Bow (24\u0022, A3), Strike (A1)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Bow",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "1KlAEwBG",
+              "label": "Dragon Blast (6\u0022, A1, Reliable, Anti-Cover, Assault), Lance (A3, Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dragon Blast",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Lance",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "kR7aqqYyXh",
+              "label": "Spirit Host Staff (A2, Spell Amplifier)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spirit Host Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
                     }
                   ]
                 }
@@ -179,64 +300,28 @@
           ]
         },
         {
-          "id": "L9eUp_b",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
+          "id": "1w_fgHah",
+          "label": "Replace Lance",
+          "variant": "Replace",
           "affects": "One",
-          "targets": [],
+          "targets": [
+            "Lance"
+          ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "urTWl_oRvK",
-              "label": "Royal Pistol (9\u0022, A2, AP(1))",
-              "cost": 10,
+              "id": "C98VCTZq",
+              "label": "Halberd (A3, Rending)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Royal Pistol",
+                  "name": "Halberd",
                   "quantity": 1,
-                  "rangeInches": 9,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "QFvy_-eQ",
-              "label": "Royal Rifle (18\u0022, A2, AP(1))",
-              "cost": 25,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Royal Rifle",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "wu5BLUXo",
-              "label": "Royal Crossbow (24\u0022, A2, Rending)",
-              "cost": 30,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Royal Crossbow",
-                  "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 2,
+                  "rangeInches": 0,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
@@ -251,21 +336,132 @@
               "modelsGained": 0
             },
             {
-              "id": "dTPZ3Q7Sxw",
-              "label": "Royal Scale-Tip Rifle (18\u0022, A2, Tear)",
-              "cost": 35,
+              "id": "Pfx5Vs4-",
+              "label": "Hand Weapon (A3, Parry(3))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Royal Scale-Tip Rifle",
+                  "name": "Hand Weapon",
                   "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "kgT-CN9P",
+              "label": "Spear (A3, Counter, Brace(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Tear"
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "7TpZeh5z",
+              "label": "Great Weapon (A3, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "SZIbm7Q0bO",
+          "label": "Replace Dragon Blast",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dragon Blast"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "jktXaGdfi4",
+              "label": "Throwing Stars (12\u0022, A1, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Throwing Stars",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CTMI_UBnhd",
+              "label": "Matchlock Pistol (9\u0022, A1, AP(1), Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Matchlock Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -277,7 +473,136 @@
           ]
         },
         {
-          "id": "um_d5KM",
+          "id": "5cvaFPyR",
+          "label": "Replace Rapid Bow",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rapid Bow"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "1Ok9Mzdz",
+              "label": "Rapid Repeater Crossbow (12\u0022, A4, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Repeater Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "6Xomm_KD",
+              "label": "Rapid Crossbow (18\u0022, A3, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "UEfS72Lv",
+              "label": "Rapid Blunderbuss (12\u0022, A4, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Blunderbuss",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "GqtO1uQp",
+              "label": "Rapid Matchlock Rifle (18\u0022, A3, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Matchlock Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dAaeuGhLYo",
+              "label": "Burst Rocket Pistol (9\u0022, A1, AP(2), Deadly(3), Assault)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Burst Rocket Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Pycog9IB",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -314,19 +639,10 @@
             },
             {
               "id": "DIseea8j7U",
-              "label": "Myth-Steed (Heavy Hooves (A1, AP(1)), Fast, Flying, Impact(2), Tough(3))",
-              "cost": 100,
+              "label": "Myth-Steed (Fast, Flying, Impact(3), Tough(3))",
+              "cost": 120,
               "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Hooves",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
+              "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
@@ -344,7 +660,7 @@
                     {
                       "kind": "coreNumeric",
                       "name": "Impact",
-                      "numericValue": 2
+                      "numericValue": 3
                     },
                     {
                       "kind": "coreNumeric",
@@ -359,7 +675,7 @@
             {
               "id": "0WLIqXY73R",
               "label": "Great Tiger (Heavy Claws (A6, AP(1)), Fear(1), Strider, Tough(6))",
-              "cost": 160,
+              "cost": 170,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -391,6 +707,16 @@
                       "name": "Tough",
                       "numericValue": 6
                     }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Heavy Claws",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 6,
+                      "armorPenetration": 1,
+                      "specialRules": []
+                    }
                   ]
                 }
               ],
@@ -398,17 +724,44 @@
             },
             {
               "id": "MsPPOM_RvN",
-              "label": "Royal Dragon (Heavy Claws (A6, AP(1)), Stomp (A6, AP(2)), Breath Attack, Fear(3), Flying, Tough(18))",
-              "cost": 510,
+              "label": "Royal Dragon (Heavy Flame Breath (6\u0022, A1, AP(1), Blast(6), Reliable, Assault), Sharp Claws (A12, Rending), Stomp (A6, AP(2)), Fear(3), Flying, Tough(18))",
+              "cost": 640,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Claws",
+                  "name": "Heavy Flame Breath",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Sharp Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 6,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "attacks": 12,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
                 },
                 {
                   "name": "Stomp",
@@ -426,10 +779,6 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Breath Attack"
-                    },
-                    {
                       "kind": "coreNumeric",
                       "name": "Fear",
                       "numericValue": 3
@@ -443,6 +792,51 @@
                       "name": "Tough",
                       "numericValue": 18
                     }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Heavy Flame Breath",
+                      "quantity": 1,
+                      "rangeInches": 6,
+                      "attacks": 1,
+                      "armorPenetration": 1,
+                      "specialRules": [
+                        {
+                          "kind": "coreNumeric",
+                          "name": "Blast",
+                          "numericValue": 6
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Reliable"
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Assault"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Sharp Claws",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 12,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "core",
+                          "name": "Rending"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Stomp",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 6,
+                      "armorPenetration": 2,
+                      "specialRules": []
+                    }
                   ]
                 }
               ],
@@ -451,7 +845,7 @@
           ]
         },
         {
-          "id": "vzb5_j_",
+          "id": "rslWLOX2D-",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -460,27 +854,6 @@
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
-            {
-              "id": "yPKnmEZP7P",
-              "label": "Blood-Keeper (Royal Warrior Boost Aura)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Blood-Keeper",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Royal Warrior Boost Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
             {
               "id": "YwSig1T9c7",
               "label": "War Master (Melee Slayer Aura)",
@@ -496,6 +869,48 @@
                     {
                       "kind": "core",
                       "name": "Melee Slayer Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "yPKnmEZP7P",
+              "label": "Blood-Keeper (Enhanced Royal Warrior Aura)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Blood-Keeper",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Royal Warrior Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "beJlGg4wIW",
+              "label": "Artificer (Unpredictable Shooter Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Artificer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Shooter Aura"
                     }
                   ]
                 }
@@ -525,30 +940,9 @@
               "modelsGained": 0
             },
             {
-              "id": "beJlGg4wIW",
-              "label": "Artificer (Unpredictable Shooter Aura)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Artificer",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Unpredictable Shooter Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "v1f2tUydYj",
               "label": "Master Spirit Host (Caster(3))",
-              "cost": 60,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -570,7 +964,7 @@
             {
               "id": "crju1U_5vV",
               "label": "Bastion Guardian (Re-Deployment)",
-              "cost": 65,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -600,7 +994,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 35,
+      "basePointCost": 50,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -609,10 +1003,10 @@
       },
       "weapons": [
         {
-          "name": "Hand Weapon",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 4,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -635,52 +1029,34 @@
       "items": [],
       "sections": [
         {
-          "id": "RNZ6Sy6",
-          "label": "Replace Hand Weapon",
+          "id": "Qyo24rZqaA",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Hand Weapon"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "bzH6vzF4t_",
-              "label": "Dual Hand Weapons (A4)",
-              "cost": 5,
+              "id": "fktdK_uzsZ",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Dual Hand Weapons",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "j0SQ9s_8_I",
-              "label": "Spear (A3, Counter)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Spear",
+                  "name": "Master Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
-                  "armorPenetration": 0,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
-                      "kind": "core",
-                      "name": "Counter"
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
                     }
                   ]
                 }
@@ -690,11 +1066,161 @@
               "modelsGained": 0
             },
             {
-              "id": "lIgU9sxXoe",
-              "label": "Lance (A3, Thrust)",
+              "id": "TKW-sL_s2S",
+              "label": "Master Halberd (A3, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "v7AuPLLxK-",
+              "label": "Master Lance (A3, AP(1), Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Lance",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "IDSQZIrJeV",
+              "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Ot0Ko5dCbE",
+              "label": "Master Great Weapon (A3, AP(4))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "MLU8YHh1aQ",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "It6XvxzkWz",
+              "label": "Rapid Bow (24\u0022, A3), Strike (A1)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
+                {
+                  "name": "Rapid Bow",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "JsPaUNFdUS",
+              "label": "Throwing Stars (12\u0022, A1, Assault), Lance (A3, Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Throwing Stars",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
                 {
                   "name": "Lance",
                   "quantity": 1,
@@ -714,9 +1240,47 @@
               "modelsGained": 0
             },
             {
-              "id": "vWQI6tgXjo",
+              "id": "fqz1gjgjFb",
+              "label": "Spirit Host Staff (A2, Spell Amplifier)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spirit Host Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "60_yhgqEzM",
+          "label": "Replace Lance",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Lance"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "DBHZD9NJ3S",
               "label": "Halberd (A3, Rending)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -738,9 +1302,63 @@
               "modelsGained": 0
             },
             {
+              "id": "bzH6vzF4t_",
+              "label": "Hand Weapon (A3, Parry(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "j0SQ9s_8_I",
+              "label": "Spear (A3, Counter, Brace(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "1Ql4EXBVfP",
               "label": "Great Weapon (A3, AP(2))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -759,88 +1377,33 @@
           ]
         },
         {
-          "id": "Q8l7tk-",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
+          "id": "v0G3dOUVbp",
+          "label": "Replace Throwing Stars",
+          "variant": "Replace",
           "affects": "One",
-          "targets": [],
+          "targets": [
+            "Throwing Stars"
+          ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "2OQqVDD8df",
-              "label": "Royal Pistol (9\u0022, A2, AP(1))",
-              "cost": 10,
+              "id": "0Wdm1dI8Y1",
+              "label": "Matchlock Pistol (9\u0022, A1, AP(1), Assault)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Royal Pistol",
+                  "name": "Matchlock Pistol",
                   "quantity": 1,
                   "rangeInches": 9,
-                  "attacks": 2,
+                  "attacks": 1,
                   "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "YGUUC39bKn",
-              "label": "Royal Bow (24\u0022, A2)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Royal Bow",
-                  "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "mDEor_gita",
-              "label": "Royal Shotgun (12\u0022, A3, AP(1))",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Royal Shotgun",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 3,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "JY9SQyX3_q",
-              "label": "Royal Scale-Tip Shortbow (18\u0022, A2, Tear)",
-              "cost": 25,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Royal Scale-Tip Shortbow",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Tear"
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -850,21 +1413,29 @@
               "modelsGained": 0
             },
             {
-              "id": "wn0TaOcbNr",
-              "label": "Royal Precision Rifle (18\u0022, A2, AP(1), Precise)",
-              "cost": 25,
+              "id": "_IfB9UvcUl",
+              "label": "Dragon Blast (6\u0022, A1, Reliable, Anti-Cover, Assault)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Royal Precision Rifle",
+                  "name": "Dragon Blast",
                   "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Precise"
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -876,7 +1447,136 @@
           ]
         },
         {
-          "id": "IKU4aIn",
+          "id": "c-vaQVZAAY",
+          "label": "Replace Rapid Bow",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rapid Bow"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "YGUUC39bKn",
+              "label": "Rapid Blunderbuss (12\u0022, A4, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Blunderbuss",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "AcgsWJicO8",
+              "label": "Rapid Matchlock Rifle (18\u0022, A3, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Matchlock Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "a2vt2ZseEY",
+              "label": "Rapid Repeater Crossbow (12\u0022, A4, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Repeater Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "jhD7J9GygV",
+              "label": "Rapid Crossbow (18\u0022, A3, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "FZH3DfecBJ",
+              "label": "Burst Rocket Pistol (9\u0022, A1, AP(2), Deadly(3), Assault)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Burst Rocket Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "lpkT2Ie5p3",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -909,7 +1609,7 @@
             {
               "id": "W-74ZYqnYJ",
               "label": "Horse (Fast, Impact(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -933,9 +1633,9 @@
               "modelsGained": 0
             },
             {
-              "id": "iGYMgFlKVW",
+              "id": "3H8jJC8n94",
               "label": "Pet Myth-Lizard (Repel Ambushers)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -956,7 +1656,7 @@
           ]
         },
         {
-          "id": "pWaVTDO",
+          "id": "ENIyJ82-",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -966,30 +1666,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "U01Eq4ZB",
-              "label": "Blood-Keeper (Royal Warrior Boost Aura)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Blood-Keeper",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Royal Warrior Boost Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "Jpdinm9Q",
               "label": "Ceramicist (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1030,21 +1709,20 @@
               "modelsGained": 0
             },
             {
-              "id": "9aFldT4c",
-              "label": "Spirit Host (Caster(2))",
-              "cost": 40,
+              "id": "U01Eq4ZB",
+              "label": "Blood-Keeper (Enhanced Royal Warrior Aura)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Spirit Host",
+                  "name": "Blood-Keeper",
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Caster",
-                      "numericValue": 2
+                      "kind": "core",
+                      "name": "Enhanced Royal Warrior Aura"
                     }
                   ]
                 }
@@ -1073,9 +1751,31 @@
               "modelsGained": 0
             },
             {
+              "id": "9aFldT4c",
+              "label": "Spirit Host (Caster(2))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spirit Host",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "PG8QhCob",
               "label": "Bastion Guardian (Re-Deployment)",
-              "cost": 65,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1105,7 +1805,7 @@
       "baseModelCount": 10,
       "minModels": 10,
       "maxModels": 10,
-      "basePointCost": 80,
+      "basePointCost": 105,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1119,15 +1819,12 @@
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Hand Weapon",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         }
       ],
       "rules": [
@@ -1139,7 +1836,7 @@
       "items": [],
       "sections": [
         {
-          "id": "OF0Uv6w",
+          "id": "qbdvPtoUr8",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1164,21 +1861,6 @@
               "modelsGained": 0
             },
             {
-              "id": "ipjxmit-Yt",
-              "label": "Banner",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "C6VNHiLMoA",
               "label": "Musician",
               "cost": 10,
@@ -1192,25 +1874,39 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "hpoqjhq",
-          "label": "Replace all Slings and Hand Weapons",
+          "id": "2Bm_OPy97Q",
+          "label": "Replace all Slings",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Slings",
-            "Hand Weapons"
+            "Slings"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "CZR60U0zzH",
-              "label": "Spear (A1, Counter)",
+              "id": "kmr3PVK31L",
+              "label": "Spear (A1, Counter, Brace(1))",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
@@ -1224,6 +1920,11 @@
                     {
                       "kind": "core",
                       "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -1235,7 +1936,7 @@
           ]
         },
         {
-          "id": "z8-d78R",
+          "id": "YKa3wwm7xR",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1247,7 +1948,7 @@
             {
               "id": "BjZ8Oh9aJc",
               "label": "Reinforced Clay (Armor(5))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1271,6 +1972,266 @@
       ]
     },
     {
+      "id": "pQNKWyY",
+      "name": "Dragonkin Warriors",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 130,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Hand Weapon",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Parry",
+              "numericValue": 1
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Royal Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "qbdvPtoUr8",
+          "label": "Upgrade up to three models with one",
+          "variant": "Upgrade",
+          "affects": "Any",
+          "targets": [],
+          "maxApplications": 3,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_EilfpqJGm",
+              "label": "Sergeant",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Sergeant"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "C6VNHiLMoA",
+              "label": "Musician",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Musician"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Ea6p9nW2gI",
+          "label": "Replace all Hand Weapons",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "3taDAWa5QS",
+              "label": "Halberd (A1, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mlkFEZxahF",
+              "label": "Spear (A1, Counter, Brace(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "HVXjBLdiff",
+          "label": "Replace one Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "1QRB5Ur1RJ",
+              "label": "Dual Hand Weapons (A4)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Hand Weapons",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "v_WFKfcrGL",
+              "label": "Dragon Glaive (A1, AP(2), Deadly(3), Thrust)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dragon Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "mGqTFngfmQ",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "aUlC_JExBT",
+              "label": "Spirit Balance (Vengeance)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spirit Balance",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Vengeance"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "_8tTcm6",
       "name": "Ravenmen Mercenaries",
       "quality": 5,
@@ -1278,7 +2239,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 70,
+      "basePointCost": 60,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1287,11 +2248,11 @@
       },
       "weapons": [
         {
-          "name": "Heavy Claws",
+          "name": "Razor Claws",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 2,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
           "specialRules": []
         }
       ],
@@ -1308,28 +2269,28 @@
       "items": [],
       "sections": [
         {
-          "id": "DIUBO7g",
-          "label": "Replace all Heavy Claws",
+          "id": "_Pv6JefVYh",
+          "label": "Replace all Razor Claws",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Heavy Claws"
+            "Razor Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "3sQz9G-GOe",
-              "label": "Metal Spurs (A2, Rending)",
-              "cost": 15,
+              "id": "uaoWkIP3dR",
+              "label": "Sharp Claws (A1, Rending)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Metal Spurs",
+                  "name": "Sharp Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
@@ -1346,7 +2307,7 @@
           ]
         },
         {
-          "id": "NhmhBCW",
+          "id": "3yuQ82QNQq",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1381,13 +2342,13 @@
       ]
     },
     {
-      "id": "pQNKWyY",
-      "name": "Dragonkin Warriors",
-      "quality": 4,
-      "defense": 4,
-      "baseModelCount": 10,
-      "minModels": 10,
-      "maxModels": 10,
+      "id": "3dr20hD",
+      "name": "Elite Dragonkin Warriors",
+      "quality": 3,
+      "defense": 3,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
       "basePointCost": 95,
       "base": {
         "shape": "Circle",
@@ -1398,23 +2359,187 @@
       "weapons": [
         {
           "name": "Hand Weapon",
-          "quantity": 10,
+          "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Parry",
+              "numericValue": 1
+            }
+          ]
         }
       ],
       "rules": [
         {
           "kind": "core",
           "name": "Royal Warrior"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "OF0Uv6w",
+          "id": "OmNaBdBT6T",
+          "label": "Replace all Hand Weapons",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "-gC4K8QxD4",
+              "label": "Halberd (A1, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "5Cz_hLjdjm",
+              "label": "Great Weapon (A1, AP(2))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "fnHHHDo7N9",
+          "label": "Replace one Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ptgeDW47L5",
+              "label": "Great Mace (A1, AP(1), Blast(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Mace",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "_XW5QRoxv2",
+              "label": "Jade Hammer (A1, AP(4), Deadly(3))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Jade Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "mGqTFngfmQ",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "aUlC_JExBT",
+              "label": "Spirit Balance (Vengeance)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spirit Balance",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Vengeance"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "qbdvPtoUr8",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1439,24 +2564,9 @@
               "modelsGained": 0
             },
             {
-              "id": "ipjxmit-Yt",
-              "label": "Banner",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "C6VNHiLMoA",
               "label": "Musician",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -1467,225 +2577,20 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "MG1ma93",
-          "label": "Replace all Hand Weapons",
-          "variant": "Replace",
-          "affects": "All",
-          "targets": [
-            "Hand Weapons"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
+            },
             {
-              "id": "3taDAWa5QS",
-              "label": "Halberd (A1, Rending)",
-              "cost": 25,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Halberd",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "QbiyAJz",
-          "label": "Upgrade one model with",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "aUlC_JExBT",
-              "label": "Spirit Balance (Vengeance)",
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
+              "rulesGained": [
                 {
-                  "name": "Spirit Balance",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Vengeance"
-                    }
-                  ]
+                  "kind": "core",
+                  "name": "Banner"
                 }
               ],
-              "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "3dr20hD",
-      "name": "Elite Dragonkin Warriors",
-      "quality": 3,
-      "defense": 3,
-      "baseModelCount": 5,
-      "minModels": 5,
-      "maxModels": 5,
-      "basePointCost": 95,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Heavy Halberd",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Royal Warrior"
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "EqXK843",
-          "label": "Replace all Heavy Halberds",
-          "variant": "Replace",
-          "affects": "All",
-          "targets": [
-            "Heavy Halberds"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "5Cz_hLjdjm",
-              "label": "Heavy Great Weapon (A1, AP(3))",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Great Weapon",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 3,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
               "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "2QpA3wM",
-          "label": "Replace one Heavy Halberd",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Heavy Halberd"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "ptgeDW47L5",
-              "label": "Great Mace (A1, AP(2), Blast(3))",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Great Mace",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 2,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "QbiyAJz",
-          "label": "Upgrade one model with",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "aUlC_JExBT",
-              "label": "Spirit Balance (Vengeance)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Spirit Balance",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Vengeance"
-                    }
-                  ]
-                }
-              ],
               "modelsGained": 0
             }
           ]
@@ -1700,7 +2605,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 85,
+      "basePointCost": 110,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -1709,11 +2614,11 @@
       },
       "weapons": [
         {
-          "name": "Heavy Hand Weapon",
+          "name": "Dual Hand Weapons",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": []
         }
       ],
@@ -1731,12 +2636,12 @@
       "items": [],
       "sections": [
         {
-          "id": "6qbArcY",
-          "label": "Replace all Heavy Hand Weapons",
+          "id": "KH2JWLRMaq",
+          "label": "Replace all Dual Hand Weapons",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Heavy Hand Weapons"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -1744,16 +2649,41 @@
           "options": [
             {
               "id": "HdDHIQQcjc",
-              "label": "Dual Heavy Hand Weapons (A4, AP(1))",
-              "cost": 35,
+              "label": "Hand Weapon (A3, Parry(3))",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Dual Heavy Hand Weapons",
+                  "name": "Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 1,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "xOHOe3PST6",
+              "label": "Great Weapon (A3, AP(2))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
                   "specialRules": []
                 }
               ],
@@ -1763,8 +2693,8 @@
             },
             {
               "id": "tQz9gTFa6v",
-              "label": "Big Pistol (9\u0022, A3, AP(1)), Heavy Hand Weapon (A2, AP(1))",
-              "cost": 40,
+              "label": "Big Pistol (9\u0022, A3, AP(1), Assault), Strike (A1)",
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1773,33 +2703,19 @@
                   "rangeInches": 9,
                   "attacks": 3,
                   "armorPenetration": 1,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
                 },
                 {
-                  "name": "Heavy Hand Weapon",
+                  "name": "Strike",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "xOHOe3PST6",
-              "label": "Heavy Great Weapon (A3, AP(3))",
-              "cost": 50,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Great Weapon",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 3,
+                  "attacks": 1,
+                  "armorPenetration": 0,
                   "specialRules": []
                 }
               ],
@@ -1810,7 +2726,7 @@
           ]
         },
         {
-          "id": "sQu4QKm",
+          "id": "QIk6-Hji_e",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1822,7 +2738,7 @@
             {
               "id": "goLYXAkXJd",
               "label": "Reinforced Clay (Armor(4))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1853,7 +2769,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 55,
+      "basePointCost": 60,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1870,7 +2786,7 @@
           "specialRules": []
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -1887,7 +2803,7 @@
       "items": [],
       "sections": [
         {
-          "id": "OF0Uv6w",
+          "id": "qbdvPtoUr8",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1912,21 +2828,6 @@
               "modelsGained": 0
             },
             {
-              "id": "ipjxmit-Yt",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "C6VNHiLMoA",
               "label": "Musician",
               "cost": 5,
@@ -1940,11 +2841,26 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "JyEpP8I",
+          "id": "6FCMeu961H",
           "label": "Replace all Bows",
           "variant": "Replace",
           "affects": "All",
@@ -1957,20 +2873,20 @@
           "options": [
             {
               "id": "MgXnwrVAW4",
-              "label": "Scale-Tip Shortbow (18\u0022, A1, Tear)",
-              "cost": 20,
+              "label": "Scale-Tip Shortbow (24\u0022, A1, Demolish)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Scale-Tip Shortbow",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 24,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Tear"
+                      "name": "Demolish"
                     }
                   ]
                 }
@@ -1982,8 +2898,8 @@
           ]
         },
         {
-          "id": "RgY5yVG",
-          "label": "Upgrade all models with",
+          "id": "Sh6ipZj9zT",
+          "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
@@ -1991,6 +2907,48 @@
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
+            {
+              "id": "fbwlBYx0Sk",
+              "label": "Defensive Stakes (Brace in Melee)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Defensive Stakes",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Brace in Melee"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "56bphFecNP",
+              "label": "Fire Braziers (Bane when Shooting)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Fire Braziers",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane when Shooting"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
             {
               "id": "dhHHgeC3_5",
               "label": "Reinforced Clay (Armor(5))",
@@ -2025,7 +2983,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 65,
+      "basePointCost": 70,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -2046,12 +3004,12 @@
             },
             {
               "kind": "core",
-              "name": "Tear"
+              "name": "Demolish"
             }
           ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2062,7 +3020,7 @@
       "rules": [
         {
           "kind": "core",
-          "name": "Quick Readjustment"
+          "name": "Quick Throw"
         },
         {
           "kind": "core",
@@ -2072,7 +3030,7 @@
       "items": [],
       "sections": [
         {
-          "id": "VgDfwLx",
+          "id": "rLRN7sb5b6",
           "label": "Replace all Scale-Tip Bombs",
           "variant": "Replace",
           "affects": "All",
@@ -2084,9 +3042,33 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "nChyat4U23",
-              "label": "Fire Bombs (12\u0022, A1, AP(1), Indirect, Rending)",
+              "id": "I3nky3FukW",
+              "label": "Sling-Bombs (12\u0022, A1, AP(2), Indirect)",
               "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sling-Bombs",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "nChyat4U23",
+              "label": "Fire Bombs (12\u0022, A1, Indirect, Rending)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2094,7 +3076,7 @@
                   "quantity": 1,
                   "rangeInches": 12,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -2110,35 +3092,11 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
-            {
-              "id": "I3nky3FukW",
-              "label": "Sling-Bombs (18\u0022, A1, AP(1), Indirect)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Sling-Bombs",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Indirect"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "inEknQD",
+          "id": "CtW_qNUmbN",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2181,7 +3139,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 65,
+      "basePointCost": 85,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -2190,7 +3148,7 @@
       },
       "weapons": [
         {
-          "name": "Rifle",
+          "name": "Matchlock Rifle",
           "quantity": 5,
           "rangeInches": 18,
           "attacks": 1,
@@ -2198,7 +3156,7 @@
           "specialRules": []
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2219,12 +3177,12 @@
       "items": [],
       "sections": [
         {
-          "id": "kbQ3Y4v",
-          "label": "Replace all Rifles",
+          "id": "Wfc_sP7lPQ",
+          "label": "Replace all Matchlock Rifles",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Rifles"
+            "Matchlock Rifles"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -2232,8 +3190,8 @@
           "options": [
             {
               "id": "8dVAWnCOnA",
-              "label": "Precision Rifle (18\u0022, A1, AP(1), Precise)",
-              "cost": 10,
+              "label": "Precision Rifle (18\u0022, A1, AP(1), Anti-Cover, Precise)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2243,6 +3201,10 @@
                   "attacks": 1,
                   "armorPenetration": 1,
                   "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
                     {
                       "kind": "core",
                       "name": "Precise"
@@ -2256,12 +3218,12 @@
             },
             {
               "id": "B-n8uzca4Y",
-              "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 15,
+              "label": "Blunderbuss (12\u0022, A2, AP(1))",
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Shotgun",
+                  "name": "Blunderbuss",
                   "quantity": 1,
                   "rangeInches": 12,
                   "attacks": 2,
@@ -2276,7 +3238,7 @@
           ]
         },
         {
-          "id": "mjjaSAg",
+          "id": "M0yW-SH_ES",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2319,7 +3281,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 110,
+      "basePointCost": 105,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2330,7 +3292,7 @@
         {
           "name": "Crossbow",
           "quantity": 5,
-          "rangeInches": 24,
+          "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
@@ -2341,7 +3303,7 @@
           ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2358,7 +3320,7 @@
       "items": [],
       "sections": [
         {
-          "id": "OF0Uv6w",
+          "id": "qbdvPtoUr8",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -2383,24 +3345,9 @@
               "modelsGained": 0
             },
             {
-              "id": "ipjxmit-Yt",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "C6VNHiLMoA",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2411,11 +3358,26 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "QbiyAJz",
+          "id": "mGqTFngfmQ",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -2448,7 +3410,7 @@
           ]
         },
         {
-          "id": "Aa3mMds",
+          "id": "SASkhDd-L_",
           "label": "Replace all Crossbows",
           "variant": "Replace",
           "affects": "All",
@@ -2461,20 +3423,88 @@
           "options": [
             {
               "id": "uR0qpy8fLG",
-              "label": "Repeater Crossbow (18\u0022, A2, Rending)",
-              "cost": 30,
+              "label": "Repeater Crossbow (12\u0022, A2, Rending)",
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Repeater Crossbow",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 12,
                   "attacks": 2,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
                       "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "84a0gvIaH8",
+          "label": "Replace one Crossbow",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Crossbow"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "dbPWvA0lci",
+              "label": "Portable Rocket Mortar (18\u0022, A1, AP(1), Blast(3), Indirect)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Portable Rocket Mortar",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "BFWMHrb2BB",
+              "label": "Hand-Held Bolt Thrower (18\u0022, A1, AP(3), Deadly(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hand-Held Bolt Thrower",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
                     }
                   ]
                 }
@@ -2495,7 +3525,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 130,
+      "basePointCost": 140,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2504,7 +3534,7 @@
       },
       "weapons": [
         {
-          "name": "Rifle",
+          "name": "Matchlock Rifle",
           "quantity": 5,
           "rangeInches": 18,
           "attacks": 1,
@@ -2512,7 +3542,7 @@
           "specialRules": []
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2533,12 +3563,12 @@
       "items": [],
       "sections": [
         {
-          "id": "FDVErv7",
-          "label": "Replace all Rifles",
+          "id": "OTFhr6tuws",
+          "label": "Replace all Matchlock Rifles",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Rifles"
+            "Matchlock Rifles"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -2546,14 +3576,14 @@
           "options": [
             {
               "id": "M_Clzd2RVx",
-              "label": "Crossbow (24\u0022, A1, Rending)",
-              "cost": 20,
+              "label": "Crossbow (18\u0022, A1, Rending)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crossbow",
                   "quantity": 1,
-                  "rangeInches": 24,
+                  "rangeInches": 18,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
@@ -2570,20 +3600,20 @@
             },
             {
               "id": "wyYIrMTUqr",
-              "label": "Scale-Tip Rifle (18\u0022, A1, Tear)",
-              "cost": 25,
+              "label": "Scale-Tip Rifle (24\u0022, A1, Demolish)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Scale-Tip Rifle",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 24,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Tear"
+                      "name": "Demolish"
                     }
                   ]
                 }
@@ -2594,14 +3624,14 @@
             },
             {
               "id": "J8SGdR3ghV",
-              "label": "Repeater Crossbow (18\u0022, A2, Rending)",
-              "cost": 55,
+              "label": "Repeater Crossbow (12\u0022, A2, Rending)",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Repeater Crossbow",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 12,
                   "attacks": 2,
                   "armorPenetration": 0,
                   "specialRules": [
@@ -2619,12 +3649,12 @@
           ]
         },
         {
-          "id": "QONHAhj",
-          "label": "Replace one Rifle",
+          "id": "8Mc2rIvM7R",
+          "label": "Replace one Matchlock Rifle",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Rifle"
+            "Matchlock Rifle"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -2633,7 +3663,7 @@
             {
               "id": "6lKUMZv83g",
               "label": "Grenade Launcher (24\u0022, A1, Blast(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2658,7 +3688,7 @@
             {
               "id": "_GdFXetbOc",
               "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2670,11 +3700,11 @@
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Takedown"
+                      "name": "Reliable"
                     },
                     {
                       "kind": "core",
-                      "name": "Reliable"
+                      "name": "Takedown"
                     }
                   ]
                 }
@@ -2686,7 +3716,7 @@
           ]
         },
         {
-          "id": "QbiyAJz",
+          "id": "mGqTFngfmQ",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -2717,6 +3747,63 @@
               "modelsGained": 0
             }
           ]
+        },
+        {
+          "id": "qbdvPtoUr8",
+          "label": "Upgrade up to three models with one",
+          "variant": "Upgrade",
+          "affects": "Any",
+          "targets": [],
+          "maxApplications": 3,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_EilfpqJGm",
+              "label": "Sergeant",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Sergeant"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "C6VNHiLMoA",
+              "label": "Musician",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Musician"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
         }
       ]
     },
@@ -2728,7 +3815,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 115,
+      "basePointCost": 100,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -2737,15 +3824,19 @@
       },
       "weapons": [
         {
-          "name": "Sniper Rifle",
+          "name": "Scale-Tip Sniper Rifle",
           "quantity": 3,
-          "rangeInches": 30,
+          "rangeInches": 24,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
               "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Demolish"
             },
             {
               "kind": "core",
@@ -2754,7 +3845,7 @@
           ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
@@ -2772,47 +3863,32 @@
           "name": "Royal Warrior"
         }
       ],
-      "items": [
-        {
-          "name": "Pavise Shield",
-          "quantity": 3,
-          "rules": [
-            {
-              "kind": "core",
-              "name": "Shielded"
-            },
-            {
-              "kind": "core",
-              "name": "Slow"
-            }
-          ]
-        }
-      ],
+      "items": [],
       "sections": [
         {
-          "id": "drSyXRA",
-          "label": "Replace all Sniper Rifles",
+          "id": "wwLxwrD5",
+          "label": "Replace all Scale-Tip Sniper Rifles",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Sniper Rifles"
+            "Scale-Tip Sniper Rifles"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "8HcDEShk5S",
-              "label": "Scale-Tip Sniper Rifle (24\u0022, A1, Reliable, Takedown, Tear)",
-              "cost": 30,
+              "id": "iemrPG0A",
+              "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Scale-Tip Sniper Rifle",
+                  "name": "Sniper Rifle",
                   "quantity": 1,
-                  "rangeInches": 24,
+                  "rangeInches": 30,
                   "attacks": 1,
-                  "armorPenetration": 0,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -2821,10 +3897,6 @@
                     {
                       "kind": "core",
                       "name": "Takedown"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Tear"
                     }
                   ]
                 }
@@ -2836,8 +3908,8 @@
           ]
         },
         {
-          "id": "EowOPlc",
-          "label": "Upgrade all models with",
+          "id": "fw1ZMDF5",
+          "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
@@ -2845,6 +3917,32 @@
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
+            {
+              "id": "tJcnnZpkdg",
+              "label": "Pavise Shield (Armor(4), Slow)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Pavise Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Armor",
+                      "numericValue": 4
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Slow"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
             {
               "id": "92Cv2Jpt",
               "label": "Reinforced Clay (Armor(5))",
@@ -2879,7 +3977,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 70,
+      "basePointCost": 65,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -2888,28 +3986,26 @@
       },
       "weapons": [
         {
-          "name": "Lance",
+          "name": "Bow",
+          "quantity": 5,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
+          "specialRules": []
         }
       ],
       "rules": [
         {
           "kind": "core",
           "name": "Fast"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 1
         },
         {
           "kind": "core",
@@ -2919,7 +4015,7 @@
       "items": [],
       "sections": [
         {
-          "id": "OF0Uv6w",
+          "id": "qbdvPtoUr8",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -2944,21 +4040,6 @@
               "modelsGained": 0
             },
             {
-              "id": "ipjxmit-Yt",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "C6VNHiLMoA",
               "label": "Musician",
               "cost": 5,
@@ -2972,74 +4053,99 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "TLfU_8g",
-          "label": "Replace all Lances",
+          "id": "6UCSS3RGKB",
+          "label": "Replace all Bows and Strikes",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Lances"
+            "Bows",
+            "Strikes"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "AJERkxUywm",
-              "label": "Bow (24\u0022, A1), Hand Weapon (A1)",
-              "cost": 20,
+              "id": "g2ZL0ifNXL",
+              "label": "Lance (A1, Thrust), Trample (Impact(1))",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hand Weapon",
+                  "name": "Lance",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                },
-                {
-                  "name": "Bow",
-                  "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "nHNJG2k77Z",
-              "label": "Scale-Tip Shortbow (18\u0022, A1, Tear), Hand Weapon (A1)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Hand Weapon",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                },
-                {
-                  "name": "Scale-Tip Shortbow",
-                  "quantity": 1,
-                  "rangeInches": 18,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Tear"
+                      "name": "Thrust"
                     }
                   ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trample",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "nHNJG2k77Z",
+              "label": "Scale-Tip Shortbow (24\u0022, A1, Demolish), Strike (A1)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scale-Tip Shortbow",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Demolish"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -3049,7 +4155,7 @@
           ]
         },
         {
-          "id": "cqnvbhQ",
+          "id": "aoMsMSesrK",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -3092,7 +4198,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 90,
+      "basePointCost": 95,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3101,12 +4207,17 @@
       },
       "weapons": [
         {
-          "name": "Hand Weapon",
+          "name": "Lance",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
         }
       ],
       "rules": [
@@ -3115,19 +4226,26 @@
           "name": "Fast"
         },
         {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 1
-        },
-        {
           "kind": "core",
           "name": "Royal Warrior"
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Trample",
+          "quantity": 5,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Impact",
+              "numericValue": 1
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "OF0Uv6w",
+          "id": "qbdvPtoUr8",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -3152,24 +4270,9 @@
               "modelsGained": 0
             },
             {
-              "id": "ipjxmit-Yt",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "C6VNHiLMoA",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3180,16 +4283,31 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "AdM6psa",
-          "label": "Replace all Hand Weapons",
+          "id": "ic_2kbk3wV",
+          "label": "Replace all Lances",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Hand Weapons"
+            "Lances"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -3197,20 +4315,21 @@
           "options": [
             {
               "id": "1PdpEo3prp",
-              "label": "Lance (A1, Thrust)",
-              "cost": 10,
+              "label": "Hand Weapon (A1, Parry(1))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Lance",
+                  "name": "Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "core",
-                      "name": "Thrust"
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -3222,7 +4341,82 @@
           ]
         },
         {
-          "id": "QbiyAJz",
+          "id": "Uo9pJjje",
+          "label": "Replace one Lance and Trample",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Lance",
+            "Trample"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "DIulPxQ2",
+              "label": "Dual Hand Weapons (A4)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Hand Weapons",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ENsk6XI-",
+              "label": "Dragon Glaive (A1, AP(2), Deadly(3), Thrust), Trample (Impact(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dragon Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trample",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "mGqTFngfmQ",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3264,7 +4458,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 255,
+      "basePointCost": 280,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3273,25 +4467,17 @@
       },
       "weapons": [
         {
-          "name": "Heavy Halberd",
+          "name": "Lance",
           "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Rending"
+              "name": "Thrust"
             }
           ]
-        },
-        {
-          "name": "Heavy Hooves",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": []
         }
       ],
       "rules": [
@@ -3300,37 +4486,37 @@
           "name": "Fast"
         },
         {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 2
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
+          "kind": "core",
+          "name": "Fearless"
         },
         {
           "kind": "core",
           "name": "Flying"
         },
         {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 3
+        },
+        {
           "kind": "core",
           "name": "Royal Warrior"
         },
         {
-          "kind": "core",
-          "name": "Fearless"
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "HtrcqJ9",
-          "label": "Replace all Heavy Halberds",
+          "id": "9BT_Ggl4ot",
+          "label": "Replace all Lances",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Heavy Halberds"
+            "Lances"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -3338,20 +4524,20 @@
           "options": [
             {
               "id": "fA4TnTtLxp",
-              "label": "Heavy Lance (A1, AP(1), Thrust)",
+              "label": "Halberd (A1, Rending)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Lance",
+                  "name": "Halberd",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Thrust"
+                      "name": "Rending"
                     }
                   ]
                 }
@@ -3363,12 +4549,12 @@
           ]
         },
         {
-          "id": "uEV3hDo",
-          "label": "Replace one Heavy Halberd",
+          "id": "NboGu6KQvJ",
+          "label": "Replace one Lance",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Heavy Halberd"
+            "Lance"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -3376,7 +4562,7 @@
           "options": [
             {
               "id": "fzjTMu5h2R",
-              "label": "Great Mace (A1, AP(2), Blast(3))",
+              "label": "Great Mace (A1, AP(1), Blast(3))",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3385,7 +4571,7 @@
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 2,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -3398,11 +4584,36 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "Y08a9RBeHU",
+              "label": "Jade Hammer (A1, AP(4), Deadly(3))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Jade Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "QbiyAJz",
+          "id": "mGqTFngfmQ",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3433,6 +4644,63 @@
               "modelsGained": 0
             }
           ]
+        },
+        {
+          "id": "qbdvPtoUr8",
+          "label": "Upgrade up to three models with one",
+          "variant": "Upgrade",
+          "affects": "Any",
+          "targets": [],
+          "maxApplications": 3,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_EilfpqJGm",
+              "label": "Sergeant",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Sergeant"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "C6VNHiLMoA",
+              "label": "Musician",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Musician"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ipjxmit-Yt",
+              "label": "Banner",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
         }
       ]
     },
@@ -3444,7 +4712,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 120,
+      "basePointCost": 135,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3495,7 +4763,7 @@
       ],
       "sections": [
         {
-          "id": "74Ys5Tc",
+          "id": "dS4dCToOk1",
           "label": "Replace Spirit Beacon",
           "variant": "Replace",
           "affects": "One",
@@ -3508,29 +4776,41 @@
           "options": [
             {
               "id": "EiQQ-oh3Na",
-              "label": "Jade Blast (Breath Attack)",
-              "cost": 5,
+              "label": "Jade Blast (9\u0022, A1, Blast(3), Assault, Bane)",
+              "cost": 10,
               "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
+              "weaponsGained": [
                 {
                   "name": "Jade Blast",
                   "quantity": 1,
-                  "rules": [
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
                     {
                       "kind": "core",
-                      "name": "Breath Attack"
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
                     }
                   ]
                 }
               ],
+              "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
               "id": "8fL3Xxg2i0",
-              "label": "Spirit Armor (Resistance)",
-              "cost": 5,
+              "label": "Spirit Armor (Spell Resistance)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3541,7 +4821,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Resistance"
+                      "name": "Spell Resistance"
                     }
                   ]
                 }
@@ -3560,7 +4840,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 155,
+      "basePointCost": 170,
       "base": {
         "shape": "Circle",
         "diameterInches": 2.3622048,
@@ -3569,7 +4849,7 @@
       },
       "weapons": [
         {
-          "name": "Rending Claws",
+          "name": "Sharp Claws",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 6,
@@ -3609,7 +4889,7 @@
       "items": [],
       "sections": [
         {
-          "id": "9Cjz9AV",
+          "id": "L6MqgUXPaM",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -3620,8 +4900,8 @@
           "options": [
             {
               "id": "cK_-0fNPQ4",
-              "label": "Jade Storm (A1, AP(1), Blast(3), Strafing)",
-              "cost": 25,
+              "label": "Jade Storm (A1, AP(1), Blast(3), Crossing Strike)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3638,7 +4918,7 @@
                     },
                     {
                       "kind": "core",
-                      "name": "Strafing"
+                      "name": "Crossing Strike"
                     }
                   ]
                 }
@@ -3650,7 +4930,7 @@
             {
               "id": "siSa9q4i9S",
               "label": "Spirit Blizzard (Precision Debuff)",
-              "cost": 45,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3667,6 +4947,39 @@
                 }
               ],
               "modelsGained": 0
+            },
+            {
+              "id": "xVGTapmyAm",
+              "label": "Jade Blast (9\u0022, A1, Blast(3), Assault, Bane)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Jade Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         }
@@ -3680,7 +4993,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 255,
+      "basePointCost": 270,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3689,12 +5002,17 @@
       },
       "weapons": [
         {
-          "name": "Heavy Claws",
+          "name": "Sharp Claws",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 2,
-          "specialRules": []
+          "attacks": 8,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         },
         {
           "name": "Stomp",
@@ -3718,10 +5036,6 @@
         },
         {
           "kind": "core",
-          "name": "Breath Attack"
-        },
-        {
-          "kind": "core",
           "name": "Flying"
         },
         {
@@ -3732,7 +5046,85 @@
       "items": [],
       "sections": [
         {
-          "id": "JanNHIn",
+          "id": "DD1i6j5xYg",
+          "label": "Replace Sharp Claws",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sharp Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "TDl4-WlQeK",
+              "label": "Heavy Claws (A8, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 8,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "WZ6_y9jfin",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "E74dJD1PNw",
+              "label": "Flame Breath (6\u0022, A1, Blast(3), Reliable, Assault)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Breath",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "WkGs82elhr",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -3744,7 +5136,7 @@
             {
               "id": "yJwlwEUNF1",
               "label": "War Drum (Precision Fighter Buff)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3764,8 +5156,8 @@
             },
             {
               "id": "DgWeIu_I5-",
-              "label": "Spirit Armor (Resistance)",
-              "cost": 40,
+              "label": "Spirit Armor (Spell Resistance)",
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3776,7 +5168,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Resistance"
+                      "name": "Spell Resistance"
                     }
                   ]
                 }
@@ -3795,7 +5187,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 100,
+      "basePointCost": 135,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3804,12 +5196,17 @@
       },
       "weapons": [
         {
-          "name": "Crew Attacks",
+          "name": "Halberd Crew",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 6,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
       "rules": [
@@ -3842,7 +5239,7 @@
       ],
       "sections": [
         {
-          "id": "XvyfaX1",
+          "id": "46kdDYqhNa",
           "label": "Replace Great Spirit Beacon",
           "variant": "Replace",
           "affects": "One",
@@ -3856,7 +5253,7 @@
             {
               "id": "GB456rMCAE",
               "label": "Great War Drum (Fear(2), Precision Fighter Buff)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3882,7 +5279,7 @@
           ]
         },
         {
-          "id": "Ol0xcuf",
+          "id": "edEUrFkp",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3894,7 +5291,7 @@
             {
               "id": "4mX1-1Fs",
               "label": "Spirit Guidance (Indirect Mark)",
-              "cost": 35,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3924,7 +5321,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 115,
+      "basePointCost": 140,
       "base": {
         "shape": "Circle",
         "diameterInches": 2.3622048,
@@ -3933,20 +5330,34 @@
       },
       "weapons": [
         {
-          "name": "Shotgun Crew",
+          "name": "Precision Rifle Crew",
           "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 6,
+          "rangeInches": 18,
+          "attacks": 4,
           "armorPenetration": 1,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Precise"
+            }
+          ]
         },
         {
-          "name": "Crew Attacks",
+          "name": "Overrun",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 2,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
         }
       ],
       "rules": [
@@ -3955,45 +5366,49 @@
           "name": "Flying"
         },
         {
+          "kind": "core",
+          "name": "Royal Warrior"
+        },
+        {
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Royal Warrior"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "6kQhvSD",
-          "label": "Replace Shotgun Crew",
+          "id": "j3ZMzs1n1k",
+          "label": "Replace Precision Rifle Crew",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Shotgun Crew"
+            "Precision Rifle Crew"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "EoebZZkDAn",
-              "label": "Precision Rifle Crew (18\u0022, A4, AP(1), Precise)",
-              "cost": 10,
+              "id": "9j2GUxIda0",
+              "label": "Volley Gun (18\u0022, A6, Anti-Cover, Surge)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Precision Rifle Crew",
+                  "name": "Volley Gun",
                   "quantity": 1,
                   "rangeInches": 18,
-                  "attacks": 4,
-                  "armorPenetration": 1,
+                  "attacks": 6,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Precise"
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Surge"
                     }
                   ]
                 }
@@ -4003,16 +5418,16 @@
               "modelsGained": 0
             },
             {
-              "id": "9j2GUxIda0",
-              "label": "Volley Gun (18\u0022, A6, AP(1))",
-              "cost": 20,
+              "id": "EoebZZkDAn",
+              "label": "Blunderbuss Crew (12\u0022, A8, AP(1))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Volley Gun",
+                  "name": "Blunderbuss Crew",
                   "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 6,
+                  "rangeInches": 12,
+                  "attacks": 8,
                   "armorPenetration": 1,
                   "specialRules": []
                 }
@@ -4023,14 +5438,14 @@
             },
             {
               "id": "Vr7fpxDbNs",
-              "label": "Rocket Battery (24\u0022, A2, AP(1), Blast(3), Indirect)",
-              "cost": 35,
+              "label": "Rocket Battery (18\u0022, A2, AP(1), Blast(3), Indirect)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket Battery",
                   "quantity": 1,
-                  "rangeInches": 24,
+                  "rangeInches": 18,
                   "attacks": 2,
                   "armorPenetration": 1,
                   "specialRules": [
@@ -4052,20 +5467,20 @@
             },
             {
               "id": "tIBBx5oqsQ",
-              "label": "Scale-Tip Volley Gun (18\u0022, A6, Tear)",
-              "cost": 45,
+              "label": "Scale-Tip Volley Gun (24\u0022, A6, Demolish)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Scale-Tip Volley Gun",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 24,
                   "attacks": 6,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Tear"
+                      "name": "Demolish"
                     }
                   ]
                 }
@@ -4077,14 +5492,14 @@
           ]
         },
         {
-          "id": "wt6ZpX1",
-          "label": "Upgrade with any",
+          "id": "BWD6G6K0Oc",
+          "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 3,
+          "maxPicks": 1,
           "options": [
             {
               "id": "EXvqDlw7Pg",
@@ -4108,30 +5523,9 @@
               "modelsGained": 0
             },
             {
-              "id": "hldMVO41TG",
-              "label": "Spirit Guidance (Indirect Mark)",
-              "cost": 35,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Spirit Guidance",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Indirect Mark"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "3YxIbYaaQR",
-              "label": "Fire Bombs (A2, AP(1), Blast(3), Strafing)",
-              "cost": 40,
+              "id": "A1UCKr4Y1F",
+              "label": "Fire Bombs (A2, AP(1), Blast(3), Crossing Strike)",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4148,13 +5542,34 @@
                     },
                     {
                       "kind": "core",
-                      "name": "Strafing"
+                      "name": "Crossing Strike"
                     }
                   ]
                 }
               ],
               "rulesGained": [],
               "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "LSPgQkn9D7",
+              "label": "Spirit Guidance (Indirect Mark)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spirit Guidance",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Indirect Mark"
+                    }
+                  ]
+                }
+              ],
               "modelsGained": 0
             }
           ]
@@ -4169,7 +5584,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 445,
+      "basePointCost": 415,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -4186,10 +5601,10 @@
           "specialRules": []
         },
         {
-          "name": "Titan Mace",
+          "name": "Titan Great Mace",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 2,
           "armorPenetration": 2,
           "specialRules": [
             {
@@ -4213,39 +5628,59 @@
         },
         {
           "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
           "name": "Royal Warrior"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "mRA727q",
-          "label": "Replace Titan Mace",
+          "id": "sqmnQZec22",
+          "label": "Replace Titan Great Mace",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Titan Mace"
+            "Titan Great Mace"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "y8-d1BY1gl",
-              "label": "Titan Glaive (A12, AP(1), Rending)",
+              "id": "WVgkI5C4Ng",
+              "label": "Titan Dual-Glaive (A12, Shred)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Titan Glaive",
+                  "name": "Titan Dual-Glaive",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 12,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "uakB7WiM0O",
+              "label": "Dual Titan Swords (A12, Rending)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Titan Swords",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 12,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -4257,11 +5692,40 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "cGXwb7ycG-",
+              "label": "Titan Jade Hammer (A2, AP(4), Deadly(6), Anti-Regen)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Titan Jade Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Regen"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "b1UeTkD",
+          "id": "2R2RkeruCp",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -4273,7 +5737,7 @@
             {
               "id": "7TmoWXYC3U",
               "label": "Reinforced Clay (Armor(2))",
-              "cost": 70,
+              "cost": 105,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4313,12 +5777,18 @@
       },
       "weapons": [
         {
-          "name": "Volley Gun",
+          "name": "Cannon",
           "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 6,
+          "rangeInches": 30,
+          "attacks": 2,
           "armorPenetration": 1,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
         },
         {
           "name": "Crew",
@@ -4342,39 +5812,46 @@
         {
           "kind": "core",
           "name": "Royal Warrior"
+        },
+        {
+          "kind": "core",
+          "name": "Cumbersome"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "NRF3xKy",
-          "label": "Replace Volley Gun",
+          "id": "gTyvH0OvUa",
+          "label": "Replace Cannon",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Volley Gun"
+            "Cannon"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "s2464DEU96",
-              "label": "Cannon (30\u0022, A2, AP(1), Blast(3))",
-              "cost": 10,
+              "id": "-rSHx2tyyw",
+              "label": "Volley Gun (18\u0022, A6, Anti-Cover, Surge)",
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Cannon",
+                  "name": "Volley Gun",
                   "quantity": 1,
-                  "rangeInches": 30,
-                  "attacks": 2,
-                  "armorPenetration": 1,
+                  "rangeInches": 18,
+                  "attacks": 6,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Surge"
                     }
                   ]
                 }
@@ -4384,15 +5861,15 @@
               "modelsGained": 0
             },
             {
-              "id": "-rSHx2tyyw",
-              "label": "Rocket Battery (24\u0022, A2, AP(1), Blast(3), Indirect)",
-              "cost": 20,
+              "id": "s2464DEU96",
+              "label": "Rocket Battery (18\u0022, A2, AP(1), Blast(3), Indirect)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket Battery",
                   "quantity": 1,
-                  "rangeInches": 24,
+                  "rangeInches": 18,
                   "attacks": 2,
                   "armorPenetration": 1,
                   "specialRules": [
@@ -4414,20 +5891,20 @@
             },
             {
               "id": "jguDR51Jus",
-              "label": "Scale-Tip Volley Gun (18\u0022, A6, Tear)",
-              "cost": 25,
+              "label": "Scale-Tip Volley Gun (24\u0022, A6, Demolish)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Scale-Tip Volley Gun",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 24,
                   "attacks": 6,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Tear"
+                      "name": "Demolish"
                     }
                   ]
                 }
@@ -4438,8 +5915,8 @@
             },
             {
               "id": "LhcGhV23Fg",
-              "label": "Heavy Cannon (30\u0022, A2, AP(2), Deadly(3))",
-              "cost": 30,
+              "label": "Heavy Cannon (30\u0022, A2, AP(3), Deadly(3))",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4447,7 +5924,7 @@
                   "quantity": 1,
                   "rangeInches": 30,
                   "attacks": 2,
-                  "armorPenetration": 2,
+                  "armorPenetration": 3,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -4519,7 +5996,7 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Gets X accumulator tokens at the start of each round, but can\u0027t hold more than 6 tokens at once. Casters from other friendly units within 12\u0022 may spend this unit\u0027s accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
+      "description": "Gets X accumulator tokens at the start of each round, but can\u0027t hold more than 6 tokens at once. Casters from other friendly units within 12\u0022 may spend this model\u0027s accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
     },
     {
       "name": "Spell Conduit",
@@ -4549,45 +6026,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Casters within 12\u0022 that are from other friendly units may cast spells as if they were in this unit\u0027s position, and get \u002B1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
-    },
-    {
-      "name": "Breath Attack",
-      "passive": [],
-      "activated": [
-        {
-          "triggerHook": "Activation_OnBeforeAttackAction",
-          "cost": {
-            "kind": "oncePerActivation"
-          },
-          "targetSelector": {
-            "rangeInches": 6,
-            "minCount": 1,
-            "maxCount": 1,
-            "targetAffinity": "Foe",
-            "requireLineOfSight": true,
-            "requiredToken": null,
-            "singleModel": false,
-            "requiredRule": null
-          },
-          "effect": {
-            "kind": "dealHits",
-            "count": 1,
-            "withRules": [
-              "Blast(3)"
-            ],
-            "armorPenetration": 1
-          },
-          "availableWhen": {
-            "kind": "always"
-          },
-          "label": ""
-        }
-      ],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Once per activation, before attacking, one enemy unit within 6\u0022 in line of sight takes 1 hit with Blast(3) and AP(1)."
+      "description": "Casters within 12\u0022 that are from other friendly units may cast spells as if they were in this model\u0027s position, and get \u002B1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
     },
     {
       "name": "Precision Debuff",
@@ -4606,7 +6045,8 @@
             "requireLineOfSight": true,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "statModifier",
@@ -4624,30 +6064,6 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which gets -1 to hit rolls when attacking once (next time the effect would apply)."
-    },
-    {
-      "name": "Tear",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "targetMajorityHasTough",
-            "minToughValue": 9
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Save",
-            "delta": -4
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Against units where most models have Tough 9\u002B, this weapon gets AP(\u002B4)."
     },
     {
       "name": "Melee Slayer Aura",
@@ -4669,7 +6085,53 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Melee Slayer."
+      "description": "This model and its unit get Melee Slayer."
+    },
+    {
+      "name": "Spell Resistance",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isSpell"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        },
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isNotSpell"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 6
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When a unit where most models have this rule takes wounds, roll one die for each. If the wound was from a spell, then it is ignored on a 2\u002B. If the wound was not from a spell, then it is ignored on a 6\u002B instead."
     },
     {
       "name": "Indirect Mark",
@@ -4688,7 +6150,8 @@
             "requireLineOfSight": true,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "markTarget",
@@ -4703,51 +6166,19 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Indirect."
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which friendly units gets Indirect on their weapons against once (next time the effect would apply)."
     },
     {
-      "name": "Indirect when shooting",
+      "name": "Quick Throw",
       "passive": [
-        {
-          "hookID": "Shooting_OnHitRollModifier",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "afterMoving"
-            }
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Hit",
-            "delta": -1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
         {
           "hookID": "Shooting_OnSaveRollModifier",
           "condition": {
-            "kind": "always"
+            "kind": "weaponHasRule",
+            "ruleName": "Indirect"
           },
           "effect": {
             "kind": "ignoreLineOfSight"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnSaveRollModifier",
-          "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "ignoreCover"
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -4757,7 +6188,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Fires at targets out of line of sight and ignores cover when shooting; -1 to hit if the unit moved this activation."
+      "description": "This model may always target enemies that are not in line of sight when shooting with Indirect weapons (instead of only when using Hold actions)."
     },
     {
       "name": "Precision Fighter Buff",
@@ -4776,7 +6207,8 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "addRule",
@@ -4792,7 +6224,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Precision Fighter for its next relevant roll."
+      "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets \u002B1 to hit rolls in melee once (next time the effect would apply)."
     },
     {
       "name": "Banner",
@@ -4800,7 +6232,7 @@
         {
           "hookID": "Morale_OnPreMoraleTest",
           "condition": {
-            "kind": "always"
+            "kind": "moraleTestFromShootingOrMelee"
           },
           "effect": {
             "kind": "rollModifier",
@@ -4815,7 +6247,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit gets \u002B1 to morale test rolls."
+      "description": "This model and its unit get \u002B1 to Morale Test rolls triggered by shooting or melee."
     },
     {
       "name": "Musician",
@@ -4870,7 +6302,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit moves \u002B1 inch on Advance, Rush and Charge actions."
+      "description": "This model and its unit move \u002B1\u0022 when using move actions."
     },
     {
       "name": "Sergeant",
@@ -4878,13 +6310,12 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
+            "kind": "always"
           },
           "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
-            "count": 1
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -4894,7 +6325,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model attacks, unmodified results of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
+      "description": "This model gets AP(\u002B1) when attacking."
     },
     {
       "name": "Armor",
@@ -4919,46 +6350,7 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
-    },
-    {
-      "name": "Quick Readjustment",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollModifier",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "weaponHasRule",
-              "ruleName": "Indirect"
-            },
-            "right": {
-              "kind": "and",
-              "left": {
-                "kind": "afterMoving"
-              },
-              "right": {
-                "kind": "not",
-                "inner": {
-                  "kind": "isMelee"
-                }
-              }
-            }
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Hit",
-            "delta": 1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "This unit ignores the -1 to hit penalty for shooting after moving when firing Indirect weapons."
+      "description": "Counts as having Defense X\u002B."
     },
     {
       "name": "Repel Ambushers",
@@ -5012,7 +6404,140 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this unit is destroyed, place a marker on the unit that destroyed it. Friendly units get \u002B1 to hit rolls against that unit for the rest of the game."
+      "description": "When this unit is fully destroyed, place as many Vengeance tokens on the unit that destroyed it as models with this rule in this unit at the beginning of the game. Friendly units get \u002BX to hit rolls when attacking that unit, where X is the number of tokens on it."
+    },
+    {
+      "name": "Anti-Cover",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon ignores Cover."
+    },
+    {
+      "name": "Anti-Regen",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon ignores Regeneration."
+    },
+    {
+      "name": "Demolish",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "targetMostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Ignores Cover, and when attacking units with most models within 1\u0022 of terrain, this weapon gets AP(\u002B1)."
+    },
+    {
+      "name": "Crossing Strike",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Movement_OnMoveThroughEnemy",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 1,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "attackWithThisWeapon"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, when this model moves through enemy units, pick one of them and attack it with this weapon as if it was shooting. This weapon may only be used in this way."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
     },
     {
       "name": "Royal Warrior",
@@ -5036,10 +6561,38 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Each unmodified 6 to hit scores an extra hit."
+      "description": "For each unmodified roll of 6 to hit when attacking, this model may roll \u002B1 attack with that weapon. This rule doesn\u0027t apply to newly generated attacks."
     },
     {
-      "name": "Royal Warrior Boost",
+      "name": "Brace in Melee",
+      "passive": [
+        {
+          "hookID": "Melee_OnChargeContact",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "countsAsFatiguedInMelee"
+            }
+          },
+          "effect": {
+            "kind": "cancelImpactDice",
+            "dicePerModel": {
+              "kind": "literal",
+              "value": 1
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model gets Brace(1) on its weapons in melee."
+    },
+    {
+      "name": "Enhanced Royal Warrior",
       "passive": [
         {
           "hookID": "Shooting_OnHitRollComplete",
@@ -5050,7 +6603,7 @@
               "ruleName": "Royal Warrior"
             },
             "right": {
-              "kind": "unmodifiedRollEquals",
+              "kind": "unmodifiedRollHits",
               "dieValue": 5
             }
           },
@@ -5067,10 +6620,10 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "If this model has Royal Warrior, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
+      "description": "If this model has Royal Warrior, it gets extra attacks on successful unmodified hit results of 5-6 from Royal Warrior (instead of only on 6)."
     },
     {
-      "name": "Royal Warrior Boost Aura",
+      "name": "Enhanced Royal Warrior Aura",
       "passive": [
         {
           "hookID": "Lifecycle_OnUnitCreated",
@@ -5079,7 +6632,7 @@
           },
           "effect": {
             "kind": "aura",
-            "ruleName": "Royal Warrior Boost"
+            "ruleName": "Enhanced Royal Warrior"
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -5089,7 +6642,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Royal Warrior Boost."
+      "description": "This model and its unit get Enhanced Royal Warrior."
     },
     {
       "name": "Melee Slayer",
@@ -5119,7 +6672,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model charges, its weapons get AP(\u002B2) against units where most models have Tough 3\u002B."
+      "description": "When charging, this model\u0027s weapons get AP(\u002B2) if most models in the target have Tough(3) or higher."
     },
     {
       "name": "Precision Fighter",
@@ -5142,7 +6695,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "\u002B1 to hit rolls in melee."
+      "description": "This model gets \u002B1 to hit rolls in melee."
     }
   ],
   "spells": [
@@ -5157,7 +6710,8 @@
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
@@ -5166,42 +6720,26 @@
       }
     },
     {
-      "name": "Dragon Fire",
+      "name": "Blazing Starlight",
       "threshold": 1,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false,
-        "requiredRule": null
+        "singleModel": true,
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 3,
-        "withRules": [],
+        "count": 2,
+        "withRules": [
+          "Demolish"
+        ],
         "armorPenetration": 0
-      }
-    },
-    {
-      "name": "Jade Claws",
-      "threshold": 2,
-      "target": {
-        "rangeInches": 12,
-        "minCount": 1,
-        "maxCount": 2,
-        "targetAffinity": "Friend",
-        "requireLineOfSight": false,
-        "requiredToken": null,
-        "singleModel": false,
-        "requiredRule": null
-      },
-      "effect": {
-        "kind": "addRule",
-        "ruleName": "Royal Warrior Boost",
-        "scope": "NextTrigger"
       }
     },
     {
@@ -5215,7 +6753,8 @@
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
@@ -5223,46 +6762,47 @@
         "withRules": [
           "Surge"
         ],
-        "armorPenetration": 1
+        "armorPenetration": 0
       }
     },
     {
-      "name": "Ancestral Guidance",
+      "name": "Jade Claws",
       "threshold": 3,
       "target": {
         "rangeInches": 18,
         "minCount": 1,
         "maxCount": 3,
-        "targetAffinity": "Foe",
+        "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
-        "kind": "markTarget",
-        "ruleName": "Indirect when Shooting"
+        "kind": "addRule",
+        "ruleName": "Enhanced Royal Warrior",
+        "scope": "NextTrigger"
       }
     },
     {
-      "name": "Blazing Starlight",
+      "name": "Dragon Fire",
       "threshold": 3,
       "target": {
-        "rangeInches": 24,
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": true,
-        "requiredRule": null
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 3,
-        "withRules": [
-          "Tear"
-        ],
+        "count": 9,
+        "withRules": [],
         "armorPenetration": 0
       }
     }

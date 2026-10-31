@@ -1,7 +1,7 @@
 {
   "name": "Ghostly Undead",
   "faction": "Ghostly Undead",
-  "version": "OPR v3.5.3",
+  "version": "OPR v3.6.0",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
   "gameSystem": "age-of-fantasy",
@@ -16,7 +16,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 85,
+      "basePointCost": 65,
       "base": {
         "shape": "Circle",
         "diameterInches": 2.3622048,
@@ -25,18 +25,23 @@
       },
       "weapons": [
         {
-          "name": "Howl",
+          "name": "Banshee Cry",
           "quantity": 1,
-          "rangeInches": 12,
+          "rangeInches": 9,
           "attacks": 4,
-          "armorPenetration": 1,
-          "specialRules": []
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
         },
         {
-          "name": "Claws",
+          "name": "Strike",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -61,13 +66,13 @@
         },
         {
           "kind": "core",
-          "name": "Resistance"
+          "name": "Spell Resistance"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "-eQ9n3O",
+          "id": "CXoPWint",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -77,20 +82,20 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "u5rbBEYF",
-              "label": "Tormentor (Relentless Aura)",
-              "cost": 10,
+              "id": "QxVOu3Cp",
+              "label": "Knight (Enhanced Empyrean Spirit Aura)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Tormentor",
+                  "name": "Knight",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Relentless Aura"
+                      "name": "Enhanced Empyrean Spirit Aura"
                     }
                   ]
                 }
@@ -100,7 +105,7 @@
             {
               "id": "juoSOaVm",
               "label": "Warden (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -119,20 +124,20 @@
               "modelsGained": 0
             },
             {
-              "id": "3jOlhboz",
-              "label": "Jailor (Scout Aura)",
+              "id": "u5rbBEYF",
+              "label": "Tormentor (Relentless Aura)",
               "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Jailor",
+                  "name": "Tormentor",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Scout Aura"
+                      "name": "Relentless Aura"
                     }
                   ]
                 }
@@ -161,24 +166,288 @@
               "modelsGained": 0
             },
             {
-              "id": "QxVOu3Cp",
-              "label": "Knight (Empyrean Spirit Boost Aura)",
-              "cost": 40,
+              "id": "3jOlhboz",
+              "label": "Jailor (Scout Aura)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Knight",
+                  "name": "Jailor",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Empyrean Spirit Boost Aura"
+                      "name": "Scout Aura"
                     }
                   ]
                 }
               ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ss28NPB_O9",
+          "label": "Replace Banshee Cry and Strike",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Banshee Cry",
+            "Strike"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ocsbN6FmQ3",
+              "label": "Master Mourning Blade (A3, AP(1), Bane)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Mourning Blade",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "hd1J6OxpRT",
+              "label": "Master Reaping Sickle (A3, AP(1), Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Reaping Sickle",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "j1xfeoEoME",
+              "label": "Cursed Shriek (12\u0022, A1, Assault), Mourning Blade (A3, Bane)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cursed Shriek",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Mourning Blade",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "cIpW6OiR7p",
+              "label": "Cursed Shriek (12\u0022, A1, Assault), Reaping Sickle (A3, Shred)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cursed Shriek",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Reaping Sickle",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "qtfJ0Tnd",
+          "label": "Replace Cursed Shriek",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Cursed Shriek"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "onX4W_ih",
+              "label": "Soul Blast (9\u0022, A1, Assault, Bane)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "DWyuUchb",
+              "label": "Scythe Blast (9\u0022, A1, AP(1), Assault, Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9NCus3ai_1",
+          "label": "Replace Banshee Cry",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Banshee Cry"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "S7lDy3wI70",
+              "label": "Bone-Chilling Screech (9\u0022, A4, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bone-Chilling Screech",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "u2SdGDUFBv",
+              "label": "Haunting Howl (12\u0022, A4, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Haunting Howl",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -202,15 +471,15 @@
       },
       "weapons": [
         {
-          "name": "Heavy Scythe",
+          "name": "Dual Reaping Sickles",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Disintegrate"
+              "name": "Shred"
             }
           ]
         }
@@ -239,13 +508,13 @@
         },
         {
           "kind": "core",
-          "name": "Resistance"
+          "name": "Spell Resistance"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "G281jv6",
+          "id": "VMcWYyHp",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -255,9 +524,30 @@
           "maxPicks": 1,
           "options": [
             {
+              "id": "oAJpDhVq",
+              "label": "Knight (Enhanced Empyrean Spirit Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Knight",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Empyrean Spirit Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "Btg2ECkT",
               "label": "Warden (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -316,26 +606,260 @@
                 }
               ],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "fjxBoNxHd1",
+          "label": "Replace Dual Reaping Sickles",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Reaping Sickles"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "oAJpDhVq",
-              "label": "Knight (Empyrean Spirit Boost Aura)",
-              "cost": 40,
+              "id": "C3Ibbn0Kw7",
+              "label": "Master Dual Scythe (A2, AP(4), Reap)",
+              "cost": 5,
               "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
+              "weaponsGained": [
                 {
-                  "name": "Knight",
+                  "name": "Master Dual Scythe",
                   "quantity": 1,
-                  "rules": [
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Empyrean Spirit Boost Aura"
+                      "name": "Reap"
                     }
                   ]
                 }
               ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "TZtx1h_pjn",
+              "label": "Master Scythe (A3, AP(2), Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "0ygCrXJFui",
+              "label": "Master Soul Flail (A3, AP(2), Surge)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Soul Flail",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ToVPlEkvoj",
+              "label": "Cursed Shriek (12\u0022, A1, Assault), Scythe (A3, AP(1), Reap)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cursed Shriek",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "WSXPFHdf7g",
+          "label": "Replace Scythe",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Scythe"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Apon3t6_z3",
+              "label": "Soul Flail (A3, AP(1), Surge)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Flail",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "21wqftWoWz",
+              "label": "Dual Scythe (A2, AP(3), Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "5Cq49yBGsI",
+          "label": "Replace Cursed Shriek",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Cursed Shriek"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "hakVAZSmbF",
+              "label": "Soul Blast (9\u0022, A1, Assault, Bane)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "aV24fddnpq",
+              "label": "Scythe Blast (9\u0022, A1, AP(1), Assault, Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -359,11 +883,11 @@
       },
       "weapons": [
         {
-          "name": "Heavy Hand Weapon",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 1,
+          "attacks": 4,
+          "armorPenetration": 0,
           "specialRules": []
         }
       ],
@@ -393,30 +917,36 @@
       "items": [],
       "sections": [
         {
-          "id": "LMRgshR",
-          "label": "Replace Heavy Hand Weapon",
+          "id": "7qd_CWLOYs",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Heavy Hand Weapon"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "8xHNQz6",
-              "label": "Dual Heavy Hand Weapons (A4, AP(1))",
-              "cost": 5,
+              "id": "Ev62NhhnLf",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Dual Heavy Hand Weapons",
+                  "name": "Master Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 4,
+                  "attacks": 3,
                   "armorPenetration": 1,
-                  "specialRules": []
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -424,13 +954,37 @@
               "modelsGained": 0
             },
             {
-              "id": "QU-no_C",
-              "label": "Heavy Halberd (A3, AP(1), Rending)",
+              "id": "MvGsB0t7kd",
+              "label": "Master Glaive (A3, AP(1), Thrust)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Halberd",
+                  "name": "Master Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "G4dFApxBVR",
+              "label": "Master Halberd (A3, AP(1), Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Halberd",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
@@ -448,13 +1002,37 @@
               "modelsGained": 0
             },
             {
-              "id": "p467NAP",
-              "label": "Heavy Spear (A3, AP(1), Counter)",
-              "cost": 10,
+              "id": "sZYUhHla9R",
+              "label": "Master Scythe (A3, AP(2), Reap)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Spear",
+                  "name": "Master Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "G5y-70F-hK",
+              "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Spear",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
@@ -463,6 +1041,11 @@
                     {
                       "kind": "core",
                       "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -472,13 +1055,13 @@
               "modelsGained": 0
             },
             {
-              "id": "xDQlp49",
-              "label": "Heavy Scythe (A3, AP(2), Disintegrate)",
-              "cost": 10,
+              "id": "JRaW_L2pBB",
+              "label": "Master Soul Flail (A3, AP(2), Surge)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Scythe",
+                  "name": "Master Soul Flail",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
@@ -486,7 +1069,7 @@
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Disintegrate"
+                      "name": "Surge"
                     }
                   ]
                 }
@@ -496,21 +1079,123 @@
               "modelsGained": 0
             },
             {
-              "id": "BiOaaDpjCs",
-              "label": "Heavy Great Sword (A3, AP(2), Rending)",
+              "id": "dXLzio6Xue",
+              "label": "Master Great Weapon (A3, AP(4))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "3Ol4F0qsQI",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "BsXxwkvN",
+              "label": "Rapid Crossbow (18\u0022, A3, Rending), Strike (A1)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Great Sword",
+                  "name": "Rapid Crossbow",
                   "quantity": 1,
-                  "rangeInches": 0,
+                  "rangeInches": 18,
                   "attacks": 3,
-                  "armorPenetration": 2,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
                       "name": "Rending"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "TQgVC1qA",
+              "label": "Cursed Shriek (12\u0022, A1, Assault), Glaive (A3, Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cursed Shriek",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ir3ChkG624",
+              "label": "Soul Guardian Staff (A2, Spell Amplifier)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Guardian Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
                     }
                   ]
                 }
@@ -522,7 +1207,298 @@
           ]
         },
         {
-          "id": "vBBuWec",
+          "id": "FjiEJIpR",
+          "label": "Replace Glaive",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Glaive"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "eAdmlIiHUs",
+              "label": "Halberd (A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ma4TZ4I4",
+              "label": "Hand Weapon (A3, Parry(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "frOsoUuh",
+              "label": "Spear (A3, Counter, Brace(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "OYHnv5tK",
+              "label": "Scythe (A3, AP(1), Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "pxjSyJlQ",
+              "label": "Great Weapon (A3, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "2Xsp67Nc",
+              "label": "Soul Flail (A3, AP(1), Surge)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Flail",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9j6jYP__cr",
+          "label": "Replace Cursed Shriek",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Cursed Shriek"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "U6zafnPNGN",
+              "label": "Soul Blast (9\u0022, A1, Assault, Bane)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "LJBVWpliLv",
+              "label": "Scythe Blast (9\u0022, A1, AP(1), Assault, Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "qPJwkkSRCH",
+          "label": "Replace Rapid Crossbow",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rapid Crossbow"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "cji-nRI-op",
+              "label": "Scythe-Bolt Crossbow (18\u0022, A2, AP(3), Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe-Bolt Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "0BZX4HlxDJ",
+              "label": "Rapid Soul Crossbow (18\u0022, A3, AP(1), Indirect)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Soul Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "2MClttAw",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -532,35 +1508,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "XRmdlMe",
-              "label": "Ghost Steed (Fast, Impact(1))",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Ghost Steed",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Fast"
-                    },
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Impact",
-                      "numericValue": 1
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "XMTboSeVh8",
+              "id": "zV7PDksfqF",
               "label": "Chain-Spirit Companion (Repel Ambushers)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -579,20 +1529,132 @@
               "modelsGained": 0
             },
             {
-              "id": "cNkfyy6",
-              "label": "Monarch Throne (Herald (A2), Armor(4), Fear(1), Tough(3))",
-              "cost": 60,
+              "id": "13__NpD-x4",
+              "label": "Tormentor Steed (Ambush, Furious, Impact(1))",
+              "cost": 15,
               "costUnpriced": false,
-              "weaponsGained": [
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "name": "Herald",
+                  "name": "Tormentor Steed",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": []
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Furious"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    }
+                  ]
                 }
               ],
+              "modelsGained": 0
+            },
+            {
+              "id": "yeJpqi8v",
+              "label": "Stalker Steed (Fast, Impact(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Stalker Steed",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "O8EqFAIv",
+              "label": "Aggressor Steed (Fast, Furious, Impact(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Aggressor Steed",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Furious"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "Slr_NQFd",
+              "label": "Hexed Steed (Crossing Attack(1), Fast, Impact(1), Traversal)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Hexed Steed",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Crossing Attack",
+                      "numericValue": 1
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Traversal"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ZCMJkiL0nD",
+              "label": "Monarch Throne (Fear(2), Tough(3))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
@@ -601,13 +1663,8 @@
                   "rules": [
                     {
                       "kind": "coreNumeric",
-                      "name": "Armor",
-                      "numericValue": 4
-                    },
-                    {
-                      "kind": "coreNumeric",
                       "name": "Fear",
-                      "numericValue": 1
+                      "numericValue": 2
                     },
                     {
                       "kind": "coreNumeric",
@@ -620,44 +1677,25 @@
               "modelsGained": 0
             },
             {
-              "id": "AOciZgQ",
-              "label": "Great Steed (Horns (A1, Thrust), Armor(4), Fast, Impact(2), Tough(3), Traversal)",
-              "cost": 85,
+              "id": "AL0CRDj3gu",
+              "label": "Great Horned Steed (Fast, Heavy Impact(3), Tough(3), Traversal)",
+              "cost": 105,
               "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Horns",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Thrust"
-                    }
-                  ]
-                }
-              ],
+              "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Great Steed",
+                  "name": "Great Horned Steed",
                   "quantity": 1,
                   "rules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Armor",
-                      "numericValue": 4
-                    },
                     {
                       "kind": "core",
                       "name": "Fast"
                     },
                     {
                       "kind": "coreNumeric",
-                      "name": "Impact",
-                      "numericValue": 2
+                      "name": "Heavy Impact",
+                      "numericValue": 3
                     },
                     {
                       "kind": "coreNumeric",
@@ -676,7 +1714,7 @@
           ]
         },
         {
-          "id": "ofhgzr4",
+          "id": "x70A0jHr",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -686,9 +1724,30 @@
           "maxPicks": 1,
           "options": [
             {
+              "id": "6fKvYgMl",
+              "label": "Knight (Enhanced Empyrean Spirit Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Knight",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Empyrean Spirit Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "55LjuqMR",
               "label": "Warden (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -728,20 +1787,21 @@
               "modelsGained": 0
             },
             {
-              "id": "gwGy-0Tr",
-              "label": "Jailor (Scout Aura)",
-              "cost": 35,
+              "id": "k20PgVHC",
+              "label": "Soul Guardian (Caster(2))",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Jailor",
+                  "name": "Soul Guardian",
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Scout Aura"
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
                     }
                   ]
                 }
@@ -770,42 +1830,20 @@
               "modelsGained": 0
             },
             {
-              "id": "6fKvYgMl",
-              "label": "Knight (Empyrean Spirit Boost Aura)",
-              "cost": 40,
+              "id": "gwGy-0Tr",
+              "label": "Jailor (Scout Aura)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Knight",
+                  "name": "Jailor",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Empyrean Spirit Boost Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "k20PgVHC",
-              "label": "Soul Guardian (Caster(2))",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Soul Guardian",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Caster",
-                      "numericValue": 2
+                      "name": "Scout Aura"
                     }
                   ]
                 }
@@ -815,7 +1853,7 @@
             {
               "id": "iOZnyL9M",
               "label": "Master Soul Guardian (Caster(3))",
-              "cost": 65,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -855,10 +1893,10 @@
       },
       "weapons": [
         {
-          "name": "Hand Weapon",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 4,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -885,30 +1923,36 @@
       "items": [],
       "sections": [
         {
-          "id": "4N-Wycq",
-          "label": "Replace Hand Weapon",
+          "id": "IS07tDoAVF",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Hand Weapon"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "lW-AAdz",
-              "label": "Dual Hand Weapons (A4)",
+              "id": "TZNzsloFuM",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Dual Hand Weapons",
+                  "name": "Master Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 0,
-                  "specialRules": []
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -916,11 +1960,134 @@
               "modelsGained": 0
             },
             {
-              "id": "7F2QUqj",
-              "label": "Spear (A3, Counter)",
-              "cost": 5,
+              "id": "TY6ucVPXJA",
+              "label": "Master Halberd (A3, AP(1), Rending)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
+                {
+                  "name": "Master Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "u4aoZGavIW",
+              "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "fdIx-Kli-Y",
+              "label": "Master Glaive (A3, AP(1), Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "tX8LwQieXT",
+              "label": "Master Great Weapon (A3, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "R73cb2hnY2",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Cth6w5Xy43",
+              "label": "Cursed Shriek (12\u0022, A1, Assault), Spear (A3, Counter, Brace(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cursed Shriek",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
                 {
                   "name": "Spear",
                   "quantity": 1,
@@ -931,6 +2098,11 @@
                     {
                       "kind": "core",
                       "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -940,7 +2112,77 @@
               "modelsGained": 0
             },
             {
-              "id": "fQTG4XO",
+              "id": "QwLfv-pRPK",
+              "label": "Scythe-Bolt Crossbow (18\u0022, A2, AP(3), Reap), Strike (A1)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe-Bolt Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Rx5w0cj3Io",
+              "label": "Soul Guardian Staff (A2, Spell Amplifier)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Guardian Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "aQ-CoMQ",
+          "label": "Replace Spear",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Spear"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "lTdDD7zha_",
               "label": "Halberd (A3, Rending)",
               "cost": 5,
               "costUnpriced": false,
@@ -964,21 +2206,135 @@
               "modelsGained": 0
             },
             {
-              "id": "b6g7Cl2",
-              "label": "Great Sword (A3, AP(1), Rending)",
-              "cost": 10,
+              "id": "CA_xmlnrPE",
+              "label": "Hand Weapon (A3, Parry(3))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Sword",
+                  "name": "Hand Weapon",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "xppg5ywTq6",
+              "label": "Glaive (A3, Thrust)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "b6g7Cl2",
+              "label": "Great Weapon (A3, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "7oQDWAwUTj",
+          "label": "Replace Cursed Shriek",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Cursed Shriek"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "as9z4dEssC",
+              "label": "Soul Blast (9\u0022, A1, Assault, Bane)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "psRQsgzg9P",
+              "label": "Scythe Blast (9\u0022, A1, AP(1), Assault, Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
                   "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reap"
                     }
                   ]
                 }
@@ -990,32 +2346,30 @@
           ]
         },
         {
-          "id": "MkHPae1",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
+          "id": "Hr3WlDyRb4",
+          "label": "Replace Scythe-Bolt Crossbow",
+          "variant": "Replace",
           "affects": "One",
-          "targets": [],
+          "targets": [
+            "Scythe-Bolt Crossbow"
+          ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "esrVMF2x7s",
-              "label": "Soul Crossbow (18\u0022, A2, Indirect, Rending)",
-              "cost": 15,
+              "id": "9SiJMXSyk7",
+              "label": "Rapid Crossbow (18\u0022, A3, Rending)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Soul Crossbow",
+                  "name": "Rapid Crossbow",
                   "quantity": 1,
                   "rangeInches": 18,
-                  "attacks": 2,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Indirect"
-                    },
                     {
                       "kind": "core",
                       "name": "Rending"
@@ -1028,21 +2382,21 @@
               "modelsGained": 0
             },
             {
-              "id": "DT0v2vzo_G",
-              "label": "Crossbow (24\u0022, A2, Rending)",
-              "cost": 20,
+              "id": "EinIJnay_t",
+              "label": "Rapid Soul Crossbow (18\u0022, A3, AP(1), Indirect)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Crossbow",
+                  "name": "Rapid Soul Crossbow",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 2,
-                  "armorPenetration": 0,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Indirect"
                     }
                   ]
                 }
@@ -1054,8 +2408,8 @@
           ]
         },
         {
-          "id": "aSqP9qd",
-          "label": "Upgrade with",
+          "id": "SKMynr72JK",
+          "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
@@ -1064,9 +2418,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "DCCaNze5",
+              "id": "C-SOUmSqt4",
               "label": "Chain-Spirit Companion (Repel Ambushers)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1083,11 +2437,37 @@
                 }
               ],
               "modelsGained": 0
+            },
+            {
+              "id": "0W0Cu83sEl",
+              "label": "Stalker Steed (Fast, Impact(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Stalker Steed",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "wp4JS4R",
+          "id": "N1cDIC_7",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1097,30 +2477,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "yDyMBzoh",
-              "label": "Tormentor (Relentless Aura)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Tormentor",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Relentless Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "fmEVVPqi",
               "label": "Warden (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1160,20 +2519,42 @@
               "modelsGained": 0
             },
             {
-              "id": "GwjF3v-Xsq",
-              "label": "Jailor (Scout Aura)",
+              "id": "WFD4itOH",
+              "label": "Soul Guardian (Caster(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Soul Guardian",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "yDyMBzoh",
+              "label": "Tormentor (Relentless Aura)",
               "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Jailor",
+                  "name": "Tormentor",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Scout Aura"
+                      "name": "Relentless Aura"
                     }
                   ]
                 }
@@ -1202,21 +2583,20 @@
               "modelsGained": 0
             },
             {
-              "id": "WFD4itOH",
-              "label": "Soul Guardian (Caster(2))",
-              "cost": 40,
+              "id": "GwjF3v-Xsq",
+              "label": "Jailor (Scout Aura)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Soul Guardian",
+                  "name": "Jailor",
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Caster",
-                      "numericValue": 2
+                      "kind": "core",
+                      "name": "Scout Aura"
                     }
                   ]
                 }
@@ -1226,7 +2606,7 @@
             {
               "id": "QhUWO0iB",
               "label": "Master Soul Guardian (Caster(3))",
-              "cost": 65,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1271,7 +2651,13 @@
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Parry",
+              "numericValue": 1
+            }
+          ]
         }
       ],
       "rules": [
@@ -1287,7 +2673,7 @@
       "items": [],
       "sections": [
         {
-          "id": "ZRjfaMP",
+          "id": "Uyd0KkV",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1314,7 +2700,7 @@
             {
               "id": "67GQ1zq",
               "label": "Banner",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -1344,7 +2730,7 @@
           ]
         },
         {
-          "id": "0TZgsx-",
+          "id": "Cm76kgz",
           "label": "Replace all Hand Weapons",
           "variant": "Replace",
           "affects": "All",
@@ -1358,7 +2744,7 @@
             {
               "id": "fNNZ-ml",
               "label": "Halberd (A1, Rending)",
-              "cost": 25,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1381,8 +2767,8 @@
             },
             {
               "id": "CUotWbT",
-              "label": "Spear (A1, Counter)",
-              "cost": 25,
+              "label": "Spear (A1, Counter, Brace(1))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1395,6 +2781,11 @@
                     {
                       "kind": "core",
                       "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -1406,7 +2797,7 @@
           ]
         },
         {
-          "id": "CA5y-K8",
+          "id": "BZI3XUj0Vu",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1448,7 +2839,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 80,
+      "basePointCost": 60,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1457,15 +2848,15 @@
       },
       "weapons": [
         {
-          "name": "Scythe",
+          "name": "Halberd",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Disintegrate"
+              "name": "Rending"
             }
           ]
         }
@@ -1483,12 +2874,50 @@
       "items": [],
       "sections": [
         {
-          "id": "c-Z1-Nv",
-          "label": "Replace one Scythe",
+          "id": "7kTIDlkgHl",
+          "label": "Replace all Halberds",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Halberds"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "d6aa3up0rR",
+              "label": "Scythe (A1, AP(1), Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "fL5gOd_",
+          "label": "Replace one Halberd",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Scythe"
+            "Halberd"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -1496,8 +2925,8 @@
           "options": [
             {
               "id": "9Nh1vLG",
-              "label": "Death Bell (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "label": "Death Bell (A1, AP(1), Blast(3))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1505,14 +2934,176 @@
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 2,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
-                      "name": "Deadly",
+                      "name": "Blast",
                       "numericValue": 3
                     }
                   ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "n7_ue1AUbu",
+              "label": "Dual Scythe (A2, AP(3), Reap)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "53Pt8nw",
+      "name": "Scythed Ghosts",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 65,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Scythe-Claws",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reap"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ethereal"
+        },
+        {
+          "kind": "core",
+          "name": "Empyrean Spirit"
+        },
+        {
+          "kind": "core",
+          "name": "Spell Resistance"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "BZI3XUj0Vu",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "c-M9PhwNx0",
+              "label": "Soul Eater (Precision Feat)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Soul Eater",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Precision Feat"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "P6w_miECky",
+          "label": "Replace all Scythe-Claws",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Scythe-Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "o4mtdjCd_u",
+              "label": "Rust-Claws (A1, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rust-Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "03rXe9QgZH",
+              "label": "Razor-Claws (A2)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Razor-Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -1531,7 +3122,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 75,
+      "basePointCost": 65,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1564,119 +3155,104 @@
         },
         {
           "kind": "core",
-          "name": "Resistance"
+          "name": "Spell Resistance"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "sw9CHx8",
-          "label": "Upgrade all models with",
-          "variant": "Upgrade",
+          "id": "15lAIAAcq1",
+          "label": "Replace all Mourning Blades",
+          "variant": "Replace",
           "affects": "All",
-          "targets": [],
+          "targets": [
+            "Mourning Blades"
+          ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "VLZa62w",
-              "label": "Shriek (12\u0022, A1, AP(1))",
-              "cost": 30,
+              "id": "TwZKcNHaxW",
+              "label": "Reaping Sickle (A1, Shred)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Shriek",
+                  "name": "Reaping Sickle",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "3UHasOzE_X",
+              "label": "Cursed Shriek (12\u0022, A1, Assault), Dagger (A1)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cursed Shriek",
                   "quantity": 1,
                   "rangeInches": 12,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Dagger",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
                   "specialRules": []
                 }
               ],
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "53Pt8nw",
-      "name": "Scythed Ghosts",
-      "quality": 5,
-      "defense": 6,
-      "baseModelCount": 5,
-      "minModels": 5,
-      "maxModels": 5,
-      "basePointCost": 90,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Dual Scythe-Claws",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "specialRules": [
+            },
             {
-              "kind": "core",
-              "name": "Disintegrate"
-            }
-          ]
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Ethereal"
-        },
-        {
-          "kind": "core",
-          "name": "Empyrean Spirit"
-        },
-        {
-          "kind": "core",
-          "name": "Resistance"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "CA5y-K8",
-          "label": "Upgrade all models with",
-          "variant": "Upgrade",
-          "affects": "All",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "c-M9PhwNx0",
-              "label": "Soul Eater (Precision Feat)",
-              "cost": 10,
+              "id": "tsRUETzQih",
+              "label": "Mourning Shriek (12\u0022, A2, AP(1)), Strike (A1)",
+              "cost": 50,
               "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
+              "weaponsGained": [
                 {
-                  "name": "Soul Eater",
+                  "name": "Mourning Shriek",
                   "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Precision Feat"
-                    }
-                  ]
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
                 }
               ],
+              "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1691,7 +3267,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 85,
+      "basePointCost": 80,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1700,17 +3276,12 @@
       },
       "weapons": [
         {
-          "name": "Scythe",
+          "name": "Great Weapon",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Disintegrate"
-            }
-          ]
+          "armorPenetration": 2,
+          "specialRules": []
         }
       ],
       "rules": [
@@ -1730,12 +3301,12 @@
       "items": [],
       "sections": [
         {
-          "id": "cLFFf04",
-          "label": "Replace all Scythes",
+          "id": "o1z_4FP0LD",
+          "label": "Replace all Great Weapons",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Scythes"
+            "Great Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -1743,12 +3314,12 @@
           "options": [
             {
               "id": "7_Tnof-QWY",
-              "label": "Great Sword (A1, AP(1), Rending)",
+              "label": "Soul Flail (A1, AP(1), Surge)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Sword",
+                  "name": "Soul Flail",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
@@ -1756,7 +3327,70 @@
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "t6WXjtXp",
+          "label": "Replace one Great Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Great Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8aarMTtP",
+              "label": "Death Bell (A1, AP(1), Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Death Bell",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CB1HpO_gz1",
+              "label": "Dual Reaping Sickles (A4, Shred)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Reaping Sickles",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
                     }
                   ]
                 }
@@ -1777,7 +3411,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 120,
+      "basePointCost": 105,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1794,7 +3428,7 @@
           "specialRules": [
             {
               "kind": "core",
-              "name": "Disintegrate"
+              "name": "Reap"
             }
           ]
         }
@@ -1814,11 +3448,112 @@
         },
         {
           "kind": "core",
-          "name": "Resistance"
+          "name": "Spell Resistance"
         }
       ],
       "items": [],
-      "sections": []
+      "sections": [
+        {
+          "id": "TKghVmGIk7",
+          "label": "Replace all Scythes",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Scythes"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "cj0t0ACNiF",
+              "label": "Soul Flail (A1, AP(1), Surge)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Flail",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "M2VzxIba6M",
+          "label": "Replace one Soul Flail",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Soul Flail"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "YaRCiqqZWQ",
+              "label": "Dual Scythe (A2, AP(3), Reap)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "k_jdl_Gjk9",
+              "label": "Dual Reaping Sickles (A4, Shred)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Reaping Sickles",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "m0GGwdf",
@@ -1828,7 +3563,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 95,
+      "basePointCost": 75,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1837,7 +3572,7 @@
       },
       "weapons": [
         {
-          "name": "Soul Crossbow",
+          "name": "Crossbow",
           "quantity": 5,
           "rangeInches": 18,
           "attacks": 1,
@@ -1845,16 +3580,12 @@
           "specialRules": [
             {
               "kind": "core",
-              "name": "Indirect"
-            },
-            {
-              "kind": "core",
               "name": "Rending"
             }
           ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -1875,7 +3606,7 @@
       "items": [],
       "sections": [
         {
-          "id": "ZRjfaMP",
+          "id": "Uyd0KkV",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1932,7 +3663,7 @@
           ]
         },
         {
-          "id": "CA5y-K8",
+          "id": "BZI3XUj0Vu",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1944,7 +3675,7 @@
             {
               "id": "c-M9PhwNx0",
               "label": "Soul Eater (Precision Feat)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1965,33 +3696,96 @@
           ]
         },
         {
-          "id": "mfaBeMk",
-          "label": "Replace all Soul Crossbows",
+          "id": "ZN8wssFG3O",
+          "label": "Replace all Crossbows",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Soul Crossbows"
+            "Crossbows"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "9LzzjMK-zg",
-              "label": "Crossbow (24\u0022, A1, Rending)",
+              "id": "yGpfZlbmjg",
+              "label": "Soul Crossbow (18\u0022, A1, AP(1), Indirect)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Crossbow",
+                  "name": "Soul Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "4AbENixjL0",
+          "label": "Replace one Crossbow",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Crossbow"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "URGjTLNWrs",
+              "label": "Soul-Blast Crossbow (24\u0022, A1, Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul-Blast Crossbow",
                   "quantity": 1,
                   "rangeInches": 24,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "KDT1M3X07Q",
+              "label": "Scythe-Bolt Crossbow (18\u0022, A2, AP(3), Reap)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe-Bolt Crossbow",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Reap"
                     }
                   ]
                 }
@@ -2012,7 +3806,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 155,
+      "basePointCost": 115,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -2021,15 +3815,20 @@
       },
       "weapons": [
         {
-          "name": "Howl",
+          "name": "Banshee Cry",
           "quantity": 5,
-          "rangeInches": 12,
+          "rangeInches": 9,
           "attacks": 2,
-          "armorPenetration": 1,
-          "specialRules": []
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
         },
         {
-          "name": "Claws",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2048,21 +3847,93 @@
         },
         {
           "kind": "core",
-          "name": "Resistance"
+          "name": "Spell Resistance"
         }
       ],
       "items": [],
-      "sections": []
+      "sections": [
+        {
+          "id": "QSqU0hJv0Y",
+          "label": "Replace all Banshee Cries",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Banshee Cries"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "E5xBDuixbS",
+              "label": "Haunting Howl (12\u0022, A2, AP(1))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Haunting Howl",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "1UuLrdV-Y9",
+          "label": "Replace one Banshee Cry",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Banshee Cry"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "SRmyia8Bt8",
+              "label": "Bone-Chilling Screech (9\u0022, A4, Shred)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bone-Chilling Screech",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "6RvcG75",
       "name": "Ghost Swarms",
-      "quality": 4,
+      "quality": 5,
       "defense": 6,
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 140,
+      "basePointCost": 145,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.968504,
@@ -2071,10 +3942,18 @@
       },
       "weapons": [
         {
-          "name": "Swarm Attacks",
+          "name": "Ghostly Shriek",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -2095,11 +3974,51 @@
         },
         {
           "kind": "core",
-          "name": "Resistance"
+          "name": "Spell Resistance"
         }
       ],
       "items": [],
-      "sections": []
+      "sections": [
+        {
+          "id": "0RoIW0nF0_",
+          "label": "Replace all Ghostly Shrieks and Strikes",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Ghostly Shrieks",
+            "Strikes"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "y8tHKv-d1t",
+              "label": "Grasping Ghosts (A3, AP(1), Surge)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Grasping Ghosts",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "gm_qxr_",
@@ -2109,7 +4028,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 105,
+      "basePointCost": 95,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2122,11 +4041,11 @@
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Rending"
+              "name": "Thrust"
             }
           ]
         }
@@ -2143,17 +4062,24 @@
         {
           "kind": "core",
           "name": "Fast"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 1
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Trample",
+          "quantity": 5,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Impact",
+              "numericValue": 1
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "ZRjfaMP",
+          "id": "Uyd0KkV",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -2210,7 +4136,7 @@
           ]
         },
         {
-          "id": "CA5y-K8",
+          "id": "BZI3XUj0Vu",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2241,6 +4167,44 @@
               "modelsGained": 0
             }
           ]
+        },
+        {
+          "id": "_UNwpaR1vp",
+          "label": "Replace all Tramples",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Tramples"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "2dalAwZlF2",
+              "label": "Cursed Shriek (12\u0022, A1, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cursed Shriek",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
         }
       ]
     },
@@ -2252,7 +4216,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 100,
+      "basePointCost": 135,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -2261,15 +4225,15 @@
       },
       "weapons": [
         {
-          "name": "Scythe",
+          "name": "Halberd",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Disintegrate"
+              "name": "Rending"
             }
           ]
         }
@@ -2290,12 +4254,118 @@
         {
           "kind": "core",
           "name": "Traversal"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 1
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "KmHzE-G",
+          "id": "8KtWg3bX1h",
+          "label": "Replace all Halberds",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Halberds"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "S13CpX0Jj5",
+              "label": "Scythe (A1, AP(1), Reap)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9u2fIQWu",
+          "label": "Replace one Halberd",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Halberd"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "krNMHvAq",
+              "label": "Death Bell (A1, AP(1), Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Death Bell",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "F8uLSnUO",
+              "label": "Dual Scythe (A2, AP(3), Reap)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Scythe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reap"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "YzvLS48Y",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -2347,10 +4417,237 @@
       },
       "weapons": [
         {
-          "name": "Heavy Hand Weapon",
+          "name": "Great Weapon",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ethereal"
+        },
+        {
+          "kind": "core",
+          "name": "Empyrean Spirit"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        }
+      ],
+      "items": [
+        {
+          "name": "Trample",
+          "quantity": 5,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Impact",
+              "numericValue": 1
+            }
+          ]
+        },
+        {
+          "name": "Tormentor",
+          "quantity": 5,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Ambush"
+            }
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "r9eEAIWDV9",
+          "label": "Replace all Great Weapons",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Great Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "WGZBZMxcXD",
+              "label": "Soul Flail (A1, AP(1), Surge)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Flail",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "kzLNa6Lj",
+          "label": "Replace one Great Weapon and Trample",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Great Weapon",
+            "Trample"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "g0Eo1_FL",
+              "label": "Death Bell (A1, AP(1), Blast(3)), Trample (Impact(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Death Bell",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trample",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "x-XkQ9Bv",
+              "label": "Dual Reaping Sickles (A4, Shred)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Reaping Sickles",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "91k_j7Q",
+          "label": "Replace all Tormentors",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Tormentors"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "u32jAdY",
+              "label": "Aggressor (Fast)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Aggressor",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rDVz1we",
+      "name": "Ghost Chariot",
+      "quality": 4,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 160,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Banshee Cry",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
+        },
+        {
+          "name": "Hooves",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
           "armorPenetration": 1,
           "specialRules": []
         }
@@ -2362,54 +4659,226 @@
         },
         {
           "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 1
+          "name": "Tough",
+          "numericValue": 6
         },
         {
           "kind": "core",
           "name": "Empyrean Spirit"
-        }
-      ],
-      "items": [
+        },
         {
-          "name": "Aggressor",
-          "quantity": 5,
-          "rules": [
-            {
-              "kind": "core",
-              "name": "Fast"
-            }
-          ]
+          "kind": "core",
+          "name": "Spell Resistance"
+        },
+        {
+          "kind": "core",
+          "name": "Fast"
         }
       ],
+      "items": [],
       "sections": [
         {
-          "id": "-5dn7lL",
-          "label": "Replace all Aggressors",
+          "id": "DzjCN4UHiE",
+          "label": "Replace Banshee Cry",
           "variant": "Replace",
-          "affects": "All",
+          "affects": "One",
           "targets": [
-            "Aggressors"
+            "Banshee Cry"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "u32jAdY",
-              "label": "Tormentor (Ambush)",
+              "id": "h9BJqaDmUP",
+              "label": "Bone-Chilling Screech (9\u0022, A6, Shred)",
               "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bone-Chilling Screech",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "UYujjL7DDd",
+              "label": "Mourning Blade Crew (A3, Bane), Chariot Shock (Impact(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mourning Blade Crew",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Chariot Shock",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 4
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "gNDLXGuwCp",
+              "label": "Haunting Howl (12\u0022, A6, AP(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Haunting Howl",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Pn2DN4BufD",
+          "label": "Replace Mourning Blade Crew",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Mourning Blade Crew"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "rskkFDFtkZ",
+              "label": "Reaping Sickle Crew (A3, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Reaping Sickle Crew",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "0lIjvQMGfw",
+              "label": "Glaive Crew (A3, Thrust)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Glaive Crew",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "pe2-nKRa",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "yy846szV",
+              "label": "Eternal Haunt (Bane Mark)",
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Tormentor",
+                  "name": "Eternal Haunt",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Ambush"
+                      "name": "Bane Mark"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "phplqbCW8d",
+              "label": "Soul Guardian (Caster(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Soul Guardian",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
                     }
                   ]
                 }
@@ -2428,7 +4897,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 155,
+      "basePointCost": 165,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -2437,25 +4906,25 @@
       },
       "weapons": [
         {
-          "name": "Heavy Scythe Crew",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 2,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Disintegrate"
-            }
-          ]
-        },
-        {
           "name": "Hooves",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 2,
-          "armorPenetration": 0,
+          "armorPenetration": 1,
           "specialRules": []
+        },
+        {
+          "name": "Scythe Crew",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reap"
+            }
+          ]
         }
       ],
       "rules": [
@@ -2470,11 +4939,6 @@
         },
         {
           "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 4
-        },
-        {
-          "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 6
         },
@@ -2487,126 +4951,121 @@
           "name": "Fast"
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Wagon Charge",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Impact",
+              "numericValue": 4
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "qXdBNmC",
-          "label": "Upgrade with",
-          "variant": "Upgrade",
+          "id": "mecC3VSLWh",
+          "label": "Replace Scythe Crew and Wagon Charge",
+          "variant": "Replace",
           "affects": "One",
-          "targets": [],
+          "targets": [
+            "Scythe Crew",
+            "Wagon Charge"
+          ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "yy846szV",
-              "label": "Eternal Haunt (Bane Mark)",
-              "cost": 30,
+              "id": "a6560TPNEq",
+              "label": "Soul Flail Crew (A3, AP(1), Surge), Wagon Charge (Impact(4))",
+              "cost": 5,
               "costUnpriced": false,
-              "weaponsGained": [],
+              "weaponsGained": [
+                {
+                  "name": "Soul Flail Crew",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Eternal Haunt",
+                  "name": "Wagon Charge",
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Bane Mark"
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 4
                     }
                   ]
                 }
               ],
               "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rDVz1we",
-      "name": "Ghost Chariot",
-      "quality": 4,
-      "defense": 4,
-      "baseModelCount": 1,
-      "minModels": 1,
-      "maxModels": 1,
-      "basePointCost": 220,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "weapons": [
-        {
-          "name": "Howl",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 6,
-          "armorPenetration": 1,
-          "specialRules": []
-        },
-        {
-          "name": "Crew Attacks",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": [
+            },
             {
-              "kind": "core",
-              "name": "Thrust"
+              "id": "F_0tWpnwfR",
+              "label": "Crossbow Crew (18\u0022, A6, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Crossbow Crew",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "LBq4BuwO0n",
+              "label": "Soul Crossbow Crew (18\u0022, A6, AP(1), Indirect)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Crossbow Crew",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "name": "Hooves",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "rules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Caster",
-          "numericValue": 2
-        },
-        {
-          "kind": "core",
-          "name": "Ethereal"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Impact",
-          "numericValue": 4
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Empyrean Spirit"
-        },
-        {
-          "kind": "core",
-          "name": "Resistance"
-        },
-        {
-          "kind": "core",
-          "name": "Fast"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "qXdBNmC",
+          "id": "IwDM-5yq",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -2616,9 +5075,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "yy846szV",
+              "id": "SO0sAPKw",
               "label": "Eternal Haunt (Bane Mark)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2643,41 +5102,50 @@
   ],
   "ruleDefinitions": [
     {
-      "name": "Disintegrate",
+      "name": "Spell Resistance",
       "passive": [
         {
           "hookID": "Shooting_OnSaveRollComplete",
           "condition": {
-            "kind": "always"
+            "kind": "and",
+            "left": {
+              "kind": "isSpell"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
           },
           "effect": {
-            "kind": "ignoreRule",
-            "ruleName": "Regeneration"
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 2
           },
           "lifetime": "ThisAttack",
-          "seat": "Actor"
+          "seat": "Subject"
         },
         {
-          "hookID": "Shooting_OnHitRollComplete",
+          "hookID": "Shooting_OnSaveRollComplete",
           "condition": {
-            "kind": "statGreaterOrEqualTo",
-            "stat": "Defense",
-            "statValue": 2
+            "kind": "and",
+            "left": {
+              "kind": "isNotSpell"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
           },
           "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Save",
-            "delta": -2
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 6
           },
           "lifetime": "ThisAttack",
-          "seat": "Actor"
+          "seat": "Subject"
         }
       ],
       "activated": [],
-      "scope": "Weapon",
+      "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Ignores Regeneration. Against units with Defense 2\u002B, this weapon gets AP(\u002B2)."
+      "description": "When a unit where most models have this rule takes wounds, roll one die for each. If the wound was from a spell, then it is ignored on a 2\u002B. If the wound was not from a spell, then it is ignored on a 6\u002B instead."
     },
     {
       "name": "Bane Mark",
@@ -2696,7 +5164,8 @@
             "requireLineOfSight": true,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "markTarget",
@@ -2711,7 +5180,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Bane."
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which friendly units gets Bane on their weapons when attacking against once (next time the effect would apply)."
     },
     {
       "name": "Banner",
@@ -2719,7 +5188,7 @@
         {
           "hookID": "Morale_OnPreMoraleTest",
           "condition": {
-            "kind": "always"
+            "kind": "moraleTestFromShootingOrMelee"
           },
           "effect": {
             "kind": "rollModifier",
@@ -2734,7 +5203,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit gets \u002B1 to morale test rolls."
+      "description": "This model and its unit get \u002B1 to Morale Test rolls triggered by shooting or melee."
     },
     {
       "name": "Musician",
@@ -2789,7 +5258,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit moves \u002B1 inch on Advance, Rush and Charge actions."
+      "description": "This model and its unit move \u002B1\u0022 when using move actions."
     },
     {
       "name": "Sergeant",
@@ -2797,13 +5266,12 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
+            "kind": "always"
           },
           "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
-            "count": 1
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -2813,24 +5281,28 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model attacks, unmodified results of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
+      "description": "This model gets AP(\u002B1) when attacking."
     },
     {
-      "name": "Armor",
+      "name": "Heavy Impact",
       "passive": [
         {
-          "hookID": "Lifecycle_OnUnitCreated",
+          "hookID": "Melee_OnChargeContact",
           "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "setDefense",
-            "defense": {
-              "kind": "arg",
-              "index": 0
+            "kind": "not",
+            "inner": {
+              "kind": "countsAsFatiguedInMelee"
             }
           },
-          "lifetime": "UntilEndOfGame",
+          "effect": {
+            "kind": "chargeImpactHits",
+            "diceCount": {
+              "kind": "arg",
+              "index": 0
+            },
+            "armorPenetration": 1
+          },
+          "lifetime": "ThisAttack",
           "seat": "Actor"
         }
       ],
@@ -2838,7 +5310,7 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+      "description": "Counts as having Impact(X) with hits that have AP(1)."
     },
     {
       "name": "Repel Ambushers",
@@ -2863,6 +5335,44 @@
       "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
     },
     {
+      "name": "Bane on their weapons when attacking",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "isNotSpell"
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue",
+              "minValue": 6
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "isNotSpell"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Gets Bane on its weapons when attacking."
+    },
+    {
       "name": "No Retreat Aura",
       "passive": [
         {
@@ -2885,6 +5395,53 @@
       "description": "This model and its unit get No Retreat."
     },
     {
+      "name": "Reap",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "targetShakenOrFatigued"
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue",
+              "minValue": 5
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When attacking units that are Shaken or Fatigued, the target must re-roll successful unmodified Defense results of 5-6."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
+    },
+    {
       "name": "Empyrean Spirit",
       "passive": [
         {
@@ -2892,11 +5449,12 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "attackedFromOverInches",
-              "distanceInches": 9
+              "kind": "attackedFromOver",
+              "shootInches": 9,
+              "chargeInches": 6
             },
             "right": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             }
           },
           "effect": {
@@ -2912,62 +5470,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
-    },
-    {
-      "name": "Empyrean Spirit Boost",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollModifier",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "attackedFromOverInches",
-                "distanceInches": 9
-              }
-            },
-            "right": {
-              "kind": "allModelsHaveThisRule"
-            }
-          },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Hit",
-            "delta": -1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Subject"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Enemies attacking this unit always get -1 to hit from Empyrean Spirit (not only from over 9 inches away)."
-    },
-    {
-      "name": "Empyrean Spirit Boost Aura",
-      "passive": [
-        {
-          "hookID": "Lifecycle_OnUnitCreated",
-          "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "aura",
-            "ruleName": "Empyrean Spirit Boost"
-          },
-          "lifetime": "UntilEndOfGame",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "This model and its unit gain Empyrean Spirit Boost."
+      "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\u0022/6\u0022 away get -1 to hit rolls."
     },
     {
       "name": "Traversal",
@@ -2988,7 +5491,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This unit\u0027s models may pass through other units, friendly or enemy, while moving."
+      "description": "May move through friendly and enemy units."
     },
     {
       "name": "Ethereal",
@@ -2996,8 +5499,18 @@
         {
           "hookID": "Movement_OnMoveActionDeclared",
           "condition": {
-            "kind": "actionTypeIs",
-            "actionType": "Advance"
+            "kind": "and",
+            "left": {
+              "kind": "actionTypeIs",
+              "actionType": "Advance"
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "TeleportedThisActivation"
+              },
+              "minCount": 1
+            }
           },
           "effect": {
             "kind": "movementBonus",
@@ -3011,8 +5524,18 @@
         {
           "hookID": "Movement_OnMoveActionDeclared",
           "condition": {
-            "kind": "actionTypeIs",
-            "actionType": "Rush"
+            "kind": "and",
+            "left": {
+              "kind": "actionTypeIs",
+              "actionType": "Rush"
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "TeleportedThisActivation"
+              },
+              "minCount": 1
+            }
           },
           "effect": {
             "kind": "movementBonus",
@@ -3026,8 +5549,18 @@
         {
           "hookID": "Movement_OnMoveActionDeclared",
           "condition": {
-            "kind": "actionTypeIs",
-            "actionType": "Charge"
+            "kind": "and",
+            "left": {
+              "kind": "actionTypeIs",
+              "actionType": "Charge"
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "TeleportedThisActivation"
+              },
+              "minCount": 1
+            }
           },
           "effect": {
             "kind": "movementBonus",
@@ -3053,13 +5586,14 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "teleport"
           },
           "availableWhen": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "label": ""
         }
@@ -3067,7 +5601,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Neutral",
-      "description": "Once per activation, before attacking, place each model fully within 6 inches of its position. Moves -6 inches on Advance and on Rush/Charge."
+      "description": "Once per activation, before attacking, you may place this model anywhere fully within 6\u0022 of its position. If you do, this model moves -6\u0022 when using Advance, and -6\u0022 when using Rush/Charge until the end of that activation."
     },
     {
       "name": "Precision Feat",
@@ -3086,7 +5620,8 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "addRule",
@@ -3094,7 +5629,7 @@
             "scope": "ThisActivation"
           },
           "availableWhen": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "label": "Precision Feat"
         }
@@ -3102,7 +5637,70 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per game, at the start of its activation, this unit may take \u002B1 to hit rolls for that activation."
+      "description": "Once per game, when this unit attacks, you may use this rule so that all models with this rule in it get \u002B1 to hit rolls."
+    },
+    {
+      "name": "Enhanced Empyrean Spirit",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Empyrean Spirit"
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackedFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "mostModelsHaveThisRule"
+              }
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If most models in this unit have Empyrean Spirit, enemies attacking them always get -1 to hit rolls from Empyrean Spirit (instead of only when shooting/charging from over 9\u0022/6\u0022 away)."
+    },
+    {
+      "name": "Enhanced Empyrean Spirit Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Enhanced Empyrean Spirit"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Enhanced Empyrean Spirit."
     },
     {
       "name": "No Retreat",
@@ -3124,7 +5722,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When a unit where most models have this rule fails a morale test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can\u0027t be ignored."
+      "description": "When a unit where most models have this rule fails a Morale Test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can\u0027t be ignored."
     },
     {
       "name": "Precision Feat Boost",
@@ -3162,32 +5760,34 @@
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Empyrean Spirit Boost",
+        "ruleName": "Enhanced Empyrean Spirit",
         "scope": "NextTrigger"
       }
     },
     {
-      "name": "Dread Shriek",
+      "name": "Reaping Terror",
       "threshold": 1,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 6,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
-        "requireLineOfSight": true,
+        "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 2,
+        "count": 3,
         "withRules": [
-          "Surge"
+          "Reap"
         ],
         "armorPenetration": 1
       }
@@ -3200,18 +5800,19 @@
         "minCount": 1,
         "maxCount": 2,
         "targetAffinity": "Foe",
-        "requireLineOfSight": false,
+        "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "Bane when attacking"
+        "ruleName": "Bane on their weapons when attacking"
       }
     },
     {
-      "name": "Reaping Terror",
+      "name": "Dread Shriek",
       "threshold": 2,
       "target": {
         "rangeInches": 12,
@@ -3221,13 +5822,14 @@
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
         "count": 4,
         "withRules": [
-          "Disintegrate"
+          "Surge"
         ],
         "armorPenetration": 0
       }
@@ -3236,14 +5838,15 @@
       "name": "Vicious Spirits",
       "threshold": 3,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 3,
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
@@ -3255,14 +5858,15 @@
       "name": "Eat Soul",
       "threshold": 3,
       "target": {
-        "rangeInches": 18,
+        "rangeInches": 24,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",

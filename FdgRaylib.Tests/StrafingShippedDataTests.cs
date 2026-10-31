@@ -15,14 +15,13 @@ namespace FdgRaylib.Tests;
 
 // #197 Strafing / #431 Crossing Strike - the strafe weapons in the shipped books. 3.6 renamed Strafing to Crossing
 // Strike (a GDF supplement rule, the same activated ability - WeaponRules36ShippedDataTests pins it), and #436 deleted
-// the catalog Strafing, retiring this file's catalog-shape tests and its "12 references resolve" pin. The bundled
-// books are still the 3.5 bake until #438, so their Strafing references are dead in the interim (the #168 drop);
-// the re-bake gives the bombs Crossing Strike.
+// the catalog Strafing, retiring this file's catalog-shape tests and its "12 references resolve" pin. Since the #438
+// 3.6.0 re-bake every strafe bomb carries Crossing Strike (no shipped book names Strafing), so only that name is read.
 //
 // What is still pinned is the property whose failure mode is silent: neither rule grants a fly-over, so every carrier
 // needs Aircraft or Flying of its own. If an import adds a strafe bomb to a grounded unit, the weapon can never be
-// used - the engine warns, but a shipped book should never reach that state. It reads both names so it holds before
-// and after the re-bake. The mechanism is pinned engine-side by StrafingRuleIntegrationTests.
+// used - the engine warns, but a shipped book should never reach that state. The mechanism is pinned engine-side by
+// StrafingRuleIntegrationTests.
 [TestFixture]
 public class StrafingShippedDataTests
 {
@@ -74,8 +73,7 @@ public class StrafingShippedDataTests
         ArmyListRuleResolution.DescribeRuleEntry(rule).lookupName;
 
     private static bool IsStrafing(SpecialRuleEntry rule) =>
-        string.Equals(NameOf(rule), "Strafing", StringComparison.OrdinalIgnoreCase)
-        || string.Equals(NameOf(rule), "Crossing Strike", StringComparison.OrdinalIgnoreCase);
+        string.Equals(NameOf(rule), "Crossing Strike", StringComparison.OrdinalIgnoreCase);
 
     private static bool CanFly(IEnumerable<string> ruleNames) => ruleNames.Any(name =>
         string.Equals(name, "Flying", StringComparison.OrdinalIgnoreCase)

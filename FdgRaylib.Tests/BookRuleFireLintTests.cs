@@ -24,15 +24,8 @@ public class BookRuleFireLintTests
 {
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>
     {
-        ["Unique"] = "list-building marker: no dispatch entries; enforced at army-build time by " +
-            "ListValidator ('the army may only include one copy'), never during play.",
+        // #438: "Unique" left with the 3.5 books (3.6 books carry the catalog "Unique Hero").
         ["Ethereal"] = "activated teleport enacted by TeleportStage (routed on Effect.Teleport), not by operations.",
-        // #422: the bundled 3.5 AoF-ChivalrousKingdoms book embeds the 3.5 "Counter in Melee", whose second entry
-        // is Counter's dropped impact facet (reduceImpactDicePerModel) - a deliberate no-op since OPR 3.6 moved
-        // that facet to Brace(X). The #438 re-bake embeds the 3.6 definition (Counter only), which passes; this
-        // entry then goes stale and must be removed.
-        ["Counter in Melee"] = "3.5 copy in AoF-ChivalrousKingdoms keeps the inert legacy impact facet until the " +
-            "#438 re-bake (#422).",
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

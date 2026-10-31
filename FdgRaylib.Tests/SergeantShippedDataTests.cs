@@ -29,7 +29,7 @@ public class SergeantShippedDataTests
 
     private static readonly string[] Books =
     {
-        "DaemonsofChange", "DaemonsofLust", "DaemonsofPlague", "DaemonsofWar",
+        "DaemonsofChange", "DaemonsofLust", "DaemonsofPlague", "DaemonsofWar", // #438: 3.6 names (3.5 "Wormhole Daemons of X")
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
@@ -117,8 +117,9 @@ public class SergeantShippedDataTests
                 .Single(d => d.Name == RuleName);
 
             Assert.That(embedded.Scope, Is.EqualTo(ERuleScope.Weapon), bookName);
-            Assert.That(embedded.Passive.Single().Effect, Is.InstanceOf<Effect.AddExtraHit>(),
-                $"{bookName}: the embedded copy carries the extra-hit body - re-run --apply-rules");
+            // #438: the 3.6 body (AP(+1), the supplement pinned above) - the 3.5 books embedded the extra-hit one.
+            Assert.That(embedded.Passive.Single().Effect, Is.EqualTo(new Effect.RollModifier(ERollKind.Save, -1)),
+                $"{bookName}: the embedded copy carries the supplement's AP(+1) body - re-run --apply-rules");
         }
     }
 

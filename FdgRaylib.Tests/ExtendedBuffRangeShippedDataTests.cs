@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 // #197 Extended Buff Range - the HDF radios: "relay non-spell Hero picks across 24in via another friendly
-// unit with the rule." A dead no-definition name (9 refs, all Field/Vehicle Radio items) until 2026-07-29:
+// unit with the rule." A dead no-definition name (9 refs in 3.5, all Field/Vehicle Radio items; 14 in 3.6 with Voidspace Stalkers) until 2026-07-29:
 // the bearer now answers Lifecycle_OnCapabilityQuery with enableBuffRelay(12), and AbilityTargeting lets a
 // FRIENDLY pick measure from the bearer's position - the ability twin of Spell Conduit, minus the roll
 // bonus. The mechanism (both relay legs, the Foe/sight gates, the stage pipeline) is pinned engine-side by
@@ -81,17 +81,21 @@ public class ExtendedBuffRangeShippedDataTests
         }
     }
 
+    // #438: the 3.6.0 census adds the new Voidspace Stalkers' five "Radio Operator" items to HDF's nine radios
+    // (checked against the 2026-10-30 snapshots: every option item carrying the rule, per unit).
     [Test]
-    public void EveryReference_IsARadioItemInHumanDefenseForce()
+    public void EveryReference_IsARadioItem_InHumanDefenseForceOrVoidspaceStalkers()
     {
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites.Count, Is.EqualTo(9),
-            "the audit's 9 references - a change here means the corpus moved, not the engine");
-        Assert.That(sites.Select(s => s.Book).Distinct(), Is.EquivalentTo(new[] { "HumanDefenseForce" }));
+        Assert.That(sites.Count, Is.EqualTo(14),
+            "the 3.6.0 census's 14 references - a change here means the corpus moved, not the engine");
+        Assert.That(sites.Count(s => s.Book == "HumanDefenseForce"), Is.EqualTo(9));
+        Assert.That(sites.Select(s => s.Book).Distinct(),
+            Is.EquivalentTo(new[] { "HumanDefenseForce", "VoidspaceStalkers" }));
         Assert.That(sites.Select(s => s.Item).Distinct(),
-            Is.EquivalentTo(new[] { "Field Radio", "Vehicle Radio" }),
-            "infantry carry Field Radios, vehicles carry Vehicle Radios - both grant the same rule");
+            Is.EquivalentTo(new[] { "Field Radio", "Vehicle Radio", "Radio Operator" }),
+            "infantry carry Field Radios, vehicles carry Vehicle Radios, Stalkers a Radio Operator - all grant the same rule");
     }
 
     [Test]

@@ -31,20 +31,9 @@ public class BookSpellCoverageTests
     // bundled book resolves; a stale entry (the name starts resolving) fails the fixture too.
     // Still empty after #378 bundled the AoF books: their spells' references all resolve (the known
     // #381 Retreating Strike gap is unit-attached in Dark Elves, pinned by BookRuleCensusTests).
-    // #422: OPR 3.6 dropped Counter-Attack; two bundled 3.5 spells (AoF-Orcs "Evil Gaze", ElvenJesters
-    // "Asphyxiating Fog") still grant it. Their 3.6 text grants "Counter in Melee once" instead - the #438/#439
-    // re-bake and spell re-import pick that up; remove this entry then.
-    private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>
-    {
-        ["Counter-Attack"] = "dropped by OPR 3.6 (#422); 3.5 spells grant it until the #438/#439 re-import",
-        // #436: more 3.5 catalog rules 3.6 dropped, still granted by bundled 3.5 spells (Brutal Massacre, Magic
-        // Arrows, Dark Isle Spirit, Rune of Piercing, Battle Guts, ...). Remove with the #438/#439 re-import.
-        ["Crack"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Harassing Boost"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Piercing Assault"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Piercing Hunter"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Resistance"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-    };
+    // #422 / #436 entries (Counter-Attack, Crack, Harassing Boost, Piercing Assault / Hunter, Resistance) went
+    // stale with the #438 3.6.0 re-bake and were removed - empty again.
+    private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>();
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 

@@ -17,7 +17,7 @@ namespace FdgRaylib.Tests;
 
 // #197 Armor(X) - "Counts as having Defense X+ in place of the model's own Defense stat." #196 shipped a
 // zero-hook marker so the name resolved and the description showed, but the mechanic was absent: every one
-// of the 11 corpus sites is a paid upgrade (Heavy Armor, mounts, chariots) whose OTHER bundled rules
+// of the 11 (3.5) corpus sites is a paid upgrade (Heavy Armor, mounts, chariots) whose OTHER bundled rules
 // (Tough, Fast, Strider) all worked, while the defense half silently did nothing. The 2026-07-29 slice
 // authored the mechanic on Tough's creation seam - Lifecycle_OnUnitCreated -> setDefense(Arg(0)) - so
 // UnitCreationRules writes the unit's Defense stat once and every save path (volleys, melee, impact,
@@ -81,18 +81,23 @@ public class ArmorShippedDataTests
         }
     }
 
+    // #438: OPR 3.6 made Armor(X) the common shield / extra-armor / frame item rule - 233 option-item grants
+    // across 45 GDF books (3.5: 11 across seven), checked against the 3.6.0 snapshots (2026-10-30 re-fetch:
+    // every Armor in an upgrade option's item `content`, per unit; ratings 2 x207, 3 x12, 4 x11, 5 x3). The 43
+    // base-loadout items (Combat / Energy Shields) are not option grants and not counted here.
     [Test]
-    public void EveryReference_IsAnItemGrantAcrossSevenBooks()
+    public void EveryReference_IsAnItemGrant_The36Census()
     {
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites.Count, Is.EqualTo(11),
-            "the audit's 11 references - a change here means the corpus moved, not the engine");
-        Assert.That(sites.Select(s => s.Book).Distinct(), Is.EquivalentTo(new[]
+        Assert.That(sites.Count, Is.EqualTo(233),
+            "the 3.6.0 census's 233 option-item grants - a change here means the corpus moved, not the engine");
+        Assert.That(sites.Select(s => s.Book).Distinct().Count(), Is.EqualTo(45));
+        Assert.That(sites.Select(s => s.Book).Distinct(), Is.SupersetOf(new[]
         {
             "DarkElfRaiders", "GoblinReclaimers", "HumanDefenseForce", "SaurianStarhosts",
-            "DaemonsofChange", "DaemonsofLust", "DaemonsofWar",
-        }));
+            "DaemonsofChange", "DaemonsofLust", "DaemonsofWar", "VoidspaceStalkers",
+        }), "the 3.5 carriers (under their 3.6 names) are still among them");
         Assert.That(sites.Select(s => s.ArmorValue), Is.All.InRange(2, 5),
             "every authored X is a plausible Defense value");
     }

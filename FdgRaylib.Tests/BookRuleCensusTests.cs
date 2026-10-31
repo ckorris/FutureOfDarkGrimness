@@ -26,33 +26,10 @@ public class BookRuleCensusTests
     // fails the fixture too - that is the reminder to delete it when the blocking item lands.
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-        // Empty from #381 (Retreating Strike, the last dead AoF name) until #422. Add entries only for a
-        // name that is KNOWINGLY dead, with the item that owns it.
-        //
-        // #422: OPR 3.6 dropped Counter-Attack and its Aura, so the core catalog no longer defines them, but
-        // the bundled 3.5 books still name them (15 books, 36 references) until #438 re-bakes the corpus from
-        // the 3.6 sources. A list naming them loads with the "not implemented" diagnostic. Remove both
-        // entries once #438 lands - AllowlistedNamesAreStillDeadSomewhere fails until you do.
-        ["Counter-Attack"] = "dropped by OPR 3.6 (#422); bundled 3.5 books name it until the #438 re-bake",
-        ["Counter-Attack Aura"] = "dropped by OPR 3.6 (#422); bundled 3.5 books name it until the #438 re-bake",
-        // #436: the rest of the 3.5 catalog rules 3.6 dropped, deleted on the same terms (CoreRuleCatalog; legacy
-        // load pinned by Dropped35CatalogLegacyDataTests). Remove these with the #422 pair once #438 lands.
-        ["Courage Aura"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Crack"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Strafing"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Harassing Boost Aura"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Guerrilla Boost Aura"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Resistance"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Resistance Aura"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Piercing Assault"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Piercing Assault Aura"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Piercing Hunter Aura"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Darkborn (Offensive)"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Darkborn (Defensive)"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Storm of Change"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Storm of Lust"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Storm of Plague"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
-        ["Storm of War"] = "dropped by OPR 3.6 (#436); bundled 3.5 books name it until the #438 re-bake",
+        // Empty from #381 (Retreating Strike, the last dead AoF name) until #422, and again since #438: the
+        // #422 (Counter-Attack + Aura) and #436 (Courage Aura, Crack, Strafing, the Boost Auras, Resistance,
+        // Piercing Assault / Hunter, Darkborn variants, Storm of X) entries went stale when the 3.6.0 re-bake
+        // replaced the 3.5 books. Add entries only for a name that is KNOWINGLY dead, with the item that owns it.
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

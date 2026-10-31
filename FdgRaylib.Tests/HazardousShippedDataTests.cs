@@ -148,14 +148,18 @@ public class HazardousShippedDataTests
         }
     }
 
+    // #438: the 3.6.0 census (2026-10-30 snapshots, weapons per unit, base + option): Ratmen Clans' 14 Plas-Charge
+    // weapons and Goblin Reclaimers' 16 Atom-Smasher weapons (3.5: 15, Ratmen only).
     [Test]
-    public void EveryReference_IsAWeaponInRatmenClans()
+    public void EveryReference_IsAWeapon_InRatmenClansOrGoblinReclaimers()
     {
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites.Count, Is.EqualTo(15),
-            "the audit's 15 references - a change here means the corpus moved, not the engine");
-        Assert.That(sites.Select(s => s.Book).Distinct(), Is.EquivalentTo(new[] { "RatmenClans" }));
+        Assert.That(sites.Count, Is.EqualTo(30),
+            "the 3.6.0 census's 30 references - a change here means the corpus moved, not the engine");
+        Assert.That(sites.Count(s => s.Book == "RatmenClans"), Is.EqualTo(14));
+        Assert.That(sites.Select(s => s.Book).Distinct(),
+            Is.EquivalentTo(new[] { "GoblinReclaimers", "RatmenClans" }));
     }
 
     [Test]

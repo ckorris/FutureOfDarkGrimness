@@ -39,18 +39,9 @@ public class BookSpellCastProbeTests
     // Rule names a bundled spell knowingly grants with nothing behind them, each with its reason. A diagnostic
     // naming one (quoted, as every rule diagnostic quotes its rule) is not a failure; an entry no diagnostic
     // mentions any more is stale and fails the sweep, so it gets removed when its blocking item lands.
-    // #422: OPR 3.6 dropped Counter-Attack, which two 3.5 spells (AoF-Orcs "Evil Gaze", ElvenJesters
-    // "Asphyxiating Fog") still grant; their 3.6 text grants "Counter in Melee once" (#438/#439 re-import).
-    private static readonly IReadOnlyDictionary<string, string> KnownDeadGrants = new Dictionary<string, string>
-    {
-        ["Counter-Attack"] = "dropped by OPR 3.6 (#422); 3.5 spells grant it until the #438/#439 re-import",
-        // #436: the same for the other dropped 3.5 catalog rules bundled 3.5 spells grant.
-        ["Crack"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Harassing Boost"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Piercing Assault"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Piercing Hunter"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-        ["Resistance"] = "dropped by OPR 3.6 (#436); 3.5 spells grant it until the #438/#439 re-import",
-    };
+    // Empty since #438: the #422 (Counter-Attack) and #436 (Crack, Harassing Boost, Piercing Assault / Hunter,
+    // Resistance) entries went stale when the 3.6.0 re-bake replaced the 3.5 spells.
+    private static readonly IReadOnlyDictionary<string, string> KnownDeadGrants = new Dictionary<string, string>();
 
     private static bool IsKnownDead(string diagnostic, HashSet<string> seen)
     {

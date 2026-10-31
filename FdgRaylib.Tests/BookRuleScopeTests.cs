@@ -98,46 +98,10 @@ public class BookRuleScopeTests
             "allowlist entries: " + string.Join(", ", stale));
     }
 
-    // The end-to-end case behind the owner's ruling (2026-07-09): a weapon rule applies only when THAT
-    // weapon fires. Sniper Drones buy a Drone Controller that upgrades their Pulse Rifles; they also carry
-    // a melee Taser, which must not inherit Reliable's 2+ hit floor or Takedown's single-model targeting.
-    [Test]
-    public void SniperDrones_DroneController_UpgradesOnlyThePulseRifle()
-    {
-        BookFile book = LoadBook(Path.Combine(BooksDirectory, "DAOUnion" + BookFile.EXTENSION_WITH_PERIOD));
-        RosterUnit drones = book.Units.Single(u => u.Name == "Sniper Drones");
-        UpgradeSection section = drones.Sections.Single(s => s.Targets.Contains("Pulse Rifles"));
-
-        var list = new BuilderList
-        {
-            Name = "Scope Test", BookName = book.Name, PointsLimit = 500,
-            Units =
-            {
-                new BuilderUnit
-                {
-                    RosterUnitId = drones.Id,
-                    Choices =
-                    {
-                        new UpgradeChoice
-                        {
-                            SectionId = section.Id, OptionId = section.Options.Single().Id, Count = 1,
-                        },
-                    },
-                },
-            },
-        };
-
-        UnitFileEntry compiled = ListCompiler.Compile(book, list).Units.Single();
-
-        IEnumerable<string> RuleNames(IEnumerable<SpecialRuleEntry> rules) => rules.Select(r => r.PrintableName);
-
-        Assert.That(RuleNames(compiled.Weapons.Single(w => w.Name == "Pulse Rifle").SpecialRules),
-            Is.EquivalentTo(new[] { "Reliable", "Takedown" }));
-        Assert.That(compiled.Weapons.Single(w => w.Name == "Taser").SpecialRules, Is.Empty,
-            "The melee Taser is not the upgrade's target.");
-        Assert.That(RuleNames(compiled.SpecialRules).Intersect(new[] { "Reliable", "Takedown" }), Is.Empty,
-            "Rules placed on their target weapon do not also fold onto the unit.");
-    }
+    // #438: SniperDrones_DroneController_UpgradesOnlyThePulseRifle retired - the 3.6 DAO Union Sniper Drones carry
+    // Reliable + Takedown on the Drone Sniper-Gun profile itself, and no 3.6 book has a targeted wargear upgrade
+    // with weapon-scoped rules left (the only targeted Upgrade grants are AoF Mummified Undead's unit-scoped
+    // Royal Snake items). The owner's 2026-07-09 ruling stays pinned engine-side by WeaponScopedWargearRoutingTests.
 
     private static BookFile LoadBook(string path) =>
         JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;

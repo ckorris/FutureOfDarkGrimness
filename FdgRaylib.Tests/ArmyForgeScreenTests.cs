@@ -366,47 +366,49 @@ public class ArmyForgeScreenTests
             "excluding the section's own pick, the full pool is switchable");
     }
 
-    // ── #323 Titan Lords double Heavy Hammer, against the SHIPPED book ─────────────────────────────────
+    // ── #323 a target granted by a LATER section, against the SHIPPED book ─────────────────────────────
 
-    // Reported 2026-08-02 (friend's War Disciples list): on the War Errant Mini-Titan, trading the Titan
-    // Shield for a second Heavy Hammer must leave BOTH hammers swappable. The book authors "Replace any
-    // Heavy Hammer" ABOVE the shield section that grants the second one, which starved the second swap in
-    // the compiler; this pins the whole path on the real bundled data - stepper bound and compiled result.
+    // Reported 2026-08-02 (friend's War Disciples list) on the 3.5 War Errant Mini-Titan: trading the Titan
+    // Shield for a second Heavy Hammer must leave BOTH hammers swappable, with "Replace any Heavy Hammer"
+    // authored ABOVE the shield section that grants the second one. #438: the 3.6 mini-titans lost that shape
+    // (two Titan Lances, no shield-for-weapon trade); the 3.6 HDF Combat Walker carries it - one Walker Sword,
+    // "Replace any Walker Sword" above "Replace Combat Shield -> Walker Sword". Stepper bound and compiled result.
     [Test]
-    public void WarErrantMiniTitan_ShieldTradedForASecondHammer_SwapsBothHammers()
+    public void CombatWalker_ShieldTradedForASecondSword_SwapsBothSwords()
     {
         BookFile book = JsonSerializer.Deserialize<BookFile>(
             File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
-                "TitanLordsWarDisciples" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
-        RosterUnit errant = book.Units.Single(u => u.Name == "War Errant Mini-Titan");
-        UpgradeSection hammers = errant.Sections.Single(s => s.Label == "Replace any Heavy Hammer");
-        UpgradeSection shield = errant.Sections.Single(s => s.Label == "Replace Titan Shield");
-        UpgradeOption sword = hammers.Options.Single(o => o.Label.StartsWith("Heavy Sword"));
+                "HumanDefenseForce" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit walker = book.Units.Single(u => u.Name == "Combat Walker");
+        UpgradeSection swords = walker.Sections.Single(s => s.Label == "Replace any Walker Sword");
+        UpgradeSection shield = walker.Sections.Single(s => s.Label == "Replace Combat Shield");
+        UpgradeOption axe = swords.Options.Single(o => o.Label.StartsWith("Walker Axe"));
+        UpgradeOption secondSword = shield.Options.Single(o => o.Label.StartsWith("Walker Sword"));
 
         var screen = new ArmyForgeScreen(book);
-        screen.AddToList(errant.Id);
+        screen.AddToList(walker.Id);
         BuilderUnit bu = screen.List.Units[0];
 
-        ArmyForgeScreen.SetChoice(bu, shield, shield.Options.Single().Id, 1); // Titan Shield -> Heavy Hammer
+        ArmyForgeScreen.SetChoice(bu, shield, secondSword.Id, 1); // Combat Shield -> Walker Sword
 
-        // With two hammers on the unit, the stepper must offer two swaps - both before and after the first.
-        Assert.That(StepperMaxFor(book, bu, hammers, sword), Is.EqualTo(2), "two hammers, two swaps offered");
-        ArmyForgeScreen.SetChoice(bu, hammers, sword.Id, 1);
-        Assert.That(StepperMaxFor(book, bu, hammers, sword), Is.EqualTo(2), "the second swap is still offered");
+        // With two swords on the unit, the stepper must offer two swaps - both before and after the first.
+        Assert.That(StepperMaxFor(book, bu, swords, axe), Is.EqualTo(2), "two swords, two swaps offered");
+        ArmyForgeScreen.SetChoice(bu, swords, axe.Id, 1);
+        Assert.That(StepperMaxFor(book, bu, swords, axe), Is.EqualTo(2), "the second swap is still offered");
 
-        ArmyForgeScreen.SetChoice(bu, hammers, sword.Id, 2);
+        ArmyForgeScreen.SetChoice(bu, swords, axe.Id, 2);
         UnitFileEntry compiled = screen.Compile().Units.Single();
-        Assert.That(compiled.Weapons.Any(w => w.Name == "Heavy Hammer"), Is.False, "neither hammer is left behind");
-        Assert.That(compiled.Weapons.Single(w => w.Name == "Heavy Sword").Quantity, Is.EqualTo(2));
-        Assert.That(compiled.PointCost, Is.EqualTo(385), "295 base + 30 shield swap + 30x2 sword swaps");
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Walker Sword"), Is.False, "neither sword is left behind");
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Walker Axe").Quantity, Is.EqualTo(2));
+        Assert.That(compiled.PointCost, Is.EqualTo(350), "325 base + 15 shield swap + 5x2 axe swaps");
     }
 
     // ── #324 an all-swap must not hide the specialist swap below it, against the SHIPPED book ──────────
 
-    // DAO Union Tactical Grunts: 5 Pulse Rifles, "Replace all Pulse Rifles" (#1) above "Replace one Pulse
-    // Rifle" (#2). Taking the all-swap used to eat the pool, so the compiler dropped the specialist AND the
-    // Forge grayed it out. Both halves are checked here: the Forge still offers the swap, and the compile
-    // honours it.
+    // DAO Union Tactical Grunts: 5 rifles, "Replace all" (#1) above "Replace one" (#2). Taking the all-swap used to
+    // eat the pool, so the compiler dropped the specialist AND the Forge grayed it out. Both halves are checked
+    // here: the Forge still offers the swap, and the compile honours it. #438: the 3.6 book renamed the Pulse
+    // Rifles "Long Rifles" (all -> Carbine 5, one -> Plasma Rifle 15, base 100).
     [Test]
     public void TacticalGrunts_AllSwapLeavesTheSpecialistSwapAvailableAndCompiled()
     {
@@ -414,8 +416,8 @@ public class ArmyForgeScreenTests
             File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
                 "DAOUnion" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
         RosterUnit grunts = book.Units.Single(u => u.Name == "Tactical Grunts");
-        UpgradeSection all = grunts.Sections.Single(s => s.Label == "Replace all Pulse Rifles");
-        UpgradeSection one = grunts.Sections.Single(s => s.Label == "Replace one Pulse Rifle");
+        UpgradeSection all = grunts.Sections.Single(s => s.Label == "Replace all Long Rifles");
+        UpgradeSection one = grunts.Sections.Single(s => s.Label == "Replace one Long Rifle");
         UpgradeOption plasma = one.Options.Single(o => o.Label.StartsWith("Plasma Rifle"));
 
         var screen = new ArmyForgeScreen(book);
@@ -432,71 +434,59 @@ public class ArmyForgeScreenTests
         ArmyForgeScreen.SetChoice(bu, one, plasma.Id, 1);
 
         UnitFileEntry compiled = screen.Compile().Units.Single();
-        Assert.That(compiled.Weapons.Single(w => w.Name == "Pulse Carbine").Quantity, Is.EqualTo(4));
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Carbine").Quantity, Is.EqualTo(4));
         Assert.That(compiled.Weapons.Single(w => w.Name == "Plasma Rifle").Quantity, Is.EqualTo(1));
-        Assert.That(compiled.Weapons.Any(w => w.Name == "Pulse Rifle"), Is.False);
-        Assert.That(compiled.PointCost, Is.EqualTo(150), "115 base + 25 flat all-swap + 10 plasma");
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Long Rifle"), Is.False);
+        Assert.That(compiled.PointCost, Is.EqualTo(120), "100 base + 5 flat all-swap + 15 plasma");
 
         // And switching the specialist to another option still works with the all-swap in place.
         Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, one), Is.EqualTo(5));
     }
 
-    // Dwarf Guilds Guardians: 5 Pistols + 5 Bashes, "Replace all Pistols and Bashes" -> CCW. The "Bashes"
-    // target never matched the "Bash" weapon, so the swap left all five Bashes on the unit for free (#324).
+    // #438: Guardians_ReplaceAllPistolsAndBashes_TakesTheBashesToo retired - the 3.6 Dwarf Guilds Guardians carry
+    // Hand Weapons + Combat Shields, and no 3.6 book has an "-es" plural target left; the #324 plural rule stays
+    // pinned by ArmyForgeCompilerTests' plural-matching cases.
+
+    // ── #383 "Any model may ..." is one pick per MODEL, shared across the options ───────────────────────
+
+    // Reported 2026-08-22 on the 3.5 Hive Warriors / Robot Snakes "Any model may replace one X" sections: they
+    // rendered as one-per-option checkboxes, so a 3-model unit could never take 3x the same gun. #438: every
+    // 3.6 per-model section is an attachment ("Any model may take any Burst Battle Rifle attachment", 16 across
+    // 15 GDF books); against the SHIPPED Veteran Battle Brothers: once the three Flamers are Burst Battle
+    // Rifles, the section is a counted stepper offering 3, the options spend one shared per-model budget, and
+    // the compile carries the trio at 3x the option cost.
     [Test]
-    public void Guardians_ReplaceAllPistolsAndBashes_TakesTheBashesToo()
+    public void VeteranBattleBrothers_AnyModelMayTakeAnAttachment_TakesThreeOfTheSameMod()
     {
         BookFile book = JsonSerializer.Deserialize<BookFile>(
             File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
-                "DwarfGuilds" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
-        RosterUnit guardians = book.Units.Single(u => u.Name == "Guardians");
-        UpgradeSection swap = guardians.Sections.Single(s => s.Label == "Replace all Pistols and Bashes");
-
-        var screen = new ArmyForgeScreen(book);
-        screen.AddToList(guardians.Id);
-        ArmyForgeScreen.SetChoice(screen.List.Units[0], swap, swap.Options.First().Id, 1);
-
-        UnitFileEntry compiled = screen.Compile().Units.Single();
-        Assert.That(compiled.Weapons.Any(w => w.Name == "Bash"), Is.False, "the Bashes are traded away");
-        Assert.That(compiled.Weapons.Any(w => w.Name == "Pistol"), Is.False);
-        Assert.That(compiled.Weapons.Single(w => w.Name == "CCW").Quantity, Is.EqualTo(5));
-    }
-
-    // ── #383 "Any model may replace one X" is one pick per MODEL, shared across the options ────────────
-
-    // Reported 2026-08-22 (screenshots: Hive Warriors and Robot Snakes, both [3]): these sections rendered
-    // as one-per-option checkboxes, so a 3-model unit could never take 3x Ravager Gun. Against the SHIPPED
-    // book: the section is a counted stepper offering 3, the options spend one shared per-model budget,
-    // and the compile carries the trio at 3x the option cost.
-    [Test]
-    public void HiveWarriors_AnyModelMayReplaceOneRazorClaws_TakesThreeOfTheSameGun()
-    {
-        BookFile book = JsonSerializer.Deserialize<BookFile>(
-            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
-                "AlienHives" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
-        RosterUnit warriors = book.Units.Single(u => u.Name == "Hive Warriors");
-        UpgradeSection section = warriors.Sections.Single(
-            s => s.Label == "Any model may replace one Razor Claws");
-        UpgradeOption ravager = section.Options.Single(o => o.Label.StartsWith("Ravager Gun"));
-        UpgradeOption spitter = section.Options.Single(o => o.Label.StartsWith("Spitter Gun"));
+                "BattleBrothers" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit veterans = book.Units.Single(u => u.Name == "Veteran Battle Brothers");
+        UpgradeSection flamers = veterans.Sections.Single(s => s.Label == "Replace any Flamer");
+        UpgradeOption rifle = flamers.Options.Single(o => o.Label.StartsWith("Burst Battle Rifle"));
+        UpgradeSection section = veterans.Sections.Single(
+            s => s.Label == "Any model may take any Burst Battle Rifle attachment");
+        UpgradeOption plasma = section.Options.Single(o => o.Label.StartsWith("Plasma-Mod"));
+        UpgradeOption fusion = section.Options.Single(o => o.Label.StartsWith("Fusion-Mod"));
 
         Assert.That(section.PerModelBudget, Is.True, "the bundled book carries the #383 stamp");
         Assert.That(section.IsCounted, Is.True, "a stepper, not a checkbox");
 
         var screen = new ArmyForgeScreen(book);
-        screen.AddToList(warriors.Id);
+        screen.AddToList(veterans.Id);
         BuilderUnit bu = screen.List.Units[0];
+        ArmyForgeScreen.SetChoice(bu, flamers, rifle.Id, 3);
 
-        Assert.That(StepperMaxFor(book, bu, section, ravager), Is.EqualTo(3),
+        Assert.That(StepperMaxFor(book, bu, section, plasma), Is.EqualTo(3),
             "3 models -> up to 3 applications of one option");
 
-        ArmyForgeScreen.SetChoice(bu, section, ravager.Id, 3);
-        Assert.That(StepperMaxFor(book, bu, section, spitter), Is.EqualTo(0),
-            "the options share the per-model budget - 3 guns spend all of it");
+        ArmyForgeScreen.SetChoice(bu, section, plasma.Id, 3);
+        Assert.That(StepperMaxFor(book, bu, section, fusion), Is.EqualTo(0),
+            "the options share the per-model budget - 3 mods spend all of it");
 
         UnitFileEntry compiled = screen.Compile().Units.Single();
-        Assert.That(compiled.Weapons.Single(w => w.Name == "Ravager Gun").Quantity, Is.EqualTo(3));
-        Assert.That(compiled.PointCost, Is.EqualTo(warriors.BasePointCost + 3 * ravager.Cost),
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Plasma-Mod").Quantity, Is.EqualTo(3));
+        Assert.That(compiled.PointCost, Is.EqualTo(veterans.BasePointCost + 3 * rifle.Cost + 3 * plasma.Cost),
             "each application is charged");
     }
 

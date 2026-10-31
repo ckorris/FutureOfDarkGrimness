@@ -1,7 +1,7 @@
 {
-  "name": "Rift Daemons of Change",
-  "faction": "Rift Daemons of Change",
-  "version": "OPR v3.5.3",
+  "name": "Daemons of Change",
+  "faction": "Daemons of Change",
+  "version": "OPR v3.6.0",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
   "gameSystem": "age-of-fantasy",
@@ -16,7 +16,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 795,
+      "basePointCost": 730,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -25,20 +25,16 @@
       },
       "weapons": [
         {
-          "name": "Exalted Power Hammer",
+          "name": "Heavy Daemon Hammer",
           "quantity": 2,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
           "specialRules": [
             {
               "kind": "coreNumeric",
               "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Shred"
+              "numericValue": 6
             }
           ]
         },
@@ -56,10 +52,6 @@
           "kind": "coreNumeric",
           "name": "Fear",
           "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
         },
         {
           "kind": "core",
@@ -82,138 +74,33 @@
       "items": [],
       "sections": [
         {
-          "id": "9UWlAeT",
-          "label": "Replace any Exalted Power Hammer",
+          "id": "yiImP2yawx",
+          "label": "Replace 2x Heavy Daemon Hammer",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Exalted Power Hammer"
+            "2x Heavy Daemon Hammer"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "T4qO-",
-              "label": "Exalted Hexed Chakram (18\u0022, A9, Surge)",
-              "cost": 30,
+              "id": "45Pj0KH-gX",
+              "label": "Daemon Loremaster Staff (A12, Spell Amplifier)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted Hexed Chakram",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 9,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Surge"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "hvyqJoG",
-              "label": "Exalted Power Spear (A3, AP(1), Deadly(3), Shred)",
-              "cost": 35,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Exalted Power Spear",
+                  "name": "Daemon Loremaster Staff",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "s46JxeT",
-              "label": "Exalted Power Staff (A9, Rending, Shred)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Exalted Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 9,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "8J0CiduOvb",
-              "label": "Exalted Magic Bolt (18\u0022, A6, AP(1), Shred)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Exalted Magic Bolt",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 6,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "14nS6",
-              "label": "Exalted Magic Blast (12\u0022, A12, Shred)",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Exalted Magic Blast",
-                  "quantity": 1,
-                  "rangeInches": 12,
                   "attacks": 12,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Shred"
+                      "name": "Spell Amplifier"
                     }
                   ]
                 }
@@ -223,17 +110,83 @@
               "modelsGained": 0
             },
             {
-              "id": "CWCaqx4",
-              "label": "Exalted Power Gauntlet (A9, AP(3), Shred)",
+              "id": "nhojSKPsGG",
+              "label": "Heavy Magic Blast (9\u0022, A9, Assault, Shred), Heavy Daemon Hammer (A1, AP(2), Blast(6))",
               "cost": 105,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Exalted Power Gauntlet",
+                  "name": "Heavy Magic Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 9,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                },
+                {
+                  "name": "Heavy Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 9,
-                  "armorPenetration": 3,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "zVlt_BMl3V",
+              "label": "Heavy Hexed Chakram (24\u0022, A18, Lacerate)",
+              "cost": 115,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Hexed Chakram",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 18,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "8ws7no3q9w",
+              "label": "Heavy Magic Bolt (18\u0022, A18, Shred)",
+              "cost": 120,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Magic Bolt",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 18,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -249,7 +202,93 @@
           ]
         },
         {
-          "id": "HdLKgJX",
+          "id": "4PQR7vP",
+          "label": "Replace any Heavy Daemon Hammer",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Heavy Daemon Hammer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "-NttaJggYc",
+              "label": "Power Staff (A6, Shred)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Power Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "hvyqJoG",
+              "label": "Heavy Daemon Spear (A1, AP(4), Deadly(6), Anti-Regen)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Regen"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CWCaqx4",
+              "label": "Daemon Gauntlet (A6, AP(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Ks01ShA8",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -259,9 +298,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "xDKfSJ7T",
+              "id": "jZoGjQMk",
               "label": "Daemonic Incursion (Ambush)",
-              "cost": 100,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -282,7 +321,7 @@
           ]
         },
         {
-          "id": "soXYvyn",
+          "id": "imvnJsYn",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -313,51 +352,9 @@
               "modelsGained": 0
             },
             {
-              "id": "wB4iODNVMB",
-              "label": "Change God\u0027s Power (Storm of Change)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Change God\u0027s Power",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Storm of Change"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "ITRs0D4M",
-              "label": "Gift of Change (Resistance)",
-              "cost": 65,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Gift of Change",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Resistance"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "wwxZFuQh",
-              "label": "Change Favour (Changebound Boost)",
-              "cost": 65,
+              "label": "Change Favour (Enhanced Changebound)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -368,7 +365,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Changebound Boost"
+                      "name": "Enhanced Changebound"
                     }
                   ]
                 }
@@ -376,9 +373,46 @@
               "modelsGained": 0
             },
             {
+              "id": "wB4iODNVMB",
+              "label": "Storm of Change (15\u0022, A2, Blast(3), Limited, Assault, Shred)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Storm of Change",
+                  "quantity": 1,
+                  "rangeInches": 15,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "cfpbaHfP",
               "label": "Lore of Change (Caster(5))",
-              "cost": 115,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -391,6 +425,27 @@
                       "kind": "coreNumeric",
                       "name": "Caster",
                       "numericValue": 5
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ITRs0D4M",
+              "label": "Gift of Change (Spell Resistance)",
+              "cost": 80,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Gift of Change",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Resistance"
                     }
                   ]
                 }
@@ -409,7 +464,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 380,
+      "basePointCost": 405,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -418,17 +473,12 @@
       },
       "weapons": [
         {
-          "name": "Great Power Hammer",
+          "name": "Heavy Power Staff",
           "quantity": 2,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 4,
           "armorPenetration": 0,
           "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
             {
               "kind": "core",
               "name": "Shred"
@@ -471,109 +521,80 @@
       "items": [],
       "sections": [
         {
-          "id": "iO4fyjC",
-          "label": "Replace any Great Power Hammer",
+          "id": "jUVHZnxi0u",
+          "label": "Replace 2x Heavy Power Staff",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Great Power Hammer"
+            "2x Heavy Power Staff"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "MVgWa",
-              "label": "Great Hexed Chakram (18\u0022, A6, Surge)",
-              "cost": 10,
+              "id": "eIxW2IX1Xg",
+              "label": "Daemon Loremaster Staff (A8, Spell Amplifier)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Hexed Chakram",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 6,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Surge"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "rej8Nod",
-              "label": "Great Power Spear (A2, AP(1), Deadly(3), Shred)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Great Power Spear",
+                  "name": "Daemon Loremaster Staff",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "v3Gw3MhYbl",
-              "label": "Great Magic Bolt (18\u0022, A4, AP(1), Shred)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Great Magic Bolt",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 4,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "ZQkfU",
-              "label": "Great Magic Blast (12\u0022, A8, Shred)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Great Magic Blast",
-                  "quantity": 1,
-                  "rangeInches": 12,
                   "attacks": 8,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "hC-vf5PH9e",
+              "label": "Heavy Hexed Chakram (24\u0022, A12, Lacerate)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Hexed Chakram",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 12,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "24cqPCySdL",
+              "label": "Heavy Magic Bolt (18\u0022, A12, Shred)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Magic Bolt",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 12,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
                       "name": "Shred"
                     }
                   ]
@@ -584,45 +605,34 @@
               "modelsGained": 0
             },
             {
-              "id": "9eUytD1",
-              "label": "Great Power Staff (A6, Rending, Shred)",
-              "cost": 20,
+              "id": "VWoaUUdaBu",
+              "label": "Heavy Magic Blast (9\u0022, A6, Assault, Shred), Heavy Power Staff (A4, Shred)",
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Power Staff",
+                  "name": "Heavy Magic Blast",
                   "quantity": 1,
-                  "rangeInches": 0,
+                  "rangeInches": 9,
                   "attacks": 6,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
+                      "name": "Assault"
                     },
                     {
                       "kind": "core",
                       "name": "Shred"
                     }
                   ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "mrvEjPp",
-              "label": "Great Power Gauntlet (A6, AP(3), Shred)",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [
+                },
                 {
-                  "name": "Great Power Gauntlet",
+                  "name": "Heavy Power Staff",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 6,
-                  "armorPenetration": 3,
+                  "attacks": 4,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -638,7 +648,94 @@
           ]
         },
         {
-          "id": "1esoIxn",
+          "id": "4sD4pPS",
+          "label": "Replace any Heavy Power Staff",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Heavy Power Staff"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "9eUytD1",
+              "label": "Heavy Daemon Hammer (A1, AP(2), Blast(6))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Daemon Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mrvEjPp",
+              "label": "Heavy Daemon Gauntlet (A4, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "rej8Nod",
+              "label": "Heavy Daemon Spear (A1, AP(4), Deadly(6), Anti-Regen)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Regen"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "xI3F05OF",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -648,7 +745,7 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "lp7rxJyn",
+              "id": "QWBF9gad",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 45,
               "costUnpriced": false,
@@ -671,7 +768,7 @@
           ]
         },
         {
-          "id": "agfgw_V",
+          "id": "TI83O4TD",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -682,7 +779,7 @@
           "options": [
             {
               "id": "Yu7tccYA",
-              "label": "Curse of Change (Casting Debuff)",
+              "label": "Curse of Change (Spell Drain)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
@@ -694,7 +791,28 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Casting Debuff"
+                      "name": "Spell Drain"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "MqkiG1_p",
+              "label": "Change Favour (Enhanced Changebound)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Change Favour",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Changebound"
                     }
                   ]
                 }
@@ -704,7 +822,7 @@
             {
               "id": "mdDirv8C",
               "label": "Symbol of Change (Fearless)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -724,8 +842,8 @@
             },
             {
               "id": "Tb-mDSgG",
-              "label": "Gift of Change (Resistance)",
-              "cost": 40,
+              "label": "Gift of Change (Spell Resistance)",
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -736,28 +854,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Resistance"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "MqkiG1_p",
-              "label": "Change Favour (Changebound Boost)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Change Favour",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Changebound Boost"
+                      "name": "Spell Resistance"
                     }
                   ]
                 }
@@ -767,7 +864,7 @@
             {
               "id": "4tQtDx1v",
               "label": "Lore of Change (Caster(4))",
-              "cost": 95,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -798,7 +895,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 140,
+      "basePointCost": 160,
       "base": {
         "shape": "Circle",
         "diameterInches": 2.3622048,
@@ -807,20 +904,16 @@
       },
       "weapons": [
         {
-          "name": "Power Hammer",
+          "name": "Daemon Hammer",
           "quantity": 2,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 0,
+          "armorPenetration": 1,
           "specialRules": [
             {
               "kind": "coreNumeric",
               "name": "Blast",
               "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Shred"
             }
           ]
         },
@@ -856,25 +949,114 @@
       "items": [],
       "sections": [
         {
-          "id": "J-K-sLT",
-          "label": "Replace any Power Hammer",
+          "id": "Q073fErBaJ",
+          "label": "Replace 2x Daemon Hammer",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
-            "Power Hammer"
+            "2x Daemon Hammer"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "DShv5BG",
-              "label": "Power Spear (A1, AP(1), Deadly(3), Shred)",
+              "id": "LCM5Iakz2q",
+              "label": "Daemon Loremaster Staff (A4, Spell Amplifier)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Power Spear",
+                  "name": "Daemon Loremaster Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ZO6WlHEHZs",
+              "label": "Heavy Hexed Chakram (24\u0022, A6, Lacerate)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Hexed Chakram",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-6rncJ5EvH",
+              "label": "Heavy Magic Bolt (18\u0022, A6, Shred)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Magic Bolt",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "NttOHry1AY",
+              "label": "Heavy Magic Blast (9\u0022, A3, Assault, Shred), Daemon Hammer (A1, AP(1), Blast(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Magic Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                },
+                {
+                  "name": "Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
@@ -882,12 +1064,8 @@
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
-                      "name": "Deadly",
+                      "name": "Blast",
                       "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
                     }
                   ]
                 }
@@ -895,94 +1073,32 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "Dvq_9BW",
+          "label": "Replace any Daemon Hammer",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Daemon Hammer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "9CJkU",
-              "label": "Heavy Hexed Chakram (18\u0022, A3, Surge)",
+              "id": "2iTr0vc",
+              "label": "Power Staff (A3, Shred)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Hexed Chakram",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 3,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Surge"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "NSZNoEyusd",
-              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Magic Bolt",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "2iTr0vc",
-              "label": "Heavy Power Staff (A3, Rending, Shred)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Power Staff",
+                  "name": "Power Staff",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "8IfRQ",
-              "label": "Magic Blast (12\u0022, A4, Shred)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Magic Blast",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
@@ -998,20 +1114,40 @@
             },
             {
               "id": "Stf-yjZ",
-              "label": "Heavy Power Gauntlet (A3, AP(3), Shred)",
-              "cost": 25,
+              "label": "Daemon Gauntlet (A3, AP(2))",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Power Gauntlet",
+                  "name": "Daemon Gauntlet",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 3,
-                  "armorPenetration": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "DShv5BG",
+              "label": "Daemon Spear (A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
                   "specialRules": [
                     {
-                      "kind": "core",
-                      "name": "Shred"
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
                     }
                   ]
                 }
@@ -1023,7 +1159,7 @@
           ]
         },
         {
-          "id": "CSIDYdC",
+          "id": "YOCQvjja1X",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -1033,9 +1169,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "XJlNNFwW",
+              "id": "xpAVLCmP-H",
               "label": "Change Boon (Spell Accumulator(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1057,7 +1193,7 @@
           ]
         },
         {
-          "id": "j7-ouDx",
+          "id": "wAzfP",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1069,7 +1205,7 @@
             {
               "id": "svDYy",
               "label": "Wings (Flying)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1088,7 +1224,7 @@
               "modelsGained": 0
             },
             {
-              "id": "gU7RH8WOlN",
+              "id": "59wVnpTZcx",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 35,
               "costUnpriced": false,
@@ -1111,7 +1247,7 @@
             {
               "id": "BewDGtFF0p",
               "label": "Fury Wings (Flying, Scout)",
-              "cost": 45,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1136,7 +1272,7 @@
           ]
         },
         {
-          "id": "9B5OPyN",
+          "id": "tS0BQRSo",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1145,6 +1281,27 @@
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
+            {
+              "id": "xRY5xIsW",
+              "label": "Change Favour (Enhanced Changebound Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Change Favour",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Changebound Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
             {
               "id": "82aHu8eT",
               "label": "Envoy of Change (Unstoppable in Melee Aura)",
@@ -1169,7 +1326,7 @@
             {
               "id": "fNzEy5ph",
               "label": "Symbol of Change (Fearless Aura)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1189,8 +1346,8 @@
             },
             {
               "id": "8GoTP6wq",
-              "label": "Gift of Change (Resistance Aura)",
-              "cost": 30,
+              "label": "Gift of Change (Spell Resistance Aura)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1201,28 +1358,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Resistance Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "xRY5xIsW",
-              "label": "Change Favour (Changebound Boost Aura)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Change Favour",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Changebound Boost Aura"
+                      "name": "Spell Resistance Aura"
                     }
                   ]
                 }
@@ -1232,7 +1368,7 @@
             {
               "id": "qWbrUAmp",
               "label": "Lore of Change (Caster(3))",
-              "cost": 70,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1263,7 +1399,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 50,
+      "basePointCost": 55,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1272,35 +1408,12 @@
       },
       "weapons": [
         {
-          "name": "Power Hammer",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
+          "attacks": 4,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
-        },
-        {
-          "name": "Staff",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
+          "specialRules": []
         }
       ],
       "rules": [
@@ -1321,30 +1434,103 @@
       "items": [],
       "sections": [
         {
-          "id": "M6HNdXl",
-          "label": "Replace Power Hammer and Staff",
+          "id": "0V_HupVCH3",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Power Hammer",
-            "Staff"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "-pR2v",
-              "label": "Power Spear (A1, AP(1), Deadly(3), Shred), Staff (A1, Shred)",
+              "id": "3hs1HC6x3n",
+              "label": "Master Daemon Hammer (A1, AP(2), Blast(3))",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Power Spear",
+                  "name": "Master Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "G9bn0Re1vE",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
                   "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CanD2xQyiT",
+              "label": "Master Power Staff (A3, AP(1), Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Power Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mu_XX-tS99",
+              "label": "Master Daemon Spear (A1, AP(4), Deadly(3), Anti-Regen)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -1353,69 +1539,65 @@
                     },
                     {
                       "kind": "core",
-                      "name": "Shred"
+                      "name": "Anti-Regen"
                     }
                   ]
-                },
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "VgWtmGSeGj",
+              "label": "Master Daemon Gauntlet (A3, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
                 {
-                  "name": "Staff",
+                  "name": "Master Daemon Gauntlet",
                   "quantity": 1,
                   "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "jcMKTqCv1c",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "IQRv9m31YK",
+              "label": "Magic Blast (9\u0022, A1, Assault, Shred), Daemon Hammer (A1, AP(1), Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Magic Blast",
+                  "quantity": 1,
+                  "rangeInches": 9,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "OEEyMKOMyF",
-              "label": "2x Power Staff (A2, Rending, Shred)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Power Staff",
-                  "quantity": 2,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
+                      "name": "Assault"
                     },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "YCnNlNX5fW",
-              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Magic Bolt",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
                     {
                       "kind": "core",
                       "name": "Shred"
@@ -1423,7 +1605,64 @@
                   ]
                 },
                 {
-                  "name": "Power Staff",
+                  "name": "Daemon Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Dtohjek4Nf",
+              "label": "Heavy Hexed Chakram (24\u0022, A3, Lacerate), Strike (A1)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Hexed Chakram",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "hxMTVYFPgR",
+              "label": "Daemon Loremaster Staff (A2, Spell Amplifier)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Loremaster Staff",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 2,
@@ -1431,8 +1670,42 @@
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
-                    },
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "YvTZss9As8",
+          "label": "Replace Daemon Hammer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Daemon Hammer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "6a1L3mXYzs",
+              "label": "Power Staff (A3, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Power Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
                     {
                       "kind": "core",
                       "name": "Shred"
@@ -1445,13 +1718,96 @@
               "modelsGained": 0
             },
             {
-              "id": "iLstcYi63D",
-              "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
+              "id": "vRantE75Uo",
+              "label": "Hand Weapon (A3, Parry(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "v1weWTC2hZ",
+              "label": "Daemon Gauntlet (A3, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "qTzuu9ilEZ",
+              "label": "Daemon Spear (A1, AP(4), Deadly(3))",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hexed Chakram",
+                  "name": "Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "hg79yl7T28",
+          "label": "Replace Heavy Hexed Chakram",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Hexed Chakram"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "7m9A5NZbI4",
+              "label": "Heavy Magic Bolt (18\u0022, A3, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Magic Bolt",
                   "quantity": 1,
                   "rangeInches": 18,
                   "attacks": 3,
@@ -1459,64 +1815,6 @@
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Surge"
-                    }
-                  ]
-                },
-                {
-                  "name": "Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "Iw_PB",
-              "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Magic Blast",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                },
-                {
-                  "name": "Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
                       "name": "Shred"
                     }
                   ]
@@ -1529,45 +1827,7 @@
           ]
         },
         {
-          "id": "DuDNfyP",
-          "label": "Replace any Power Staff",
-          "variant": "Replace",
-          "affects": "Any",
-          "targets": [
-            "Power Staff"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "-pJ2E",
-              "label": "Power Gauntlet (A2, AP(3), Shred)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Power Gauntlet",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 3,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "_cjrXsh",
+          "id": "QXwpqcxG",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -1577,9 +1837,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "qj5pSMgI",
+              "id": "WwWvf5hV",
               "label": "Change Boon (Spell Accumulator(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1601,7 +1861,7 @@
           ]
         },
         {
-          "id": "alqSF1n",
+          "id": "z3G3m",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1611,7 +1871,7 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "ns98dpGOBK",
+              "id": "N08cSboi5I",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 35,
               "costUnpriced": false,
@@ -1633,10 +1893,19 @@
             },
             {
               "id": "NuPAk",
-              "label": "Disc of Change (Fast, Strider, Tough(3))",
-              "cost": 60,
+              "label": "Disc of Change (Strike (A3), Fast, Strider, Tough(3))",
+              "cost": 80,
               "costUnpriced": false,
-              "weaponsGained": [],
+              "weaponsGained": [
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
               "rulesGained": [],
               "itemsGained": [
                 {
@@ -1656,6 +1925,16 @@
                       "name": "Tough",
                       "numericValue": 3
                     }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Strike",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 3,
+                      "armorPenetration": 0,
+                      "specialRules": []
+                    }
                   ]
                 }
               ],
@@ -1663,16 +1942,16 @@
             },
             {
               "id": "gwiTt",
-              "label": "Screecher Chariot (Sharp Beak (A6, AP(2)), Armor(3), Fast, Strider, Tough(6))",
-              "cost": 170,
+              "label": "Screecher Chariot (Screechers (A2, AP(1)), Armor(3), Fast, Impact(4), Strider, Tough(6))",
+              "cost": 175,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Sharp Beak",
+                  "name": "Screechers",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 6,
-                  "armorPenetration": 2,
+                  "attacks": 2,
+                  "armorPenetration": 1,
                   "specialRules": []
                 }
               ],
@@ -1692,6 +1971,11 @@
                       "name": "Fast"
                     },
                     {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 4
+                    },
+                    {
                       "kind": "core",
                       "name": "Strider"
                     },
@@ -1699,6 +1983,16 @@
                       "kind": "coreNumeric",
                       "name": "Tough",
                       "numericValue": 6
+                    }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Screechers",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 2,
+                      "armorPenetration": 1,
+                      "specialRules": []
                     }
                   ]
                 }
@@ -1708,7 +2002,7 @@
           ]
         },
         {
-          "id": "IL-XwEI",
+          "id": "_dk0Vr2A",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1717,6 +2011,27 @@
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
+            {
+              "id": "VPdkY3XG",
+              "label": "Change Favour (Enhanced Changebound Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Change Favour",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Enhanced Changebound Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
             {
               "id": "BAxa3k6k",
               "label": "Envoy of Change (Unstoppable in Melee Aura)",
@@ -1763,7 +2078,7 @@
             {
               "id": "em8gBv7h",
               "label": "Symbol of Change (Fearless Aura)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1782,51 +2097,9 @@
               "modelsGained": 0
             },
             {
-              "id": "g1UYxI6Y",
-              "label": "Icon of Change (Indirect when Shooting Aura)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Icon of Change",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Indirect when Shooting Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "VPdkY3XG",
-              "label": "Change Favour (Changebound Boost Aura)",
-              "cost": 40,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Change Favour",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Changebound Boost Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "pudrwamS",
               "label": "Lore of Change (Caster(2))",
-              "cost": 45,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1839,6 +2112,27 @@
                       "kind": "coreNumeric",
                       "name": "Caster",
                       "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "g1UYxI6Y",
+              "label": "Icon of Change (Indirect when Shooting Aura)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Icon of Change",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Indirect when Shooting Aura"
                     }
                   ]
                 }
@@ -1866,35 +2160,12 @@
       },
       "weapons": [
         {
-          "name": "Power Hammer",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
+          "attacks": 4,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
-        },
-        {
-          "name": "Staff",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
+          "specialRules": []
         }
       ],
       "rules": [
@@ -1923,30 +2194,78 @@
       "items": [],
       "sections": [
         {
-          "id": "ilZn7-z",
-          "label": "Replace Power Hammer and Staff",
+          "id": "Og6_x6SMFQ",
+          "label": "Replace Dual Hand Weapons",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Power Hammer",
-            "Staff"
+            "Dual Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "DXVRl",
-              "label": "Power Spear (A1, AP(1), Deadly(3), Shred), Staff (A1, Shred)",
+              "id": "daKmaaAHXH",
+              "label": "Master Daemon Hammer (A1, AP(2), Blast(3))",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Power Spear",
+                  "name": "Master Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "twwq9x2OKQ",
+              "label": "Master Power Staff (A3, AP(1), Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Power Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
                   "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Okyf4KtMZR",
+              "label": "Master Daemon Spear (A1, AP(4), Deadly(3), Anti-Regen)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -1955,20 +2274,7 @@
                     },
                     {
                       "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                },
-                {
-                  "name": "Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
+                      "name": "Anti-Regen"
                     }
                   ]
                 }
@@ -1978,87 +2284,55 @@
               "modelsGained": 0
             },
             {
-              "id": "VK1El",
-              "label": "2x Power Staff (A2, Rending, Shred)",
+              "id": "O36vPCwJYA",
+              "label": "Master Daemon Gauntlet (A3, AP(4))",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Power Staff",
-                  "quantity": 2,
+                  "name": "Master Daemon Gauntlet",
+                  "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "BJ9gLFbkSS",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "fgPSNPLUoT",
-              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Magic Bolt",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                },
-                {
-                  "name": "Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "42Xkj",
-              "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
-              "cost": 15,
+              "id": "h-otVSNX",
+              "label": "Magic Blast (9\u0022, A1, Assault, Shred), Daemon Hammer (A1, AP(1), Blast(3))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Magic Blast",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
+                  "rangeInches": 9,
+                  "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
                     {
                       "kind": "core",
                       "name": "Shred"
@@ -2066,16 +2340,83 @@
                   ]
                 },
                 {
-                  "name": "Power Staff",
+                  "name": "Daemon Hammer",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "v-BIWUKl",
+              "label": "Heavy Hexed Chakram (24\u0022, A3, Lacerate), Strike (A1)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Hexed Chakram",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Rending"
-                    },
+                      "name": "Lacerate"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "rl_b_Wcx",
+          "label": "Replace Daemon Hammer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Daemon Hammer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "j7BMAT67",
+              "label": "Power Staff (A3, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Power Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
                     {
                       "kind": "core",
                       "name": "Shred"
@@ -2088,13 +2429,71 @@
               "modelsGained": 0
             },
             {
-              "id": "6OVaESBdlC",
-              "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
-              "cost": 15,
+              "id": "YpfcW2py",
+              "label": "Daemon Gauntlet (A3, AP(2))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hexed Chakram",
+                  "name": "Daemon Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "BnEWMAdj",
+              "label": "Daemon Spear (A1, AP(4), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Daemon Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "XCIHRyXbAE",
+          "label": "Replace Heavy Hexed Chakram",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Hexed Chakram"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "VmVf2NOWvJ",
+              "label": "Heavy Magic Bolt (18\u0022, A3, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Magic Bolt",
                   "quantity": 1,
                   "rangeInches": 18,
                   "attacks": 3,
@@ -2102,23 +2501,6 @@
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Surge"
-                    }
-                  ]
-                },
-                {
-                  "name": "Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
                       "name": "Shred"
                     }
                   ]
@@ -2131,45 +2513,7 @@
           ]
         },
         {
-          "id": "M48gpCx",
-          "label": "Replace any Power Staff",
-          "variant": "Replace",
-          "affects": "Any",
-          "targets": [
-            "Power Staff"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "fIwvn",
-              "label": "Power Gauntlet (A2, AP(3), Shred)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Power Gauntlet",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 3,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "cP4-DVR",
+          "id": "Gf_HZfpw",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -2202,7 +2546,7 @@
             {
               "id": "1rS-_HUE",
               "label": "Symbol of Change (Fearless Aura)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2223,7 +2567,7 @@
             {
               "id": "O1NPpRZ_",
               "label": "Icon of Change (Indirect when Shooting Aura)",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2243,8 +2587,8 @@
             },
             {
               "id": "yQ7wRJur",
-              "label": "Gift of Change (Resistance Aura)",
-              "cost": 30,
+              "label": "Gift of Change (Spell Resistance Aura)",
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2255,7 +2599,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Resistance Aura"
+                      "name": "Spell Resistance Aura"
                     }
                   ]
                 }
@@ -2274,7 +2618,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 165,
+      "basePointCost": 150,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2283,28 +2627,23 @@
       },
       "weapons": [
         {
-          "name": "Power Hammer",
+          "name": "Fireballs",
           "quantity": 1,
-          "rangeInches": 0,
+          "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
               "kind": "core",
-              "name": "Shred"
+              "name": "Assault"
             }
           ]
         },
         {
-          "name": "Staff",
+          "name": "Horror Claws",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
+          "attacks": 3,
           "armorPenetration": 0,
           "specialRules": [
             {
@@ -2337,253 +2676,7 @@
       "items": [],
       "sections": [
         {
-          "id": "9xMg_-x",
-          "label": "Replace Power Hammer and Staff",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Power Hammer",
-            "Staff"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "EarM1",
-              "label": "Power Spear (A1, AP(1), Deadly(3), Shred), Staff (A1, Shred)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Power Spear",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                },
-                {
-                  "name": "Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "MhjDm5-4_S",
-              "label": "2x Power Staff (A2, Rending, Shred)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Power Staff",
-                  "quantity": 2,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "0UJJ55sJGr",
-              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Magic Bolt",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                },
-                {
-                  "name": "Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "xqzYLfjW6M",
-              "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Hexed Chakram",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 3,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Surge"
-                    }
-                  ]
-                },
-                {
-                  "name": "Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "VMMKs",
-              "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Magic Blast",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                },
-                {
-                  "name": "Power Staff",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "ZE891yO",
-          "label": "Replace any Power Staff",
-          "variant": "Replace",
-          "affects": "Any",
-          "targets": [
-            "Power Staff"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "tNg0L",
-              "label": "Power Gauntlet (A2, AP(3), Shred)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Power Gauntlet",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 3,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "h6x6gTe",
+          "id": "XPKDTNVO",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -2595,7 +2688,7 @@
             {
               "id": "N3rVJji8",
               "label": "Change Boon (Spell Accumulator(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2623,10 +2716,10 @@
       "name": "Change Furies",
       "quality": 5,
       "defense": 5,
-      "baseModelCount": 5,
-      "minModels": 5,
-      "maxModels": 5,
-      "basePointCost": 105,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 145,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -2635,11 +2728,11 @@
       },
       "weapons": [
         {
-          "name": "Armblades",
-          "quantity": 5,
+          "name": "Power Claws",
+          "quantity": 10,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
+          "attacks": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
@@ -2665,12 +2758,12 @@
       "items": [],
       "sections": [
         {
-          "id": "8bqE_lD",
-          "label": "Replace all Armblades",
+          "id": "uVvec",
+          "label": "Replace all Power Claws",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Armblades"
+            "Power Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -2678,26 +2771,17 @@
           "options": [
             {
               "id": "z-HLG",
-              "label": "Rending Claws (A2, Rending, Shred)",
-              "cost": 10,
+              "label": "Dual Armblades (A2)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Rending Claws",
+                  "name": "Dual Armblades",
                   "quantity": 1,
                   "rangeInches": 0,
                   "attacks": 2,
                   "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -2716,7 +2800,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 90,
+      "basePointCost": 70,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -2725,15 +2809,7 @@
       },
       "weapons": [
         {
-          "name": "Fireballs",
-          "quantity": 5,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Hand Weapon",
+          "name": "Power Sword",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -2755,7 +2831,7 @@
       "items": [],
       "sections": [
         {
-          "id": "EyIosAy",
+          "id": "qlNM8hz",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -2780,24 +2856,9 @@
               "modelsGained": 0
             },
             {
-              "id": "8kxkNy_",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "D8cpX43",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2808,25 +2869,40 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "8kxkNy_",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "kdvIQCJ",
-          "label": "Replace all Hand Weapons",
+          "id": "9xmu_Bn",
+          "label": "Replace all Power Swords",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Hand Weapons"
+            "Power Swords"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "aHPqFZb",
-              "label": "Halberd (A1, Rending, Shred)",
-              "cost": 10,
+              "id": "ADVrF8GCMf",
+              "label": "Halberd (A1, Rending)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2839,10 +2915,31 @@
                     {
                       "kind": "core",
                       "name": "Rending"
-                    },
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "aHPqFZb",
+              "label": "Hand Weapon (A1, Parry(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
                     {
-                      "kind": "core",
-                      "name": "Shred"
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -2853,8 +2950,8 @@
             },
             {
               "id": "vol24hM",
-              "label": "Spear (A1, Counter, Shred)",
-              "cost": 15,
+              "label": "Spear (A1, Counter, Brace(1))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2869,8 +2966,9 @@
                       "name": "Counter"
                     },
                     {
-                      "kind": "core",
-                      "name": "Shred"
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -2881,8 +2979,8 @@
             },
             {
               "id": "IcR2ekR",
-              "label": "Great Weapon (A1, AP(2), Shred)",
-              "cost": 20,
+              "label": "Great Weapon (A1, AP(2))",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2891,12 +2989,7 @@
                   "rangeInches": 0,
                   "attacks": 1,
                   "armorPenetration": 2,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -2905,8 +2998,8 @@
             },
             {
               "id": "lUVdi-N",
-              "label": "Dual Hand Weapons (A2, Shred)",
-              "cost": 25,
+              "label": "Dual Hand Weapons (A2)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2915,12 +3008,7 @@
                   "rangeInches": 0,
                   "attacks": 2,
                   "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -2930,53 +3018,19 @@
           ]
         },
         {
-          "id": "Hpoz-p4",
-          "label": "Upgrade one model with",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "fmlO-M0",
-              "label": "Wizard (Caster(1))",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Wizard",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Caster",
-                      "numericValue": 1
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "VzEmNL-",
+          "id": "z_2Ss5S",
           "label": "Upgrade one model with any",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 2,
+          "maxPicks": 3,
           "options": [
             {
               "id": "09zImCC1_6",
               "label": "Change Boon (Spell Accumulator(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2996,9 +3050,31 @@
               "modelsGained": 0
             },
             {
+              "id": "gaD9dQFOWt",
+              "label": "Wizard (Caster(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Wizard",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "i1PyNAO",
               "label": "Banner of Change (Bounding Aura)",
-              "cost": 35,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3028,7 +3104,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 205,
+      "basePointCost": 150,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -3037,25 +3113,12 @@
       },
       "weapons": [
         {
-          "name": "Fireballs",
-          "quantity": 5,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
           "name": "Claws",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
+          "specialRules": []
         }
       ],
       "rules": [
@@ -3072,7 +3135,7 @@
       "items": [],
       "sections": [
         {
-          "id": "EyIosAy",
+          "id": "qlNM8hz",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -3097,24 +3160,9 @@
               "modelsGained": 0
             },
             {
-              "id": "8kxkNy_",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "D8cpX43",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3125,11 +3173,26 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "8kxkNy_",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "0J0a9no",
+          "id": "SNMn2",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3141,7 +3204,7 @@
             {
               "id": "ZSbX8",
               "label": "Change Boon (Spell Accumulator(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3172,7 +3235,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 165,
+      "basePointCost": 125,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -3181,25 +3244,12 @@
       },
       "weapons": [
         {
-          "name": "Fireballs",
-          "quantity": 5,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
           "name": "Claws",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
+          "specialRules": []
         }
       ],
       "rules": [
@@ -3224,7 +3274,7 @@
       "baseModelCount": 10,
       "minModels": 10,
       "maxModels": 10,
-      "basePointCost": 115,
+      "basePointCost": 85,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -3233,25 +3283,12 @@
       },
       "weapons": [
         {
-          "name": "Fireballs",
-          "quantity": 10,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
           "name": "Claws",
           "quantity": 10,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
+          "specialRules": []
         }
       ],
       "rules": [
@@ -3271,7 +3308,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 105,
+      "basePointCost": 90,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -3280,20 +3317,20 @@
       },
       "weapons": [
         {
-          "name": "Magic Blast",
+          "name": "Hexed Chakram",
           "quantity": 5,
-          "rangeInches": 12,
-          "attacks": 2,
+          "rangeInches": 24,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Shred"
+              "name": "Lacerate"
             }
           ]
         },
         {
-          "name": "Claws",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -3318,21 +3355,21 @@
       "items": [],
       "sections": [
         {
-          "id": "IU-qvk2",
-          "label": "Replace all Magic Blasts",
+          "id": "q9KrL2Mw",
+          "label": "Replace all Hexed Chakrams",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Magic Blasts"
+            "Hexed Chakrams"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "pdQW8Idg",
-              "label": "Magic Bolt (18\u0022, A1, AP(1), Shred)",
-              "cost": 0,
+              "id": "3exDEe9C",
+              "label": "Magic Bolt (18\u0022, A1, Shred)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3340,7 +3377,7 @@
                   "quantity": 1,
                   "rangeInches": 18,
                   "attacks": 1,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -3354,21 +3391,21 @@
               "modelsGained": 0
             },
             {
-              "id": "3exDEe9C",
-              "label": "Hexed Chakram (18\u0022, A2, Surge)",
+              "id": "94pNvnR2QS",
+              "label": "Magic Blast (9\u0022, A2, Shred)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hexed Chakram",
+                  "name": "Magic Blast",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 9,
                   "attacks": 2,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Surge"
+                      "name": "Shred"
                     }
                   ]
                 }
@@ -3389,7 +3426,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 115,
+      "basePointCost": 95,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -3398,20 +3435,20 @@
       },
       "weapons": [
         {
-          "name": "Magic Bolt",
+          "name": "Hexed Chakram",
           "quantity": 5,
-          "rangeInches": 18,
+          "rangeInches": 24,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Shred"
+              "name": "Lacerate"
             }
           ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -3428,7 +3465,7 @@
       "items": [],
       "sections": [
         {
-          "id": "EyIosAy",
+          "id": "qlNM8hz",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -3453,24 +3490,9 @@
               "modelsGained": 0
             },
             {
-              "id": "8kxkNy_",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "D8cpX43",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3481,32 +3503,47 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "8kxkNy_",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "bmOPcRb",
-          "label": "Replace all Magic Bolts",
+          "id": "LRymxjDasP",
+          "label": "Replace all Hexed Chakrams",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Magic Bolts"
+            "Hexed Chakrams"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "WKlFjw8lFn",
-              "label": "Magic Blast (12\u0022, A2, Shred)",
+              "id": "-hjtF2PJ1d",
+              "label": "Magic Bolt (18\u0022, A1, Shred)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Magic Blast",
+                  "name": "Magic Bolt",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 2,
+                  "rangeInches": 18,
+                  "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
@@ -3521,21 +3558,21 @@
               "modelsGained": 0
             },
             {
-              "id": "-hjtF2PJ1d",
-              "label": "Hexed Chakram (18\u0022, A2, Surge)",
+              "id": "b_Aw3sNAnK",
+              "label": "Magic Blast (9\u0022, A2, Shred)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hexed Chakram",
+                  "name": "Magic Blast",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 9,
                   "attacks": 2,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Surge"
+                      "name": "Shred"
                     }
                   ]
                 }
@@ -3547,7 +3584,7 @@
           ]
         },
         {
-          "id": "lqXhq-e",
+          "id": "9Fwehorm",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3559,7 +3596,7 @@
             {
               "id": "6MY5gvzd",
               "label": "Change Boon (Spell Accumulator(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3590,7 +3627,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 195,
+      "basePointCost": 180,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -3599,25 +3636,17 @@
       },
       "weapons": [
         {
-          "name": "Hexed Spikes",
+          "name": "Power Claws",
           "quantity": 3,
-          "rangeInches": 12,
-          "attacks": 4,
+          "rangeInches": 0,
+          "attacks": 3,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Surge"
+              "name": "Shred"
             }
           ]
-        },
-        {
-          "name": "Claws",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
         }
       ],
       "rules": [
@@ -3642,28 +3671,27 @@
       "items": [],
       "sections": [
         {
-          "id": "ajP-Yho",
-          "label": "Replace all Hexed Spikes and Claws",
+          "id": "rU0Lr",
+          "label": "Replace all Power Claws",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Hexed Spikes",
-            "Claws"
+            "Power Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "hCVO87Kt6Y",
-              "label": "Mutated Claws (A4, Shred)",
-              "cost": 5,
+              "id": "El8_-TTY1O",
+              "label": "Heavy Magic Blast (9\u0022, A4, Shred), Claws (A1)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Mutated Claws",
+                  "name": "Heavy Magic Blast",
                   "quantity": 1,
-                  "rangeInches": 0,
+                  "rangeInches": 9,
                   "attacks": 4,
                   "armorPenetration": 0,
                   "specialRules": [
@@ -3672,6 +3700,14 @@
                       "name": "Shred"
                     }
                   ]
+                },
+                {
+                  "name": "Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -3679,21 +3715,40 @@
               "modelsGained": 0
             },
             {
-              "id": "7JZun",
-              "label": "Magic Blast (12\u0022, A4, Shred), Claws (A1)",
-              "cost": 15,
+              "id": "xIH78rWbbV",
+              "label": "Soul Claws (A3, AP(2))",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Magic Blast",
+                  "name": "Soul Claws",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 4,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YTUeMWM7St",
+              "label": "Hexed Spikes (24\u0022, A3, Lacerate), Claws (A1)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hexed Spikes",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Shred"
+                      "name": "Lacerate"
                     }
                   ]
                 },
@@ -3722,7 +3777,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 215,
+      "basePointCost": 220,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -3735,8 +3790,13 @@
           "quantity": 3,
           "rangeInches": 0,
           "attacks": 3,
-          "armorPenetration": 2,
-          "specialRules": []
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
       "rules": [
@@ -3763,7 +3823,41 @@
         }
       ],
       "items": [],
-      "sections": []
+      "sections": [
+        {
+          "id": "5iakkGj-Q0",
+          "label": "Replace all Sharp Beaks",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Sharp Beaks"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "HUVhuCg9Qi",
+              "label": "Heavy Beak (A3, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Beak",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "P8kTKn6",
@@ -3773,7 +3867,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 185,
+      "basePointCost": 155,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.968504,
@@ -3800,10 +3894,10 @@
           ]
         },
         {
-          "name": "Claws",
+          "name": "Strike",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -3820,7 +3914,55 @@
         }
       ],
       "items": [],
-      "sections": []
+      "sections": [
+        {
+          "id": "OZ_wv-8dyU",
+          "label": "Replace all Spout Flames",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Spout Flames"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "lp7MZJnSek",
+              "label": "Hexed Flames (18\u0022, A1, Blast(3), Reliable, Lacerate)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hexed Flames",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "X38x0rl",
@@ -3830,7 +3972,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 145,
+      "basePointCost": 125,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3841,14 +3983,13 @@
         {
           "name": "Infernal Blaze",
           "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 2,
+          "rangeInches": 18,
+          "attacks": 4,
           "armorPenetration": 1,
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
+              "kind": "core",
+              "name": "Shred"
             },
             {
               "kind": "core",
@@ -3857,11 +3998,11 @@
           ]
         },
         {
-          "name": "Claws",
+          "name": "Stomp",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
           "specialRules": []
         }
       ],
@@ -3884,7 +4025,50 @@
       "items": [],
       "sections": [
         {
-          "id": "J2a047D",
+          "id": "sHCusE7SBw",
+          "label": "Replace Infernal Blaze",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Infernal Blaze"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "zLTjuus-SZ",
+              "label": "Flame Torrent (18\u0022, A2, AP(1), Blast(3), Reliable)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Torrent",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "eHLC8dx8La",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3894,8 +4078,53 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "lE0Eby6o",
-              "label": "Curse of Change (Casting Debuff)",
+              "id": "JPokkQYBmB",
+              "label": "Fire Blast (6\u0022, A1, Blast(3), Reliable, Assault)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fire Blast",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "TjRwr_oa",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Hyfx1gXL",
+              "label": "Curse of Change (Spell Drain)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
@@ -3907,7 +4136,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Casting Debuff"
+                      "name": "Spell Drain"
                     }
                   ]
                 }
@@ -3926,7 +4155,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 215,
+      "basePointCost": 180,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -3937,14 +4166,13 @@
         {
           "name": "Great Scorcher Blaze",
           "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 2,
+          "rangeInches": 18,
+          "attacks": 4,
           "armorPenetration": 1,
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
+              "kind": "core",
+              "name": "Shred"
             },
             {
               "kind": "core",
@@ -3953,11 +4181,11 @@
           ]
         },
         {
-          "name": "Sharp Beak",
+          "name": "Screechers",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 2,
+          "attacks": 2,
+          "armorPenetration": 1,
           "specialRules": []
         }
       ],
@@ -3988,7 +4216,7 @@
       "items": [],
       "sections": [
         {
-          "id": "jNz6qpZ",
+          "id": "wxmfKD2Ew-",
           "label": "Replace Great Scorcher Blaze",
           "variant": "Replace",
           "affects": "One",
@@ -4000,13 +4228,13 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "1QRzSmLcAA",
-              "label": "Great Scorcher Flame (18\u0022, A2, AP(1), Blast(3), Reliable)",
+              "id": "Y41f54EgGe",
+              "label": "Great Scorcher Torrent (18\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Scorcher Flame",
+                  "name": "Great Scorcher Torrent",
                   "quantity": 1,
                   "rangeInches": 18,
                   "attacks": 2,
@@ -4027,11 +4255,56 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "WmaFmfhYlR",
+              "label": "Great Flame Blast (6\u0022, A1, AP(1), Blast(3), Reliable, Assault), Chariot Shock (Heavy Impact(4))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Flame Blast",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Chariot Shock",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Heavy Impact",
+                      "numericValue": 4
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "J2a047D",
+          "id": "TjRwr_oa",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -4041,8 +4314,8 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "lE0Eby6o",
-              "label": "Curse of Change (Casting Debuff)",
+              "id": "Hyfx1gXL",
+              "label": "Curse of Change (Spell Drain)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
@@ -4054,7 +4327,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Casting Debuff"
+                      "name": "Spell Drain"
                     }
                   ]
                 }
@@ -4073,7 +4346,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 715,
+      "basePointCost": 580,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -4082,23 +4355,10 @@
       },
       "weapons": [
         {
-          "name": "Change Cannon",
-          "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 9,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
-        },
-        {
-          "name": "Change Sword",
-          "quantity": 1,
+          "name": "Power Axe",
+          "quantity": 2,
           "rangeInches": 0,
-          "attacks": 18,
+          "attacks": 6,
           "armorPenetration": 0,
           "specialRules": [
             {
@@ -4129,22 +4389,18 @@
         },
         {
           "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
           "name": "Changebound"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "peK3Gpc",
-          "label": "Replace Change Sword",
+          "id": "UarB89I",
+          "label": "Replace any Power Axe",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
-            "Change Sword"
+            "Power Axe"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -4152,22 +4408,17 @@
           "options": [
             {
               "id": "j4xCv",
-              "label": "Heavy Change Axe (A12, AP(2), Shred)",
+              "label": "Soul Sword (A6, AP(2))",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Change Axe",
+                  "name": "Soul Sword",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 12,
+                  "attacks": 6,
                   "armorPenetration": 2,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred"
-                    }
-                  ]
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -4177,30 +4428,39 @@
           ]
         },
         {
-          "id": "GHRRifK",
-          "label": "Replace Change Cannon",
+          "id": "DiPIoZjbmz",
+          "label": "Replace one Power Axe",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Change Cannon"
+            "Power Axe"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "XgAX8",
-              "label": "Heavy Change Cannon (24\u0022, A6, AP(2), Shred)",
-              "cost": 20,
+              "id": "40aoa1BLeU",
+              "label": "Power Cannon (15\u0022, A3, Blast(3), Assault, Shred)",
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Heavy Change Cannon",
+                  "name": "Power Cannon",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 6,
-                  "armorPenetration": 2,
+                  "rangeInches": 15,
+                  "attacks": 3,
+                  "armorPenetration": 0,
                   "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
                     {
                       "kind": "core",
                       "name": "Shred"
@@ -4213,21 +4473,83 @@
               "modelsGained": 0
             },
             {
-              "id": "IbkFD",
-              "label": "Hexed Cannon (18\u0022, A18, Surge)",
-              "cost": 35,
+              "id": "GXDriPe4mm",
+              "label": "Hexed Cannon (18\u0022, A9, Assault, Lacerate)",
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hexed Cannon",
                   "quantity": 1,
                   "rangeInches": 18,
-                  "attacks": 18,
+                  "attacks": 9,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Surge"
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Vx-kutqInD",
+              "label": "Soul Cannon (15\u0022, A3, AP(2), Blast(3), Assault)",
+              "cost": 100,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Soul Cannon",
+                  "quantity": 1,
+                  "rangeInches": 15,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "WqqmIVv8Ah",
+              "label": "Heavy Soul Cannon (15\u0022, A3, AP(2), Deadly(3), Assault)",
+              "cost": 115,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Soul Cannon",
+                  "quantity": 1,
+                  "rangeInches": 15,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -4294,7 +4616,7 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Gets X accumulator tokens at the start of each round, but can\u0027t hold more than 6 tokens at once. Casters from other friendly units within 12\u0022 may spend this unit\u0027s accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
+      "description": "Gets X accumulator tokens at the start of each round, but can\u0027t hold more than 6 tokens at once. Casters from other friendly units within 12\u0022 may spend this model\u0027s accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
     },
     {
       "name": "Changebound",
@@ -4304,11 +4626,12 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "attackedFromOverInches",
-              "distanceInches": 9
+              "kind": "attackedFromOver",
+              "shootInches": 9,
+              "chargeInches": 6
             },
             "right": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             }
           },
           "effect": {
@@ -4324,30 +4647,43 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+      "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\u0022/6\u0022 away get -1 to hit rolls."
     },
     {
-      "name": "Changebound Boost",
+      "name": "Spell Resistance",
       "passive": [
         {
-          "hookID": "Shooting_OnHitRollModifier",
+          "hookID": "Shooting_OnSaveRollComplete",
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "attackedFromOverInches",
-                "distanceInches": 9
-              }
+              "kind": "isSpell"
             },
             "right": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             }
           },
           "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Hit",
-            "delta": -1
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        },
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isNotSpell"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 6
           },
           "lifetime": "ThisAttack",
           "seat": "Subject"
@@ -4357,10 +4693,10 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Enemies attacking this unit always get -1 to hit from Changebound (not only from over 9 inches away)."
+      "description": "When a unit where most models have this rule takes wounds, roll one die for each. If the wound was from a spell, then it is ignored on a 2\u002B. If the wound was not from a spell, then it is ignored on a 6\u002B instead."
     },
     {
-      "name": "Changebound Boost Aura",
+      "name": "Spell Resistance Aura",
       "passive": [
         {
           "hookID": "Lifecycle_OnUnitCreated",
@@ -4369,7 +4705,7 @@
           },
           "effect": {
             "kind": "aura",
-            "ruleName": "Changebound Boost"
+            "ruleName": "Spell Resistance"
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -4379,7 +4715,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Changebound Boost."
+      "description": "This model and its unit get Spell Resistance."
     },
     {
       "name": "Indirect when Shooting Aura",
@@ -4391,7 +4727,7 @@
           },
           "effect": {
             "kind": "aura",
-            "ruleName": "Indirect when shooting"
+            "ruleName": "Indirect"
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -4401,7 +4737,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Indirect when shooting."
+      "description": "This model and its unit get Indirect on its weapons when shooting."
     },
     {
       "name": "Bounding Aura",
@@ -4423,7 +4759,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Bounding."
+      "description": "This model and its unit get Bounding."
     },
     {
       "name": "Banner",
@@ -4431,7 +4767,7 @@
         {
           "hookID": "Morale_OnPreMoraleTest",
           "condition": {
-            "kind": "always"
+            "kind": "moraleTestFromShootingOrMelee"
           },
           "effect": {
             "kind": "rollModifier",
@@ -4446,7 +4782,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit gets \u002B1 to morale test rolls."
+      "description": "This model and its unit get \u002B1 to Morale Test rolls triggered by shooting or melee."
     },
     {
       "name": "Musician",
@@ -4501,7 +4837,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit moves \u002B1 inch on Advance, Rush and Charge actions."
+      "description": "This model and its unit move \u002B1\u0022 when using move actions."
     },
     {
       "name": "Sergeant",
@@ -4509,13 +4845,12 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
+            "kind": "always"
           },
           "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
-            "count": 1
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -4525,7 +4860,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model attacks, unmodified results of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
+      "description": "This model gets AP(\u002B1) when attacking."
     },
     {
       "name": "Armor",
@@ -4550,43 +4885,36 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+      "description": "Counts as having Defense X\u002B."
     },
     {
-      "name": "Casting Debuff",
-      "passive": [],
-      "activated": [
+      "name": "Heavy Impact",
+      "passive": [
         {
-          "triggerHook": "Activation_OnBeforeAttackAction",
-          "cost": {
-            "kind": "oncePerActivation"
-          },
-          "targetSelector": {
-            "rangeInches": 18,
-            "minCount": 1,
-            "maxCount": 1,
-            "targetAffinity": "Foe",
-            "requireLineOfSight": true,
-            "requiredToken": null,
-            "singleModel": false,
-            "requiredRule": "Caster"
+          "hookID": "Melee_OnChargeContact",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "countsAsFatiguedInMelee"
+            }
           },
           "effect": {
-            "kind": "statModifier",
-            "roll": "Cast",
-            "delta": -1,
-            "lifetimeScope": "NextTrigger"
+            "kind": "chargeImpactHits",
+            "diceCount": {
+              "kind": "arg",
+              "index": 0
+            },
+            "armorPenetration": 1
           },
-          "availableWhen": {
-            "kind": "always"
-          },
-          "label": ""
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
         }
       ],
+      "activated": [],
       "scope": "Unit",
-      "engineArgumentCount": 0,
+      "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight with Caster, which gets -1 to casting rolls once (next time the effect would apply)."
+      "description": "Counts as having Impact(X) with hits that have AP(1)."
     },
     {
       "name": "Split",
@@ -4608,51 +4936,60 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\u0022 of it before removing the last model."
+      "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\u0022 of it before removing the last model. Units placed via Split can\u0027t seize or contest objectives on the round they are placed."
     },
     {
-      "name": "Indirect when shooting",
-      "passive": [
+      "name": "Spell Drain",
+      "passive": [],
+      "activated": [
         {
-          "hookID": "Shooting_OnHitRollModifier",
-          "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "afterMoving"
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "moraleTestThen",
+            "onFailure": {
+              "kind": "consumeToken",
+              "tType": {
+                "id": "SpellTokens"
+              },
+              "count": 2
             }
           },
-          "effect": {
-            "kind": "rollModifier",
-            "rollKind": "Hit",
-            "delta": -1
+          "availableWhen": {
+            "kind": "always"
           },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy model within 18\u0022 in line of sight, which must take a Morale Test. If failed, it loses 2 spell tokens."
+    },
+    {
+      "name": "Anti-Regen",
+      "passive": [
         {
-          "hookID": "Shooting_OnSaveRollModifier",
+          "hookID": "Shooting_OnSaveRollComplete",
           "condition": {
             "kind": "always"
           },
           "effect": {
-            "kind": "ignoreLineOfSight"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnSaveRollModifier",
-          "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "ignoreCover"
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -4662,7 +4999,91 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Fires at targets out of line of sight and ignores cover when shooting; -1 to hit if the unit moved this activation."
+      "description": "This weapon ignores Regeneration."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
+    },
+    {
+      "name": "Enhanced Changebound",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Changebound"
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackedFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "mostModelsHaveThisRule"
+              }
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If most models in this unit have Changebound, enemies attacking them always get -1 to hit rolls from Changebound (instead of only when shooting/charging from over 9\u0022/6\u0022 away)."
+    },
+    {
+      "name": "Enhanced Changebound Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Enhanced Changebound"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Enhanced Changebound."
     },
     {
       "name": "Bounding",
@@ -4670,14 +5091,15 @@
         {
           "hookID": "Activation_OnActivationStart",
           "condition": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "effect": {
             "kind": "repositionAtActivation",
             "distance": {
               "kind": "d3"
             },
-            "plusInches": 1
+            "plusInches": 1,
+            "move": true
           },
           "lifetime": "ThisActivation",
           "seat": "Actor"
@@ -4687,30 +5109,10 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
+      "description": "When this unit is activated, you may move all models with this rule in it by up to D3\u002B1\u0022."
     }
   ],
   "spells": [
-    {
-      "name": "Shifting Form",
-      "threshold": 1,
-      "target": {
-        "rangeInches": 18,
-        "minCount": 1,
-        "maxCount": 1,
-        "targetAffinity": "Foe",
-        "requireLineOfSight": false,
-        "requiredToken": null,
-        "singleModel": false,
-        "requiredRule": null
-      },
-      "effect": {
-        "kind": "statModifier",
-        "roll": "Cast",
-        "delta": -3,
-        "lifetimeScope": "NextTrigger"
-      }
-    },
     {
       "name": "Sky Blaze",
       "threshold": 1,
@@ -4722,15 +5124,16 @@
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 2,
+        "count": 3,
         "withRules": [
-          "Surge"
+          "Lacerate"
         ],
-        "armorPenetration": 1
+        "armorPenetration": 0
       }
     },
     {
@@ -4744,7 +5147,8 @@
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
@@ -4753,47 +5157,8 @@
       }
     },
     {
-      "name": "Mutating Inferno",
-      "threshold": 2,
-      "target": {
-        "rangeInches": 9,
-        "minCount": 1,
-        "maxCount": 2,
-        "targetAffinity": "Foe",
-        "requireLineOfSight": true,
-        "requiredToken": null,
-        "singleModel": false,
-        "requiredRule": null
-      },
-      "effect": {
-        "kind": "dealHits",
-        "count": 4,
-        "withRules": [],
-        "armorPenetration": 0
-      }
-    },
-    {
-      "name": "Change Boon",
-      "threshold": 3,
-      "target": {
-        "rangeInches": 12,
-        "minCount": 1,
-        "maxCount": 3,
-        "targetAffinity": "Friend",
-        "requireLineOfSight": false,
-        "requiredToken": null,
-        "singleModel": false,
-        "requiredRule": null
-      },
-      "effect": {
-        "kind": "addRule",
-        "ruleName": "Changebound Boost",
-        "scope": "NextTrigger"
-      }
-    },
-    {
       "name": "Power Bolt",
-      "threshold": 3,
+      "threshold": 2,
       "target": {
         "rangeInches": 12,
         "minCount": 1,
@@ -4802,13 +5167,55 @@
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 6,
+        "count": 4,
         "withRules": [],
         "armorPenetration": 2
+      }
+    },
+    {
+      "name": "Change Boon",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Enhanced Changebound",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Mutating Inferno",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 24,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 3,
+        "withRules": [],
+        "armorPenetration": 0
       }
     }
   ]

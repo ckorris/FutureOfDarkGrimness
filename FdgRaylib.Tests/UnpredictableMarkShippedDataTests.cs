@@ -103,10 +103,13 @@ public class UnpredictableMarkShippedDataTests
     {
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites.Count, Is.EqualTo(5),
-            "the audit's 5 references - a change here means the corpus moved, not the engine");
+        // #438: the 3.6.0 census (2026-10-30 snapshots): Fighter Mark 7 (Alien Hives' Battle Pheromones x4 + the new
+        // Voidspace Stalkers' Toxin Drone x3), Shooter Mark 2 (Goblin Reclaimers' Targeted Frenzy). 3.5: 5.
+        Assert.That(sites.Count, Is.EqualTo(9),
+            "the 3.6.0 census's 9 references - a change here means the corpus moved, not the engine");
         Assert.That(sites.Where(s => s.Mark == FighterMark).Select(s => s.Book).Distinct(),
-            Is.EquivalentTo(new[] { "AlienHives" }), "Fighter Mark is Battle Pheromones");
+            Is.EquivalentTo(new[] { "AlienHives", "VoidspaceStalkers" }),
+            "Fighter Mark is Battle Pheromones / Toxin Drone");
         Assert.That(sites.Where(s => s.Mark == ShooterMark).Select(s => s.Book).Distinct(),
             Is.EquivalentTo(new[] { "GoblinReclaimers" }), "Shooter Mark is Targeted Frenzy");
     }
@@ -128,7 +131,7 @@ public class UnpredictableMarkShippedDataTests
                 resolver.RegisterOrReplace(definition);
             }
 
-            string markName = bookName == "AlienHives" ? FighterMark : ShooterMark;
+            string markName = bookName == "GoblinReclaimers" ? ShooterMark : FighterMark;
             Assert.That(resolver.TryResolve(markName, out ResolvedRule resolved), Is.True, bookName);
             Assert.That(resolved.Definition.Activated.Single().Effect, Is.InstanceOf<Effect.MarkTarget>(),
                 $"{bookName}: the embedded copy carries the markTarget ability - re-run --apply-rules");

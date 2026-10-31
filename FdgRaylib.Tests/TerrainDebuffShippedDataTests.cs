@@ -20,8 +20,8 @@ namespace FdgRaylib.Tests;
 // #197 P8 - the terrain-debuff family (14 corpus references). "Dangerous Terrain Debuff" is TWO rules
 // sharing one name: four books defer it ("counts as being in Dangerous Terrain once, next time the
 // effect would apply") and two make it immediate ("must immediately take a Dangerous Terrain test").
-// The importer routes the minority variant to "Dangerous Terrain Debuff (Immediate)", the Darkborn
-// mechanism, so a re-import stays correct.
+// The importer routed the minority variant to "Dangerous Terrain Debuff (Immediate)", the Darkborn
+// mechanism (3.5 only - #434 / #438: every 3.6.0 book prints the deferred text).
 //
 // The mechanics live engine-side (TerrainDebuffRuleIntegrationTests). What is pinned here is the
 // authored JSON and its agreement with the corpus, because every failure in this layer is silent:
@@ -213,28 +213,23 @@ public class TerrainDebuffShippedDataTests
             "references whose own book carries no usable definition: " + string.Join(", ", unresolved));
     }
 
-    // The disambiguation itself. Lust Disciples and War Disciples print "must immediately take a Dangerous
-    // Terrain test"; the other four print "counts as being in Dangerous Terrain once". Routing a book to
-    // the wrong variant makes it play a rule its own page does not describe - and both variants resolve
-    // cleanly, so nothing else in the suite would notice.
+    // The 3.5 disambiguation is gone. Lust Disciples and War Disciples printed "must immediately take a Dangerous
+    // Terrain test" in 3.5 and the importer routed them to "(Immediate)"; every 3.6.0 book prints the one deferred
+    // text, #434 removed the routing, and #438's re-bake carries the bare name everywhere (2026-10-30 snapshots: 11
+    // Dangerous across six books, Lust / War Disciples included, plus 3 Difficult in Daemons of Plague).
     [Test]
-    public void OnlyTheTwoImmediateArmies_CarryTheImmediateVariant()
+    public void NoBookCarriesTheImmediateVariant_AllElevenDangerousSitesDefer()
     {
-        string[] immediateArmies = { "LustDisciples", "WarDisciples" };
-
         List<DebuffSite> immediate = DebuffSites().Where(s => s.Rule == DangerousImmediate).ToList();
         List<DebuffSite> deferred = DebuffSites().Where(s => s.Rule == DangerousDeferred).ToList();
 
-        Assert.That(immediate.Select(s => s.Book).Distinct().OrderBy(b => b),
-            Is.EqualTo(immediateArmies.OrderBy(b => b)).AsCollection);
-        Assert.That(immediate.Count, Is.EqualTo(2));
-        Assert.That(deferred.Count, Is.EqualTo(9));
-        Assert.That(deferred.Select(s => s.Book), Has.No.AnyOf(immediateArmies),
-            "a book gets one variant or the other, never both");
+        Assert.That(immediate, Is.Empty, "the 3.5-only Immediate name left with the 3.5 books");
+        Assert.That(deferred.Count, Is.EqualTo(11));
+        Assert.That(deferred.Select(s => s.Book).Distinct(), Is.SupersetOf(new[] { "LustDisciples", "WarDisciples" }),
+            "the two former Immediate armies now carry the deferred rule");
     }
 
-    // (The importer half of that routing - what keeps it true across a re-import, since the bundled books
-    // were patched by hand - is pinned engine-side by OprBookImporterTests, where Disambiguate lives.)
+    // (#434 removed the importer half of the 3.5 routing; OprBookImporterTests pins that the bare name now imports.)
 
     private static IUnit BuildUnit(GameDataStore store, string name)
     {
