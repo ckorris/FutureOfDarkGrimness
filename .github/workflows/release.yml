@@ -20,7 +20,7 @@ env:
   # OnePageRules rules-set version. Rides in archive names alongside the app version
   # (FdgRaylib-win-x64-v<app>-<this>.zip) and in the release title. Must match what
   # scripts/build-dist.sh defaults to; bump here when the implemented ruleset revs.
-  RULES_VERSION: OPR_3_5_1
+  RULES_VERSION: OPR_3_6_0
 
 jobs:
   build-release:
@@ -63,7 +63,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Human-readable rules version for the title: OPR_3_5_1 -> "OPR 3.5.1".
+          # Human-readable rules version for the title: OPR_3_6_0 -> "OPR 3.6.0".
           RULES_DISPLAY="$(echo "$RULES_VERSION" | sed 's/^OPR_/OPR /; s/_/./g')"
           gh release create "$GITHUB_REF_NAME" \
             dist/*.zip dist/*.tar.gz dist/SHA256SUMS.txt \
