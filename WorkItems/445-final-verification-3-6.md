@@ -41,6 +41,11 @@ origin first) or a reopen of the responsible item, and this file records which.
 
 ## Notes
 
+- 2026-10-31 (from #441): checklist item 9's #441 line is the "Hand-verify checklist (Chris)" section of
+  `WorkItems/441-army-forge-ui-3-6.md` (15 lines, one GDF and one AoF army, incl. the #424 Heavy Pistol shoot-then-charge
+  and the #438 Stinger Dagger melee pick). #441 also leaves forks F1-F9 for Chris; any he signs off before the release
+  is built under #441, the rest stay open past it. Item 5's counts are pinned by `ArmyForge36Tests` (48 + 40, 3.6
+  names, all `OPR v3.6.0`).
 - 2026-10-31 (from #440): add to the checklist - `FdgRaylib --retrofit-editable armies FdgLab/armies --dry-run` (0
   converted, 40 already editable, 0 left alone); every `armies/` and `FdgLab/armies` list playing `--headless --army`
   with 0 `[rules]` warnings; the 28-scenario headless run (`--headless --scenario <json> --all-ai`, table in #440);

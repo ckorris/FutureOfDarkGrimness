@@ -364,11 +364,11 @@ public class ArmyForge36Tests
 
     // An "Enhanced X" hover explains the rule it lifts: its description names X ("If most models in this unit have
     // Shadowborn, ..."). Three 3.6.0 texts name the MECHANIC instead ("If this model has Versatile Attack ... from
-    // Versatile Attack") for Versatile Warrior / Watchborn / Vinci Tech - kept verbatim by #436 D3; whether the hover
-    // should add the base rule's name is fork F7 in WorkItems/441. Pinned exactly, so a re-bake that changes the
-    // set shows up here.
+    // Versatile Attack") for Versatile Warrior / Watchborn / Vinci Tech - kept verbatim by #436 D3; two of them ship
+    // in a book. Whether the hover should add the base rule's name is fork F7 in WorkItems/441. Pinned exactly, so a
+    // re-bake that changes the set shows up here.
     [Test]
-    public void EnhancedHovers_NameTheBaseRuleTheyLift_ExceptTheThreeVersatileTexts()
+    public void EnhancedHovers_NameTheBaseRuleTheyLift_ExceptTheVersatileFamilyTexts()
     {
         var shipped = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (BookFile book in AllBooks())

@@ -261,7 +261,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 438 | Re-bake all 88 books; unified bake script; post-bake passes; effect-set keywords | 4 | #436 #437 | S | medium | done 2026-10-30 (`scripts/bake-books.sh`, 2026-10-30 re-fetch, shipped Dead 0; section uid, pass-through swaps, item weapons fixed; Unique + StormStage deleted; owner review: D1-D5) |
 | 439 | Spells 3.6: parser grammar, re-import, per-book parity verification | 4 | #429 #438 | O | high | done 2026-10-31 (527/528 spells, Combat Possession truncated at source; parity 527/527; phrase clones deleted; owner review: D1-D5) |
 | 440 | Regenerate derived data (Random Army catalog, scenarios, fixtures, built-in army); legacy .fdgarmy load check | 4 | #438 | S | medium | done 2026-10-31 (`--reforge`: 41 lists rebuilt on 3.6 and bracket-fitted, 4 substitutions; 28/28 scenarios run; Very Fast deleted; legacy 3.5 tests + Q5 amber notice; awaiting Random Army hand-verify; owner review: D1-D6, D10) |
-| 441 | Army Forge + glossary UI for 3.6 (Assault display, roster, Unique Hero, import summary) | 5 | #437 #438 | O | medium | todo |
+| 441 | Army Forge + glossary UI for 3.6 (Assault display, roster, Unique Hero, import summary) | 5 | #437 #438 | O | medium | built 2026-10-31; forks F1-F9 await sign-off; GUI hand-verify pending (owner review: D3, D4, D5) |
 | 442 | Tactician AI + Combat Calculator parity with 3.6 | 5 | phase 2 | O | high | done 2026-10-30 (Assault / Parry / Enhanced halves deferred to #424 / #423 / #433; bench 85.9% vs 85.6%; awaiting GUI hand-verify; owner review: D7, D9) |
 | 443 | Terrain 3.6: Dense, Unstable, Steep, Climbable (design fork; Q3) | 5 | - | O | high | deferred past the 3.6 release (Q3 answered 2026-10-29) |
 | 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | todo |
@@ -277,7 +277,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433, #423, #436, #437, #438, #439, #440) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433, #423, #436, #437, #438, #439, #440, #441) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file
@@ -342,6 +342,9 @@ Post-release follow-up (recorded here so it is not lost; NOT a gate for the 3.6 
   shipped books with the #442 D11 recipe. Step 2, if the 3.5 figure is not recovered: re-train on 3.6 self-play under
   #191's promotion rule (beats the incumbent on the benchmark, G4). Chris, 2026-10-30: "Retraining should definitely be
   on the to-do list, but it seems like now is too early."
+- **Name each stale "Replace X" pick in the import preview (#441 D4, #262).** The Forge reconciliation now explains a
+  unit priced below Army Forge with one generic note; naming the selection itself ("Retributors: Twin Shard Carbine -
+  no Shard Carbine to replace, not charged") needs a per-choice applied/unapplied report from `ListCompiler`.
 
 ---
 

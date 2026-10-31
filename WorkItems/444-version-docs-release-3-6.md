@@ -58,6 +58,12 @@ shows `v0.4.0`; CI release job green with the title containing "(OPR 3.6.0)".
 
 ## Notes
 
+- 2026-10-31 (from #441): release-notes material - the Army Forge lists the 48 + 40 books under their 3.6 names
+  (Voidspace Stalkers new); Spawn / Split rules hover with their description instead of "not enforced"; the Forge no
+  longer grays out a combo upgrade (e.g. Assault Brothers' "Heavy Pistol, Energy Hammer") after the pistols were all
+  swapped; long 3.6 rule texts wrap in every hover; the importer explains a unit priced below Army Forge (a stale
+  "Replace X" pick) and AoF Shadow Stalkers says why it has five spells. The README's "Age of
+  Fantasy armies: ... I will add them eventually" bullet (now line 127) is still yours per #441's survey row.
 - 2026-10-31 (from #440): release-notes material - the Random Army lists were rebuilt for 3.6 (some units substituted
   or cut to keep each inside its 1k/2k/3k/4k bracket; #440 D1-D4 for Chris's review), 3.5 army files keep loading and
   playing with an amber "built for OPR v3.5.x; it plays with 3.6 rules" lobby/CLI notice, and Very Fast is gone from
