@@ -1,4 +1,5 @@
 using System.Text.Json;
+using FDG.ArmyBuilding;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 
@@ -69,6 +70,7 @@ public static class ArmyLoader
                 var army = JsonSerializer.Deserialize<ArmyListFile>(json, RuleJson.Options);
                 if (army == null) throw new InvalidOperationException("Deserialized army was null.");
                 Console.WriteLine($"Loaded '{army.Name}' ({army.TotalPoints} pts, {army.Units.Count} units).");
+                if (LegacyNotice(json) is string notice) Console.WriteLine(notice);
                 return army;
             }
             catch (Exception ex)
@@ -76,6 +78,15 @@ public static class ArmyLoader
                 Console.WriteLine($"Failed to load file: {ex.Message}");
             }
         }
+    }
+
+    /// <summary>#440 (plan Q5): the lobby's legacy-ruleset line for a Forge army whose embedded book predates the
+    /// current OPR ruleset, or null. Read as the derived type only to see the book stamp - the army returned to
+    /// the game stays the base type, exactly as before.</summary>
+    internal static string? LegacyNotice(string json)
+    {
+        try { return LegacyArmyNotice.Line(JsonSerializer.Deserialize<BuiltArmyFile>(json, RuleJson.Options)); }
+        catch (JsonException) { return null; }
     }
 
     private static ArmyListFile MakeTestArmy(string playerLabel)

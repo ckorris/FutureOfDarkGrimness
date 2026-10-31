@@ -405,6 +405,15 @@ public class LobbyScreen : IAppScreen
 
         ImGui.PopStyleVar(); // CellPadding (taller rows)
 
+        // #440 (plan Q5): one amber line per army built for an older OPR ruleset. Advice only - it never
+        // blocks the launch, and it reads off the synced roster, so every machine shows the same lines.
+        foreach (string notice in LegacyArmyNotices(players))
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, LegacyNoticeColor);
+            UiText.Wrapped(notice);
+            ImGui.PopStyleColor();
+        }
+
         // Slots are fixed when resuming a saved game, so no add/remove there.
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
@@ -592,6 +601,16 @@ public class LobbyScreen : IAppScreen
     }
 
     private static readonly Vector4 OverPointsColor  = new(1f, 0.3f, 0.3f, 1f);
+    private static readonly Vector4 LegacyNoticeColor = new(1f, 0.7f, 0.2f, 1f); // amber (#440)
+
+    /// <summary>#440 (Q5): the legacy-ruleset notice for every assigned army whose embedded book predates the
+    /// current OPR ruleset, in roster order, one line per distinct army. ImGui-free so it is testable.</summary>
+    internal static IReadOnlyList<string> LegacyArmyNotices(IEnumerable<LobbyPlayerInfoSummary> players) =>
+        players.Where(p => p.ArmyListSummary.IsAssigned)
+            .Select(p => FDG.ArmyBuilding.LegacyArmyNotice.Line(p.ArmyListSummary.ArmyName, p.ArmyListSummary.RulesVersion))
+            .OfType<string>()
+            .Distinct()
+            .ToList();
     private static readonly Vector4 UnderPointsColor = new(1f, 0.85f, 0.25f, 1f);
 
     // The Pts cell. Red over the limit (the #153 launch gate flags it), yellow well under it. The rule

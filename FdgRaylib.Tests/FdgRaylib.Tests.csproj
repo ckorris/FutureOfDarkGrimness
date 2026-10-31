@@ -17,4 +17,9 @@
     <ProjectReference Include="..\FdgRaylib\FdgRaylib.csproj" />
   </ItemGroup>
 
+  <!-- #440: original 3.5 catalog lists, kept as the legacy-load regression set. -->
+  <ItemGroup>
+    <None Include="Fixtures\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
