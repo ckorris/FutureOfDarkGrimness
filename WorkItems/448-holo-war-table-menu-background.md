@@ -1,6 +1,6 @@
 # 448 — Holographic war-table main menu background
 
-**Status**: implemented 2026-10-30 (all 5 slices); awaiting GUI hand-verify
+**Status**: closed 2026-10-31, hand-verified by the owner
 **Related**: `docs/menu-background/` (mockup, army colour sheet, generators, pairing check)
 
 ## Goal
@@ -296,3 +296,24 @@ re-run the script after any colour or group change.
   the delta-E script is only a guard that the groups didn't miss a pair.
 
 ## Outcome
+Closed 2026-10-31, hand-verified by the owner in the running game ("that looks great!"), pushed to
+master as `ce82c6f`. What shipped, after two owner feedback rounds:
+
+- The main menu shows a holographic 6'x4' wireframe war table with bloom, scanlines and a vignette,
+  framed to the right of a translucent left command panel. Buttons come in three tiers: HOST/SOLO and
+  JOIN, the three middle buttons, and Options + Quit as framed tertiary buttons. The title lines are the
+  same size, and the privacy notice and Options modal share the panel's styling.
+- Every 32s battle is freshly random: terrain, a contrasting army pairing (25 main armies,
+  12 hand-listed clash groups), unit positions, roles and shooting. Each side holds, advances (walks in,
+  then fires) and patrols (keeps moving the whole battle). Every model with line of sight fires at the
+  nearest enemy model it can see. No shot, measure, base or path crosses terrain, and moving units
+  never pass through anything. Titan Lords field only big single-model units. The camera drifts and
+  closes in on a fight in each battle.
+- Options -> "Menu background" offers Animated / Still / Off (persisted). The table pauses under
+  dialogs. Measured cost is ~1.7 ms/frame Animated and ~0.06 ms Still at 1080p.
+- Dropped at the owner's request: the radar pulse, then the lengthwise scan line that replaced it, the
+  fire on casualties, and the solid line under the bolts.
+- **Deferred (not built):** the click-to-dive transition on leaving the menu, and a perf measurement
+  on a weak GPU. Neither is filed. Re-file if wanted.
+- Tests: 76 menu tests in the app suite (3133 total at close), mutation-checked. The engine is
+  untouched.
