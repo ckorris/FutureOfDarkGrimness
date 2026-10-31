@@ -46,13 +46,17 @@ public static class RuleHoverText
     /// name split out as its own hoverable segment. Byte-identical to what the panel printed before, so
     /// the only change on screen is the underlines.
     /// </summary>
-    public static IReadOnlyList<Segment> WeaponStatLine(IWeapon weapon)
+    /// <param name="resolver">#441 F7: the registry the "Base rule: X." line of an Enhanced rule is read against
+    /// (<see cref="FDG.Rules.Dispatch.EnhancedRuleGate.HoverDescription(FDG.Rules.Definitions.SpecialRuleDefinition, IRuleResolver)"/>);
+    /// null where none is in reach - a weapon-scoped gate names the weapon's own rule, so the line still reads
+    /// right without one.</param>
+    public static IReadOnlyList<Segment> WeaponStatLine(IWeapon weapon, IRuleResolver? resolver = null)
     {
         var segments = new List<Segment>
         {
             new($"{weapon.RangeInches}\", A{weapon.Attacks} AP{weapon.ArmorPenetration}", null, null),
         };
-        foreach (Segment rule in RuleSegments(weapon))
+        foreach (Segment rule in RuleSegments(weapon, resolver))
         {
             segments.Add(new Segment(", ", null, null));
             segments.Add(rule);
@@ -62,11 +66,13 @@ public static class RuleHoverText
 
     /// <summary>One segment per special rule on <paramref name="weapon"/>, in attachment order. The
     /// RESOLVED name is used (army load formats it "Tough(2)"), matching every other rule display.</summary>
-    public static IReadOnlyList<Segment> RuleSegments(IWeapon weapon)
+    /// <param name="resolver">See <see cref="WeaponStatLine"/>.</param>
+    public static IReadOnlyList<Segment> RuleSegments(IWeapon weapon, IRuleResolver? resolver = null)
     {
         var segments = new List<Segment>();
         foreach (ResolvedRule rule in weapon.RuleDefinitions)
-            segments.Add(new Segment(rule.RequestedName, rule.RequestedName, rule.Definition.Description));
+            segments.Add(new Segment(rule.RequestedName, rule.RequestedName,
+                EnhancedRuleGate.HoverDescription(rule.Definition, resolver)));
         return segments;
     }
 

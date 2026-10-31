@@ -224,7 +224,9 @@ public class TableTooltipOverlay
                 {
                     ImGui.Indent();
                     ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + UiChrome.Em(DescriptionWrapEm));
-                    ImGui.TextDisabled(rule.Definition.Description);
+                    // #441 F7: the description plus the "Base rule: X." line for an Enhanced rule whose text never
+                    // names its base - the same text every other rule hover shows.
+                    ImGui.TextDisabled(EnhancedRuleGate.HoverDescription(rule.Definition, _ruleResolver));
                     ImGui.PopTextWrapPos();
                     ImGui.Unindent();
                 }

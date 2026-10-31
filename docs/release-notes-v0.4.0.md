@@ -70,7 +70,9 @@ Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
 - The Forge no longer greys out a combined upgrade (e.g. Assault Brothers' "Heavy Pistol, Energy Hammer") after every
   pistol was swapped.
 - Rule hovers wrap the long 3.6 rule texts everywhere; Spawn and Split show their description instead of "not
-  enforced".
+  enforced"; an Enhanced rule whose official text does not name the rule it enhances (Enhanced Watchborn, Enhanced
+  Vinci Tech) ends its hover with "Base rule: Watchborn." / "Base rule: Vinci Tech." on every screen that explains
+  rules.
 - New force-org warnings in the Forge for the 3.6 caps.
 
 ## AI

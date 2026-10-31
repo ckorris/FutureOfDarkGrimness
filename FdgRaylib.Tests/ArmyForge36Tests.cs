@@ -362,26 +362,45 @@ public class ArmyForge36Tests
         Assert.That(placed[^1].Line + 1, Is.InRange(8, 20), "a tall-but-readable tooltip, not a one-line banner");
     }
 
-    // An "Enhanced X" hover explains the rule it lifts: its description names X ("If most models in this unit have
-    // Shadowborn, ..."). Three 3.6.0 texts name the MECHANIC instead ("If this model has Versatile Attack ... from
-    // Versatile Attack") for Versatile Warrior / Watchborn / Vinci Tech - kept verbatim by #436 D3; two of them ship
-    // in a book. Whether the hover should add the base rule's name is fork F7 in WorkItems/441. Pinned exactly, so a
-    // re-bake that changes the set shows up here.
+    // An "Enhanced X" hover explains the rule it lifts. Most 3.6.0 texts name X themselves ("If most models in this
+    // unit have Shadowborn, ..."). Two shipped texts name the MECHANIC instead ("If this model has Versatile Attack ...
+    // from Versatile Attack") for Watchborn / Vinci Tech (Enhanced Versatile Warrior too, in no shipped book) - kept
+    // verbatim by #436 D3 - so #441 F7 (signed off B) ends their hover with one display-only line, "Base rule: X.",
+    // X read off the definition's gate (EnhancedRuleGate - the helpers Watchborn's activation pick grants fold to
+    // Watchborn), never from the name; the OPR text itself is untouched. Every other Enhanced hover is the bare text.
+    // Pinned exactly, so a re-bake that changes the set shows up here.
     [Test]
-    public void EnhancedHovers_NameTheBaseRuleTheyLift_ExceptTheVersatileFamilyTexts()
+    public void EnhancedHovers_NameTheBaseRuleTheyLift_TheVersatileFamilyTextsThroughTheBaseRuleLine()
     {
-        var shipped = new Dictionary<string, string>(StringComparer.Ordinal);
+        var lines = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        int enhanced = 0;
         foreach (BookFile book in AllBooks())
+        {
+            RuleGlossary glossary = RuleGlossary.Build(book);
             foreach (var d in book.RuleDefinitions.Where(d => d.Name.StartsWith("Enhanced ", StringComparison.Ordinal)))
-                shipped[d.Name] = d.Description;
+            {
+                enhanced++;
+                string tooltip = glossary.Tooltip(d.Name);
+                string bare = $"{d.Name}\n{d.Description}";
+                if (d.Description.Contains(BaseOfEnhanced(d.Name), StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.That(tooltip, Is.EqualTo(bare), $"{d.Name} names its base in its own text: no line");
+                }
+                else
+                {
+                    Assert.That(tooltip, Does.StartWith(bare + "\n"), $"{d.Name}: the OPR text first, untouched");
+                    lines[d.Name] = tooltip[(bare.Length + 1)..];
+                }
+            }
+        }
 
-        var silent = shipped
-            .Where(kv => !kv.Value.Contains(BaseOfEnhanced(kv.Key), StringComparison.OrdinalIgnoreCase))
-            .Select(kv => kv.Key).OrderBy(n => n, StringComparer.Ordinal).ToList();
-
-        Assert.That(shipped.Count, Is.GreaterThan(50), "the books embed the Enhanced family");
-        Assert.That(silent, Is.EqualTo(new[] { "Enhanced Vinci Tech", "Enhanced Watchborn" }),
-            "OPR's 3.6.0 text for these says \"Versatile Attack\" (F7); Enhanced Versatile Warrior is in no shipped book");
+        Assert.That(enhanced, Is.GreaterThan(50), "the books embed the Enhanced family");
+        Assert.That(lines, Is.EqualTo(new Dictionary<string, string>
+        {
+            ["Enhanced Vinci Tech"] = "Base rule: Vinci Tech.",
+            ["Enhanced Watchborn"] = "Base rule: Watchborn.",
+        }), "OPR's 3.6.0 text for these says \"Versatile Attack\" (F7); every other Enhanced text names its base");
+        Assert.That(lines.Values.All(l => l.All(c => c < 0x80)), Is.True, "ASCII");
     }
 
     private static string BaseOfEnhanced(string name)

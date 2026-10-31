@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FDG.ArmyBuilding;
 using FDG.Rules.Definitions;
 using FDG.Rules.Dispatch;
@@ -36,6 +37,29 @@ public class RuleGlossaryTests
 
         Assert.That(glossary.Describe("Assault"), Is.EqualTo("Counts as both a ranged weapon and a melee weapon."));
         Assert.That(glossary.Tooltip(new SpecialRuleEntry_Core("Assault")), Does.Contain("Counts as both"));
+    }
+
+    // #441 F7: the glossary's text is EnhancedRuleGate.HoverDescription - an Enhanced rule whose OPR text never names
+    // its base ends with "Base rule: X.", X read off the gate (Watchborn's activation helpers fold to Watchborn); one
+    // whose text names its base is the bare description.
+    [Test]
+    public void Describe_EnhancedRuleWhoseTextNeverNamesItsBase_EndsWithTheBaseRuleLine()
+    {
+        string path = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "GdfRuleSupplement.json");
+        IReadOnlyList<SpecialRuleDefinition> definitions = BookRuleSupplement.LoadDefinitions(System.IO.File.ReadAllText(path));
+        RuleGlossary glossary = RuleGlossary.Build(definitions);
+        SpecialRuleDefinition watchborn = definitions.Single(d => d.Name == "Enhanced Watchborn");
+        SpecialRuleDefinition lustbound = definitions.Single(d => d.Name == "Enhanced Lustbound");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(watchborn.Description, Does.Not.Contain("Watchborn"), "the premise: OPR's text says Versatile Attack");
+            Assert.That(glossary.Describe("Enhanced Watchborn"), Is.EqualTo(watchborn.Description + "\nBase rule: Watchborn."));
+            Assert.That(glossary.Tooltip("Enhanced Watchborn"), Does.EndWith("\nBase rule: Watchborn."));
+            Assert.That(glossary.Describe("Enhanced Lustbound"), Is.EqualTo(lustbound.Description), "names Lustbound itself");
+            Assert.That(glossary.Describe("Watchborn"), Is.EqualTo(definitions.Single(d => d.Name == "Watchborn").Description),
+                "only the Enhanced family gets a line");
+        });
     }
 
     [Test]

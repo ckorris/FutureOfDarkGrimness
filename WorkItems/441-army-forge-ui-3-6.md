@@ -1,6 +1,6 @@
 # 441 — Army Forge + glossary UI for 3.6
 
-**Status**: done pending hand-verify and forks (built 2026-10-31; forks F1-F9 await sign-off; GUI hand-verify pending)
+**Status**: done pending hand-verify and F6 (built 2026-10-31; forks F1-F5, F7-F9 ruled and built; F6 open; GUI hand-verify pending)
 **Related**: #415, #424 (Assault), #430 (force org), #437/#438, #259 (rule hover), #168 (import summary), #304 (join warnings), #378 (system filter)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / medium. Read `docs/ResolverGuide.md` and `ArmyForgeScreen.cs` structure first.
 
@@ -46,6 +46,13 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-31 (later) **F3 and F7 ruled** (Chris: "For F3, I think A is okay." / "For F7, let's do B."). F3 = A, nothing
+  to build. F7 = B built: engine `1a2badd4` (`EnhancedRuleGate`, `IRuleResolver.Definitions`, the four request-text
+  sites); the app change, the submodule bump and this note ride one superproject commit. One composition point for the "Base rule: X." line (D17); the base is read off the
+  gate with the activation helpers folded to the rule whose pick grants them (D16) - which also fixed an F5 false
+  advisory the shipped Watch Brothers / Duchies of Vinci lists would have hit in the Army Builder. F6 stays open (Chris
+  leaning C, not ruled). Gates: engine 4485 / 1 skipped (+6), app 4055 (+2), build 0 errors / 6 warnings (all
+  pre-existing, none in touched files), headless smoke exit 0 `Game result:`, ASCII grep clean.
 - 2026-10-31 **forks ruled and built** (Chris: "I agree with you on: F1, F2, F4, F5, F8, F9. Haven't decided on the rest,
   not enough context or time."). Built the recommended option of each: F1 B (lobby force-org line; engine `e610806e`, app
   `1e60fd2`), F2 B (Forge legacy notice; app `6b670f2`), F4 B (Parry chip; engine `f88e2e05`, app `251f518`), F5 B (Army
@@ -268,8 +275,37 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   frame like the #168 audit (dictionary lookups). The line is "<unit>: Enhanced X does nothing without X" in the pane's
   amber "!" style - advisory, not an Error, not launch-blocking. The headless/launch-time summary (fork option C) is
   not built.
+- **D16 - An Enhanced rule's base is its gate with activation helpers folded to the rule whose pick grants them (2026-10-31).**
+  The shipped Enhanced Watchborn / Enhanced Vinci Tech (and the supplement's Enhanced Versatile Warrior) gate on
+  `UnitHasRule("Watchborn (Piercing)")` / `("Watchborn (Precision)")` - the one-activation helpers Watchborn's
+  activation pick `AddRule`s onto its own unit - because those are what the Enhanced rule lifts; no list carries a
+  helper, the unit carries Watchborn. `EnhancedRuleGate.GrantingRule` folds a gate name to the rule whose
+  Self-targeted activated ability grants it (`ETargetAffinity.Self` + `Effect.AddRule`); a grant aimed at ANOTHER unit
+  ("Furious Buff" / "Guarded Buff" hand Furious / Guarded to a friend) is a separate rule and does not fold, so
+  "Enhanced Guarded" still depends on Guarded. Without a candidate set (no resolver in reach) the gate name stands.
+  `EnhancedRuleAudit.BaseRuleNames` now goes through this, which fixes a latent F5 false advisory: a Forge-built Watch
+  Brothers unit (Watchborn + Enhanced Watchborn) read as "does nothing without Watchborn (Piercing) and Watchborn
+  (Precision)" - pinned on the shipped book now. Needed `IRuleResolver.Definitions` (enumeration; the only
+  implementation is `RuleResolver`, aliases repeat their definition). Alternatives: print the raw helper names ("Base
+  rules: Watchborn (Piercing) and Watchborn (Precision).") - true to the gate, false to what the unit carries, and
+  leaves F5 wrong; strip the parenthetical from the name - name parsing, the D14 rejection; a hand table of
+  helper -> base - a second source for a fact the definitions already state.
+- **D17 - One composition point for the hover text: `EnhancedRuleGate.HoverDescription`, in the engine.** Every
+  surface that explains a rule reads `Description` through it (the text as authored, plus the line when there is one),
+  so the Forge, the calculator, the in-game hovers, the engine's request texts and the CLI say the same words. The
+  resolver each surface passes: the glossary builds one from core + the book's definitions (the same core-then-embedded
+  set it describes); the overlays pass their `DisplayRuleSet` resolver; the engine stages pass
+  `GameContext.RuleEvaluator.RuleResolver`; `UnitStatBlockRenderer` (no resolver in reach) folds against the unit's own
+  rules, which is where the base rides; `RuleHoverText.RuleSegments` takes an optional resolver (the army list overlay
+  passes its own; the shoot panel and the calculator's weapon rows pass none - a weapon-scoped gate names the weapon's
+  own rule, so the line reads right without one; today no weapon-scoped Enhanced rule needs a line). Not changed: the
+  token chip's "Gains X - <description> (lifetime)." sentence (`TokenDisplay.RuleDescription`), which splices the text
+  mid-sentence; a "Base rule" line would not fit, and an Enhanced rule arrives by token only via an Aura. The CLI
+  indents a continuation line under its rule (`StringSelectionResolver`). `SpecialRuleDefinition.Description` itself
+  is untouched - OPR verbatim (#436 D3) and serialized. Alternatives: a computed `DisplayDescription` property on the
+  record (System.Text.Json would write it into books and saves); per-surface composition (nine copies of one line).
 
-## Forks (F1, F2, F4, F5, F8, F9 signed off 2026-10-31; F3, F6, F7 open)
+## Forks (F1-F5, F7-F9 signed off 2026-10-31; F6 open)
 
 - **F1 - A force-org line in the lobby (#430 hand-off).** Today the lobby shows only `LaunchGate` blockers and, on
   launch, the Errors as a confirm; the amber caps live in the Forge and the Army Builder. (A) Nothing (status quo).
@@ -297,7 +333,8 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   re-bake) and show it in the Forge, with the canonical line beneath it as "plays as". (C) Store it and show only the
   printed text. **Recommend B** - players compare against the Army Forge list they built, and the canonical line keeps
   the mechanics honest; it is a schema field plus a re-bake, so its own item after the release.
-  **Open - not yet ruled (2026-10-31).**
+  **Signed off A (keep the engine's canonical spell line everywhere) 2026-10-31. Chris: 'For F3, I think A is okay.'**
+  Nothing to build; the plan's section 7 carries no F3 bullet to mark.
 - **F4 - Parry in the Combat Calculator (#423 / #442 hand-off).** (A) Keep the volley note ("Parry: 4 dice ignored
   0.67 of 4 hits before the saves."). (B) A "Parry" chip on the volley row like the other rule chips, the numbers in
   its hover. (C) A "parried" column in the save buckets. **Recommend B** - consistent with how the calculator already
@@ -328,7 +365,23 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   never names its base (display-only, every rule-hover surface, OPR text untouched). (C) Normalise the texts in the
   supplements and re-bake (reverses #436 D3 for these). **Recommend B.** Pinned by
   `ArmyForge36Tests.EnhancedHovers_NameTheBaseRuleTheyLift_ExceptTheVersatileFamilyTexts`.
-  **Open - not yet ruled (2026-10-31).**
+  **Signed off B, built 2026-10-31** (Chris: "For F7, let's do B."): the hover of an Enhanced rule whose OPR text never
+  names its base (case-insensitive) ends with one display-only line, "Base rule: Watchborn." / "Base rule: Vinci
+  Tech." ("Base rules: X and Y." for several), the OPR text above it untouched. Composed ONCE in the engine,
+  `EnhancedRuleGate.HoverDescription(definition, resolver)`, and read from there by every surface that explains a
+  rule: the Forge card / upgrade hovers and the Combat Calculator panes (`RuleGlossary.Build`), the in-game unit
+  hovers (`TableTooltipOverlay`), the army list overlay (unit and weapon rules), the deployment / unit-picker stat
+  block (`UnitStatBlockRenderer`), the shoot panel's weapon rules (`RuleHoverText.RuleSegments`), and the engine's
+  own request texts - the action menu's companion hover and its description-rule underlines (`ChooseActionStage`),
+  the melee weapon pick's rule rows (`ChooseMeleeWeaponStage`) and the effect-pick dialog (`AbilityEffectChoice`) -
+  which the CLI prints too (a second line indented under the rule). Not on: the token chip's "Gains X - ..." sentence
+  (`TokenDisplay`, a grant sentence, not a rule hover). FOUND on the way: the shipped gate is on the ACTIVATION
+  HELPERS ("Watchborn (Piercing)" / "(Precision)"), not on Watchborn, so F5 would have flagged every Forge-built
+  Watch Brothers unit; fixed in the same lookup (D16). The Army Builder has no rule hovers (nothing to add). D16, D17.
+  Tests: engine `EnhancedRuleGateTests`, `EnhancedRuleAuditTests` (Watchborn shape); app
+  `ArmyForge36Tests.EnhancedHovers_NameTheBaseRuleTheyLift_TheVersatileFamilyTextsThroughTheBaseRuleLine` (the
+  "except" turned into the line: exactly those two get it, every other shipped Enhanced hover is the bare text),
+  `RuleGlossaryTests`, `EnhancedRuleAuditShippedDataTests` (Watch Brothers).
 - **F8 - (new, #430 hand-off item 5) Cap numbers inline or in a hover.** (A) Inline as now: "Too many Heroes: 3 (max
   2 at 1000 pts; 1 per 500)." (B) A short line ("Too many Heroes: 3 of 2") with the basis and the rule in a hover.
   **Recommend A** - plain strings already read well, and a hover would add a hit target per line in two screens.
@@ -383,7 +436,7 @@ AoF (Dwarves, Shadow Stalkers, Sky-City Dwarves):
       (1 per 375) and say "Unique Hero "Gamharl" taken 2 times (once per army)."
 - [ ] Lobby: field a 3.5 file (e.g. `FdgRaylib.Tests/Fixtures/legacy-3.5/`) - the amber Q5 line appears (#440).
 
-Forks built 2026-10-31 (F1, F2, F4, F5):
+Forks built 2026-10-31 (F1, F2, F4, F5, F7):
 - [ ] F1, lobby: Host a GDF lobby at 1000 pts and assign an army with three Heroes (e.g. the HDF list from the Rixxon
       step above, saved; or any Forge list with 3 Heroes) -> under the roster an amber "Army '<name>' is over 1
       force-org cap"; hovering it shows "Too many Heroes: 3 (max 2 at 1000 pts; 1 per 500)."; set Army Points to 2000
@@ -398,6 +451,14 @@ Forks built 2026-10-31 (F1, F2, F4, F5):
 - [ ] F5, Army Builder: open a Daemons of Lust list, add the rule "Enhanced Lustbound" to a unit that has no Lustbound
       -> amber "! <unit>: Enhanced Lustbound does nothing without Lustbound" under the points box; add "Lustbound" to
       the unit (or to a Hero joined to it) -> the line goes; Save and the lobby launch are not blocked either way.
+- [ ] F7, Forge: Grimdark Future -> Watch Brothers -> add Watch Battle Brothers, take the "Enhanced Watchborn" upgrade
+      (or Watch Prime Brothers); in the config pane hover "Enhanced Watchborn" -> the hover is OPR's "If this model
+      has Versatile Attack ..." text and ENDS with the line "Base rule: Watchborn."; hover "Watchborn" on the same unit
+      -> no such line; hover any other Enhanced rule (e.g. Daemons of Lust "Enhanced Lustbound") -> its text names
+      Lustbound and has no "Base rule" line. Age of Fantasy -> Duchies of Vinci -> "Enhanced Vinci Tech" -> ends "Base
+      rule: Vinci Tech.". In game with that list: the table unit hover and the army list overlay show the same line
+      under Enhanced Watchborn. Army Builder: a Watch Brothers list with Watchborn + Enhanced Watchborn shows NO
+      "does nothing without" line; remove Watchborn -> "...: Enhanced Watchborn does nothing without Watchborn".
 
 ## Outcome
 
@@ -406,8 +467,9 @@ Built 2026-10-31, **done pending hand-verify and forks**. Goals 1-8 checked agai
 case. Two defects found and fixed: Spawn/Split hovered as "not enforced" (D2) and the Forge grayed a pass-through
 combo after a counted swap (D1). Three wording/layout choices made with one obvious reading, for owner review: D3,
 D4, D5. Nine UI forks (F1-F9) written up; 2026-10-31 Chris ruled six (F1, F2, F4, F5 = B, built: engine `e610806e`, `f88e2e05`,
-`54341597`; app `1e60fd2`, `6b670f2`, `251f518`, `568dce7`; F8, F9 = A), F3, F6, F7 open. Not built, by design: naming each stale #262 selection
-(plan section 7 post-release). Gates: engine 4455 passed / 1 skipped (+1), app 4036 (+20), build 0 errors,
+`54341597`; app `1e60fd2`, `6b670f2`, `251f518`, `568dce7`; F8, F9 = A), and later the same day F3 = A (nothing to build) and
+F7 = B (built: engine `1a2badd4`; app with the submodule bump, one commit); F6 open. Not built, by design: naming each stale #262 selection
+(plan section 7 post-release). Gates: engine 4485 passed / 1 skipped, app 4055, build 0 errors,
 `--validate-rules` OK 401, shipped Dead 0, headless smoke exit 0.
 
 ## Rules for the agent (plan section 1, restated)
