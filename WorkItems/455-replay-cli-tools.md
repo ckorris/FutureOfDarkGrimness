@@ -54,6 +54,21 @@ is NOT the right flag set - check `ScenarioLauncher` accepts a `.fdgsave` direct
 scenarios are accepted, add `--resume FILE` as the headless twin of the GUI's Load Game, and say so).
 
 ## Notes
+- 2026-10-30 slice 2 (engine db9862e4): `FdgRaylib/Cli/ReplayTool.cs` (`--dump`, `--events`, `--stats`, `--verify`,
+  `--export`, `--at --make-save`), wired in `Program.cs` before `--make-scenario`; `ReplayText` made public for
+  it. Found and fixed a #454 bug: the build-mismatch warning fired between any two dev builds, because the SDK
+  appends the commit (`0.3.0-dev+<sha>`); `ReplayReader.SameBuild` now ignores the `+` part between `-dev`
+  stamps (release stamps still match exactly). 7 app tests (`FdgRaylib.Tests/ReplayToolTests.cs`) on a replay
+  recorded in-process through the `--scenario --all-ai` path (example-shootout, seed 455), +1 engine test.
+  Engine 3455 passed / 1 skipped, app 3066 passed, build clean, smoke exit 0.
+  Checked by hand: on the 2k BB vs Orks seed 42 replay (#454's) `--verify` PASS (4 snapshots compared, 1234
+  deltas, 421 beats, 2.3 s), `--dump` 2323 lines, `--stats` matches plan section 5, `--export` byte-identical
+  to `zcat`; `--at 96` and `--at end` saves resume with `--headless --scenario --all-ai` to a Game result.
+  On a headless-smoke replay (written by a temporary, reverted `FDG_REPLAY_OUT` patch in `CliApp` - archived
+  at `~/Projects/fdg-lab-scratch/replay-455/CliApp.export.patch`; #452 owns writing it for real): 97 steps
+  (+17 folded) - the smoke plays the two-unit test army, so not the ticket's "~300", which assumed a 2k list -
+  `--verify` PASS (4 snapshots, 366 deltas, 103 beats), `--at 20 --make-save` -> `--headless --scenario` resumes
+  to a Game result both with the human slot on EOF defaults and with `--all-ai`.
 - 2026-10-30 slice 1 (engine 5212670a): `FDG.Replay.ReplayVerifier` + `ReplayJsonDiff`. Checks: `Seq` from 0 and
   dense; every request answered or failed unless still open at the end; no reply without its request (host) and
   no second answer; at most one `GameEnded` (none = a note); every snapshot after the first rebuilt from its
@@ -76,6 +91,23 @@ scenarios are accepted, add `--resume FILE` as the headless twin of the GUI's Lo
   a later request (it was skipped, not pending); ones still open at the end are one note. A `RequestError` is
   a note (it is a recorded fact, not a broken recording). A reply to an unknown task fails on a host
   recording, a note on a client one (#451 clients may join mid-request).
+- **No `--resume` flag**: `--scenario` already loads a `.fdgsave` directly (`ScenarioLauncher.LoadStore`), headless
+  or GUI, so a cut save plays with `--headless --scenario OUT.fdgsave [--all-ai]` and the tool prints that line.
+- **`--make-save` refuses a step before the main phase** (exit 1, naming the first resumable step): the progress
+  record is only written at the first activation boundary and `FDGServer`'s resume constructor throws without
+  it, so a save from deployment would be a trap. The caveat it prints names the cut's activation and, when the
+  step is inside one, the activation's first step (`--at K`) for a clean cut.
+- **`.fdgsave` input and the embedded truncated replay with a `Saved` marker are handed to #453** (they need
+  #453's `GameSaveFile.Replay`): `--replay X.fdgsave` exits 1 saying so, and `--make-save` says its save carries
+  no replay. Recorded in #453's scope. Likewise the "replay written by the headless smoke" check is re-run by
+  #452 once replays are written for real.
+- **Output choices**: `--dump` hides Debug-category log lines unless `--debug-log` (a 2k game has ~1500 of them;
+  the header says they are hidden); store changes are tallied per type and flushed before each marker and at
+  each step's end; a beat prints its type, its `Text`, then any other prose-like string field (durations and
+  enum names skipped). `--events` marks each request `[step N]`/`[folded]` and prints a step's reply as its
+  summary (others as compact JSON without `$type`); T is seconds since the recording began. `--stats` gzips each
+  group on its own (so groups do not sum to the file, said in the output). Column widths come from the whole
+  file, never the `--from/--to` window, so two windows of one file diff cleanly.
 - **Divergence anchoring**: each differing entry carries the Seq of its last recorded change in the window
   ("no change recorded since snapshot N" when none); the issue is anchored to the earliest. A removed event
   is reported exactly by the dense-Seq check; a corrupted one by its own Seq. After a divergence the check

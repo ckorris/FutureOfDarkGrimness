@@ -40,6 +40,12 @@ load -> finish produces one replay whose dump (#455) shows `... Saved, Resumed, 
   player never applies across `Resumed`.
 - `CliApp` resume path (`FDGServer` resume constructor at ~line 160) and `ScenarioLauncher.LoadStore`
   take the same `LoadWithReplay` route; a compiled scenario has no replay so it starts fresh.
+- Handed over from #455 (2026-10-30): the `--replay` CLI (`FdgRaylib/Cli/ReplayTool.cs`) must accept a
+  `.fdgsave` through `LoadWithReplay` (today `Loaded.Open` refuses one, naming #453), and `--at STEP
+  --make-save` must embed the replay truncated at that step plus a `Saved` marker, so resuming the cut save
+  continues one replay (today it prints "the save carries no replay"). Extend #455's
+  `ReplayToolTests.MakeSave_AtStep3_WritesTheStateThere_AndItResumes`: `LoadWithReplay` on the cut save
+  returns a replay whose last marker is `Saved`.
 
 ## Tests
 - `Tests/GameSaveLoadTests.cs` additions: save with a recorder -> file has `Replay` + `ReplaySummary`;

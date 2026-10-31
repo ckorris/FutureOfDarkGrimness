@@ -48,7 +48,8 @@ per game.
 - Idempotence: two writes for one `GameId` produce one file whose content is the later export.
 
 ## Verification
-`dotnet build`; FdgRaylib.Tests green; headless smoke writes a file; GUI: play a short local game and
+`dotnet build`; FdgRaylib.Tests green; headless smoke writes a file, and `--replay Replays/<file> --verify`
+passes on it (#455's tool - checked so far only on a temporary export patch, see #455 Notes); GUI: play a short local game and
 exit via each of (game over card, Esc -> main menu, Esc -> quit to desktop, window X) checking `Replays/`
 each time; a client-side file from one networked game (two processes on one machine is enough here;
 #457 does two machines).

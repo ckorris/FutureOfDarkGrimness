@@ -596,6 +596,14 @@ if (retrofitBasesIdx >= 0 && retrofitBasesIdx + 1 < args.Length)
     return;
 }
 
+// --replay <file.fdgreplay> --dump | --events | --stats | --verify | --export OUT | --at STEP --make-save OUT
+// (#455): read a recorded game headless - the step timeline, every event, sizes, an integrity check, the raw
+// JSONL, or a resumable save cut at a step (for --scenario). Exit 0 on success, 1 with a one-line reason.
+if (args.Contains("--replay"))
+{
+    Environment.Exit(ReplayTool.Run(args, Console.Out));
+}
+
 // --make-scenario <scenario.json> <out.fdgsave>  (#167 T1): compile a compact scenario JSON (armies,
 // placements, wounds/tokens, whose activation it is) into a resumable save positioned at the start of
 // the active player's activation. Author a rule test in ~20 lines of JSON instead of playing to it.
