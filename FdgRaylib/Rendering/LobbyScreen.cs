@@ -405,9 +405,10 @@ public class LobbyScreen : IAppScreen
 
         ImGui.PopStyleVar(); // CellPadding (taller rows)
 
-        // #440 (plan Q5): one amber line per army built for an older OPR ruleset. Advice only - it never
-        // blocks the launch, and it reads off the synced roster, so every machine shows the same lines.
-        foreach (string notice in LegacyArmyNotices(players))
+        // #440 (plan Q5): one amber line per army built for an older OPR ruleset, and (#444 D2) one for a
+        // resumed save written under an older ruleset. Advice only - neither blocks the launch. The army
+        // lines read off the synced roster, so every machine shows them; the save line is host-side.
+        foreach (string notice in LegacyNotices(players, _viewModel.IsResumeMode, _viewModel.SaveRulesVersion))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, LegacyNoticeColor);
             UiText.Wrapped(notice);
@@ -611,6 +612,21 @@ public class LobbyScreen : IAppScreen
             .OfType<string>()
             .Distinct()
             .ToList();
+
+    /// <summary>#444 D2: the legacy-ruleset notice for the save a resume lobby was loaded from, or null when the
+    /// lobby is not a resume or the save is current. A resume with no stamp at all is legacy (every pre-3.6 save).</summary>
+    internal static string? LegacySaveNoticeLine(bool isResume, string? saveRulesVersion) =>
+        isResume ? FDG.SaveLoad.LegacySaveNotice.Line(saveRulesVersion) : null;
+
+    /// <summary>Every amber legacy line the roster shows, save line first, then the #440 army lines. ImGui-free.</summary>
+    internal static IReadOnlyList<string> LegacyNotices(IEnumerable<LobbyPlayerInfoSummary> players, bool isResume,
+        string? saveRulesVersion)
+    {
+        var lines = new List<string>();
+        if (LegacySaveNoticeLine(isResume, saveRulesVersion) is string saveLine) lines.Add(saveLine);
+        lines.AddRange(LegacyArmyNotices(players));
+        return lines;
+    }
     private static readonly Vector4 UnderPointsColor = new(1f, 0.85f, 0.25f, 1f);
 
     // The Pts cell. Red over the limit (the #153 launch gate flags it), yellow well under it. The rule

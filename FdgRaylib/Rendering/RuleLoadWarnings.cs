@@ -21,6 +21,7 @@ public static class RuleLoadWarnings
     private static readonly object _lock = new();
     private static readonly List<string> _pendingMessages = new();
     private static readonly List<RuleDrop> _pendingDrops = new();
+    private static readonly List<string> _pendingNotices = new();
     private static GameLog? _log;
     private static bool _installed;
 
@@ -58,6 +59,35 @@ public static class RuleLoadWarnings
 
         foreach (string message in messages)
             log.Add(message, DetailColor, isDebug: true);
+
+        List<string> notices;
+        lock (_lock)
+        {
+            notices = new List<string>(_pendingNotices);
+            _pendingNotices.Clear();
+        }
+        foreach (string notice in notices)
+            log.Add(notice, WarnColor);
+    }
+
+    /// <summary>
+    /// #444 D2: posts one visible amber line - the legacy-save notice of a GUI <c>--scenario</c> launch, the same
+    /// line the lobby shows on Load Game - into the attached log, or holds it until <see cref="AttachLog"/>.
+    /// </summary>
+    public static void PostNotice(string message)
+    {
+        GameLog? log;
+        lock (_lock)
+        {
+            log = _log;
+            if (log == null)
+            {
+                _pendingNotices.Add(message);
+                return;
+            }
+        }
+
+        log.Add(message, WarnColor);
     }
 
     /// <summary>

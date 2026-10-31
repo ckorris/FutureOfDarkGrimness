@@ -296,6 +296,10 @@ Army Forge / lobby / calculator screens:
 - [ ] **#442** (Notes "Awaiting GUI hand-verify") - Combat Calculator, melee, charging: the "Charged from (in), 0 = not
       set" field appears (whole inches, default 0) and only while charging; a Ravage / Regenerative Strength attacker
       shows its own "Ravage" row; the shooting checkbox reads "Attacker advanced (untick = Hold)".
+- [ ] **#444** (D2, built 2026-10-31) - Main menu -> Load Game on a pre-3.6 save (any `.fdgsave` written before this
+      build, e.g. one from the repo root) -> the resume lobby shows the amber line "This save predates the OPR 3.6
+      upgrade; it plays with 3.6 rules" under the roster, beside any #440 army lines; Resume is not blocked; a save
+      written by this build shows no line. (Same line in the game log for a GUI `--scenario <old save>` launch.)
 
 ### 10. Docs numbers vs code - GREEN
 

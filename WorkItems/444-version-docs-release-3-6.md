@@ -59,6 +59,22 @@ shows `v0.4.0`; CI release job green with the title containing "(OPR 3.6.0)".
 
 ## Notes
 
+- 2026-10-31 (later): **D2 ruled B by Chris ("the absence of a version is an indicator that it's too old"); built.**
+  Engine: `OprRulesVersion.CurrentStamp` ("OPR v3.6.0", `Helpers/OprRulesVersion.cs`) is the one ruleset literal;
+  `GameSaveFile.RulesVersion` (null on every pre-3.6 save) is written by `GameSaveSerializer.Save` and read back by the
+  new `Load(json, out rulesVersion)` overload (`Load(json)` unchanged, schema `Version` stays 2); `LegacySaveNotice`
+  (`SaveLoad/`) yields the amber line for an absent / unparseable / other-ruleset stamp; `LegacyArmyNotice.CurrentRules`
+  now derives from the stamp. `ILobbyViewModel.SaveRulesVersion` (default null) + a trailing optional parameter on the
+  host resume constructor carry the stamp into the lobby. App: `LobbyScreen.LegacyNotices(players, isResume, stamp)`
+  draws the save line first, then the #440 army lines, same amber; `Program.LoadGameFlow` passes the stamp (and echoes
+  the line to the console); `ScenarioLauncher.LoadStore(path, out notice)` prints it like `ArmyLoader` prints the army
+  line, and the GUI `--scenario` path posts it into the game log via `RuleLoadWarnings.PostNotice`. Tests: engine
+  `LegacySaveNoticeTests` (round trip, unstamped loads + is legacy, 3.5 legacy, current not; +16, suite 4471 / 1
+  skipped), app `LegacySaveNoticeLobbyTests` (save + army lines coexist, resume gating, host VM carries the stamp,
+  `LoadStore` console output; +6, suite 4042). Gates: build 6 warnings (unchanged), headless smoke exit 0, `--scenario`
+  on a `--make-scenario` save shows no line and the same save with `RulesVersion` deleted shows it. Docs: README,
+  release notes, plan rule 6 + #444 row, #445 section 9 line, CLAUDE.md one clause. Decisions D13-D20. Awaiting GUI
+  hand-verify (the #445 section 9 line).
 - 2026-10-31: **Steps 1-7 done on the branch (step 7 partial by brief); step 8 not started and not mine to start.**
   Engine `cbd4cf79` (444: rule citations that still read v3.5.1 now cite the unchanged v3.6.0 text); superproject
   `e864f1c` (0.4.0, OPR_3_6_0, CLAUDE.md examples, pointer bump), `ea56978` (README / EngineNotes / ResolverGuide /
@@ -146,7 +162,12 @@ shows `v0.4.0`; CI release job green with the title containing "(OPR 3.6.0)".
   (`377-SpellVerify.fdgsave`, copied to the scratchpad, run `--headless --scenario <copy> --all-ai`) loaded and played
   to `Game result:` with exit 0. README and release notes therefore say "not supported: some may still open, but they
   keep the 3.5 armies they were saved with; start a new game". Alternative: a save version gate refusing pre-0.4.0
-  saves (a code change, out of this item's doc scope; Chris to say if wanted).
+  saves (a code change, out of this item's doc scope; Chris to say if wanted). **Chris ruled B on 2026-10-31** ("let's
+  do B. We can treat the absence of a version as an indicator that it's too old"); built the same day: saves carry an
+  `OPR v3.6.0` rules stamp, a save with no stamp (every pre-3.6 save) or another ruleset's stamp loads anyway and the
+  resume lobby / `--scenario` console show the amber "This save predates the OPR 3.6 upgrade; it plays with 3.6 rules"
+  (or "This save was written for OPR v3.5.3; it plays with 3.6 rules") line, never a refusal. README, release notes and
+  plan rule 6 reworded to match. Details in the Notes and D13-D20.
 - **D3 (OWNER REVIEW) - the stale AoF "Unsupported" bullet became a "3.6 terrain types" bullet.** AoF has shipped
   since 3.5, so the bullet was simply false; the slot now names the one 3.6 area not in this release (#443 deferred)
   instead of being deleted.
@@ -182,12 +203,46 @@ shows `v0.4.0`; CI release job green with the title containing "(OPR 3.6.0)".
 - **D12 - the Elevated -> Climbable reservation (#443 "may be reserved by #444 if cheap") not done.** Saves and
   scenarios store terrain flags by NAME (#443 survey), so a rename needs a JSON alias plus UI and test changes - not
   cheap, and it is engine work outside a docs item. Left to #443.
+- **D13 - one ruleset literal, in the engine.** `FDG.OprRulesVersion.CurrentStamp` = "OPR v3.6.0" (`Helpers/`, namespace
+  `FDG`, same shape as a book's `Version`) is the only place the ruleset is spelled; `CurrentMajorMinor` ("3.6") is
+  derived from it and `LegacyArmyNotice.CurrentRules` became a property returning that (was its own `const "3.6"`).
+  Alternatives: a const concatenation `"OPR v" + CurrentRules + ".0"` (hard-codes the patch digit) or two literals
+  pinned together by a test (drift is caught late). Bumped alongside `RULES_VERSION` (comment there, CLAUDE.md clause).
+- **D14 - `LegacySaveNotice` is its own class (`FDG.SaveLoad`), not an extension of `LegacyArmyNotice`.** The two differ
+  on purpose about an absent stamp: an army with none is hand-authored (nothing says it is old, #440), a save with none
+  predates 3.6 (every save this build writes is stamped). One `IsLegacy` cannot serve both without a flag parameter;
+  a test (`TheArmyNotice_StillIgnoresAnAbsentStamp_WhileTheSaveNoticeDoesNot`) pins the difference.
+- **D15 - the stamp rides the view model.** `ILobbyViewModel.SaveRulesVersion` (default interface member, null, like
+  `LaunchedGameId`) and an optional trailing `saveRulesVersion` parameter on the host resume constructor; the screen
+  helper `LobbyScreen.LegacyNotices(players, isResume, saveRulesVersion)` is ImGui-free and puts the save line before
+  the army lines. The null default means a resume lobby built from an in-memory store (tests, `ResumeRejoinNetworkTests`)
+  would read as legacy if drawn - acceptable, the app's only resume-lobby constructor call (`Program.LoadGameFlow`)
+  passes the real stamp. Alternative: a `LobbyScreen` property set after `SetViewModel` like `ListedPublicly` (#412);
+  rejected because the host owns the save and the view-model route is what a later client sync would reuse.
+- **D16 - not synced to joining clients in 0.4.0.** A client's `SaveRulesVersion` is null and its `IsResumeMode` is
+  false, so no line. No existing synced lobby field carries it (the roster's `RulesVersion` is per army), so syncing
+  means a new lobby message field; a resume lobby cannot re-crew networked clients yet anyway ("Networked re-crew ...
+  is a follow-up" on the constructor). Host-side display is enough for the release.
+- **D17 - GUI `--scenario` shows the line in the game log.** `ScenarioLauncher.LoadStore(path, out notice)` prints the
+  line to the console in both modes (exactly as `ArmyLoader` prints the army line) and `Program` posts it into the game
+  log through the new `RuleLoadWarnings.PostNotice` (amber WarnColor, beside the #168 drop summary, buffered until the
+  log exists). Not hand-verified in the GUI (no display driving) - folded into the #445 section 9 line.
+- **D18 - no checked-in unstamped fixture.** Both test suites derive the pre-3.6 shape by stripping `RulesVersion` from a
+  fresh `Save()` of a default store (engine: Newtonsoft `JObject`; app: `System.Text.Json` `JsonNode`) - a real round
+  trip of this build's own format with nothing to rot. A hand-made `.fdgsave` would need a valid type map and would
+  break on the next schema bump; the user's untracked root saves stay out of the repo.
+- **D19 - no save schema bump.** `GameSaveSerializer.CurrentVersion` stays 2: the stamp is additive and advisory, `Load`
+  never gates on it, and the one-argument `Load(string)` is kept as a delegating overload (`StoreSnapshot`, tests and
+  the app compile unchanged).
+- **D20 - `Program.LoadGameFlow` also echoes the line to the console.** One extra `Console.WriteLine`, so a GUI Load
+  Game leaves the same trace in the terminal as the CLI paths; the lobby line is the one the player sees.
 
 ## Disagreements between shipped code and the 3.6 text (recorded, code not changed)
 
 - Teleport: `TeleportStage.TELEPORT_RANGE_INCHES` is a flat 6"; the 3.6 description gives 3" / 6" by action. Already
   in #436 D6 item (1) / the #434 follow-up list; no doc states the Teleport range. Release notes list it.
-- 3.5 saves (D2): the plan says unsupported, the code has no gate (they can load).
+- 3.5 saves (D2): the plan says unsupported, the code has no gate (they can load). Resolved 2026-10-31 (D2 option B):
+  they load with an amber notice; plan rule 6, README and release notes now say so.
 - Otherwise none: every number the two docs state matches both the code and the 3.6.0 text.
 
 ## Outcome

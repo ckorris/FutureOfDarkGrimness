@@ -820,9 +820,10 @@ else
         if (!File.Exists(path)) return;
 
         GameDataStore loadedStore;
+        string? saveRulesVersion;
         try
         {
-            loadedStore = GameSaveSerializer.Load(File.ReadAllText(path));
+            loadedStore = GameSaveSerializer.Load(File.ReadAllText(path), out saveRulesVersion);
         }
         catch (Exception ex)
         {
@@ -844,8 +845,13 @@ else
             return;
         }
 
+        // #444 D2: the save's rules stamp rides into the lobby, which shows the amber legacy-save line for a
+        // pre-3.6 save (no stamp) or one from another ruleset. Echoed to the console like the CLI does.
+        if (LegacySaveNotice.Line(saveRulesVersion) is string saveNotice) Console.WriteLine(saveNotice);
+
         // #310: the saved player name, same as a fresh host lobby uses.
-        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore);
+        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore,
+            saveRulesVersion);
         activeLobby = lobby;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
@@ -956,7 +962,9 @@ else
         }
         try
         {
-            GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath);
+            // #444 D2: LoadStore prints the legacy-save line to the console; the GUI also gets it in the
+            // game log, posted once the log exists (below, beside the #168 rule-drop summary).
+            GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath, out string? legacySaveNotice);
             var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed, aiProfile,
                 scenarioAllAi,
                 scenarioLogDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null);
@@ -985,6 +993,7 @@ else
                 // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
                 // Launch attached the log - push any drops it just produced into the visible summary.
                 RuleLoadWarnings.FlushPending();
+                if (legacySaveNotice != null) RuleLoadWarnings.PostNotice(legacySaveNotice);
                 scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
             };
         }

@@ -43,7 +43,8 @@ submodule-first cadence, ASCII-only game text, one vertical slice at a time, nev
    forbids it). Quoting a rule's text in a work-item file or a code comment, as past items do, is fine.
 6. **Scope policy.** 3.6 replaces 3.5. Delete or rewrite 3.5 behaviour; do not add version switches,
    `IsV36` flags, or dual code paths. The single exception: old `.fdgarmy` files with embedded rule
-   definitions keep loading (#440). `.fdgsave` files from 3.5 are not supported.
+   definitions keep loading (#440). `.fdgsave` files from 3.5 load and play under 3.6 rules with a non-blocking amber
+   notice in the resume lobby (#444 D2, option B, ruled 2026-10-31: a save with no rules stamp is pre-3.6).
 7. **Verification per item** (in addition to CLAUDE.md's engine suite + build + headless smoke):
    `FdgRaylib --rule-coverage FdgRaylib/Assets/Books` must not regress (Dead count only goes down), and
    any rule you (re)implement gets an integration test mirroring the nearest `*RuleIntegrationTests`.
@@ -266,7 +267,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 441 | Army Forge + glossary UI for 3.6 (Assault display, roster, Unique Hero, import summary) | 5 | #437 #438 | O | medium | built 2026-10-31; forks F1-F9 await sign-off; GUI hand-verify pending (owner review: D3, D4, D5) |
 | 442 | Tactician AI + Combat Calculator parity with 3.6 | 5 | phase 2 | O | high | done 2026-10-30 (Assault / Parry / Enhanced halves deferred to #424 / #423 / #433; bench 85.9% vs 85.6%; awaiting GUI hand-verify; owner review: D7, D9) |
 | 443 | Terrain 3.6: Dense, Unstable, Steep, Climbable (design fork; Q3) | 5 | - | O | high | deferred past the 3.6 release (Q3 answered 2026-10-29) |
-| 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | steps 1-7 done 2026-10-31; merge + tag pending |
+| 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | steps 1-7 done 2026-10-31; D2 ruled B, legacy-save amber notice built 2026-10-31 (D13-D20); merge + tag pending |
 | 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | pass 1 done 2026-10-31 (14 green / 0 red; 4 amber: 5 new warnings net 0, GUI hand-verify list, Random Army hand-verify, #441 F1-F9); pass 2 pending |
 | 446 | Units that activate in Dangerous terrain take the test (pre-existing gap found by #420) | 2 | #420 | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4) |
 | 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | done 2026-10-30 (owner review: D1, D3) |
