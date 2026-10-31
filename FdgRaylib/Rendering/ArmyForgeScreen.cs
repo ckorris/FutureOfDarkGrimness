@@ -72,7 +72,7 @@ public class ArmyForgeScreen : IAppScreen
         $"FDG Army (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
 
-    // The public ctor loads the library on a worker task: parsing all 47 bundled books (~9 MB of JSON)
+    // The public ctor loads the library on a worker task: parsing every bundled book (88 since 3.6, ~19 MB of JSON)
     // took ~0.5s on the startup path, before the window even existed. Every member that reads the
     // books/list joins the task via EnsureLibrary() first; the test-seam ctor fills these synchronously.
     private Task<List<BookFile>>? _libraryTask;

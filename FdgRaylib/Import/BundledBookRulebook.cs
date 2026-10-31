@@ -56,7 +56,7 @@ public sealed class BundledBookRulebook : ICurrentRulebook
     /// rather than by walking all the books: the supplements are the layer every book's definitions are
     /// stamped FROM, so their names cover every book definition except a handful of per-book
     /// "... Effect" helpers, and those are only ever granted by another rule - never named as a list
-    /// rule entry, so they cannot reach this question. Small files instead of ~7 MB of book JSON, on a
+    /// rule entry, so they cannot reach this question. Small files instead of ~19 MB of book JSON, on a
     /// path that only runs when a reference failed to resolve.
     /// </summary>
     public bool Defines(string ruleName)
