@@ -27,6 +27,9 @@
 #      --import-spells          spells re-stamped from the same snapshots (#377); a no-op on a fresh import.
 #   3. --rule-coverage over outDir (the summary should read Dead: 0) and a list of any .fdgbook in outDir this bake
 #      did not write (a stale book from an older bake - delete or git rm it by hand).
+# #439: the bake FAILS (exit 1, after step 1) if the importer skipped any spell as "unrecognized effect text" - a
+# parser gap must never ship as a silently missing spell. A spell whose OPR source text is truncated after its target
+# clause warns differently and does not fail the bake (AoF Shadow Stalkers' Combat Possession in the 3.6.0 data).
 #
 # Replaces scripts/bake-aof-books.sh (#378, AoF only; retired by #438).
 set -euo pipefail
@@ -45,6 +48,7 @@ mkdir -p "$OUT"
 dotnet build FdgRaylib/FdgRaylib.csproj >/dev/null
 
 declare -a written=()
+declare -a unparsed=()
 declare -A snapshot_of=()
 
 # bake <system-prefix> <snapshot.json> <supplement...>
@@ -55,6 +59,8 @@ bake() {
     out="$OUT/${prefix}$(echo "$name" | tr -d ' -').fdgbook"
     log="$("$BIN" --import-opr "$json" "$out" "$@")"
     echo "$log" | sed "s|^|    |"
+    while IFS= read -r line; do unparsed+=("$name: ${line#  }"); done \
+        < <(echo "$log" | grep "skipped: unrecognized effect text" || true)
     if echo "$log" | grep -q "^Skipped "; then return 0; fi
     written+=("$out")
     snapshot_of["$out"]="$json"
@@ -74,6 +80,11 @@ for f in "$AOF_SNAP"/*.json; do
     bake "AoF-" "$f" "${supp[@]}"
 done
 echo "== baked ${#written[@]} book(s)"
+if [ "${#unparsed[@]}" -gt 0 ]; then
+    echo "FAIL: ${#unparsed[@]} spell(s) the importer could not parse (#439 - fix the grammar, never ship a gap):" >&2
+    printf '    %s\n' "${unparsed[@]}" >&2
+    exit 1
+fi
 
 echo "== 2a. --import-book: skipped (3.6.0 snapshots price every option per unit, #437 D7)"
 
