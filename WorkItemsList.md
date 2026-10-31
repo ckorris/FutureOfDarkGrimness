@@ -22,10 +22,8 @@ Numbers 415-447 are reserved for the upgrade; their detail files live on the fea
 merges to master before #444. Phase order and dependencies: plan section 4.
 
 - [~] 415 — OPR 3.6 upgrade umbrella: the plan, ground rules, master merges into the branch, release gate. ([WorkItems/415](WorkItems/415-opr-3-6-upgrade-umbrella.md))
-- [x] 416 — 3.6 reference snapshot (90 Army Forge books, core rules, common-rules API) + `scripts/census-opr-books.py` + coverage baseline. Done 2026-10-29. ([WorkItems/416](WorkItems/416-opr-3-6-reference-snapshot-census.md))
 - [x] 417 — Melee ranges 3.6: 3" strike range (4" vertical kept, Q4); pile-in/consolidate already 3"/1". Done 2026-10-29; GUI hand-verify pending (charge line/count, 1"-3" optional-charge band). ([WorkItems/417](WorkItems/417-melee-range-3-inches.md))
 - [x] 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" special rules. Done 2026-10-29; dice-panel GUI hand-verify pending. ([WorkItems/418](WorkItems/418-fatigue-no-special-sixes.md))
-- [x] 419 — Melee result 3.6: loser = most wounds TAKEN this activation; Fear(X) adds to the enemy's taken count. Done 2026-10-29; owner review asked on D1/D3. ([WorkItems/419](WorkItems/419-melee-result-wounds-taken.md))
 - [x] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. Done 2026-10-29; "or that activate in it" built by #446 (D5 resolved). ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))
 - [x] 421 — Hero 3.6: Tough(9+) heroes lend Quality for morale within 6"; both lends gated on the hero not being Shaken. Done 2026-10-30; owner review asked on D3, D4. ([WorkItems/421](WorkItems/421-hero-morale-aura-3-6.md))
 - [x] 422 — Impact/Counter/Brace 3.6: Fatigue gate on all three; Counter = strike-first only; new core Brace(X) (+ Counter/Brace in Melee grants); Counter-Attack dropped. Done 2026-10-29; GUI hand-verify pending, owner: D1/D4; D8 resolved by #447. ([WorkItems/422](WorkItems/422-impact-counter-brace.md))
@@ -35,29 +33,18 @@ merges to master before #444. Phase order and dependencies: plan section 4.
   Done 2026-10-30 (capability-operation seam + B1); GUI hand-verify after the #438 re-bake; owner review asked on D2, D3.
 - [x] 425 — Cumbersome (new core); Artillery most-models/unmoved; Indirect = Hold-only LoS bypass, no move penalty; Quick Throw. Done 2026-10-30; owner review asked on D1, D3, D4, D5; GUI hand-verify pending. ([WorkItems/425](WorkItems/425-cumbersome-artillery-indirect.md))
 - [x] 426 — Deployment distances 3.6: Scout 9"/9", Vanguard and Fanatic 9" from non-Vanguard enemies, Reinforcement edges, Ambush objective lockout check. Done 2026-10-30; owner review asked on D1-D6. ([WorkItems/426](WorkItems/426-deployment-distances-3-6.md))
-- [x] 427 — Core small batch 3.6: Unstoppable, Aircraft, Flying, Transport contact-to-enter, Spell Amplifier, Immobile/Strider confirm. Done 2026-10-29; owner review asked on D1, D2, D3, D5, D6. ([WorkItems/427](WorkItems/427-core-small-batch-3-6.md))
-- [x] 428 — "Most models have this rule" replaces every "all models" gate (Fearless, Regeneration, Stealth, Artillery, ~40 faction rules). Done 2026-10-29; owner review asked on D2/D3. ([WorkItems/428](WorkItems/428-most-models-gating.md))
 - [x] 429 — Casting 3.6: LoS moves from Caster into each spell, +1 casting modifiers, once per activation, boosters within 18" without LoS, Spell Drain. Done 2026-10-30; owner review asked on D2/D6. ([WorkItems/429](WorkItems/429-casting-3-6.md))
 - [x] 430 — Force org 3.6: 1 unit/200pts, 1 model-or-Tough/20pts, AoF levels (375/750/1500), Unique Hero once per army. Done 2026-10-30; owner review asked on D1-D4/D6. ([WorkItems/430](WorkItems/430-force-org-3-6.md))
-- [x] 431 — New weapon-rule family: Anti-Cover, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate, Destructive, Disintegrate, Demolish, Purge, Reap, Scourge, Unwieldy, Imprecise, Crossing Strike. Done 2026-10-29; owner review asked on D2/D3/D5/D8. ([WorkItems/431](WorkItems/431-new-weapon-rules-3-6.md))
-- [x] 432 — Range-conditional army-wide rules: the "over 9"/6" when shooting/charging (or shot/charged)" family + range debuffs/buffs; Boosts deleted. Done 2026-10-29; owner review asked on D1/D2/D4/D5. ([WorkItems/432](WorkItems/432-range-conditional-army-rules.md))
 - [x] 433 — "Enhanced X" family (112 names replacing the Boost family) as Option B deltas on untouched bases. ([WorkItems/433](WorkItems/433-enhanced-rule-family.md))
   Done 2026-10-30; all-90 scratch import Enhanced 0 dead; owner review asked on D4, D5.
 - [x] 434 — GDF supplement sweep to 3.6: remaining reworded definitions, new unit/aura/buff rules, weapon-scoped grants, Voidspace Stalkers. ([WorkItems/434](WorkItems/434-gdf-supplement-3-6.md))
   Done 2026-10-30; Enhanced family -> #433; owner review asked on D2, D3, D4, D7, D12, D13.
-- [x] 435 — AoF supplement sweep to 3.6 + book overrides (all moot, deleted) + AoF core: Sergeant AP, Banner, Musician, Brace in Melee. ([WorkItems/435](WorkItems/435-aof-supplement-3-6.md))
-  Done 2026-10-30; Enhanced family -> #433, Parry -> #423; owner review asked on D2, D3, D7.
-- [x] 436 — Remove dropped 3.5 definitions (catalog + supplements) and bring every kept description to 3.6 wording for the glossary. Done 2026-10-30; Unique -> #438; owner review asked on D1, D2, D3, D5, D6. ([WorkItems/436](WorkItems/436-drop-3-5-definitions-text-parity.md))
-- [x] 437 — Importer 3.6: snapshot shape, `OPR v3.6.0` stamp, renamed/parent books, share-link version gate, Assault weapon class. Done 2026-10-30; owner review asked on D1, D2. ([WorkItems/437](WorkItems/437-importer-3-6.md))
-- [x] 438 — Re-bake all 88 books from the 3.6.0 snapshots: unified bake script, post-bake passes, effect-set keywords. Done 2026-10-30; owner review asked on D1-D5. ([WorkItems/438](WorkItems/438-rebake-books-3-6.md))
-- [x] 439 — Spells 3.6: parser grammar (LoS clause, weapon-scoped grants, new rule names), re-import, per-book parity verification. ([WorkItems/439](WorkItems/439-spells-3-6.md))
-  Done 2026-10-31; 527/528 spells (one truncated at source), parity 527/527; owner review asked on D1-D5.
 - [x] 440 — Regenerate derived data (Random Army catalog, scenarios, fixtures, built-in test army) and prove legacy 3.5 `.fdgarmy` files still load (Q5 notice). ([WorkItems/440](WorkItems/440-regenerate-derived-data-3-6.md))
 - [ ] 441 — Army Forge + glossary UI for 3.6: built 2026-10-31; awaiting GUI hand-verify and sign-off on forks F1-F9. ([WorkItems/441](WorkItems/441-army-forge-ui-3-6.md))
 - [x] 442 — Tactician AI + Combat Calculator parity with 3.6 (3" melee, Assault threat, Parry/Brace, Cumbersome, Indirect). ([WorkItems/442](WorkItems/442-ai-and-calculator-parity-3-6.md))
   Done 2026-10-30; Assault / Parry / Enhanced halves -> #424 / #423 / #433; owner review asked on D7, D9.
 - [ ] 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed). Design fork; blocked on Q3. ([WorkItems/443](WorkItems/443-terrain-3-6.md))
-- [ ] 444 — Version, docs, release: RULES_VERSION OPR_3_6_0, app version (Q7), README/CLAUDE.md/EngineNotes/ResolverGuide, merge to master, tag. ([WorkItems/444](WorkItems/444-version-docs-release-3-6.md))
+- [~] 444 — Version, docs, release: 0.4.0 / OPR_3_6_0, README/CLAUDE.md/docs, archive, release-notes draft done on the branch 2026-10-31; merge + tag wait for hand-verify, fork sign-off and #445. ([WorkItems/444](WorkItems/444-version-docs-release-3-6.md))
 - [ ] 445 — Final verification: coverage Dead 0, per-book smokes, share-link gate, hand-verify checklist. ([WorkItems/445](WorkItems/445-final-verification-3-6.md))
 - [x] 446 — Dangerous terrain: a unit that activates in Dangerous terrain takes the test first thing in its activation; one test per activation on either trigger. Done 2026-10-30; owner review asked on D1, D2, D3, D4. ([WorkItems/446](WorkItems/446-activate-in-dangerous-terrain.md))
 - [x] 447 — Impact(X) is per model: X dice per living model carrying it (a joined hero's own Impact adds), Brace subtracts from the total. Done 2026-10-30; owner review asked on D1, D3. ([WorkItems/447](WorkItems/447-impact-per-model.md))

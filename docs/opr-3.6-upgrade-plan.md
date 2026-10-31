@@ -1,6 +1,8 @@
 # OPR v3.6.0 upgrade plan (Grimdark Future + Age of Fantasy)
 
-**Status:** planning complete 2026-10-29; implementation not started. Umbrella work item: **#415**.
+**Status:** feature-complete on `feature/opr-3.6` as of 2026-10-31, pending Chris's GUI hand-verifies, his sign-off on
+the open forks (#441 F1-F9) and the per-item D decisions, the #445 verification run, and the merge to `master` + the
+`v0.4.0` tag (#444 step 8). Planning completed 2026-10-29. Umbrella work item: **#415**.
 **Branch:** `feature/opr-3.6` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`). Nothing from this upgrade lands on `master` until the whole plan is green (#444).
 **Owner:** Chris. **Sources of truth:** section 3. **Open questions:** section 6 (defaults are assumed until
@@ -264,7 +266,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 441 | Army Forge + glossary UI for 3.6 (Assault display, roster, Unique Hero, import summary) | 5 | #437 #438 | O | medium | built 2026-10-31; forks F1-F9 await sign-off; GUI hand-verify pending (owner review: D3, D4, D5) |
 | 442 | Tactician AI + Combat Calculator parity with 3.6 | 5 | phase 2 | O | high | done 2026-10-30 (Assault / Parry / Enhanced halves deferred to #424 / #423 / #433; bench 85.9% vs 85.6%; awaiting GUI hand-verify; owner review: D7, D9) |
 | 443 | Terrain 3.6: Dense, Unstable, Steep, Climbable (design fork; Q3) | 5 | - | O | high | deferred past the 3.6 release (Q3 answered 2026-10-29) |
-| 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | todo |
+| 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | steps 1-7 done 2026-10-31; merge + tag pending |
 | 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | todo |
 | 446 | Units that activate in Dangerous terrain take the test (pre-existing gap found by #420) | 2 | #420 | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4) |
 | 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | done 2026-10-30 (owner review: D1, D3) |
@@ -277,7 +279,7 @@ Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, 
 ## 6. Open questions for Chris
 
 **Answered 2026-10-29: Chris accepted every default below (Q1-Q10).** Pushes done (master reservation,
-both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433, #423, #436, #437, #438, #439, #440, #441) are a separate set
+both feature branches). The agents' per-item decisions (the D entries in #428, #420, #418, #417, #422, #427, #431, #432, #419, #429, #425, #426, #430, #421, #446, #447, #434, #435, #442, #424, #433, #423, #436, #437, #438, #439, #440, #441, #444) are a separate set
 and remain open for his review; each item file lists its own.
 
 - **Q1 Number reservation on master.** Items #415-#445 are filed on the feature branch. Other sessions file

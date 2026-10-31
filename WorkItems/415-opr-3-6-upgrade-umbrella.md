@@ -24,6 +24,9 @@ passes and the feature branch is merged to master in both repos.
 
 ## Notes
 
+- 2026-10-31 (from #444): post-merge cleanup slice handed here - the stale "not-yet-rebaked books" / "until #438" /
+  "until #436" code comments (15 sites, listed in #444's 2026-10-31 note) now describe a state the re-bake ended;
+  comment-only, outside #444's v3.5.1-citation scope.
 - 2026-10-29: OPR released 3.6.0 today. Local `master` was 22 commits behind `origin/master` (#406/#412-#414
   analytics + fixes landed from another session); fast-forwarded, then branched `feature/opr-3.6` in both
   repos from `c5c7ebf` / engine `479888d`. Snapshotted all 90 Army Forge books (49 GDF incl. the empty
