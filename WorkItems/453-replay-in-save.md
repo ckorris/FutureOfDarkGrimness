@@ -41,6 +41,11 @@ load -> finish produces one replay whose dump (#455) shows `... Saved, Resumed, 
   seeding from history needs a new entry point that takes the prior events (and their header) before snapshot 0.
   The launch message already carries the host's header (`LaunchGameMessage.Replay`). A rejoining client's
   recording today simply starts at its join snapshot (pinned by `ClientReplayRecordingTests`).
+- **From #452:** `ReplaySave` writes one file per `IReplaySource` instance and rewrites it while that recording's
+  `Summary` changes. Escape-menu Load writes the old game's file in `OnGameExited` before the teardown, then loads;
+  today the resumed game gets a new recorder and so a new file, and the earlier session's file is kept. Once a
+  resumed recording continues the saved history, its file is a superset of the earlier one - both stay (F3); say so
+  in the Outcome rather than deduplicating.
 - Half-activation semantics: document in `docs/replay-plan.md` 4.1 (already there) and in the recorder
   code that deltas between the last `ActivationStart` and `Saved` were undone by the resume; #454's
   player never applies across `Resumed`.

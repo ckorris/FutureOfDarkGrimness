@@ -18,7 +18,7 @@ A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rul
   ```
   (The submodule needs its own link - its hooks live under `.git/modules/FutureOfDarkGrimness/`.)
 - **Submodule-first commit cadence.** When engine changes are authorized (the `FutureOfDarkGrimness` submodule), commit the submodule first, then bump the superproject submodule pointer together with any app-side changes in a second commit.
-- **Verify before committing — never commit red.** Run `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj` green, and for app-side changes a full `dotnet build`. When a change touches a playable path, also run a headless smoke (`printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless`) and confirm it exits 0 with the expected log line.
+- **Verify before committing — never commit red.** Run `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj` green, and for app-side changes a full `dotnet build`. When a change touches a playable path, also run a headless smoke (`printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless`) and confirm it exits 0 with the expected log lines (`Game result: ...`, then `Replay saved to: .../Replays/replay-....fdgreplay`).
 - **Re-verify assumptions before shared/irreversible operations.** Inspect git state before merging to or pushing a shared branch; if a stated premise turns out false (e.g. "master is synced"), surface it before proceeding rather than pressing on.
 
 ## Versioning & Releases
@@ -92,7 +92,8 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --make-scenario Scenarios/exa
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/example-shootout.json
 
 # Replay tools (#455, see Scenarios/README.md): read a recorded game headless (--dump | --events | --stats |
-# --verify | --export OUT.jsonl), or cut a resumable save at a step and play it with --scenario.
+# --verify | --export OUT.jsonl), or cut a resumable save at a step and play it with --scenario. Every game writes
+# its .fdgreplay to Replays/ beside the executable on any exit, host and client (#452); --replay-out DIR redirects it.
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --dump
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --at 20 --make-save repro.fdgsave
 

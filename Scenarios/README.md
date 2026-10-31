@@ -22,7 +22,8 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --scenario Scenari
 
 ## From a replay (#455)
 
-A recorded game (`.fdgreplay`) turns into a repro save in one command, so a reported bug becomes a
+A recorded game (`.fdgreplay` - every game writes one to `Replays/` beside the executable, host and client, #452)
+turns into a repro save in one command, so a reported bug becomes a
 scenario without replaying the game by hand. Find the decision with `--dump`, then cut there:
 
 ```bash

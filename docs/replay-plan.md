@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording) done 2026-10-31. Umbrella work item: **#449**.
+**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording) and #452 (files on every game exit) done 2026-10-31. Umbrella work item: **#449**.
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -162,8 +162,8 @@ index. Another player's request is recorded at its resolved notice. Measured on 
 and real sockets): every client snapshot is byte-identical to the host's at the same index, and the played-back final
 state equals the host's live one.
 
-**Exposure:** `IFDGGame.Replay` (`IReplaySource? { bool IsRecording; byte[] ExportGzip(); ReplaySummary Summary; }`)
-on both `FDGGame_AsLocal` and `FDGGame_AsClient`; `ILobbyViewModel.Replay` forwards to the launched game
+**Exposure:** `IFDGGame.Replay` (`IReplaySource? { bool IsRecording; ReplayHeader? Header; byte[] ExportGzip(); ReplaySummary Summary; }`;
+`Header` added by #452 for file names) on both `FDGGame_AsLocal` and `FDGGame_AsClient`; `ILobbyViewModel.Replay` forwards to the launched game
 (host) or the client game. The app never touches the recorder's internals.
 
 **Thread safety:** store events and markers fire on the engine thread; request observers fire on the
@@ -220,6 +220,18 @@ step. The filter is one class (`DefaultStepFilter`) so the viewer can offer "sho
 - `Replays/` beside the executable (same location policy as `RecoverySave`'s `Saves/`): `replay-<UTC
   yyyyMMdd-HHmmss>-<armyA>-vs-<armyB>.fdgreplay`, never pruned (F3), written by host and client alike.
 - `.fdgsave` gains `Replay` (base64 gzip of the container as of the save) - #453.
+
+**As built (#452).** `FdgRaylib/SaveLoad/ReplaySave.TryWrite(IReplaySource?, DateTime, string? directory)` writes
+`replay-<stamp>-<armyA>-vs-<armyB>[-<n>p].fdgreplay` (army names from the header, `[A-Za-z0-9-]`, 24 chars; the
+opponent is the first slot on another team) through a temporary file, prints `Replay saved to: PATH`, and remembers
+the path per recording instance: a later call rewrites the same file only when `Summary` changed, otherwise it is a
+no-op. Keyed on the instance, not `GameId`, because a resumed save keeps its game ID. `Program.cs` points one
+`currentReplay` at the lobby's / `--scenario` server's / `CliApp`'s recording and calls `WriteReplayIfAny()` from:
+the lobby's and the scenario server's `OnGameEnded` (before the game-over card, which gets a "Replay saved to" note
+under any #187 recovery note), `RaylibRenderer.OnGameExited` (Esc -> main menu / load), the `finally` after
+`renderer.Run()` (Quit to Desktop and the window's close button leave the loop without `ExitGame`), the headless and
+headless-scenario runs after the game, the `renderer.Run()` catch, and `AppDomain.UnhandledException`.
+`--replay-out DIR` overrides the folder for the run. Zero decisions writes nothing (F3).
 
 ---
 
@@ -278,7 +290,7 @@ scope here (gzip already does most of that work).
 | 449 | Umbrella: plan, ground rules, master merges, release gate | - | planning done |
 | 450 | Engine: replay format + host-side `ReplayRecorder` (store, requests, beats, log, markers, snapshots, seed materialisation) | - | done 2026-10-30 |
 | 451 | Engine: decision payloads to clients (D2) + `ClientReplayRecorder` + `ReplayMarkerMessage` | 450 | done 2026-10-31 |
-| 452 | App: auto-write `.fdgreplay` on every game exit (host, client, headless, scenario, crash best-effort) | 450, 451 | todo |
+| 452 | App: auto-write `.fdgreplay` on every game exit (host, client, headless, scenario, crash best-effort) | 450, 451 | done 2026-10-31 |
 | 453 | Replay inside `.fdgsave`: save embeds, resume continues, clients receive history | 450, 451 | todo |
 | 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | done 2026-10-30 |
 | 455 | Headless tooling: `--replay` dump / stats / verify / export / make-save | 454 | done 2026-10-30 |

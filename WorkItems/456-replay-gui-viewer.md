@@ -41,6 +41,10 @@ game, and the acceptance list below is ticked.
   of 0.75 s / speed; `Instant` = no beats, 0.1 s dwell. Autoplay stops at the end and at a `Resumed`
   marker (shows a one-line banner "Game was saved and resumed here; the unfinished activation was
   replayed").
+- **From #452:** `ReplaySave.List(directory = null)` returns full paths, newest first (by name: the UTC stamp leads);
+  `ReplaySave.DirectoryPath` is the folder. Names are `replay-<stamp>-<armyA>-vs-<armyB>[-<n>p][_<k>].fdgreplay`
+  with the army names cut to `[A-Za-z0-9-]` and 24 characters - show the header's names, never parse the file
+  name. `--replay-out` only redirects where a run writes; the browser reads `DirectoryPath`.
 - Step-back cost: a seek rebuilds the store (plan 4.3). Show a brief "seeking..." if it exceeds 100 ms;
   no frame may block the UI for more than that - do the `Load` on a worker and swap on the main thread
   (same lock-and-handoff discipline the resolvers use; see `docs/ResolverGuide.md`).

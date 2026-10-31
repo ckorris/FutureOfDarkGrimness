@@ -32,6 +32,10 @@ public class CliApp
     private FDGGame_AsLocal? _aiGame;
 
     public ITableState? TableState => _localGame?.TableState;
+
+    /// <summary>The running game's recording, once RunAsync/RunScenarioAsync has built the server; Program.cs
+    /// writes it to Replays/ when the run ends or crashes (#452).</summary>
+    public IReplaySource? Replay { get; private set; }
     public GameLog? Log { get; private set; }
 
     // Filled during CreatePlayerSlots(); read by the renderer at draw time.
@@ -108,9 +112,10 @@ public class CliApp
         playerSlots[1].AssignPlayerController(aiController);
 
         var gameEnded = new TaskCompletionSource();
-        // #450: record the game; the human game exposes it (IFDGGame.Replay) for #452 to write at exit.
+        // #450: record the game; Program.cs writes it once the run ends (#452).
         var replay = new ReplayRecorder();
         _localGame.AttachReplay(replay);
+        Replay = replay;
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots, replay: replay);
         // #168: army loads just ran inside the server build - flush their buffered rule warnings
         // into this mode's log as the aggregated summary (headless keeps the stdout fallback).
@@ -166,6 +171,7 @@ public class CliApp
         var gameEnded = new TaskCompletionSource();
         var replay = new ReplayRecorder(); // #450
         _localGame.AttachReplay(replay);
+        Replay = replay;
         var server = new FDGServer(parts.Store, parts.Bus, parts.Slots, replay: replay); // resume constructor
         server.OnGameCompleted += PrintGameResult;
         server.OnGameEnded += result =>

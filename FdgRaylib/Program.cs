@@ -27,8 +27,25 @@ void WriteCrash(string source, object? exObj)
     try { File.AppendAllText(crashLogPath, text); } catch { /* best-effort */ }
 }
 
+// #452: every game leaves a .fdgreplay. The mode wiring below points currentReplay at the running game's
+// recording (the lobby's, a --scenario server's, or the headless CliApp's); every exit path - game over, the
+// escape menu, closing the window, a headless run finishing, a crash - calls WriteReplayIfAny, and ReplaySave
+// writes each recording to one file however many of those paths see it. --replay-out overrides the folder.
+Func<IReplaySource?> currentReplay = () => null;
+string replayDirectory = ReplaySave.DirectoryPath;
+string? WriteReplayIfAny()
+{
+    try { return ReplaySave.TryWrite(currentReplay(), DateTime.UtcNow, replayDirectory); }
+    catch { return null; /* best-effort: never let the replay turn an exit into a crash */ }
+}
+
 AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+{
+    // The process is going down: save the game so far first (best effort), then report the crash.
+    // TaskScheduler.UnobservedTaskException below is not fatal - the game carries on - so it doesn't write.
+    WriteReplayIfAny();
     WriteCrash("AppDomain.UnhandledException", e.ExceptionObject);
+};
 
 TaskScheduler.UnobservedTaskException += (_, e) =>
 {
@@ -98,6 +115,12 @@ if (profileIdx >= 0 && profileIdx + 1 < args.Length)
         Environment.Exit(2);
     }
 }
+
+// --replay-out <dir> (#452): write this run's replay there instead of Replays/ beside the executable - for
+// scripts and tests that want the file somewhere known.
+int replayOutIdx = Array.IndexOf(args, "--replay-out");
+if (replayOutIdx >= 0 && replayOutIdx + 1 < args.Length)
+    replayDirectory = Path.GetFullPath(args[replayOutIdx + 1]);
 
 // The flag's file arguments from startIdx up to the next --flag (#375: the supplement CLI flags take
 // one or more supplement files).
@@ -658,6 +681,8 @@ var app = new CliApp(headless, slowDelayMs, diceSeed, aiProfile);
 
 if (headless)
 {
+    currentReplay = () => app.Replay; // #452
+
     if (scenarioPath != null)
     {
         try
@@ -670,11 +695,13 @@ if (headless)
             Console.WriteLine($"Scenario error: {ex.Message}");
             Environment.Exit(1);
         }
+        WriteReplayIfAny();
         return;
     }
 
     app.Prepare();
     await app.RunAsync();
+    WriteReplayIfAny();
     UsageAnalytics.Shutdown();
 }
 else
@@ -716,6 +743,9 @@ else
     // abandoned host lobby kept serving the port as a zombie while the next lobby's listener
     // silently failed to bind - joins and chat went to a lobby no UI was bound to.
     ILobbyViewModel? activeLobby = null;
+    // #452: the no-lobby --scenario game's recording (below); otherwise the replay is the lobby's.
+    IReplaySource? scenarioReplay = null;
+    currentReplay = () => activeLobby?.Replay ?? scenarioReplay;
     void TeardownLobby()
     {
         StopListing();
@@ -839,18 +869,38 @@ else
         renderer.NavigateTo(renderer.MainMenu);
     };
 
-    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271, #279).
+    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271, #279). Not Quit to Desktop or
+    // the window's close button: those leave renderer.Run(), and the finally block at the bottom covers them.
     renderer.OnGameExited = () =>
     {
         // #412: leaving a game that hadn't finished is an abandon (suppressed after a game_end).
         GameAnalyticsSession.Current?.Abandoned("menu");
+        // #452: a game left through the menu still leaves its replay (a no-op when game over already wrote it
+        // and nothing happened since). Before the teardown, which drops the lobby that holds the recording.
+        WriteReplayIfAny();
+        scenarioReplay = null;
         TeardownLobby();
     };
+
+    // #452: the game is over (host or client, finished or ended by a disconnect): write its replay and say where
+    // on the game-over card. Runs on the engine thread before ShowGameOver, after any recovery-save note.
+    void WriteReplayForGameOver()
+    {
+        string? path = WriteReplayIfAny();
+        if (path != null)
+            renderer.AddGameOverNote($"Replay saved to:\n{path}");
+        else if (currentReplay()?.Summary.Steps > 0)
+            renderer.AddGameOverNote("Could not save the replay (see the console for why).");
+    }
 
     renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI) =>
         renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI);
 
-    renderer.LobbyScreen.OnGameEnded = result => renderer.ShowGameOver(result);
+    renderer.LobbyScreen.OnGameEnded = result =>
+    {
+        WriteReplayForGameOver();
+        renderer.ShowGameOver(result);
+    };
 
     // #187: a game the engine ended because a player's connection dropped is not lost - the host writes a
     // recovery save automatically (over the internet a brief drop is common, and nobody should have to
@@ -912,14 +962,19 @@ else
                     tableBackground: scenarioSettings.TableBackground,
                     seeThroughFriendlyUnits: scenarioSettings.SeeThroughFriendlyUnits);
 
-                var scenarioReplay = new ReplayRecorder(); // #450
-                parts.HumanGame.AttachReplay(scenarioReplay);
+                var scenarioRecorder = new ReplayRecorder(); // #450
+                parts.HumanGame.AttachReplay(scenarioRecorder);
+                scenarioReplay = scenarioRecorder; // #452
                 var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
-                    new RealtimePresentationClock(), replay: scenarioReplay);
+                    new RealtimePresentationClock(), replay: scenarioRecorder);
                 // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
                 // Launch attached the log - push any drops it just produced into the visible summary.
                 RuleLoadWarnings.FlushPending();
-                scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
+                scenarioServer.OnGameEnded += result =>
+                {
+                    WriteReplayForGameOver();
+                    renderer.ShowGameOver(result);
+                };
             };
         }
         catch (ScenarioCompileException ex)
@@ -935,6 +990,7 @@ else
     }
     catch (Exception ex)
     {
+        WriteReplayIfAny(); // #452: before the wait below - the player may close the terminal instead of pressing Enter
         WriteCrash("renderer.Run() threw", ex);
         Console.Error.WriteLine("Press Enter to exit.");
         Console.ReadLine();
@@ -942,6 +998,9 @@ else
     }
     finally
     {
+        // #452: Quit to Desktop and the window's close button end the loop without ExitGame, so a game still
+        // on the table is written here (a no-op when it was already written and nothing happened since).
+        WriteReplayIfAny();
         // App exit: send the polite delist so the entry vanishes now, not at TTL (#271), and wait for
         // the router to drop the port mapping - the process is about to end, so a background removal
         // would die with it.

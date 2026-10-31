@@ -270,3 +270,6 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
 - [x] 451 — Engine: resolved notice carries the decision (D2) + `ClientReplayRecorder`: remote clients record the
   whole game under the host's game ID (header on the launch message). **Done 2026-10-31** on `feature/replay`;
   client snapshots byte-identical to the host's. GUI two-process check in #457. ([WorkItems/451](WorkItems/451-replay-client-recording.md))
+- [x] 452 — App: every game writes its `.fdgreplay` to `Replays/` (host and client) on any exit - game over, disconnect,
+  escape menu, Quit to Desktop, window close, headless, crash best-effort; the game-over card names the file. **Done
+  2026-10-31** on `feature/replay`; each exit path run once in the GUI or by script. ([WorkItems/452](WorkItems/452-replay-autosave.md))

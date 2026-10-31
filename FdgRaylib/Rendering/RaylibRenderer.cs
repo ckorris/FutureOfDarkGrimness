@@ -108,8 +108,8 @@ public class RaylibRenderer
     // the game-over overlay. Non-null = game finished, result string to display.
     private volatile string? _gameOverResult = null;
 
-    // Optional second line under the result (#187: "Recovery save written to ..."). Same threading rules
-    // as _gameOverResult.
+    // Optional note under the result (#187: "Recovery save written to ...", #452: "Replay saved to ...").
+    // Same threading rules as _gameOverResult.
     private volatile string? _gameOverNote = null;
 
     // #331: celebration behind the game-over card. Main-thread only (built and drawn in the render loop),
@@ -337,6 +337,14 @@ public class RaylibRenderer
     /// card reads it on the main thread. Cleared by <see cref="ExitGame"/> with the result.
     /// </summary>
     public void SetGameOverNote(string? note) => _gameOverNote = note;
+
+    /// <summary>
+    /// #452: adds a paragraph under whatever note is already set - the replay's path, below a recovery-save
+    /// note when there is one. Same threading as <see cref="SetGameOverNote"/>: the engine thread calls both
+    /// in turn, before <see cref="ShowGameOver"/>.
+    /// </summary>
+    public void AddGameOverNote(string note) =>
+        _gameOverNote = _gameOverNote == null ? note : $"{_gameOverNote}\n\n{note}";
 
     /// <summary>
     /// Tears down all in-game state so the renderer can return to the screen stack and a later launch
@@ -1208,9 +1216,13 @@ public class RaylibRenderer
         string? result = _gameOverResult;
         if (result == null) return;
 
-        // A recovery note (#187) is a wrapped absolute path, so the card grows to hold it.
+        // The notes (#187 recovery save, #452 replay) are wrapped absolute paths, so the card grows to hold them.
         string? note = _gameOverNote;
-        var size = new Vector2(Math.Min(460f, screenW * 0.8f), note == null ? 200f : 290f);
+        float width = Math.Min(460f, screenW * 0.8f);
+        ImGuiStylePtr style = ImGui.GetStyle();
+        float noteHeight = note == null ? 0f
+            : ImGui.CalcTextSize(note, false, width - (style.WindowPadding.X * 2f)).Y + (style.ItemSpacing.Y * 4f);
+        var size = new Vector2(width, 200f + noteHeight);
         ImGui.SetNextWindowPos(new Vector2((screenW - size.X) / 2f, (screenH - size.Y) / 2f), ImGuiCond.Appearing);
         ImGui.SetNextWindowSize(size, ImGuiCond.Always);
         ImGui.Begin("Game Over##overlay",
