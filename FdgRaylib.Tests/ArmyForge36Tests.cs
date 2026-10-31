@@ -192,4 +192,98 @@ public class ArmyForge36Tests
             : ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
         return ArmyForgeScreen.StepperMax(section, roster, unit, available, own, others);
     }
+    // ── Goals 3 + 4: Unique Hero and the force-org lines, per system ────────────────────────────────
+
+    private static RosterUnit Roster(BookFile book, string name) => book.Units.Single(u => u.Name == name);
+
+    private static RosterUnit FirstSquad(BookFile book) => book.Units.First(u =>
+        u.MaxModels > 1 && !u.Rules.Any(r => r.PrintableName is "Hero" or "Unique Hero"));
+
+    // 3.6 HDF Colonel Rixxon is a Unique Hero: a Hero for every purpose (the join control is offered, it counts
+    // toward the Hero cap) and an Error on the second copy - the rule is absolute, unlike the advisory caps.
+    [Test]
+    public void GdfUniqueHero_JoinsLikeAHero_AndTheSecondCopyIsAnError_WithTheGdfHeroCapWording()
+    {
+        BookFile book = Book("HumanDefenseForce");
+        RosterUnit rixxon = Roster(book, "Colonel Rixxon");
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(FirstSquad(book).Id);
+        screen.AddToList(rixxon.Id);
+        screen.AddToList(rixxon.Id);
+        screen.AddToList(Roster(book, "Company Leader").Id);
+        Assert.That(screen.List.PointsLimit, Is.EqualTo(1000), "GDF starter size");
+
+        List<UnitFileEntry> rows = ListCompiler.CompileRows(book, screen.List);
+        Assert.That(ForceOrgValidator.IsHero(rows[1]), Is.True, "the join control is drawn for a Hero");
+        Assert.That(screen.HostCandidates(1, rows), Does.Contain(0), "and offers the squad as a host");
+        Assert.That(RuleGlossary.Build(book).Describe("Unique Hero"),
+            Is.EqualTo("Counts as having Hero, and this model may only be taken once per army."),
+            "the hover is the 3.6 catalog sentence, not the not-enforced marker");
+
+        IReadOnlyList<ListIssue> issues = screen.Issues();
+        Assert.That(issues.Where(i => i.Severity == ListIssueSeverity.Error).Select(i => (i.UnitIndex, i.Message)),
+            Is.EqualTo(new[] { ((int?)2, "Colonel Rixxon: Unique Hero - the army may only include one copy.") }),
+            "only the SECOND copy, on its own row");
+        Assert.That(issues.Where(i => i.Severity == ListIssueSeverity.Warning).Select(i => i.Message),
+            Does.Contain("Too many Heroes: 3 (max 2 at 1000 pts; 1 per 500)."));
+        Assert.That(issues.Select(i => i.Message), Has.None.StartsWith("Unique Hero \""),
+            "the advisory duplicate line is dropped where the Error already says it");
+    }
+
+    // The same shapes in Age of Fantasy read AoF's numbers (1 Hero per 375 at a 750 starter list). The Army Builder
+    // prints ForceOrgValidator's lines for the same army straight (no catalog behind it, so Unique Hero is a
+    // warning there).
+    [Test]
+    public void AofUniqueHero_AndTheHeroCap_ReadAofNumbers_InTheForgeAndTheArmyBuilder()
+    {
+        BookFile book = Book("AoF-Dwarves");
+        RosterUnit gamharl = Roster(book, "Gamharl");
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(FirstSquad(book).Id);
+        screen.AddToList(gamharl.Id);
+        screen.AddToList(gamharl.Id);
+        screen.AddToList(Roster(book, "Dwarf Champion").Id);
+        Assert.That(screen.List.PointsLimit, Is.EqualTo(750), "AoF starter size");
+
+        IReadOnlyList<ListIssue> issues = screen.Issues();
+        Assert.That(issues.Single(i => i.Severity == ListIssueSeverity.Error).Message,
+            Is.EqualTo("Gamharl: Unique Hero - the army may only include one copy."));
+        Assert.That(issues.Select(i => i.Message), Does.Contain("Too many Heroes: 3 (max 2 at 750 pts; 1 per 375)."));
+
+        IReadOnlyList<string> builderLines = ForceOrgValidator.Validate(screen.Compile());
+        Assert.That(builderLines, Does.Contain("Too many Heroes: 3 (max 2 at 750 pts; 1 per 375)."));
+        Assert.That(builderLines, Does.Contain("Unique Hero \"Gamharl\" taken 2 times (once per army)."));
+        foreach (string line in builderLines.Concat(issues.Select(i => i.Message)))
+            Assert.That(line.All(c => c < 0x80), Is.True, $"ASCII only: {line}");
+    }
+
+    // Every cap's wording per system, as the two screens print them (#430's numbers: GDF 500 / 1000 / 200 / 20,
+    // AoF 375 / 750 / 150 / 15; 35% for both).
+    [TestCase(GameSystems.GrimdarkFuture, 500, 1000, 200, 20)]
+    [TestCase(GameSystems.AgeOfFantasy, 375, 750, 150, 15)]
+    public void ForceOrgLines_NameTheSystemsNumbers(string system, int perHero, int perCopy, int perUnit, int perModel)
+    {
+        var army = new BuiltArmyFile { GameSystem = system, PointsLimit = 300 };
+        for (int i = 0; i < 4; i++)
+            army.Units.Add(new UnitFileEntry
+            {
+                Name = i < 3 ? "Squad" : "Boss", ModelCount = 10, PointCost = 120,
+                SpecialRules = i < 3 ? new List<SpecialRuleEntry>() : new List<SpecialRuleEntry> { new SpecialRuleEntry_Core("Hero") },
+            });
+        army.Units.Add(new UnitFileEntry
+        {
+            Name = "Second Boss", ModelCount = 1, PointCost = 10,
+            SpecialRules = new List<SpecialRuleEntry> { new SpecialRuleEntry_Core("Hero") },
+        });
+
+        string all = string.Join("\n", ForceOrgValidator.Validate(army));
+        Assert.Multiple(() =>
+        {
+            Assert.That(all, Does.Contain($"; 1 per {perHero})."));
+            Assert.That(all, Does.Contain($"; 1 + 1 per {perCopy})."));
+            Assert.That(all, Does.Contain("; 35% of the army)."));
+            Assert.That(all, Does.Contain($"; 1 per {perUnit})."));
+            Assert.That(all, Does.Contain($"; 1 model or Tough per {perModel})."));
+        });
+    }
 }
