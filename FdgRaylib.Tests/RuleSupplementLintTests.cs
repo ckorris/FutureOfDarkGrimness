@@ -20,8 +20,8 @@ public class RuleSupplementLintTests
 {
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>
     {
-        ["Unique"] = "list-building marker: no dispatch entries; enforced at army-build time by " +
-            "ListValidator ('the army may only include one copy'), never during play.",
+        // #438: "Unique" (a 3.5 list-building marker) left the GDF file with the 3.5 books - 3.6 prints the catalog
+        // "Unique Hero".
 
         // The #196 F1 Tough-majority entries (Shatter, Tear, Melee Slayer, Ranged Slayer) left with
         // #377: RuleFireLint now synthesizes Tough(9)-majority defender variants at

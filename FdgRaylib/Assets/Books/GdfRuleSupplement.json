@@ -195,15 +195,6 @@
     "description": "This model gets +4\"/+2\" range when shooting/charging."
   },
   {
-    "name": "Unique",
-    "passive": [],
-    "activated": [],
-    "scope": "Unit",
-    "engineArgumentCount": 0,
-    "valence": "Neutral",
-    "description": "Your army may only include one copy of this unit."
-  },
-  {
     "name": "Hive Bond",
     "passive": [
       {
