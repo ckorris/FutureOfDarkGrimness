@@ -391,4 +391,98 @@ public class ArmyForge36Tests
             if (rest.EndsWith(suffix, StringComparison.Ordinal)) return rest[..^suffix.Length];
         return rest;
     }
+    // ── Goal 6: the import summary and the spell list ───────────────────────────────────────────────
+
+    // #437's version gate refuses a list whose book is on another OPR release, with a remedy per direction; the
+    // import popup prints the failure's message as is (red, wrapped), so both remedies reach the player.
+    [TestCase("3.5.3", "That book has not been updated to this OPR version yet, so lists using it cannot be imported.")]
+    [TestCase("3.7.0", "The game's data needs an update before this list can be imported.")]
+    public void AVersionMismatch_ReachesTheImportPopup_WithItsRemedy(string version, string remedy)
+    {
+        var failed = System.Threading.Tasks.Task.FromException(new OprVersionMismatchException("Battle Brothers", version));
+
+        string? text = ArmyForgeScreen.ImportErrorText(failed);
+
+        Assert.That(text, Is.EqualTo($"Army book 'Battle Brothers' is at OPR version {version}; this game supports 3.6.x. {remedy}"));
+        Assert.That(text!.All(c => c < 0x80), Is.True, "ASCII");
+        Assert.That(ArmyForgeScreen.ImportErrorText(System.Threading.Tasks.Task.CompletedTask), Is.Null, "a result is no error");
+    }
+
+    // #262: a unit priced below Army Forge on an older list is a stale "Replace X" pick Army Forge still bills - the
+    // reconciliation explains that under the deltas instead of leaving a bare number that reads as our bug.
+    [Test]
+    public void TheReconciliation_ExplainsAUnitPricedBelowArmyForge_AsAStaleReplacePick()
+    {
+        var under = new OprForgeSessionResult { Selections = new BuilderList() };
+        under.UnitPointsDeltas.Add(("Retributors", 105, 125));
+        var over = new OprForgeSessionResult { Selections = new BuilderList() };
+        over.UnitPointsDeltas.Add(("Retributors", 130, 125));
+
+        string? note = ArmyForgeScreen.StaleReplaceNote(under);
+        Assert.That(note, Does.Contain("stale \"Replace X\" pick").And.Contain("Re-pick that unit's upgrades on Army Forge"));
+        Assert.That(note!.All(c => c < 0x80), Is.True, "ASCII");
+        Assert.That(ArmyForgeScreen.StaleReplaceNote(over), Is.Null, "only the under-priced direction is that quirk");
+        Assert.That(ArmyForgeScreen.StaleReplaceNote(new OprForgeSessionResult { Selections = new BuilderList() }), Is.Null);
+    }
+
+    // After the 3.6 re-bake the import preview's "RULES NOT ENFORCED" list and the launch-time "N special rules ...
+    // are not implemented" line (#168) are empty for a clean 3.6 list: every roster unit of every shipped book,
+    // imported the way a share link is (units + the bundled book's definitions attached), resolves every rule.
+    [Test]
+    public void AClean36List_ReportsNoRuleAsNotEnforced_ForEveryShippedBook()
+    {
+        var inert = new List<string>();
+        foreach (BookFile book in AllBooks())
+        {
+            var list = new BuilderList { BookName = book.Name, PointsLimit = 100000 };
+            foreach (RosterUnit unit in book.Units) BuilderListEditing.AddUnit(book, list, unit.Id);
+            BuiltArmyFile compiled = ListCompiler.Compile(book, list);
+
+            var imported = new ArmyListFile { Name = "import", Faction = book.Faction, GameSystem = book.GameSystem };
+            imported.Units.AddRange(compiled.Units);
+            OprListImporter.AttachBookDefinitions(imported, book);
+
+            foreach (string name in OprListImporter.UnresolvedRuleNames(imported)) inert.Add($"{book.Name}: {name}");
+            string? line = RuleLoadWarnings.SummarizeUnimplemented(FDG.SaveLoad.ArmyRuleAudit.Audit(compiled).Drops, "this list");
+            if (line is not null) inert.Add($"{book.Name}: {line}");
+        }
+
+        Assert.That(inert, Is.Empty, string.Join("\n", inert));
+    }
+
+    // AoF Shadow Stalkers ships five spells: OPR's 3.6.0 text for Combat Possession stops mid-sentence (#439 D1). The
+    // Forge says so under the spell list rather than silently listing five; the table follows the shipped books.
+    [Test]
+    public void ABookShortOfSixSpells_SaysWhy_UnderItsSpellList_AndNoOtherBookDoes()
+    {
+        foreach (BookFile book in AllBooks())
+        {
+            IReadOnlyList<string> notes = ArmyForgeScreen.SpellDataNotes(book);
+            if (book.Spells.Count == 6) Assert.That(notes, Is.Empty, book.Name);
+            else Assert.That(notes, Has.Count.EqualTo(6 - book.Spells.Count), $"{book.Name}: {book.Spells.Count} spells, no note");
+        }
+
+        BookFile stalkers = Book("AoF-ShadowStalkers");
+        Assert.That(stalkers.Spells, Has.Count.EqualTo(5));
+        Assert.That(stalkers.Spells.Select(sp => sp.Name), Has.None.EqualTo("Combat Possession"));
+        Assert.That(ArmyForgeScreen.SpellDataNotes(stalkers).Single(),
+            Is.EqualTo("Combat Possession: text missing in OPR's 3.6.0 data, so it is not listed or castable."));
+    }
+
+    // The spell list prints SpellText's canonical line per spell (#439 left OPR's prose unstored - fork F3). Every
+    // shipped line is ASCII and non-empty, and the new token-drain effect reads as a sentence.
+    [Test]
+    public void EveryShippedSpellLine_IsAscii_AndTheTokenDrainReadsWell()
+    {
+        foreach (BookFile book in AllBooks())
+            foreach (var spell in book.Spells)
+            {
+                string line = FDG.Stages.SpellText.Describe(spell);
+                Assert.That(line, Is.Not.Empty, $"{book.Name}: {spell.Name}");
+                Assert.That(line.All(c => c < 0x80), Is.True, $"{book.Name}: {spell.Name}: {line}");
+            }
+
+        var rune = Book("AoF-SkyCityDwarves").Spells.Single(sp => sp.Name == "Aether-Cloud Rune");
+        Assert.That(FDG.Stages.SpellText.Describe(rune), Does.StartWith("Loses 2 spell tokens - "));
+    }
 }

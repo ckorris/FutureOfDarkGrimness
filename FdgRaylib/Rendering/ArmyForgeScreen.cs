@@ -395,12 +395,8 @@ public class ArmyForgeScreen : IAppScreen
         if (_importTask is { IsCompleted: true } finished)
         {
             _importTask = null;
-            if (finished.IsFaulted)
-                _importError = finished.Exception?.GetBaseException().Message ?? "Import failed.";
-            else if (finished.IsCanceled)
-                _importError = "Import was canceled.";
-            else
-                _importOutcome = finished.Result;
+            _importError = ImportErrorText(finished);
+            if (_importError is null) _importOutcome = finished.Result;
         }
         bool busy = _importTask is not null;
 
@@ -518,6 +514,12 @@ public class ArmyForgeScreen : IAppScreen
                     UiText.Colored(RedText, $"Excluded (not in bundled book): {name} ({pts} pts)");
                 foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
                     UiText.Colored(YellowText, $"{name}: our Forge {ours} pts, Army Forge {theirs} pts");
+                if (StaleReplaceNote(session) is { } note)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled]);
+                    UiText.Wrapped(note);
+                    ImGui.PopStyleColor();
+                }
                 ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
                 foreach (string warning in session.Warnings) UiText.Wrapped(warning);
                 ImGui.PopStyleColor();
@@ -597,6 +599,31 @@ public class ArmyForgeScreen : IAppScreen
     /// disclosed at reopen, not silently applied.</summary>
     internal static ArmyListFile ImportedFileToWrite(ArmyListFile army, BuilderList? selections, BookFile? book) =>
         selections is not null && book is not null ? EditableSession.Attach(army, selections, book) : army;
+
+    /// <summary>
+    /// #441: what the import popup prints for a finished fetch - the failure's own message (an
+    /// <see cref="OprVersionMismatchException"/> carries #437's two remedies: an older book "has not been updated
+    /// to this OPR version yet", a newer one means "the game's data needs an update"), or null for a result.
+    /// </summary>
+    internal static string? ImportErrorText(Task finished)
+    {
+        if (finished.IsFaulted) return finished.Exception?.GetBaseException().Message ?? "Import failed.";
+        if (finished.IsCanceled) return "Import was canceled.";
+        return null;
+    }
+
+    /// <summary>
+    /// #441 (#262): the line under the reconciliation when a unit prices BELOW Army Forge. On an older list that is
+    /// almost always a stale "Replace X" pick whose X the unit no longer has - Army Forge still bills it, our
+    /// compiler applies nothing and charges nothing (#262, ruled an upstream Army Forge quirk) - and without this
+    /// it reads as our bug. Null when no unit is under. ASCII.
+    /// </summary>
+    internal static string? StaleReplaceNote(OprForgeSessionResult session) =>
+        session.UnitPointsDeltas.Any(d => d.OurPoints < d.TheirPoints)
+            ? "A unit below Army Forge's price usually carries a stale \"Replace X\" pick for gear it no longer has " +
+              "(common on older lists). Army Forge still charges it; it changes nothing on the table, so our Forge " +
+              "charges nothing. Re-pick that unit's upgrades on Army Forge to clear it."
+            : null;
 
     private bool SaveImported(ArmyForgeShareService.ImportOutcome outcome)
     {
@@ -829,8 +856,28 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.SameLine();
             UiText.Disabled(FDG.Stages.SpellText.Describe(spell));
         }
+        foreach (string note in SpellDataNotes(_book))
+            UiText.Colored(YellowText, note);
         ImGui.PopTextWrapPos();
     }
+
+    /// <summary>
+    /// #441: spells OPR's own 3.6.0 data leaves out, one line per gap, keyed by (game system, book name) - so a
+    /// five-spell list reads as a known data gap, not a dropped spell. The importer skips a spell whose source text
+    /// is truncated (#439 D1) and the book cannot record what it skipped, hence a table here;
+    /// <c>ArmyForge36Tests</c> fails when a re-bake makes an entry stale (or a new book falls short). ASCII.
+    /// </summary>
+    private static readonly (string System, string Book, string Note)[] SpellGaps =
+    {
+        (GameSystems.AgeOfFantasy, "Shadow Stalkers",
+            "Combat Possession: text missing in OPR's 3.6.0 data, so it is not listed or castable."),
+    };
+
+    internal static IReadOnlyList<string> SpellDataNotes(BookFile book) => SpellGaps
+        .Where(g => GameSystems.SameSystem(g.System, book.GameSystem)
+                    && string.Equals(g.Book, book.Name, StringComparison.OrdinalIgnoreCase))
+        .Select(g => g.Note)
+        .ToList();
 
     /// <summary>#403: what the import popup leads with. Held as constants rather than inline so the
     /// ASCII-only rule (the ImGui atlas bakes Basic Latin + Latin-1; anything else draws as '?') can be
