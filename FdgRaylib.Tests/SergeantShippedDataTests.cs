@@ -29,7 +29,7 @@ public class SergeantShippedDataTests
 
     private static readonly string[] Books =
     {
-        "WormholeDaemonsofChange", "WormholeDaemonsofLust", "WormholeDaemonsofPlague", "WormholeDaemonsofWar",
+        "DaemonsofChange", "DaemonsofLust", "DaemonsofPlague", "DaemonsofWar",
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
@@ -127,7 +127,7 @@ public class SergeantShippedDataTests
     [Test]
     public void BloodWarriors_BuyingASergeant_GetOneMarkedCopyPerWeaponProfile()
     {
-        BookFile book = LoadBook("WormholeDaemonsofWar");
+        BookFile book = LoadBook("DaemonsofWar");
         RosterUnit warriors = book.Units.Single(u => u.Name == "Blood Warriors");
         UpgradeSection champions = warriors.Sections
             .Single(s => s.Options.Any(o => o.Label == "Sergeant") && s.Targets.Count == 0);

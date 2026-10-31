@@ -90,8 +90,8 @@ public class ArmorShippedDataTests
             "the audit's 11 references - a change here means the corpus moved, not the engine");
         Assert.That(sites.Select(s => s.Book).Distinct(), Is.EquivalentTo(new[]
         {
-            "DarkElfRaiders", "GoblinReclaimers", "HumanDefenseForce", "SaurianStarhost",
-            "WormholeDaemonsofChange", "WormholeDaemonsofLust", "WormholeDaemonsofWar",
+            "DarkElfRaiders", "GoblinReclaimers", "HumanDefenseForce", "SaurianStarhosts",
+            "DaemonsofChange", "DaemonsofLust", "DaemonsofWar",
         }));
         Assert.That(sites.Select(s => s.ArmorValue), Is.All.InRange(2, 5),
             "every authored X is a plausible Defense value");
