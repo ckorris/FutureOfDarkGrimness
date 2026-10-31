@@ -61,7 +61,6 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 ## Replay system (branch `feature/replay`, plan: `docs/replay-plan.md`)
 
 - [~] 449 — Replay system umbrella: plan, ground rules, master merges into the branch, release gate. Planning done 2026-10-30; sizing measured (plan sec 5). ([WorkItems/449](WorkItems/449-replay-umbrella.md))
-- [ ] 453 — Replay embedded in `.fdgsave`: save carries it, resume continues it (`Saved`/`Resumed` markers), clients of a resumed game receive the history. ([WorkItems/453](WorkItems/453-replay-in-save.md))
 - [ ] 456 — GUI replay viewer: browser screen over `Replays/`, table view with real beats, play/pause/step/seek/speed, decision list + details. Forks F1/F2 answered. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
 - [ ] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
 

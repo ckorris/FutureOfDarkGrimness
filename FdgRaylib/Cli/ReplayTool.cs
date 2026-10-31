@@ -22,14 +22,15 @@ namespace FdgRaylib.Cli;
 /// reason otherwise; never opens a window. Output is ASCII with width-stable columns and no colour (it is
 /// read by agents and diffed).
 /// <para>
-/// Only <c>.fdgreplay</c> files today: a replay inside a <c>.fdgsave</c>, and <c>--make-save</c> embedding the
-/// replay up to the cut, arrive with #453.
+/// FILE is a <c>.fdgreplay</c> or a <c>.fdgsave</c> that carries one (#453: a save embeds the replay so far, ending
+/// with its <c>Saved</c> marker). <c>--make-save</c> embeds the replay up to the cut, so resuming the cut save with
+/// <c>--scenario</c> continues this replay.
 /// </para>
 /// </summary>
 public static class ReplayTool
 {
     public const string Usage =
-        "Usage: --replay FILE.fdgreplay (--dump [--from N] [--to M] [--folded] [--no-log] [--no-beats] [--debug-log]"
+        "Usage: --replay FILE.fdgreplay|FILE.fdgsave (--dump [--from N] [--to M] [--folded] [--no-log] [--no-beats] [--debug-log]"
         + " | --events [--from SEQ] [--to SEQ] [--kind K,...] [--verbose] | --stats | --verify | --export OUT.jsonl"
         + " | --at STEP|end --make-save OUT.fdgsave)";
 
@@ -77,6 +78,9 @@ public static class ReplayTool
     {
         public string Path = "";
         public long FileBytes;
+
+        /// <summary>#453: the replay came out of a .fdgsave (FileBytes is then the embedded replay's size).</summary>
+        public bool FromSave;
         public byte[] Gzip = Array.Empty<byte>();
         public ReplayDocument Document = null!;
         public ReplayTimeline Timeline = null!;
@@ -85,25 +89,44 @@ public static class ReplayTool
 
         public static Loaded Open(string path)
         {
-            if (path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ToolException($"{path} is a save. Replays inside saves arrive with #453; pass the .fdgreplay file.");
-            }
             if (File.Exists(path) == false)
             {
                 throw new ToolException($"File not found: {path}");
             }
 
-            byte[] bytes = File.ReadAllBytes(path);
+            bool fromSave = path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase);
+            byte[] bytes = fromSave ? EmbeddedReplay(path) : File.ReadAllBytes(path);
             using var stream = new MemoryStream(bytes);
             ReplayDocument document = ReplayReader.ReadGzip(stream);
             return new Loaded
             {
                 Path = path,
                 FileBytes = bytes.Length,
+                FromSave = fromSave,
                 Gzip = bytes,
                 Document = document,
                 Timeline = new ReplayTimeline(document),
+            };
+        }
+
+        // #453: the replay a save carries.
+        private static byte[] EmbeddedReplay(string path)
+        {
+            byte[]? replay;
+            try
+            {
+                replay = GameSaveSerializer.LoadWithReplay(File.ReadAllText(path)).ReplayGzip;
+            }
+            catch (InvalidOperationException exception)
+            {
+                throw new ToolException($"{path} does not load as a save: {exception.Message}");
+            }
+
+            return replay switch
+            {
+                null => throw new ToolException($"{path} carries no replay (a compiled scenario, a save of an unrecorded game, or one from before #453)."),
+                { Length: 0 } => throw new ToolException($"{path} carries a replay that is not valid base64."),
+                _ => replay,
             };
         }
 
@@ -136,22 +159,29 @@ public static class ReplayTool
         ReplayTimeline timeline = replay.Timeline;
         IReadOnlyList<ReplayEvent> events = timeline.Events;
 
-        Line(o, "Replay", $"{replay.Path}  ({Bytes(replay.FileBytes)} gzip, {events.Count} events)");
+        Line(o, "Replay", $"{replay.Path}  ({Bytes(replay.FileBytes)} gzip{(replay.FromSave ? " inside the save" : "")}, {events.Count} events)");
         Line(o, "Format", $"{header.FormatVersion}   build {Or(header.BuildVersion)}   engine {Or(header.EngineVersion)}");
         string recordedBy = header.RecordedBy.ToString()
             + (header.RecordedByPlayerId is PlayerID by ? $" ({PlayerLabel(header, by)})" : "");
         Line(o, "Game", $"{header.GameId}   seed {header.Seed?.ToString() ?? "none"}   {header.RandomnessType}   "
             + $"recorded by {recordedBy}   started {header.StartedUtc.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}Z");
+        if (header.ResumedUtc.Count > 0)
+        {
+            Line(o, "Resumed", string.Join(", ", header.ResumedUtc.Select(utc => utc.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + "Z"))
+                + "   (a saved game, continued: each resume is a Resumed marker, after which the state is replaced)");
+        }
         foreach (ReplaySlot slot in header.Slots.OrderBy(s => s.SlotId))
         {
             Line(o, "Slot", $"P{slot.SlotId + 1}  {Controller(slot.Controller),-6}  team {slot.Team}  {Ascii(Or(slot.Name))}  -  {Ascii(Or(slot.ArmyName))}");
         }
 
-        int rounds = timeline.Markers.Where(m => m.Marker == EReplayMarker.RoundStart).Select(m => m.Round ?? 0).DefaultIfEmpty(0).Max();
+        // Any marker's round, not RoundStart's alone: a recording that begins mid-game (a scenario, a resume - #453)
+        // has no RoundStart for the round it begins in.
+        int rounds = timeline.Markers.Select(m => m.Round ?? 0).DefaultIfEmpty(0).Max();
         int folded = timeline.Requests.Count - timeline.Steps.Count;
         Line(o, "Rounds", $"{rounds}   steps {timeline.Steps.Count} (+{folded} folded)   snapshots {timeline.Snapshots.Count}");
 
-        MarkerEvent? ended = timeline.Markers.FirstOrDefault(m => m.Marker == EReplayMarker.GameEnded);
+        MarkerEvent? ended = timeline.GameEndedMarker; // #453: a resumed recovery save's earlier end is not the outcome
         string outcome = ended == null
             ? "(no GameEnded marker - abandoned or cut short)"
             : $"{ended.Outcome ?? "?"}{(string.IsNullOrEmpty(ended.Message) ? "" : " - " + Ascii(ended.Message))}";
@@ -630,7 +660,14 @@ public static class ReplayTool
                 + (firstResumable == null ? "No step of this replay can be." : $"The first resumable step is {firstResumable}."));
         }
 
-        string saveJson = GameSaveSerializer.Save(player.Store);
+        // #453: the save carries the replay up to the cut, closed with a Saved marker, so resuming it continues this
+        // replay. A step's cut comes before its request (the resumed game asks it again); the end's before GameEnded.
+        IReadOnlyList<ReplayEvent> events = timeline.Events;
+        long cutSeq = atEnd
+            ? events.Count == 0 ? 0 : events[^1] is MarkerEvent { Marker: EReplayMarker.GameEnded } last ? last.Seq : events[^1].Seq + 1
+            : steps[index].RequestSeq;
+        ReplayRecorder cut = ReplayRecorder.CutForSave(replay.Document, cutSeq);
+        string saveJson = GameSaveSerializer.Save(player.Store, cut);
         CreateDirectoryFor(outPath);
         File.WriteAllText(outPath, saveJson);
 
@@ -655,7 +692,8 @@ public static class ReplayTool
         {
             o.WriteLine($"Resume: step {index} is inside activation R{first.Round} A{activation:00}; for a clean cut use --at {first.Index} (its first decision).");
         }
-        o.WriteLine("Note: the save carries no replay; embedding the replay up to the cut arrives with #453.");
+        o.WriteLine($"Replay: the save carries this replay up to the cut ({cut.Summary.Steps} decisions, ending with a Saved marker); "
+            + "resuming it continues the replay, from a Resumed marker.");
         o.WriteLine($"Play it: --headless --scenario {outPath}   (add --all-ai for AI on every slot)");
         return 0;
     }

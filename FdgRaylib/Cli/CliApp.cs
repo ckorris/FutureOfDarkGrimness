@@ -137,9 +137,10 @@ public class CliApp
     /// headless, lobby-free: slot 0 drives via the CLI resolvers, every other saved slot is AI.
     /// --all-ai makes slot 0 AI too (observation runs); --log-decisions interleaves each planning
     /// AI's Choose Action narration into stdout as "[ai N] ..." lines (FdgLab's flag, here).
+    /// <paramref name="priorReplay"/> is the save's replay (#453), which this run's recording continues.
     /// </summary>
     public async Task RunScenarioAsync(GameDataStore loadedStore, bool allAi = false,
-        bool logDecisions = false)
+        bool logDecisions = false, byte[]? priorReplay = null)
     {
         Console.WriteLine("=== FDG Raylib - scenario ===");
 
@@ -169,7 +170,7 @@ public class CliApp
         }
 
         var gameEnded = new TaskCompletionSource();
-        var replay = new ReplayRecorder(); // #450
+        var replay = ReplayRecorder.Continue(priorReplay); // #450; #453 continues the save's
         _localGame.AttachReplay(replay);
         Replay = replay;
         var server = new FDGServer(parts.Store, parts.Bus, parts.Slots, replay: replay); // resume constructor

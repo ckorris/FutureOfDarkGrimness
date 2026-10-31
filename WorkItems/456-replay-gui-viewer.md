@@ -45,6 +45,15 @@ game, and the acceptance list below is ticked.
   `ReplaySave.DirectoryPath` is the folder. Names are `replay-<stamp>-<armyA>-vs-<armyB>[-<n>p][_<k>].fdgreplay`
   with the army names cut to `[A-Za-z0-9-]` and 24 characters - show the header's names, never parse the file
   name. `--replay-out` only redirects where a run writes; the browser reads `DirectoryPath`.
+- **From #453:** a recording can span sessions. `Header.ResumedUtc` lists the resumes (show them on the header line);
+  each is a `Resumed` marker followed by a snapshot that replaces the state - `ReplayTimeline.SnapshotFor` and the
+  player already never cross one. A `Saved` marker sits just before each (none when the save was a #187 recovery save:
+  that recording keeps its `GameEnded` (Disconnect) right before the `Resumed`). Show the outcome from
+  `ReplayTimeline.GameEndedMarker` (the last session's end), never the first `GameEnded`. A request open at the save
+  has no reply and is asked again after the resume under a new task, so it never becomes a step. A client's recording
+  of a resumed game begins with the host's events (verbatim, through the `Resumed`), so its early steps carry the
+  host's `T`. A `.fdgsave` carries `GameSaveFile.ReplaySummary` ahead of its entries, should the browser ever list
+  saves; `--replay` already opens one.
 - Step-back cost: a seek rebuilds the store (plan 4.3). Show a brief "seeking..." if it exceeds 100 ms;
   no frame may block the UI for more than that - do the `Load` on a worker and swap on the main thread
   (same lock-and-handoff discipline the resolvers use; see `docs/ResolverGuide.md`).

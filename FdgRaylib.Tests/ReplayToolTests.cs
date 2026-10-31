@@ -4,6 +4,7 @@ using FDG.GameModel;
 using FDG.Replay;
 using FDG.SaveLoad;
 using FdgRaylib.Cli;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
@@ -153,26 +154,77 @@ public class ReplayToolTests
         string outPath = Path.Combine(_root, "cut", "at3.fdgsave");
         (int code, string output) = Run("--replay", _replayPath, "--at", "3", "--make-save", outPath);
         Assert.That(code, Is.EqualTo(0), output);
-        Assert.That(output, Does.StartWith("Step 3 of ").And.Contain("--scenario " + outPath));
+        Assert.That(output, Does.StartWith("Step 3 of ").And.Contain("--scenario " + outPath).And.Contain("ending with a Saved marker"));
 
-        var player = new ReplayPlayer(new ReplayTimeline(_document));
+        var timeline = new ReplayTimeline(_document);
+        var player = new ReplayPlayer(timeline);
         player.SeekToStep(3);
-        Assert.That(File.ReadAllText(outPath), Is.EqualTo(GameSaveSerializer.Save(player.Store)), "the state step 3 was asked in");
+        Assert.That(StoreOnly(File.ReadAllText(outPath)), Is.EqualTo(GameSaveSerializer.Save(player.Store)), "the state step 3 was asked in");
 
-        // And --scenario can take it from there to a result.
-        ScenarioLauncher.ResumeParts parts = ScenarioLauncher.BuildResume(ScenarioLauncher.LoadStore(outPath), allAi: true);
+        // #453: with the replay up to the cut, closed by a Saved marker.
+        var (store, prior) = ScenarioLauncher.LoadStoreWithReplay(outPath);
+        ReplayDocument embedded = Read(prior!);
+        long cut = timeline.Steps[3].RequestSeq;
+        Assert.That(embedded.Events.Select(e => e.Seq), Is.EqualTo(Enumerable.Range(0, (int)cut + 1).Select(i => (long)i)));
+        Assert.That(embedded.Events[^1], Is.InstanceOf<MarkerEvent>().With.Property(nameof(MarkerEvent.Marker)).EqualTo(EReplayMarker.Saved));
+
+        // And --scenario can take it from there to a result, continuing the replay.
+        ScenarioLauncher.ResumeParts parts = ScenarioLauncher.BuildResume(store, allAi: true);
+        var recorder = ReplayRecorder.Continue(prior);
         var ended = new TaskCompletionSource<GameResult>();
-        var server = new FDGServer(parts.Store, parts.Bus, parts.Slots);
+        var server = new FDGServer(parts.Store, parts.Bus, parts.Slots, replay: recorder);
         server.OnGameCompleted += result => ended.TrySetResult(result);
         Task finished = await Task.WhenAny(ended.Task, Task.Delay(TimeSpan.FromSeconds(120)));
         Assert.That(finished, Is.SameAs(ended.Task), "the cut save resumes and plays to completion");
+
+        ReplayDocument continued = Read(recorder.ExportGzip());
+        Assert.That(continued.Header.GameId, Is.EqualTo(_document.Header.GameId));
+        var resumed = (MarkerEvent)continued.Events[embedded.Events.Count];
+        Assert.That(resumed.Marker, Is.EqualTo(EReplayMarker.Resumed));
+        Assert.That(continued.Events[embedded.Events.Count + 1], Is.InstanceOf<SnapshotEvent>());
+
+        string continuedPath = Path.Combine(_root, "cut", "continued.fdgreplay");
+        File.WriteAllBytes(continuedPath, recorder.ExportGzip());
+        (int verifyCode, string verifyOutput) = Run("--replay", continuedPath, "--verify");
+        Assert.That(verifyCode, Is.EqualTo(0), verifyOutput);
+        Assert.That(Run("--replay", continuedPath, "--dump").Output, Does.Contain("-- Saved").And.Contain("-- Resumed").And.Contain("Resumed  "));
+    }
+
+    // #453: a save that carries a replay reads like the .fdgreplay it embeds.
+    [Test]
+    public void ASave_IsReadForTheReplayItCarries()
+    {
+        string savePath = Path.Combine(_root, "carrying.fdgsave");
+        File.WriteAllText(savePath, GameSaveSerializer.Save(GameDataStore.GameDataStoreBuilder.GetDefault(),
+            ReplayRecorder.CutForSave(_document, _document.Events[^1].Seq)));
+
+        (int code, string output) = Run("--replay", savePath, "--verify");
+
+        Assert.That(code, Is.EqualTo(0), output);
+        Assert.That(Run("--replay", savePath, "--dump").Output, Does.StartWith($"Replay   {savePath}").And.Contain("gzip inside the save"));
+    }
+
+    private static string StoreOnly(string saveJson)
+    {
+        GameSaveFile file = JsonConvert.DeserializeObject<GameSaveFile>(saveJson)!;
+        file.Replay = null;
+        file.ReplaySummary = null;
+        return JsonConvert.SerializeObject(file, Formatting.Indented);
+    }
+
+    private static ReplayDocument Read(byte[] gzip)
+    {
+        using var stream = new MemoryStream(gzip);
+        return ReplayReader.ReadGzip(stream);
     }
 
     [Test]
     public void BadInvocations_ExitOne_WithAOneLineReason()
     {
         AssertError(Run("--replay", Path.Combine(_root, "missing.fdgreplay"), "--dump"), "File not found");
-        AssertError(Run("--replay", Path.Combine(_root, "game.fdgsave"), "--dump"), "#453");
+        string bareSave = Path.Combine(_root, "bare.fdgsave");
+        File.WriteAllText(bareSave, GameSaveSerializer.Save(GameDataStore.GameDataStoreBuilder.GetDefault()));
+        AssertError(Run("--replay", bareSave, "--dump"), "carries no replay");
         AssertError(Run("--replay", _replayPath, "--dump", "--stats"), "One mode at a time");
         AssertError(Run("--replay", _replayPath), "No mode given");
         AssertError(Run("--replay", _replayPath, "--at", "99999", "--make-save", Path.Combine(_root, "x.fdgsave")), "--at takes a step");

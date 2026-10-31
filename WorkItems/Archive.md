@@ -273,3 +273,6 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
 - [x] 452 — App: every game writes its `.fdgreplay` to `Replays/` (host and client) on any exit - game over, disconnect,
   escape menu, Quit to Desktop, window close, headless, crash best-effort; the game-over card names the file. **Done
   2026-10-31** on `feature/replay`; each exit path run once in the GUI or by script. ([WorkItems/452](WorkItems/452-replay-autosave.md))
+- [x] 453 — Replay inside `.fdgsave`: a save embeds the replay so far (`Saved` marker), a resume continues it
+  (`Resumed` + snapshot), a resumed game's clients get the history on the launch message. **Done 2026-10-31** on
+  `feature/replay`; verified in the GUI (save -> Load -> finish = one replay). ([WorkItems/453](WorkItems/453-replay-in-save.md))

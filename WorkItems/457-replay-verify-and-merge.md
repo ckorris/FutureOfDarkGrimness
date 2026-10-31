@@ -15,9 +15,12 @@ the index lines for 449-457 are ticked and archived.
       `--verify` passes on both; step counts match. (#451's two-process GUI check. #452 ran it with two processes
       on one machine, early exits only - see its Notes; this item still wants a full game on two machines.)
 - [ ] Save -> quit -> load -> finish on the host with a client reconnecting to the resumed game: one
-      continuous replay on both sides (`Saved`, `Resumed` markers present, `--verify` passes).
+      continuous replay on both sides (`Saved`, `Resumed` markers present, `--verify` passes). (#453 ran the host
+      half in the GUI on one machine - save, Esc -> Load, finish - and pinned the client half in-process over the
+      loopback transport; the two-machine run is still this item's.)
 - [ ] Disconnect mid-game: the host writes both the #187 recovery save (with embedded replay) and the
-      replay file; the client writes its replay.
+      replay file; the client writes its replay. Then resume the recovery save and finish: its replay shows
+      `GameEnded` (Disconnect), `Resumed`, ..., `GameEnded` (Chris's #453 call), and `--verify` passes.
 - [ ] Size check against `docs/replay-plan.md` section 5 on three real GUI games (`--stats`); update the
       table with real beat numbers if #450's measurement was from the headless path only.
 - [ ] Headless: `printf "2\n2\n" | dotnet run ... --headless` exits 0 and prints the replay path;

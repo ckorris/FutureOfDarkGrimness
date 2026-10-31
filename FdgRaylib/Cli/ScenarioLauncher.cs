@@ -19,16 +19,22 @@ public static class ScenarioLauncher
         FDGGame_AsLocal HumanGame, IReadOnlyList<PlayerSlotInfo> SavedInfos);
 
     /// <summary>A scenario JSON compiles in-memory; a .fdgsave loads directly.</summary>
-    public static GameDataStore LoadStore(string path)
+    public static GameDataStore LoadStore(string path) => LoadStoreWithReplay(path).Store;
+
+    /// <summary>
+    /// <see cref="LoadStore"/>, plus the replay a .fdgsave carries (#453), for <c>ReplayRecorder.Continue</c>: the
+    /// resumed game's recording continues it. A compiled scenario carries none, so its recording starts fresh.
+    /// </summary>
+    public static (GameDataStore Store, byte[]? PriorReplay) LoadStoreWithReplay(string path)
     {
         if (path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
         {
             if (!File.Exists(path))
                 throw new ScenarioCompileException($"Save file not found: {path}");
-            return GameSaveSerializer.Load(File.ReadAllText(path));
+            return GameSaveSerializer.LoadWithReplay(File.ReadAllText(path));
         }
 
-        return ScenarioCompiler.CompileFromFile(path);
+        return (ScenarioCompiler.CompileFromFile(path), null);
     }
 
     /// <param name="seedOverride">

@@ -306,11 +306,15 @@ public sealed class EscapeMenuOverlay
     // game can't be serialized or the dialog is canceled. Moved here from the retired table toolbar.
     private void HandleSaveGame()
     {
-        string? json = _saveGameToJson?.Invoke();
-        if (json == null) return;
+        if (_saveGameToJson == null) return;
 
         var (canceled, path) = TinyDialogs.SaveFileDialog("Save Game", "", SaveFilter);
         if (canceled || string.IsNullOrWhiteSpace(path)) return;
+
+        // #453: serialized only once a file is chosen - saving records a Saved marker in the game's replay, which a
+        // cancelled dialog must not leave behind.
+        string? json = _saveGameToJson.Invoke();
+        if (json == null) return;
 
         if (!path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
             path += GameSaveFile.EXTENSION_WITH_PERIOD;

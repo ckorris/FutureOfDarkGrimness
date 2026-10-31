@@ -22,8 +22,8 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --scenario Scenari
 
 ## From a replay (#455)
 
-A recorded game (`.fdgreplay` - every game writes one to `Replays/` beside the executable, host and client, #452)
-turns into a repro save in one command, so a reported bug becomes a
+A recorded game (`.fdgreplay` - every game writes one to `Replays/` beside the executable, host and client, #452;
+or a `.fdgsave`, which carries the replay so far, #453) turns into a repro save in one command, so a reported bug becomes a
 scenario without replaying the game by hand. Find the decision with `--dump`, then cut there:
 
 ```bash
@@ -47,8 +47,9 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --exp
 Caveats: a resume restarts at the activation boundary the save's progress record points at (#052),
 so a cut in the middle of an activation re-plays that activation from its start on the board as it
 stood at the cut - cut at the activation's first decision (the tool names it) for a clean repro. A
-step before round 1 cannot be resumed (the tool says which step is the first that can). Until #453 the
-cut save carries no replay, and `--replay` reads only `.fdgreplay` files, not saves.
+step before round 1 cannot be resumed (the tool says which step is the first that can). The cut save
+carries the replay up to the cut, closed with a `Saved` marker, so the resumed game's replay continues
+it from a `Resumed` marker (#453) - `--replay` reads that save's replay as it reads a `.fdgreplay`.
 
 ## Scenario JSON
 

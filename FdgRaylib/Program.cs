@@ -687,8 +687,8 @@ if (headless)
     {
         try
         {
-            await app.RunScenarioAsync(ScenarioLauncher.LoadStore(scenarioPath),
-                scenarioAllAi, scenarioLogDecisions);
+            var (scenarioStore, priorReplay) = ScenarioLauncher.LoadStoreWithReplay(scenarioPath);
+            await app.RunScenarioAsync(scenarioStore, scenarioAllAi, scenarioLogDecisions, priorReplay);
         }
         catch (ScenarioCompileException ex)
         {
@@ -782,9 +782,10 @@ else
         if (!File.Exists(path)) return;
 
         GameDataStore loadedStore;
+        byte[]? priorReplay; // #453: the save's replay, which the resumed game's recording continues
         try
         {
-            loadedStore = GameSaveSerializer.Load(File.ReadAllText(path));
+            (loadedStore, priorReplay) = GameSaveSerializer.LoadWithReplay(File.ReadAllText(path));
         }
         catch (Exception ex)
         {
@@ -807,7 +808,7 @@ else
         }
 
         // #310: the saved player name, same as a fresh host lobby uses.
-        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore);
+        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore, priorReplay);
         activeLobby = lobby;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
@@ -938,7 +939,7 @@ else
         }
         try
         {
-            GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath);
+            var (scenarioStore, scenarioPriorReplay) = ScenarioLauncher.LoadStoreWithReplay(scenarioPath);
             var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed, aiProfile,
                 scenarioAllAi,
                 scenarioLogDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null);
@@ -953,19 +954,20 @@ else
             GameSettings scenarioSettings = GameProgressUtilities.TryGetProgress(parts.Store)?.Settings
                 ?? GameSettings.GetDefault();
 
+            FDGServer? scenarioServer = null; // built after Launch below; saves go through it (#453)
             renderer.OnWindowReady = () =>
             {
                 GameGuiWiring.Launch(parts.HumanGame, players,
-                    saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
+                    saveGameToJson: () => scenarioServer?.SaveGame() ?? GameSaveSerializer.Save(parts.Store),
                     onLaunched: renderer.TransitionToGame,
                     coverProximityExceptions: scenarioSettings.CoverProximityExceptionsEnabled,
                     tableBackground: scenarioSettings.TableBackground,
                     seeThroughFriendlyUnits: scenarioSettings.SeeThroughFriendlyUnits);
 
-                var scenarioRecorder = new ReplayRecorder(); // #450
+                var scenarioRecorder = ReplayRecorder.Continue(scenarioPriorReplay); // #450; #453 continues a save's
                 parts.HumanGame.AttachReplay(scenarioRecorder);
                 scenarioReplay = scenarioRecorder; // #452
-                var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
+                scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
                     new RealtimePresentationClock(), replay: scenarioRecorder);
                 // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
                 // Launch attached the log - push any drops it just produced into the visible summary.
