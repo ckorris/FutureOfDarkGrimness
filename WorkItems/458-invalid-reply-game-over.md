@@ -10,6 +10,8 @@ answers an invalid reply by asking again and then falling back to a no-op (the u
 throwing.
 
 ## Notes
+- 2026-10-31: Placement dead-end fixed with an engine-placer Auto-place (see Decisions). App tests 3140,
+  engine 3394 (1 skipped) green; headless game exit 0.
 - 2026-10-31: Discord report (v0.3.0, platform unconfirmed; no in-app report filed - checked the #226
   drop box, newest is 2026-09-29): "game crash when invalid reposition ... When repositioning charging
   unit after combat". Screenshot: Game Over, "Response to ConsolidateStage was invalid: Breaks cohesion"
@@ -30,6 +32,16 @@ throwing.
   games exit 0 with zero re-asks logged. GUI not hand-checked.
 
 ## Decisions
+- **Placement dead-end -> Auto-place** (owner sign-off 2026-10-31: "auto-place/best possible"). Mandatory
+  placements (spillout / Scout / Ambush / Reinforcements / spawn) have no Back and Done needed every model
+  placed by fully legal clicks, so a zone with no legal spot hung the game. GuiPlaceObjectsResolver gets an
+  Auto-place button (beside Undo; every placement except a reposition) running the engine's
+  AiPlaceObjectsResolver - the AI's and the commit guard's placer, so no second GUI algorithm (the reason
+  #343 deleted the old one) - which returns its least-bad block when nothing is legal. One undo step
+  (PlacementHistory.RecordAutoPlace). While the auto-placed unit stands, Done ignores the table-edge gate,
+  and an amber line names the first rule the spot breaks. Commit is safe: no placement stage validates
+  zone/enemy distance, and PlacementCommitGuard re-places a >0.01" overlap with the same placer and logs a
+  WARNING. This is the one place the fix knowingly allows a slightly illegal result (owner-approved).
 - **Gates call the engine validator.** GuiConsolidationMoveResolver.ValidateForDone =
   MovementUtilities.ValidateConsolidationPaths with enemy + friendly + terrain inputs.
   GuiDefineMovementResolver.ValidateForDone = ValidatePaths with per-model budgets, friendlies and
@@ -56,12 +68,6 @@ throwing.
 - No "slightly illegal move" was needed: every fallback leaves the board as it was.
 
 ## Deferred (from the 2026-10-31 audit, not fixed here)
-- **Mandatory placement can HANG** (no exit, no throw): spillout / Scout / Ambush / Reinforcements /
-  auxiliary spawn via RequestClearPlacement. The GUI only enables Done once every model is placed
-  validly and offers no Back; a crowded spillout ring or a late Ambush with nowhere >9" from enemies
-  leaves the player stuck. Back won't do (PlacementRequesting throws on a Cancelled mandatory
-  placement); needs an auto-place / "commit least-bad" exit using PlacementCommitGuard's fallback.
-  Design fork - needs sign-off.
 - Deployment cohesion: GUI checks only "within 1" of some placed model" (2D, no 9" rule) and the engine
   checks nothing - illegal deployments are silently accepted (no crash).
 - GUI enemy footprints for the move/consolidation gates include off-table (0,0)-parked units the engine
@@ -76,5 +82,9 @@ throwing.
    game never ends on Done.
 2. Move a rectangular-base unit sideways so its bases turn - same: Done greys out rather than erroring.
 3. Auto-advance next to impassible terrain or an enemy: the button greys out with the reason.
+4. Placement: Auto-place in a roomy zone places the unit legally (no amber line); one Undo restores the
+   previous state. Force a dead end (a big unit spilling out of a transport wrecked in a crowded melee, or
+   an Ambush late with enemies everywhere) - Auto-place fills it in, the amber line names the broken rule,
+   Done commits, the game continues (the log may show the commit guard's overlap WARNING).
 
 ## Outcome
