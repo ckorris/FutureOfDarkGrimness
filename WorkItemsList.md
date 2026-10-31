@@ -52,7 +52,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [x] 438 — Re-bake all 88 books from the 3.6.0 snapshots: unified bake script, post-bake passes, effect-set keywords. Done 2026-10-30; owner review asked on D1-D5. ([WorkItems/438](WorkItems/438-rebake-books-3-6.md))
 - [x] 439 — Spells 3.6: parser grammar (LoS clause, weapon-scoped grants, new rule names), re-import, per-book parity verification. ([WorkItems/439](WorkItems/439-spells-3-6.md))
   Done 2026-10-31; 527/528 spells (one truncated at source), parity 527/527; owner review asked on D1-D5.
-- [ ] 440 — Regenerate derived data (Random Army catalog, scenarios, fixtures, built-in test army) and prove legacy 3.5 `.fdgarmy` files still load (Q5 notice). ([WorkItems/440](WorkItems/440-regenerate-derived-data-3-6.md))
+- [x] 440 — Regenerate derived data (Random Army catalog, scenarios, fixtures, built-in test army) and prove legacy 3.5 `.fdgarmy` files still load (Q5 notice). ([WorkItems/440](WorkItems/440-regenerate-derived-data-3-6.md))
 - [ ] 441 — Army Forge + glossary UI for 3.6: Assault weapon display, roster, Unique Hero, import summary, hover text. ([WorkItems/441](WorkItems/441-army-forge-ui-3-6.md))
 - [x] 442 — Tactician AI + Combat Calculator parity with 3.6 (3" melee, Assault threat, Parry/Brace, Cumbersome, Indirect). ([WorkItems/442](WorkItems/442-ai-and-calculator-parity-3-6.md))
   Done 2026-10-30; Assault / Parry / Enhanced halves -> #424 / #423 / #433; owner review asked on D7, D9.

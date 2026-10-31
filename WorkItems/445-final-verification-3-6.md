@@ -41,6 +41,11 @@ origin first) or a reopen of the responsible item, and this file records which.
 
 ## Notes
 
+- 2026-10-31 (from #440): add to the checklist - `FdgRaylib --retrofit-editable armies FdgLab/armies --dry-run` (0
+  converted, 40 already editable, 0 left alone); every `armies/` and `FdgLab/armies` list playing `--headless --army`
+  with 0 `[rules]` warnings; the 28-scenario headless run (`--headless --scenario <json> --all-ai`, table in #440);
+  `Legacy35ArmyTests` green; and Chris's Random Army hand-verify in a GDF and an AoF lobby (the lobby should show no
+  amber legacy line for any catalog list, and one for a 3.5 file loaded by hand).
 - 2026-10-29: filed with the plan.
 
 ## Decisions

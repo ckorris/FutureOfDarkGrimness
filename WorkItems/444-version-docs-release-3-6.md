@@ -58,6 +58,12 @@ shows `v0.4.0`; CI release job green with the title containing "(OPR 3.6.0)".
 
 ## Notes
 
+- 2026-10-31 (from #440): release-notes material - the Random Army lists were rebuilt for 3.6 (some units substituted
+  or cut to keep each inside its 1k/2k/3k/4k bracket; #440 D1-D4 for Chris's review), 3.5 army files keep loading and
+  playing with an amber "built for OPR v3.5.x; it plays with 3.6 rules" lobby/CLI notice, and Very Fast is gone from
+  the built-in test army and the catalog. `scripts/build-dist.sh linux` was run and ships the regenerated `armies/`
+  folder unchanged; the archive still says `OPR_3_5_1` until RULES_VERSION is bumped here (and the run wiped the old
+  multi-platform `dist/` artifacts, as the script always does).
 - 2026-10-30 (from #442): release-notes material - the Tactician now uses Spell Drain, prices its Versatile picks and
   the 3.6 activation-start moves, and reads the 3.6 range / charge-distance rules, Ravage, Hazardous, Scourge and Tag
   tokens; the Combat Calculator takes a charge distance and shows Ravage. Two owner-review items there (D7 break-bonus

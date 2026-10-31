@@ -46,6 +46,13 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-31 (from #440): (1) The Q5 legacy notice is lobby + CLI only (`FDG.ArmyBuilding.LegacyArmyNotice`, amber,
+  "Army '<name>' was built for OPR v3.5.3; it plays with 3.6 rules"). The Forge reopens a 3.5 list against its OWN
+  embedded 3.5 book and says nothing - decide whether it should show the same line, and whether it should offer
+  "rebuild against the 3.6 book": `FdgRaylib/Cli/ArmyReforge.Reforge` (the `--reforge` dev flag) does exactly that
+  per file (solver, label translation, nearest fit) and could back such a button. (2) Every `armies/` list now embeds
+  the `OPR v3.6.0` book with its selections, so a Forge reopen of a catalog list is lossless (`--retrofit-editable`
+  reports 40/40 already editable).
 - 2026-10-31 (from #439): spell display. (1) Spells carry no prose (`SpellDefinition`), and the Forge / picker text
   comes from `SpellText.Describe`; with #439 the grants read as canonical names ("Grants Shred when shooting (next
   time)") rather than OPR's "gets Shred on its weapons when shooting" - if the glossary / spell list should show the
