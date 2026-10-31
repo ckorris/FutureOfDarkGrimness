@@ -30,9 +30,9 @@ public class QuickShotAndUnwieldyShippedDataTests
     private const string QuickShotMark = "Quick Shot Mark";
     private const string Unwieldy = "Unwieldy in melee";
     private const string UnwieldyDebuff = "Unwieldy Debuff";
-    // #434: the 3.6 Debuff grants "Unwieldy on its weapons in melee" (a unit-scoped clone of "Unwieldy in melee",
-    // which stays for 3.5 books and saved lists - #431 D7).
-    private const string UnwieldyOnItsWeapons = "Unwieldy on its weapons in melee";
+    // #439: the 3.6 Debuff's "gets Unwieldy on its weapons in melee" is "Unwieldy in melee" - the weapon-scope suffix is
+    // a scope, not a name (the #434 clone "Unwieldy on its weapons in melee" was deleted with the other phrase clones).
+    private const string UnwieldyPhraseClone = "Unwieldy on its weapons in melee";
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
@@ -106,11 +106,10 @@ public class QuickShotAndUnwieldyShippedDataTests
         Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerActivation>());
         Assert.That(ability.TargetSelector!.RangeInches, Is.EqualTo(18f));
         Assert.That(ability.TargetSelector.RequireLineOfSight, Is.True, "'in line of sight'");
-        Assert.That(ability.Effect, Is.EqualTo(new Effect.AddRule(UnwieldyOnItsWeapons, ELifetime.NextTrigger)),
-            "'gets Unwieldy on its weapons in melee ONCE (next time the effect would apply)'");
-        Assert.That(Definition(UnwieldyOnItsWeapons).Passive, Is.EqualTo(Definition(Unwieldy).Passive).AsCollection,
-            "the 3.6 grant target is the 3.5 one under its 3.6 name, entry for entry");
-        Assert.That(Definition(UnwieldyOnItsWeapons).Scope, Is.EqualTo(Definition(Unwieldy).Scope));
+        Assert.That(ability.Effect, Is.EqualTo(new Effect.AddRule(Unwieldy, ELifetime.NextTrigger)),
+            "'gets Unwieldy on its weapons in melee ONCE (next time the effect would apply)' - the canonical name");
+        Assert.That(Supplement().Any(r => string.Equals(r.Name, UnwieldyPhraseClone, StringComparison.OrdinalIgnoreCase)),
+            Is.False, "the #434 phrase clone is gone (#439)");
     }
 
     // Every grant target must actually resolve, and to a definition with dispatch entries. A grant naming

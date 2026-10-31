@@ -271,7 +271,6 @@ public class GdfSweep36ShippedDataTests
     [TestCase("Predator", "Bloodborn")]
     [TestCase("Nimble", "Wolfborn")]
     [TestCase("Vicious", "Mischievous")]
-    [TestCase("Unwieldy on its weapons in melee", "Unwieldy in melee")]
     public void TheTwin_HasItsSiblingsEntries(string name, string sibling)
     {
         Assert.That(Shipped(name).Passive, Is.EqualTo(Shipped(sibling).Passive));
@@ -445,28 +444,23 @@ public class GdfSweep36ShippedDataTests
 
     // --- spell-phrase aliases ----------------------------------------------------------------------------------
 
-    // The 3.6 spell text says "gets Shred on its weapons when shooting" where 3.5 said "gets Shred when shooting"; the
-    // importer keeps the phrase as the granted name. Each is authored as its canonical rule under the 3.6 phrase.
-    [TestCase("Unstoppable on their weapons when shooting", "Unstoppable when shooting")]
-    [TestCase("Shred on its weapons when shooting", "Shred when shooting")]
-    [TestCase("AP(1) on their weapons when shooting", "AP(1) when shooting")]
-    [TestCase("Rending on their weapons in melee", "Rending in melee")]
-    [TestCase("+6\" range on its weapons when shooting", "Increased Shooting Range")]
-    [TestCase("+6\" range on their weapons when shooting", "Increased Shooting Range")]
-    [TestCase("Bane on their weapons when attacking", "Bane when attacking")]
-    [TestCase("Shred on its weapons in melee", "Shred in melee")]
-    [TestCase("Shred on their weapons when attacking", "Shred when attacking")]
-    public void TheSpellPhraseAlias_IsTheCatalogRule(string alias, string canonical)
+    // #439: the 3.6 spell text says "gets Shred on its weapons when shooting"; the importer now folds the weapon-scope
+    // suffix onto the canonical grant name (OprBookImporter.CanonicalGrantName), so the #434 phrase clones that let the
+    // raw phrase resolve are deleted. A clone coming back would be dead weight - and a sign the parser regressed.
+    [TestCase("Unstoppable on their weapons when shooting")]
+    [TestCase("Shred on its weapons when shooting")]
+    [TestCase("AP(1) on their weapons when shooting")]
+    [TestCase("Indirect on their weapons")]
+    [TestCase("Rending on their weapons in melee")]
+    [TestCase("+6\" range on its weapons when shooting")]
+    [TestCase("+6\" range on their weapons when shooting")]
+    [TestCase("Bane on their weapons when attacking")]
+    [TestCase("Shred on its weapons in melee")]
+    [TestCase("Shred on their weapons when attacking")]
+    [TestCase("Unwieldy on its weapons in melee")]
+    public void TheSpellPhraseClone_IsGone(string clone)
     {
-        Assert.That(Shipped(alias).Passive, Is.EqualTo(Catalog(canonical).Passive));
-        Assert.That(Shipped(alias).Scope, Is.EqualTo(Catalog(canonical).Scope));
-    }
-
-    [Test]
-    public void IndirectOnTheirWeapons_IsTheCatalogIndirect()
-    {
-        // #436: was compared against the supplement's "Indirect when shooting", deleted as a 3.5 name.
-        Assert.That(Shipped("Indirect on their weapons").Passive, Is.EqualTo(Catalog("Indirect").Passive));
-        Assert.That(Shipped("Indirect on their weapons").Scope, Is.EqualTo(ERuleScope.Weapon));
+        Assert.That(Gdf().Any(d => string.Equals(d.Name, clone, StringComparison.OrdinalIgnoreCase)),
+            Is.False, $"'{clone}' is a weapon-scope phrase, not a rule name (#439)");
     }
 }

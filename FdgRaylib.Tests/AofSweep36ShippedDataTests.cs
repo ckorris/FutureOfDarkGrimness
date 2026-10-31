@@ -210,28 +210,18 @@ public class AofSweep36ShippedDataTests
 
     // --- new names --------------------------------------------------------------------------------------------
 
-    // The 3.6 AoF spell text grants "X on its weapons in melee" (#434 D5): each is its canonical catalog rule under the
-    // 3.6 phrase. Melee hits are never a spell's, so no weapons-only gate is needed.
-    [TestCase("AP(+1) on its weapons in melee", "AP(+1) in melee")]
-    [TestCase("Bane on its weapons in melee", "Bane in melee")]
-    [TestCase("Unstoppable on its weapons in melee", "Unstoppable in melee")]
-    public void TheSpellPhraseAlias_IsTheCatalogRule(string alias, string canonical)
+    // #439: the 3.6 AoF spell text grants "X on its weapons in melee" / marks "Surge on their weapons"; the importer now
+    // folds the weapon-scope suffix onto the canonical name ("AP(+1) in melee", "Bane in melee", "Unstoppable in melee",
+    // "Surge"), so the #435 D8 phrase clones are deleted. (A mark is claimed only by a real attack's hit roll, never by
+    // spell hits, so the clone's IsNotSpell gate on "Surge on their weapons" had nothing left to exclude.)
+    [TestCase("AP(+1) on its weapons in melee")]
+    [TestCase("Bane on its weapons in melee")]
+    [TestCase("Unstoppable on its weapons in melee")]
+    [TestCase("Surge on their weapons")]
+    public void TheSpellPhraseClone_IsGone(string clone)
     {
-        Assert.That(AofShipped(alias).Passive, Is.EqualTo(Catalog(canonical).Passive));
-        Assert.That(AofShipped(alias).Scope, Is.EqualTo(Catalog(canonical).Scope));
-    }
-
-    [Test]
-    public void SurgeOnTheirWeapons_IsSurge_WeaponsOnly()
-    {
-        // Chivalrous Kingdoms' Curse of the Huntress: "... which friendly units gets Surge on their weapons against once".
-        // Surge's entries with #434 D2's weapons-only gate (the "Shred / Bane on their weapons when attacking" convention).
-        SpecialRuleDefinition alias = AofShipped("Surge on their weapons");
-        Assert.That(alias.Scope, Is.EqualTo(Catalog("Surge").Scope));
-        Assert.That(alias.Passive, Is.EqualTo(Catalog("Surge").Passive.Select(e => e with
-        {
-            Condition = new Condition.And(e.Condition, new Condition.IsNotSpell()),
-        })));
+        Assert.That(Aof().Any(d => string.Equals(d.Name, clone, StringComparison.OrdinalIgnoreCase)), Is.False,
+            $"'{clone}' is a weapon-scope phrase, not a rule name (#439)");
     }
 
     [Test]
