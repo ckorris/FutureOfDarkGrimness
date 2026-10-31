@@ -1,6 +1,6 @@
 # 451 — Engine: decision payloads to clients + ClientReplayRecorder
 
-**Status**: todo
+**Status**: in progress (slice 1 of 3 done)
 **Related**: plan `docs/replay-plan.md` section 4.2 (client column); depends on #450; reverses part of #088 (decision D2); #452 writes what this records
 
 ## Goal
@@ -63,10 +63,35 @@ one machine (host GUI + client GUI, or host headless + client GUI) and confirm b
 report the same step count at game end (print it to the console for now; #452 writes files).
 
 ## Notes
-- (none yet)
+- **2026-10-31 - slice 1: the resolved notice carries the decision (engine `f24bdef6`).**
+  `StageTaskNotifyResolvedMessage` has the ticket's eight fields; `RequestMessageSender` keeps the request half
+  (`ResolvedDecision`: type names, display name, request JSON) in its pending entry and fills the notice on all
+  THREE ways a task ends - reply, resolver error, disconnect. `NetworkProtocol.Version` 4 -> 5. Tests:
+  `RequestSystemTests` (one per ending, exact-record equality), `ClientReplayRecordingTests` (wire round trip
+  of an answered and a failed notice). There were no existing `MessageSerializationTests` /
+  `NetworkProtocolTests` pins on this message to update. Engine 3459 passed / 1 skipped, build clean, smoke
+  exit 0.
+- **Ordering, verified by reading the code (#086 write lock, `RequestMessageSender`):** per connection, frames
+  arrive in send order - every send to one connection takes its `WriteLock` (a `SemaphoreSlim`, whose async
+  waiters are released FIFO) before the sending call returns. On the reply path the host sends the resolved
+  notice BEFORE it completes the awaiting stage (`actions.OnSuccessful`), so the notice always precedes the
+  store deltas the decision causes. A broadcast walks connections one after another, so with several clients a
+  later broadcast could in theory overtake an earlier one on the second connection - the same property every
+  replicated store delta already relies on, so not new here.
 
 ## Decisions
-- (record: snapshot #0 shape; message arrival-order finding; what #088 text was changed)
+- **The error path broadcasts too** (beyond the ticket's two send sites): a resolver error
+  (`StageTaskRequestErrorMessage`) used to end the task with NO resolved notice, so the outstanding-task entry
+  lingered on every client and a client replay could never close another player's failed request. It now
+  sends the notice with `ErrorMessage` set and `ReplyJson` null, in the same place the reply path does (after
+  the observer, before the awaiting stage resumes).
+- **`PlayerID` in the notice is the host's record of the target** (the pending entry), not the replier's
+  claim in `StageTaskReplyMessage.PlayerID`.
+- **#088 text changed:** only the routing comment in `RequestMessageSender.RequestDecision` ("no client
+  receives another player's request payload while the decision is open; once it resolves the notice carries
+  it to everyone"). The message's own doc comment records the D2 loosening. The awaiting message is unchanged.
+- **Protocol v5** covers both replay wire changes (#450's `ReplayMarkerMessage` never bumped it): an older
+  peer would otherwise join and record half-empty replays instead of being refused with a reason.
 
 ## Outcome
 (open)
