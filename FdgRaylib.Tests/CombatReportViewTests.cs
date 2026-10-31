@@ -36,11 +36,11 @@ public class CombatReportViewTests
         float dice = 10f, int hitNeeded = 5, float hits = 3.33f, float wounds = 1.67f,
         IReadOnlyList<SaveBucket>? saves = null, IReadOnlyList<string>? hitTags = null,
         IReadOnlyList<string>? saveTags = null, bool inRange = true, float effectiveRange = 24f,
-        int copies = 10) =>
+        int copies = 10, ParrySummary? parry = null) =>
         new(new FakeWeapon(), copies, inRange, effectiveRange, dice, hitNeeded,
             hitTags ?? new List<string>(), hits,
             saves ?? new List<SaveBucket> { new(4, hits, string.Empty) },
-            saveTags ?? new List<string>(), wounds, new List<string>());
+            saveTags ?? new List<string>(), wounds, new List<string>(), parry);
 
     private static CombatReport Report(params VolleyReport[] volleys) =>
         new(ECombatMode.Shooting, "Infantry Squad", "Hive Warriors", 9f, 7.33f,
@@ -145,9 +145,38 @@ public class CombatReportViewTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(view.HitChips, Is.EqualTo(new[] { "Quality 4+" }), "blank entries dropped");
+            Assert.That(view.HitChips, Is.EqualTo(new[] { new ChipView("Quality 4+") }), "blank entries dropped");
             Assert.That(view.SaveChips, Is.Empty);
         });
+    }
+
+    // #441 F4 (signed off B): the defender's Parry step is a "Parry" chip, first on the Save line, with the dice and
+    // hits-ignored numbers in its hover - no "Parry: ..." note and no extra column. A tag chip has no hover.
+    [Test]
+    public void AParryVolley_ShowsAParryChipWithTheNumbersInItsHover_AndNoParryNote()
+    {
+        var view = Row(Volley(hits: 4f,
+            saveTags: new List<string> { "AP(1) -1" },
+            parry: new ParrySummary(DiceRolled: 4f, HitsIgnored: 4f / 6f, HitsBefore: 4f)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(view.SaveChips, Is.EqualTo(new[]
+            {
+                new ChipView("Parry", "4 dice ignored 0.67 of 4 hits before the saves."),
+                new ChipView("AP(1) -1"),
+            }));
+            Assert.That(view.Notes.Any(n => n.Contains("Parry")), Is.False);
+            Assert.That(view.SaveChips[0].Hover!.All(c => c < 128), Is.True, "game text is ASCII-only");
+        });
+    }
+
+    [Test]
+    public void WithoutParry_TheSaveLineHasNoParryChip()
+    {
+        var view = Row(Volley(saveTags: new List<string> { "AP(1) -1" }));
+
+        Assert.That(view.SaveChips, Is.EqualTo(new[] { new ChipView("AP(1) -1") }));
     }
 
     [Test]

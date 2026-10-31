@@ -920,13 +920,13 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.Unindent();
     }
 
-    private static void DrawChipLine(string label, IReadOnlyList<string> chips, string result)
+    private static void DrawChipLine(string label, IReadOnlyList<ChipView> chips, string result)
     {
         UiText.Colored(DimText, label);
-        foreach (string chip in chips)
+        foreach (ChipView chip in chips)
         {
             ImGui.SameLine();
-            UiChrome.DrawChip(chip);
+            UiChrome.DrawChip(chip.Label, chip.Hover);
         }
         ImGui.SameLine();
         UiText.Colored(DimText, "->");
