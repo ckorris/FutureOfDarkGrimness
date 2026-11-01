@@ -1,6 +1,6 @@
 # 457 — Replay: verification, docs, merge feature/replay -> master
 
-**Status**: in-progress - verified on one machine 2026-10-31; the two-machine run, the perf-bar call and the `master` merge wait on Chris
+**Status**: in-progress - verified on one machine 2026-10-31; the two-machine run and the `master` merge wait on Chris
 **Related**: umbrella #449; all of #450-#456; parallel #415 (OPR 3.6) for merge ordering
 
 ## Goal
@@ -25,7 +25,7 @@ the index lines for 449-457 are ticked and archived.
       table with real beat numbers if #450's measurement was from the headless path only.
 - [x] Headless: `printf "2\n2\n" | dotnet run ... --headless` exits 0 and prints the replay path;
       `--scenario` writes a replay; `--replay FILE --dump/--verify/--make-save` work on it.
-- [!] Performance: a 2k game's recording adds no visible per-decision latency (compare `--slow 0`
+- [x] Performance: a 2k game's recording adds no visible per-decision latency (compare `--slow 0`
       headless wall time with and without recording; < 3% is the bar) and the GUI frame time is
       unaffected during play.
 - [x] Docs: `CLAUDE.md` Build & Run gets the `--replay` lines and the smoke's expected replay line;
@@ -46,6 +46,16 @@ the index lines for 449-457 are ticked and archived.
 - [ ] Delete the remote `feature/replay` branches after the merge (both repos).
 
 ## Notes
+- **2026-11-01 - performance, Chris's call.** Recording stays on by default; headless runs take **`--no-replay`**
+  (`CliApp(record: false)`: no recorder on the new-game or scenario path, the Mode line says so, no file; outside
+  `--headless` it exits 2 - the GUI always records). Of the cuts I had suggested, profiling showed non-indented
+  snapshots save only ~10-20 ms a game (and need a format bump) and `Fastest` gzip ~50 ms for a ~60% bigger file -
+  Chris took neither, and took the one that only pays: `ExportGzip` stamps the header with the recorder's running
+  tally instead of recounting every request (`ReplayWriter.WriteGzip(..., summary)`), ~15 ms off the end write.
+  Pinned: `HeadlessRecordingToggleTests` (recorded by default / `record: false` leaves none), and the exported
+  header summary equals a recount on a real game and on a continued recording (`ReplayRecorderGameTests`,
+  `ReplayResumeTests`). 2k seed 42, Release: play 1.96 s recorded vs 1.69 s with `--no-replay`; write 0.21 s.
+  Suites: engine 3487/1 skipped, app 3180; smoke exit 0 with its replay line, `--verify` PASS.
 - **2026-10-31 - verification on one machine (`[~]` = done here, the two-machine half still Chris's; `[!]` = needs a call).**
   - **Master merged into the branch** (both repos, pushed): engine `bad4f5c4` brings #458 (re-ask a rejected reply);
     app `0c60bc3` brings #448 (war-table menu) and #458. One conflict, `MainMenuScreen`: #448 rebuilt the menu into
@@ -91,7 +101,8 @@ the index lines for 449-457 are ticked and archived.
   shot of the previous one animates.
 
 ## Decisions
-- (none yet)
+- **Recording cost (Chris, 2026-11-01):** accept it in played games, `--no-replay` for headless batch runs, and only the
+  tally reuse among the cuts (the others were measured and judged not worth it - see Notes).
 
 ## Outcome
 (open)

@@ -62,7 +62,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 
 - [~] 449 — Replay system umbrella: plan, ground rules, master merges into the branch, release gate. Planning done 2026-10-30; sizing measured (plan sec 5). ([WorkItems/449](WorkItems/449-replay-umbrella.md))
 - [~] 456 — GUI replay viewer (main menu -> Replays): browser, table view with real beats, play/pause/step/seek/speed, decision list + details. Built 2026-10-31; Chris's hand-verify open. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
-- [~] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. Verified on one machine 2026-10-31; the two-machine run, the perf-bar call and the `master` merge wait on Chris. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
+- [~] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. Verified on one machine 2026-10-31; headless `--no-replay` added 2026-11-01; the two-machine run and the `master` merge wait on Chris. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
 
 ## Movement
 

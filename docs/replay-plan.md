@@ -332,8 +332,14 @@ end write is gzip (~220 ms) plus the header tally (~40 ms). GC: +78 MB allocated
 time (11 more gen0, 1 more gen2 collection; each pause 1-2 ms) - the only way recording reaches the render
 thread. FdgLab and the tests never record (opt-in), so simulation throughput is untouched. The plan's "< 3% of
 headless wall time" bar is NOT met on this measure (~15% of play time when both players answer instantly); it
-is invisible in a played game (sub-millisecond per decision, one ~40 ms engine-thread pause per round). Cheap
-cuts if it ever matters: non-indented snapshot JSON, `CompressionLevel.Fastest` for the file.
+is invisible in a played game (sub-millisecond per decision, one ~40 ms engine-thread pause per round).
+**Chris's call (2026-11-01):** keep recording on by default, add **`--no-replay`** for headless runs (no recorder,
+no file; the GUI always records), and take the cuts that pay. Measured before choosing: non-indented snapshots
+save ~10-20 ms a game (the indented part is only the save's outer wrapper; the per-object entry JSON - 75% of a
+snapshot's cost - is never indented) and would need a format bump; `CompressionLevel.Fastest` saves ~50 ms once
+per game but grows the file ~60% (406 -> 653 KB). Neither taken. Taken: the file's header summary comes from the
+recorder's running tally instead of a recount (`ExportGzip`), ~15 ms off the end write (0.22 -> 0.21 s).
+With `--no-replay` a 2k headless game's play is 1.69 s vs 1.96 s recorded, and no write.
 
 ---
 

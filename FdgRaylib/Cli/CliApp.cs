@@ -25,6 +25,10 @@ public class CliApp
     // #191 --ai-profile: which AI drives the computer slots (solo-rules baseline or the Tactician).
     private readonly EAiProfile _aiProfile;
 
+    // #457 --no-replay: false runs the game unrecorded (no recorder, no .fdgreplay) - for batch runs where
+    // throughput matters more than a replay.
+    private readonly bool _record;
+
     // Initialized by Prepare(); used by RunAsync().
     private LocalMessageBus? _messageBus;
     private GameDataStore? _gameDataStore;
@@ -34,7 +38,7 @@ public class CliApp
     public ITableState? TableState => _localGame?.TableState;
 
     /// <summary>The running game's recording, once RunAsync/RunScenarioAsync has built the server; Program.cs
-    /// writes it to Replays/ when the run ends or crashes (#452).</summary>
+    /// writes it to Replays/ when the run ends or crashes (#452). Null under --no-replay (#457).</summary>
     public IReplaySource? Replay { get; private set; }
     public GameLog? Log { get; private set; }
 
@@ -42,12 +46,13 @@ public class CliApp
     public Dictionary<PlayerID, Color> PlayerColors { get; } = new();
 
     public CliApp(bool headless, int slowDelayMs = 0, int? diceSeed = null,
-        EAiProfile aiProfile = EAiProfile.SoloRules)
+        EAiProfile aiProfile = EAiProfile.SoloRules, bool record = true)
     {
         _headless = headless;
         _slowDelayMs = slowDelayMs;
         _diceSeed = diceSeed;
         _aiProfile = aiProfile;
+        _record = record;
     }
 
     // Creates the local game instance (and thus TableState) without any user prompts.
@@ -69,6 +74,7 @@ public class CliApp
         Console.WriteLine("=== FDG Raylib ===");
         string modeDesc = _headless ? "headless CLI" : "CLI + Raylib";
         if (_slowDelayMs > 0) modeDesc += $" (slow mode: {_slowDelayMs}ms)";
+        if (!_record) modeDesc += " (not recorded: --no-replay)";
         Console.WriteLine($"Mode: {modeDesc}");
         Console.WriteLine();
 
@@ -112,8 +118,8 @@ public class CliApp
         playerSlots[1].AssignPlayerController(aiController);
 
         var gameEnded = new TaskCompletionSource();
-        // #450: record the game; Program.cs writes it once the run ends (#452).
-        var replay = new ReplayRecorder();
+        // #450: record the game; Program.cs writes it once the run ends (#452). --no-replay: no recorder (#457).
+        ReplayRecorder? replay = _record ? new ReplayRecorder() : null;
         _localGame.AttachReplay(replay);
         Replay = replay;
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots, replay: replay);
@@ -170,7 +176,8 @@ public class CliApp
         }
 
         var gameEnded = new TaskCompletionSource();
-        var replay = ReplayRecorder.Continue(priorReplay); // #450; #453 continues the save's
+        // #450; #453 continues the save's. --no-replay (#457): none, and the save's replay is left behind.
+        ReplayRecorder? replay = _record ? ReplayRecorder.Continue(priorReplay) : null;
         _localGame.AttachReplay(replay);
         Replay = replay;
         var server = new FDGServer(parts.Store, parts.Bus, parts.Slots, replay: replay); // resume constructor

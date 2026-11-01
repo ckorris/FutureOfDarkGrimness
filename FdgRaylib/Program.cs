@@ -159,6 +159,15 @@ int replayOutIdx = Array.IndexOf(args, "--replay-out");
 if (replayOutIdx >= 0 && replayOutIdx + 1 < args.Length)
     replayDirectory = Path.GetFullPath(args[replayOutIdx + 1]);
 
+// --no-replay (#457): run a headless game unrecorded - no recorder, no .fdgreplay - for batch runs where throughput
+// matters more than a replay (recording costs ~0.75 ms a decision plus ~0.2 s to write the file). The GUI always records.
+bool recordReplay = !args.Contains("--no-replay");
+if (!recordReplay && !headless)
+{
+    Console.Error.WriteLine("--no-replay is for headless runs (--headless); the GUI always records.");
+    Environment.Exit(2);
+}
+
 // The flag's file arguments from startIdx up to the next --flag (#375: the supplement CLI flags take
 // one or more supplement files).
 static List<string> TrailingPaths(string[] args, int startIdx)
@@ -714,7 +723,7 @@ if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
 UsageAnalytics.Initialize(
     headless ? "headless" : scenarioPath != null ? "scenario" : null);
 
-var app = new CliApp(headless, slowDelayMs, diceSeed, aiProfile);
+var app = new CliApp(headless, slowDelayMs, diceSeed, aiProfile, recordReplay);
 
 if (headless)
 {

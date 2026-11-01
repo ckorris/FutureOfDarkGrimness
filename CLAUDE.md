@@ -93,7 +93,8 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/example-
 
 # Replay tools (#455, see Scenarios/README.md): read a recorded game headless (--dump | --events | --stats |
 # --verify | --export OUT.jsonl), or cut a resumable save at a step and play it with --scenario. Every game writes
-# its .fdgreplay to Replays/ beside the executable on any exit, host and client (#452); --replay-out DIR redirects it.
+# its .fdgreplay to Replays/ beside the executable on any exit, host and client (#452); --replay-out DIR redirects it,
+# and a headless run takes --no-replay to skip recording (#457: batch runs; the GUI always records).
 # A .fdgsave carries the replay so far and resuming it continues that replay (#453); --replay reads a save's too.
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --dump
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --replay game.fdgreplay --at 20 --make-save repro.fdgsave
