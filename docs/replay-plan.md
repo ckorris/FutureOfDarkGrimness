@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording), #452 (files on every game exit) and #453 (replay inside saves, resumes continue it) done 2026-10-31; #456 (GUI viewer) built 2026-10-31, awaiting Chris's hand-verify. Umbrella work item: **#449**.
+**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording), #452 (files on every game exit) and #453 (replay inside saves, resumes continue it) done 2026-10-31; #456 (GUI viewer) built 2026-10-31, awaiting Chris's hand-verify; #457 (verification) run 2026-10-31 on one machine - `master` merged into the branch, the master merge itself and the two-machine run wait on Chris. Umbrella work item: **#449**.
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -308,6 +308,33 @@ snapshots included (~14 MB as .NET UTF-16); fine.
 If size ever matters, a field-level diff for `UnitData` updates would cut the raw stream ~10x; out of
 scope here (gzip already does most of that work).
 
+**Re-measured at #457 (2026-10-31, format v3, the shipping recorder through the app)** - three seeded 2k
+headless games (`--seed 42/7/11`; player 1 is the CLI's EOF defaults, player 2 the solo-rules AI), `--stats`:
+
+| Game | Requests | `.fdgreplay` | Raw | Snapshots (5) | Store updates | Request bytes | Beats |
+|------|-----------------|--------------|-----|---------------|---------------|----------|-------|
+| BB vs Orks, seed 42 | 281 | **406 KB** | 6.10 MB | 2.44 MB -> 138 KB | 1059: 2.42 MB -> 96 KB | 603 KB -> 48 KB | 244: 337 KB -> 33 KB |
+| Hives vs HDF, seed 7 | 265 | **378 KB** | 5.87 MB | 2.61 MB -> 133 KB | 820: 2.01 MB -> 81 KB | 666 KB -> 45 KB | 282: 306 KB -> 25 KB |
+| Robots vs Dark Elves, seed 11 | 248 | **362 KB** | 5.80 MB | 2.40 MB -> 122 KB | 793: 2.45 MB -> 91 KB | 450 KB -> 37 KB | 240: 249 KB -> 20 KB |
+
+In line with #450 (0.41-0.49 MB), a little smaller: 248-281 requests here vs 312-349 in #450's AI-vs-AI lab
+games (here player 1 is the CLI's defaults, not a bot). Beats are engine-side (`PresentationRelayer`), so the GUI path records the same ones;
+a human GUI game differs only in its decisions (movement paths with more waypoints). The two-process GUI games
+#457 ran were small (14-17 steps, 15-27 KB). F3 holds.
+
+**Recording cost (#457).** Same seeded 2k games, Release builds, `origin/master` (no recording) vs the branch,
+3 runs each: a whole headless game is 2.9 s vs 3.5 s. Split by phase (seed 42): launch +0.06 s; play
+(~330 decisions) 1.66 s -> 1.91 s, +0.25 s, **~0.75 ms per decision**; writing the file at the end 0.22 s
+(after the result, before the game-over card). A profile (`dotnet-trace`, sampled thread time) puts the play
+cost at: the round snapshots ~200 ms (a full `GameSaveSerializer` save, 4-5 per game, ~40 ms each), beat
+serialization ~85 ms, requests ~55 ms, store updates ~25 ms, log lines ~15 ms - all on the engine thread; the
+end write is gzip (~220 ms) plus the header tally (~40 ms). GC: +78 MB allocated per game, +20 ms of total pause
+time (11 more gen0, 1 more gen2 collection; each pause 1-2 ms) - the only way recording reaches the render
+thread. FdgLab and the tests never record (opt-in), so simulation throughput is untouched. The plan's "< 3% of
+headless wall time" bar is NOT met on this measure (~15% of play time when both players answer instantly); it
+is invisible in a played game (sub-millisecond per decision, one ~40 ms engine-thread pause per round). Cheap
+cuts if it ever matters: non-indented snapshot JSON, `CompressionLevel.Fastest` for the file.
+
 ---
 
 ## 6. Items
@@ -322,7 +349,7 @@ scope here (gzip already does most of that work).
 | 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | done 2026-10-30 |
 | 455 | Headless tooling: `--replay` dump / stats / verify / export / make-save | 454 | done 2026-10-30 |
 | 456 | GUI replay viewer: browser screen, playback screen, controls, decision list | 454, 452 | built 2026-10-31; Chris's hand-verify open |
-| 457 | Verification + merge: networked hand-verify, size check, docs, merge `feature/replay` -> `master` | all | todo |
+| 457 | Verification + merge: networked hand-verify, size check, docs, merge `feature/replay` -> `master` | all | verified on one machine 2026-10-31; two-machine run + `master` merge wait on Chris |
 
 Suggested order: 450 -> 454 -> 455 (an agent can now debug from a replay) -> 451 -> 452 -> 453 -> 456 -> 457.
 450/454 and 451 can run in parallel sessions once 450's event records exist.

@@ -56,6 +56,7 @@ You can also add local players for hotseat-style, or combine them with more than
 - UI that previews what you can hit (and what can hit you) before every move.
 - Options for common house rules, like having to declare all your shooting all at once, or being able to ignore thin cover that you’re right up against.
 - Saving and loading games.
+- Replays of every game, to watch back or send with a bug report.
 
 <br>
 
@@ -107,9 +108,17 @@ The best way to try it out is to play a solo game against a bot. Launch the game
 
 
 
+## Watching Replays
+
+Every game you play is recorded. When it ends (or you leave it), a `.fdgreplay` file is written to the `Replays` folder next to the app, on every computer in the game. Open **Replays** from the main menu to see them all, newest first, and pick one to watch it back on the table: play, pause, step a decision at a time, change speed, or jump anywhere with the slider. The list on the right shows every decision made, and the log keeps up with you. A saved game carries its replay with it, so a game you saved and loaded later is still one replay, and **Open File...** can open a `.fdgsave` too.
+
+<br>
+
 ## Bug Reporting
 
 I’ve playtested this a lot, but there’s bound to be bugs. If you see a bug, please use the Report Bug option in the escape menu to tell me. Or you can ping me on Discord [here](https://discord.com/channels/610199287346888743/1538297424865403032) or open up a Github issue.
+
+If you can, attach that game's replay (the newest file in the `Replays` folder): it lets me step to the exact moment it went wrong and load the game from there.
 
 Here’s places where I most expect bugs:
 
@@ -128,7 +137,7 @@ There's a few things yet to come:
 - **Age of Fantasy armies:** Sorry, I don't play fantasy, so this has not been a priority. I will add them eventually.
 - **3D movement**: The engine _mostly_ supports three dimensions, but the UI doesn't have a good way of doing that since it's all rendered in 2D. That said, if someone used the rules engine with a 3D game engine, it's mostly a matter of implementing colliders.
 - **Campaign Rules and Multi-Army Lists:** I intend to do both. 
-- **Replays:** Would also be great to make battle reports.
+- **Battle reports:** Replays are in; turning one into a battle report would be great.
 - **Observer Mode:** Shouldn't be that hard, but I haven't done it yet.  
 
 <br>

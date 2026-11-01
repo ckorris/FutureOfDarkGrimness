@@ -62,7 +62,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 
 - [~] 449 — Replay system umbrella: plan, ground rules, master merges into the branch, release gate. Planning done 2026-10-30; sizing measured (plan sec 5). ([WorkItems/449](WorkItems/449-replay-umbrella.md))
 - [~] 456 — GUI replay viewer (main menu -> Replays): browser, table view with real beats, play/pause/step/seek/speed, decision list + details. Built 2026-10-31; Chris's hand-verify open. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
-- [ ] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
+- [~] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. Verified on one machine 2026-10-31; the two-machine run, the perf-bar call and the `master` merge wait on Chris. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
 
 ## Movement
 
@@ -207,6 +207,7 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
+- [ ] 459 — A networked client of a resumed game drew unit labels but no model bases (seen with a scenario-compiled save; a game-written save drew fine). Pre-existing on master; found by #457's two-process runs. ([WorkItems/459](WorkItems/459-client-resume-models-not-drawn.md))
 - [~] 405 - Lobby could add local players and bots but never drop one, and the four add buttons
   said nothing about what each gets you. Per-row Remove (engine owns the policy; host's own row,
   connected clients, resumed/launched lobbies excluded) + tooltips. Implemented + tested;

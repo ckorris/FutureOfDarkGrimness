@@ -38,6 +38,17 @@ Replays (#450/#451): every game is recorded on the host AND on each remote clien
 - The notification propagates: `GameContext.OnGameEnded` event -> `FDGServer.OnGameEnded` event -> `CliApp` `TaskCompletionSource` -> `RunAsync` returns. In GUI mode a Game Over card offers Return to Main Menu (#040).
 - In GrimDark Future rules a player can win even if all their models are eliminated (objectives determine the winner), so **unit counts must never be used as a win condition**.
 
+## Replay
+
+Every real game is recorded on the host and on each remote client, written to `Replays/` when it ends or is left, embedded in saves, and played back by the GUI viewer and the `--replay` CLI tools. Plan and decisions: `docs/replay-plan.md` (container: section 4.1; decisions D1-D6).
+
+- **Host recorder** (`Replay/ReplayRecorder.cs`, #450): opt-in - the app's launch paths hand one to `FDGServer`, simulations and FdgLab pass none. `FDGServer` attaches it to the store (`AttachStore`: every add / update / remove as JSON), the request sender (`RequestMessageSender.Observer`: requests, replies, request errors), the beat relay (`PresentationRelayer.Observer`) and the game log, and records the flow markers through `ReplayMarkerRelay` (`GameContext.ReplayMarkers`: `GameStart` in `StartReplay`, `RoundStart` in `ReconcileNewRoundStage`, `ActivationStart` in `DeterminePlayerTurnStage`, `GameEnded` from `OnGameEnded`; `Saved` from `SaveGame`). A full snapshot (a `GameSaveSerializer` save) follows `GameStart` / `Resumed` and every `RoundStart`. Recording is a list append under one lock and never throws into the engine: the first failure logs one `[replay]` line and stops recording.
+- **Client recorder** (`Replay/ClientReplayRecorder.cs`, #451): a client has no engine, so it records what the host sends - deltas verbatim, its join sync as snapshot 0, beats, log lines, markers, and every player's decisions from `StageTaskNotifyResolvedMessage` (D2). The host's header rides `LaunchGameMessage.Replay`; a resumed game's history rides `LaunchGameMessage.ReplayHistory` (#453).
+- **Container**: gzip JSON Lines - line 1 the header (`ReplayHeader`: format version, game ID, seed, settings, slots, resumes, and the `ReplaySummary` the browser lists from), then one `ReplayEvent` per line (`ReplayEvents.cs`, `ReplayWriter` / `ReplayReader`). `ReplayFormat.CurrentVersion` is bumped on any change and older files are refused, never migrated (plan rule 5).
+- **Saves and resumes** (#453): `FDGServer.SaveGame` records `Saved` and embeds the replay in the `.fdgsave`; a resume (`GameSaveSerializer.LoadWithReplay` -> `ReplayRecorder.Continue`) keeps the earlier events, records `Resumed` and a fresh snapshot, and counts `Seq`, play time and snapshot indexes on.
+- **The `Resumed` boundary rule**: a save is taken mid-activation but resumes from the start of that activation (#052), so the deltas between that activation's `ActivationStart` and `Saved` describe work the resume undid. Playback never applies an event across a `Resumed`: crossing one rebuilds the store from the snapshot that follows it (`ReplayPlayer`), and the verifier counts each session between resumes on its own.
+- **Playback** (#454): `ReplayTimeline` indexes steps (one per decision with a real choice, `DefaultStepFilter`) and markers; `ReplayPlayer` seeks by rebuilding from the nearest snapshot and replaying deltas, and returns each step's beats and log lines; `ReplayVerifier` checks a file's integrity (`--verify`). The app side: `FdgRaylib/Cli/ReplayTool.cs` (#455) and the viewer in `FdgRaylib/Rendering/Replays/` (#456).
+
 ## Known stubs in the engine
 
 The engine has substantial gaps. Don't assume rules are enforced just because a stage exists. Surveyed Apr 2026 (setup, melee pile-in, and wound auto-fill re-verified 2026-06-14):
@@ -83,7 +94,11 @@ FdgRaylib/
     ArmyLoader.cs                          Prompts for army; EOF -> built-in test army
     LocalMessageBus.cs                     In-process message bus (single-machine play)
     ResolverRegistryFactory.cs             Build()/BuildGui() — assemble resolver registry
+    ReplayTool.cs                          #455 `--replay FILE` (--dump / --events / --stats / --verify /
+                                           --export / --at N --make-save)
     Resolvers/                             CLI (stdin/stdout) resolvers, one per request type
+  SaveLoad/
+    ReplaySave.cs / RecoverySave.cs        #452 replay files in Replays/, #187 recovery saves
   Rendering/
     RaylibRenderer.cs                      Window loop, screen dispatch, in-game canvas
     IAppScreen.cs                          Screen interface used by the screen stack
@@ -94,6 +109,7 @@ FdgRaylib/
                                            `--menu-preview out.png [WxH] [menu|privacy|options] [seed]
                                            [t=SECONDS] [bench]` renders the menu offscreen from a hidden
                                            window (bench: ms/frame, Animated vs Still)
+    Replays/                               #456 replay browser + viewer (ReplaySession, ReplayScreen)
     Resolvers/
       IGuiResolver.cs                      Has-pending + Draw
       IGuiCanvasOverlay.cs                 Optional layout receiver for table interactions
@@ -106,6 +122,8 @@ FutureOfDarkGrimness/                      Submodule — read-only by default
     FDGGame_AsLocal.cs / FDGGame_AsClient.cs
   ArmyBuilding/                            Army Forge book model, compiler, validator, OPR importer
   Rules/                                   #042 data-driven special-rules system (catalog, dispatch, tokens)
+  Replay/                                  #450-#454 recorders (host, client), container, timeline,
+                                           player, verifier (see "Replay" above)
   Network/
     Connection/
       FDGHost.cs / FDGClient.cs            TCP host/client over port 6389
