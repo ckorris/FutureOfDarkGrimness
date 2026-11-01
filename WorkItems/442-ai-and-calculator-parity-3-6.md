@@ -502,7 +502,7 @@ with no illegal-action retries in the log.
   `Rules/`, reusable for every "after I move / after I'm Shaken" hypothetical); (b) stamp the token on the live unit
   around the estimate and remove it (mutates shared, synced state from a resolver - rejected); (c) drop the op by
   rule name after evaluation (re-implements the rule's gate by name - against plan G1). Recommendation: (a), as its
-  own small item; deferred here, nothing built.
+  own small item; deferred here, nothing built. Filed as #459 on 2026-11-01 and built there.
 - **D10 - the bench and its verdict (2026-10-30).** The plan's G4 pool is Chris-curated at 2,000 points; the brief asked
   for 6-8 armies from the 3.6 scratch books, which `--book-to-army` / the scratch compiler produce at 600-800 points,
   so the bench is a SMALL-game bench - recorded as such, not a G4 gate number. Verdict: no regression (85.9% vs

@@ -815,3 +815,9 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-31 - number 458 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `22f0d56`: index + archive max **457** (449-457 reserved for replay), no `458` branch on either remote.
 > **458 = rejected player reply no longer ends the game.** No collision.
+
+> **2026-11-01 - number 459 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `170ed4c` (the orchestrator's check earlier the same day at `46072fd` agreed): index + archive max **458**, no
+> `459` branch on either remote. **459 = Tactician assumed-token
+> overlay (Artillery's unmoved -1 on move candidates, #442 D9).** Filed on `feature/opr-3.6`; the replay effort
+> on `feature/replay` interleaves above it the usual way. No collision.
