@@ -7,6 +7,7 @@ and **never reused**, even across deletions; a split item's line stays and point
 - Completed / closed items: `WorkItems/Archive.md` (entries moved there verbatim).
 - Number-collision log: `WorkItems/Reconciliations.md` — read before filing new numbers on a branch that has drifted from origin/master. A per-clone pre-push hook blocks duplicate numbers across this file and the archive.
 - **OPR 3.6 upgrade (2026-10-29 ->):** `docs/opr-3.6-upgrade-plan.md` - the plan, ground rules for agents, and the item table. Work happens on branch `feature/opr-3.6` in both repos; items #415-#445 below are reserved for it.
+- **Replay system (2026-10-30 ->):** `docs/replay-plan.md` - record-what-happened replays (host + client), auto-saved, embedded in saves, GUI viewer + CLI tools. Work happens on branch `feature/replay` in both repos; items #449-#457 below are reserved for it.
 - Cross-session priority handoff: `WorkItems/FableWindowPlan.md` — what shipped during the 2026-07 Fable window and the agreed order for what's next (top item: #169 design fork, sign-off before building).
 
 **Keep this index lean — every work session reads it whole.** An entry is at most ~3 lines: number,
@@ -50,6 +51,18 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [x] 447 — Impact(X) is per model: X dice per living model carrying it (a joined hero's own Impact adds), Brace subtracts from the total. Done 2026-10-30; owner review asked on D1, D3. ([WorkItems/447](WorkItems/447-impact-per-model.md))
 
 ---
+
+## Replay system (branch `feature/replay`, plan: `docs/replay-plan.md`)
+
+- [~] 449 — Replay system umbrella: plan, ground rules, master merges into the branch, release gate. Planning done 2026-10-30; sizing measured (plan sec 5). ([WorkItems/449](WorkItems/449-replay-umbrella.md))
+- [ ] 450 — Engine: replay container format + host-side `ReplayRecorder` (store deltas, request/reply, beats, log, markers, per-round snapshots, concrete seed always). ([WorkItems/450](WorkItems/450-replay-recorder-host.md))
+- [ ] 451 — Engine: `StageTaskNotifyResolvedMessage` carries request + reply payloads (D2, partial reversal of #088) + `ClientReplayRecorder` so remote clients record the same replay. ([WorkItems/451](WorkItems/451-replay-client-recording.md))
+- [ ] 452 — App: auto-write `.fdgreplay` to `Replays/` on every game exit (normal, disconnect, escape menu, window close, headless, scenario, crash best-effort), host and client. ([WorkItems/452](WorkItems/452-replay-autosave.md))
+- [ ] 453 — Replay embedded in `.fdgsave`: save carries it, resume continues it (`Saved`/`Resumed` markers), clients of a resumed game receive the history. ([WorkItems/453](WorkItems/453-replay-in-save.md))
+- [ ] 454 — Engine: playback - `ReplayTimeline` (steps = decisions, one-option requests fold), `ReplayPlayer` (seek via snapshot + deltas, step fwd/back), shared `StoreDeltaApplier`, decision describer. ([WorkItems/454](WorkItems/454-replay-playback-engine.md))
+- [ ] 455 — Headless `--replay FILE --dump | --events | --stats | --verify | --export | --at N --make-save` so an agent can read a replay and cut a repro save from it. ([WorkItems/455](WorkItems/455-replay-cli-tools.md))
+- [ ] 456 — GUI replay viewer: browser screen over `Replays/`, table view with real beats, play/pause/step/seek/speed, decision list + details. Forks F1/F2 answered. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
+- [ ] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))
 
 ## Movement
 
@@ -259,7 +272,6 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 - [~] 289 — Decisive rolls (morale, cast, objective D3, Storm, token shed) render as real dice in probabilistic mode instead of an expected-value bar: `DiceRolledBeat.FromDecisive`. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/289](WorkItems/289-decisive-rolls-render-as-dice.md))
 - [~] 292 — Shoot panel weapon rows show special rules as underlined, individually hoverable names (new in-game `RuleHoverText`) + a Rules block with descriptions in the Details pane. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/292](WorkItems/292-weapon-select-rule-hovers.md))
 - [~] 298 — Resolver option buttons were hardcoded 28-32px while the font is `18f * uiScale`: row height (and every pixel step sitting next to text) now derives from the line height, shared via `ResolverPanelLayout.OptionRowHeight`. Melee weapon menu also gained its rules' descriptions as option subtext. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/298](WorkItems/298-resolver-option-button-height.md))
-- [ ] 448 — Holographic war-table main menu background (reserved; work happens on `master`, detail file there). ([WorkItems/448](WorkItems/448-holo-war-table-menu-background.md))
 
 ## 2026-06-10 audit follow-ups
 
@@ -316,7 +328,7 @@ Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc 
 Implemented, merged, suite green — held open only until confirmed by hand in the running app.
 Tick and move to the archive once verified. The detail files carry the full ledgers.
 
-
+- [~] 458 — A rejected player reply no longer ends the game: move/consolidation Done gates call the engine validator, the engine re-asks then holds instead of throwing, and placement gains an engine-placer Auto-place so a no-legal-spot placement can't hang (Discord "Breaks cohesion" Game Over, v0.3.0). Verify: the GUI checks in the detail file. ([WorkItems/458](WorkItems/458-invalid-reply-game-over.md))
 - [~] 326 — Single-model moves show a roster of the unit's models with each one's distance travelled: pick by row click, Up/Down, Tab/Shift+Tab, or the table click #295 left as the only way in (which a playtester never found). Space stays Confirm. Consolidation gets the same roster as slice 2. Verify: the six GUI checks in the detail file. ([WorkItems/326](WorkItems/326-single-model-move-roster.md))
 - [~] 324 — A single-target "Replace all X" now leaves the copies that specialist swaps below it were bought for (5 pistols, trade 1, then replace-all -> 4 rifles + the 1), and "-es" plural targets match ("Bashes" -> the "Bash" weapon, which was silently free). Multi-target all-swaps (88 corpus pairs) deferred pending the aggregate weapon-model question. Verify: DAO Union Tactical Grunts - take "Replace all Pulse Rifles" then "Replace one Pulse Rifle -> Plasma Rifle"; expect 4 carbines + 1 plasma at 150 pts. ([WorkItems/324](WorkItems/324-all-swap-yields-and-plurals.md))
 - [~] 323 — Replace upgrades starved by a later section: a Replace whose targets another section grants (Titan Lords "Replace any Heavy Hammer" above the shield swap that buys the second hammer) now banks the shortfall and settles it after every section applies, so both hammers swap and an OPR import keeps both. Verify: in the Forge, trade a War Errant Mini-Titan's Titan Shield for a Heavy Hammer, then swap BOTH hammers (385 pts, no hammer left). ([WorkItems/323](WorkItems/323-starved-replace-upgrade.md))

@@ -801,7 +801,17 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **447 = Impact(X) rolled per unit instead of per model** (surfaced by #422). Reserved on `master`; detail file on
 > `feature/opr-3.6`.
 
-> **2026-10-30 - number 448 filed clean (on `master`, mirrored here).** `git fetch origin` before filing, from
-> `origin/master` at `8e598a9`: index + archive max **447**, no `448` on either remote. **448 = holographic
-> war-table main menu background**, filed on `master` in `af8dae8`; this line reserves it on `feature/opr-3.6`
-> so upgrade sub-items take 449+. Detail file lives on `master`.
+> **2026-10-30 - number 448 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `8e598a9`: index + archive max **447** (415-447 reserved for the OPR 3.6 upgrade), no `448` branch on
+> either remote. **448 = holographic war-table main menu background.** No collision.
+
+> **2026-10-30 - numbers 449-457 reserved clean (replay system).** `git fetch origin` before filing, from
+> `origin/master` at `479888d`: index + archive max **448**, no `449`-`457` branch on either remote.
+> **449 = replay umbrella, 450-457 = its sub-items** (`docs/replay-plan.md` section 6). Reserved on `master`
+> like the 415-447 block; the work happens on `feature/replay` in both repos. A new replay sub-item or 3.6
+> sub-item takes max(origin/master index + archive) + 1 the usual way, so expect the two efforts' numbers to
+> interleave above 457. No collision.
+
+> **2026-10-31 - number 458 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `22f0d56`: index + archive max **457** (449-457 reserved for replay), no `458` branch on either remote.
+> **458 = rejected player reply no longer ends the game.** No collision.

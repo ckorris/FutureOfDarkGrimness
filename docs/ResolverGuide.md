@@ -183,8 +183,12 @@ Backspace did once deployment (where Backspace was always back-only) became canc
 is ACTION-granular (`PlacementHistory`): a group drop or Restart reverses as one step and re-opens the
 formation ghost with its rotation, a drag-edit restores the pre-drag pose, and right-click during a
 pick-up cancels the pick-up. Movement/consolidation right-click still clears the last waypoint (one per
-model in group mode). The GUI auto-placer went with the Auto-place button (AI and CLI-EOF placement have
-their own, engine/CLI-side). Terrain placement (#346) reverses one step per right-click at BOTH of its
+model in group mode). #343 removed the old GUI-only auto-placer; #458 brought an Auto-place button back
+(shares the Undo row, not offered for a reposition) that runs the engine's `AiPlaceObjectsResolver` - the
+same placer the AI and the commit guard use - and undoes as ONE step (`PlacementHistory.RecordAutoPlace`).
+When no spot is legal it takes the placer's least-bad block, the panel names the rule it breaks, and Done
+accepts it (`_autoPlaced` lifts the per-click/edge gates), so a mandatory placement with no Back can never
+dead-end. Terrain placement (#346) reverses one step per right-click at BOTH of its
 steps — a frozen ghost un-freezes, a chosen template goes back to the piece list — and the panel now says
 so; it previously advertised **Esc**, which has opened the in-game menu since #248 and never cancelled a
 resolver, so the one line telling a stuck player how to get out named the wrong key.

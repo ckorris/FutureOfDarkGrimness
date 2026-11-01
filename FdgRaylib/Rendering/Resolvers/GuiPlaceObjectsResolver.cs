@@ -1,5 +1,6 @@
 using System.Numerics;
 using FDG;
+using FDG.Ai.Resolvers;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
@@ -167,6 +168,12 @@ public class GuiPlaceObjectsResolver<T>
     private string? _errorMessage;
     private double  _errorExpiry;
 
+    // #458: the placed list came from Auto-place (and has not been undone or restarted since). Such a
+    // placement may be the engine placer's LEAST-BAD spot when no legal one exists, so Done accepts it
+    // even where the per-click rules would not - otherwise a crowded spillout ring or a late Ambush with
+    // nowhere over 9" from the enemy leaves the player unable to finish a mandatory placement at all.
+    private bool _autoPlaced;
+
     public GuiPlaceObjectsResolver(ITableState tableState, FormationModeState formationMode)
     {
         _tableState = tableState;
@@ -179,6 +186,10 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
+
+    /// <summary>#458 (tests): the placement as it stands, and whether it came from Auto-place.</summary>
+    internal IReadOnlyList<PlacedObjectEntry<T>> Placed => _placed;
+    internal bool IsAutoPlaced => _autoPlaced;
 
     public Task<CancellableResult<List<PlacedObjectEntry<T>>>> Resolve(PlaceObjectsRequest<T> request)
     {
@@ -193,6 +204,7 @@ public class GuiPlaceObjectsResolver<T>
             _singleRotationDeploy = 0f;
             _formationCycle = null;
             _errorMessage = null;
+            _autoPlaced = false;
             _selfModels = new HashSet<object>(ReferenceEqualityComparer.Instance);
             foreach (DataBinding<T> binding in request.ModelsToPlace)
             {
@@ -728,6 +740,14 @@ public class GuiPlaceObjectsResolver<T>
         // is down — until then FinalCohesion reports nothing.
         string? cohesionIssue = PlacementCohesion.Describe(FinalCohesion(request));
 
+        // #458: after Auto-place, say what the spot breaks (if anything) - it may be the least-bad one.
+        // Shares the amber warning line with the cohesion verdict; the two never coincide, since Auto-place
+        // is not offered for a reposition, the only placement that has a cohesion verdict.
+        string? autoPlaceProblem = _autoPlaced && _placed.Count == total && !_dragIndex.HasValue
+            ? FirstPlacementProblem(request) : null;
+        string? warningText = cohesionIssue ?? (autoPlaceProblem == null ? null
+            : $"No fully legal spot - Auto-place took the closest one ({autoPlaceProblem}). Done accepts it as is.");
+
         // #029: edge-constrained placement (Aircraft redeploy) — surface the touch requirement live.
         bool touchingEdge = request.MustTouchTableEdge && PlacedTouchesEdge(request);
         string? edgeText = !request.MustTouchTableEdge ? null
@@ -745,7 +765,7 @@ public class GuiPlaceObjectsResolver<T>
         {
             ImGui.Spacing();
             float statsH = PlacementPanelLayout.StatsHeight(ImGui.GetContentRegionAvail().Y,
-                MeasureFooterHeight(request, statusText, cohesionIssue, edgeText),
+                MeasureFooterHeight(request, statusText, warningText, edgeText),
                 ImGui.GetTextLineHeight());
             ImGui.BeginChild("##DeployStats", new Vector2(0, statsH), ImGuiChildFlags.Borders);
             // Wrap descriptions at the child's own width: the shared renderer's tooltip default (300px)
@@ -760,10 +780,10 @@ public class GuiPlaceObjectsResolver<T>
         ImGui.TextWrapped(statusText);
         ImGui.PopStyleColor();
 
-        if (cohesionIssue != null)
+        if (warningText != null)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.95f, 0.75f, 0.3f, 1f));
-            ImGui.TextWrapped(cohesionIssue);
+            ImGui.TextWrapped(warningText);
             ImGui.PopStyleColor();
         }
 
@@ -787,8 +807,9 @@ public class GuiPlaceObjectsResolver<T>
         float restartH  = PlacementPanelLayout.RestartButtonHeight(lineH);
 
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on all models placed).
+        // #458: an Auto-placed unit may stand on a not-quite-legal best spot (see _autoPlaced); Done takes it.
         bool canDone = _placed.Count == total && !_dragIndex.HasValue
-            && (!request.MustTouchTableEdge || PlacedTouchesEdge(request))
+            && (!request.MustTouchTableEdge || PlacedTouchesEdge(request) || _autoPlaced)
             && cohesionIssue == null;
         if (ResolverButtons.Primary("Done", new Vector2(fullW, doneH), enabled: canDone))
         {
@@ -819,10 +840,26 @@ public class GuiPlaceObjectsResolver<T>
         // gesture each), driven by the history rather than the placed list: after Restart the list is
         // empty but the restart itself can still be undone. Right-click is the canvas gesture for the
         // same thing; the button is the discoverable surface and advertises it.
+        // #458: Auto-place shares the row (not for a reposition, whose models each keep their own radius -
+        // the engine placer would just leave them standing, which the player can do by pressing Done).
+        bool offerAutoPlace = request.MaxDistanceFromStartInches <= 0f && total > 0;
+        float undoW = offerAutoPlace ? (fullW - ImGui.GetStyle().ItemSpacing.X) / 2f : fullW;
         ImGui.BeginDisabled(!_history.CanUndo);
-        if (ImGui.Button("Undo (R-click)", new Vector2(fullW, secondH)))
+        if (ImGui.Button("Undo (R-click)", new Vector2(undoW, secondH)))
             UndoLastAction();
         ImGui.EndDisabled();
+        if (offerAutoPlace)
+        {
+            ImGui.SameLine();
+            ImGui.BeginDisabled(_dragIndex.HasValue);
+            if (ImGui.Button("Auto-place", new Vector2(undoW, secondH)))
+                AutoPlace(request);
+            ImGui.EndDisabled();
+            if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                ImGui.SetTooltip("Place the whole unit on the best spot available - the same placer the AI uses.\n" +
+                                 "If no spot is fully legal it takes the closest one, and Done accepts it.\n" +
+                                 "You can still move models afterwards, or undo it in one step.");
+        }
 
         // Destructive: Restart -- set apart below a separator, red-tinted. Undoable (#343): it is a
         // single un-confirmed click, so it must not be the one gesture here that destroys work for good.
@@ -834,6 +871,7 @@ public class GuiPlaceObjectsResolver<T>
             _placed.Clear();
             _dragIndex = null;
             _errorMessage = null;
+            _autoPlaced = false;
         }
         ImGui.EndDisabled();
 
@@ -850,6 +888,58 @@ public class GuiPlaceObjectsResolver<T>
         if (groupRotation.HasValue) _groupRotationDeploy = groupRotation.Value;
         _dragIndex = null;
         _errorMessage = null;
+        _autoPlaced = false;
+    }
+
+    /// <summary>
+    /// #458 — places the whole unit through the engine's own placer (<see cref="AiPlaceObjectsResolver{T}"/>,
+    /// the one AI players and the commit guard's overlap repair use), so the GUI has no second placement
+    /// algorithm to drift. The placer sweeps the zone for a fully legal block and, when there is none,
+    /// returns the least-bad one it saw; either way the player sees it, can drag-adjust it or undo it, and
+    /// Done commits it. One history step, so a single undo restores whatever was placed before.
+    /// </summary>
+    internal void AutoPlace(PlaceObjectsRequest<T> request)
+    {
+        // The placer's sweep is synchronous (it returns a completed task), so this does not block the frame.
+        CancellableResult<List<PlacedObjectEntry<T>>> result =
+            new AiPlaceObjectsResolver<T>(_tableState).Resolve(request).GetAwaiter().GetResult();
+        if (result is not Selected<List<PlacedObjectEntry<T>>> selected
+            || selected.Value.Count != request.ModelsToPlace.Count)
+        {
+            _errorMessage = "Auto-place could not place this unit.";
+            _errorExpiry = ImGui.GetTime() + 2.5;
+            return;
+        }
+
+        _history.RecordAutoPlace(_placed);
+        _placed.Clear();
+        _placed.AddRange(selected.Value);
+        _dragIndex = null;
+        _errorMessage = null;
+        _autoPlaced = true;
+    }
+
+    /// <summary>
+    /// #458 — the first rule the current placement breaks, by the same per-model checks a click is held
+    /// to, or null when it is fully legal. Shown after Auto-place, which may have had to settle for the
+    /// least-bad spot, so the player knows what they are accepting.
+    /// </summary>
+    internal string? FirstPlacementProblem(PlaceObjectsRequest<T> request)
+    {
+        IBoundedZone zone = request.DeploymentZone;
+        float minEnemyDist = request.MinDistanceFromEnemiesInches;
+        List<Position> enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : _noEnemies;
+        for (int i = 0; i < _placed.Count; i++)
+        {
+            PlacedObjectEntry<T> entry = _placed[i];
+            T value = entry.Binding.GetValue();
+            if (!IsPlacementValid(entry.Position, GetBaseRadius(value), GetBaseShape(value),
+                    entry.Facing ?? new Float2(0f, 1f), zone, enemies, minEnemyDist, i, StartPositionOf(value),
+                    request.MaxDistanceFromStartInches, out string? reason))
+                return reason;
+        }
+        if (request.MustTouchTableEdge && !PlacedTouchesEdge(request)) return "Not touching a table edge.";
+        return null;
     }
 
     /// <summary>

@@ -48,6 +48,42 @@ UserConfig.EnsureExists();
 // #412: the Options panel's saved display/audio settings.
 FdgRaylib.Rendering.ViewSettings.Load(UserConfig.Current.View);
 
+// --menu-preview <out.png> [WxH] [menu|privacy|options] [seed] [t=SECONDS] (#448): the main menu rendered
+// offscreen from a hidden window (war table + real ImGui menu), written to a PNG, then exit. The seed picks
+// the army pairing (default 1) and t the moment of its battle (default HoloDirector.StillMoment: everyone
+// who advances has arrived, fighting, measuring, camera on the overview), so a preview is reproducible. `bench` also times the live
+// background per frame. No analytics, no network, no settings saved.
+int menuPreviewIdx = Array.IndexOf(args, "--menu-preview");
+if (menuPreviewIdx >= 0)
+{
+    if (menuPreviewIdx + 1 >= args.Length)
+    {
+        Console.Error.WriteLine("--menu-preview needs an output path: --menu-preview out.png [1920x1080] [menu|privacy|options] [seed] [t=SECONDS]");
+        Environment.Exit(2);
+    }
+    int previewW = 1920, previewH = 1080;
+    string previewState = "menu";
+    int previewSeed = 1;
+    float previewTime = FdgRaylib.Rendering.MenuBackground.HoloDirector.StillMoment;
+    bool previewBench = false;
+    foreach (string extra in args.Skip(menuPreviewIdx + 2).TakeWhile(a => !a.StartsWith("--")))
+    {
+        string[] dims = extra.Split('x');
+        if (dims.Length == 2 && int.TryParse(dims[0], out int pw) && int.TryParse(dims[1], out int ph))
+            (previewW, previewH) = (pw, ph);
+        else if (extra == "bench")
+            previewBench = true;
+        else if (int.TryParse(extra, out int seed))
+            previewSeed = seed;
+        else if (extra.StartsWith("t=") && float.TryParse(extra[2..], System.Globalization.NumberStyles.Float,
+                     System.Globalization.CultureInfo.InvariantCulture, out float t))
+            previewTime = t;
+        else
+            previewState = extra;
+    }
+    Environment.Exit(FdgRaylib.Rendering.MenuBackground.MenuPreview.Run(args[menuPreviewIdx + 1], previewW, previewH, previewState, previewSeed, previewTime, previewBench));
+}
+
 bool headless = args.Contains("--headless");
 
 // #354: let army load see the CURRENT rulebook, not just the frozen copy a saved .fdgarmy embeds, so a

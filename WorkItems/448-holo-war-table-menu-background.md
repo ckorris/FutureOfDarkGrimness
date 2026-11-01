@@ -1,0 +1,319 @@
+# 448 — Holographic war-table main menu background
+
+**Status**: closed 2026-10-31, hand-verified by the owner
+**Related**: `docs/menu-background/` (mockup, army colour sheet, generators, pairing check)
+
+## Goal
+The main menu gets an animated background: a holographic 6'x4' wargaming table, wireframe-on-black with
+bloom (DEFCON / hologram look, bright lines, almost no fill or texture), seen at an angle, with wireframe
+terrain pieces and two random armies' units skirmishing on it. The button column moves into a left
+"command panel". Done = every slice below has shipped, the menu stays responsive, and an Options toggle
+can turn the animation down or off.
+
+Reference image: `docs/menu-background/mockup-terrain.jpg` (rendered by `mockup_generator.py terrain`;
+it holds the camera maths, terrain shapes, formation and line-of-fire checks the real version follows).
+
+## Design (signed off by the owner 2026-10-30)
+
+**Table.** 72"x48" slab, bright top edge, visible rim thickness, corner brackets, faint 6" grid (1"
+sub-grid fainter), inch ticks every 6" with labels every 12" on the near long side AND one short side.
+Camera tilted ~47 deg, slight yaw, table framed in the area right of the panel. No topography (option 1,
+contour lines, was rejected in favour of terrain pieces).
+
+**Terrain pieces** (cyan wireframe, faint face fill): ruined walls with broken tops + window holes,
+containers, an octagonal bunker with firing slits, forests (cone trees inside a dashed boundary),
+barricades, a crater (area terrain, does not block). The pulse ring brightens pieces as it crosses them.
+
+**Units.** Groups of base circles sharing ONE flag (pole on the model nearest the centroid), loose
+formation. Infantry squads of 3-10 small bases; vehicles as a single large base + dashed inner ring +
+facing tick. Label `<ABBR> <n> x<alive>` (space before the number, e.g. `BAT-BR 2 x10`). Casualties are
+dashed, faded bases. Dotted movement trails.
+
+**Activity.** Tracers (white-hot, so gold/amber armies stay readable) from the shooters' nearest models
+to the target's nearest models; simple flickering fire + embers on casualties; an expanding radar pulse;
+a base-to-base measuring line with the true inch distance. **No shot or measure may pass through
+terrain** and no base may sit in terrain.
+
+**Motion.** Camera glides/drifts, periodically framing a new skirmish (camera director); units advance
+along trails; tracers travel; fire flickers; pulses repeat; measuring line draws out then fades.
+
+**Menu layout (A + C).** Title top-left, both lines the same size ("FUTURE of" / "DARK GRIMNESS").
+Left translucent command panel with corner brackets. Tiers: HOST/SOLO + JOIN (large, primary; hovered =
+filled), Army Forge / Combat Calculator / Load Game (medium, solid), Options + Quit (side-by-side ghost
+buttons: outline only, dimmer, regular weight). Map darkened behind the panel only.
+
+**Privacy popup (#412) restyled to match:** same translucent dark panel, thin cyan border + corner
+brackets, and the same primary/ghost button tiers, so it reads as part of the command-panel UI rather
+than a stock ImGui modal. The main-menu Options modal gets the same treatment.
+
+**Rejected:** sea level, objective markers, fog of war, mouse reticle, slow terrain morphing, cloud
+shadows, palette from `TableBackgrounds`, topographic contours.
+
+### Armies (main armies only; Prime/Brothers variants, Disciples, Titan Lords-Disciples excluded)
+
+| Abbr | Army | Colour | | Abbr | Army | Colour |
+|---|---|---|---|---|---|---|
+| ALIEN | Alien Hives | `#9C6BFF` | | H-INQ | Human Inquisition | `#E6EAF2` |
+| BAT-BR | Battle Brothers | `#4F6BFF` | | INFECT | Infected Colonies | `#D4E157` |
+| B-SIST | Blessed Sisters | `#FF4D6D` | | JAK | Jackals | `#D8A878` |
+| C-BR | Custodian Brothers | `#F2E4BC` | | M-CULT | Machine Cults | `#E0612A` |
+| DAO | DAO Union | `#FF9F40` | | ORK | Orc Marauders | `#3DDC5A` |
+| D-ELF | Dark Elf Raiders | `#E04DFF` | | RAT | Ratmen Clans | `#FFB000` |
+| D-GUILD | Dwarf Guilds | `#D09050` | | REB-G | Rebel Guerrillas | `#B5A66A` |
+| ELF-J | Elven Jesters | `#FF85C8` | | ROBOT | Robot Legions | `#8C4DFF` |
+| E-DYN | Eternal Dynasty | `#FFEB3B` | | S-STAR | Saurian Starhost | `#2EE6A6` |
+| GOB | Goblin Reclaimers | `#A6F58C` | | S-CULT | Soul-Snatcher Cults | `#C58CFF` |
+| HAVOC | Havoc Brothers | `#E8352E` | | TITAN | Titan Lords | `#FFD447` |
+| H-ELF | High Elf Fleets | `#8EC9FF` | | DEMON | Wormhole Daemons (all four) | `#FF2E88` |
+| HDF | Human Defense Force | `#8CC63F` | | | | |
+
+**Pairings are hard-coded:** the clash groups in `docs/menu-background/army_pairings_check.py`
+(`CLASH_GROUPS`) are the source of truth. Two armies sharing a group are never on the table together,
+and no mirror matches. The script asserts every allowed pair is >= 35 delta-E apart and every army keeps
+>= 12 opponents (currently 238 allowed pairs, min 16 opponents). Port the table verbatim to C#, and
+re-run the script after any colour or group change.
+
+## Slice plan
+1. **[done 2026-10-30] Static scene + menu layout.** Projected table (rim, grid, ticks, labels) + terrain wireframes
+   into a render texture, bloom/scanline/vignette post-process; `MainMenuScreen` window made transparent,
+   layout A + C, new labels (HOST/SOLO, JOIN), same-size title; privacy popup + Options modal restyled
+   to match the panel.
+2. **[done 2026-10-30] Armies + units.** Army table + clash groups in C#, random allowed pairing per menu visit, formations,
+   flags, labels, casualties, trails.
+3. **[done 2026-10-30] Activity + line of fire.** Tracers, fire, pulse, measuring line; shooter/target choice rejects lines
+   crossing terrain. Fork to settle first: reuse the engine's LOS against real terrain pieces vs a local
+   2D footprint test (cosmetic only, as in the mockup). **Decided 2026-10-30: the simplest - the local
+   2D footprint test** (owner: "use whatever is the simplest").
+4. **[done 2026-10-30] Motion + camera director.** Drift, glide to skirmishes, unit advances.
+   **Deferred:** the optional click-to-dive transition on leaving the menu (not built; see Notes).
+5. **[done 2026-10-30] Options toggle** (Animated / Still / Off) + perf check; pause while a modal is open.
+   The weak-GPU half of the perf check could not be done here (see Notes).
+
+## GUI hand-verify checklist (owner)
+1. Launch: the war table plays right of the command panel - a pairing fades in, walkers arrive, fire,
+   tracers and pulse run, the measure draws out, the camera glides in on the action around 14-18s and
+   back out, and after ~32s the table dissolves and a new pairing fades in.
+2. Hover each button: frame lights; a chevron on Host/Solo, Join and the three middle buttons.
+3. Options: restyled modal; the table freezes behind it. Switch "Menu background" to Still (one frozen
+   frame) and Off (plain dark), then back to Animated; the choice survives a restart.
+4. Host/Solo and Join: the table shows, dimmed and frozen, behind each dialog; backing out resumes it,
+   and returning to the menu from a game deals a new pairing.
+5. F11 / resize: the table re-fits next to the panel.
+6. Quit still exits. (Privacy notice styling: only shows on a fresh install, or via
+   `--menu-preview out.png privacy`.)
+
+## Notes
+- 2026-10-30: **Owner feedback round 2** ("looks great!"): (1) remove the scrolling line; (2) remove the
+  solid line under the blaster fire; (3) Titan Lords field ONLY big single-model units; (4) things that
+  move keep moving the whole battle, and a unit can move then switch to shooting; (5, mid-turn) every
+  model with line of sight shoots, not just two. **All done in one commit.** (1) `SweepX`, the boost and
+  the draw are gone. (2) Only the travelling bolts and muzzle flash remain. (3) `HoloSkirmish.RosterFor`
+  swaps a TITAN side's four slots for single bases of 1.8-2.2" radius (fixed layout and random alike).
+  (4) `EHoloRole` on every unit - Holds (shoots all battle), Advances (walks a route in from behind,
+  arrives at 5-10s, then shoots), Patrols (a three-leg wander through its own half at a steady pace from
+  the first second to the last; never shoots, never shot at, never measured to). Each side gets at least
+  one of each. `HoloUnit.ProgressAt(battleTime)` per role replaces the global advance curve;
+  `HoloShot.StartsAt` / `HoloMeasure.StartsAt` wait for both units to stand still. Placement now keeps
+  every moving model's path a base's width + 1.5" clear of every other unit's standing bases and every
+  other path (timing ignored, so paths never even cross), standing units 4" apart for their labels, and
+  routes in their own half (the half check became side-aware - a winding patrol could otherwise have
+  drifted over the centre line). Vehicles may now shoot (a Titan side would otherwise never fire); the
+  measure is any two units that end up standing still, idle pairs first. (5) `ShotLines`: each living
+  model fires at the nearest target model it has a clear line to; a model with none holds its fire.
+  `StillMoment` (and the preview default) moved to 13.5s so every volley has opened and the measure is
+  fully drawn. Tests: per-role motion (holder in place, advancer moving then stopped, patroller still
+  moving and unfinished at every half-second), shots start only once both units stand still, a
+  patroller is passed over while an advancer in its spot opens fire on arrival, every model that can see
+  fires and no other does, every side has all three roles, moving units never pass through anything,
+  Titan sides are big singles only (random sweep + fixed layout, both sides), still moment shows every
+  volley open + a drawn measure over 100 seeds. Mutation-checked (front two fire, Titan rule off,
+  everyone holds, paths through standing units, paths crossing paths, patrollers fight, shots ignore
+  arrival, patrol stops early, own half unchecked) - each reddens its test.
+- 2026-10-30: **Owner feedback round 1, item (1): every battle is a fresh layout.** `HoloBattle.Generate`:
+  random terrain (`HoloTableScene.BuildRandom` - 3 ruins (straight or L, random lengths/heights), 2
+  forests (random radius, 4-5 scattered trees), a bunker, 3 containers, a crater, 2 barricades; random
+  rotation; rejection-sampled at least 2.5" apart and 1" inside the table, largest first), a random
+  allowed pairing, the same unit roster placed at random (`HoloSkirmish.Generate` - each side in its own
+  half; squads that stay put in the 4-14" band so fights are in range, walkers and vehicles anywhere in
+  their half; bases 0.6" off all terrain incl. the crater, 4" from other units so flags/labels never
+  collide (first cut was 1.5" and labels overlapped in the previews), 0.5" inside the edge; walkers get
+  a two-leg route in from behind and every model's path must clear terrain by its base width), then the
+  shooting planned from that. A layout is kept only if it is worth watching (>= 2 fights, both sides
+  firing, a measure); otherwise another is dealt; after 60 tries the signed-off fixed layout is the
+  fallback (0 of 300 test seeds need it). Footprint outlines moved into static helpers shared by drawing
+  and placement (`BoxFootprint`, `RuinFootprints`, `BunkerRing`, `Ring`); craters now record an
+  `AreaFootprints` outline (blocks nothing, but no base may stand on it); `HoloGeometry` holds the shared
+  point/segment/polygon distances (the engagement's clearance check now delegates to it).
+  `BuildDefault` and the fixed slots are unchanged (pinned by a test).
+  Tests: `MainMenuRandomBattleTests` (8, over 300 seeds, generated once per run): fallback <= 1%, terrain
+  1" inside and 2.5" apart, bases on table / off terrain / apart, sides in their own halves, every
+  model's walk-in route clear, every shot + measure clear and every battle worth watching with a
+  close-up, layouts/positions/armies vary and a seed repeats exactly, fixed layout unchanged.
+  Mutation-checked: crowding pieces, bases on terrain, routes through terrain, wrong half, dull battles
+  accepted each redden their test. Removing the table-bounds check alone stayed green, which exposed that
+  the ruin placement budgeted 6.5" reach while an L's far corner reaches ~8.6" (the bounds check was
+  quietly catching it): reach is now computed from the legs, the test asserts the generator's 1" margin,
+  and removing the bounds check together with an underestimated reach reddens it.
+  **Process slip:** the previous commit (`6adfa5b`) was made in a command chain that did not gate on
+  the engine suite, and that run had 1 failure. Re-runs: 6 of 7 green; the failing test is
+  `Broadcast_UnauthenticatedConnection_ReceivesNothing` (engine networking, a 2s timing window) - an
+  intermittent engine test unrelated to this app-only work (submodule untouched). Commits since are gated
+  on a green build + both suites + smoke.
+  **Warnings, corrected:** the "0 warnings" reported after each slice came from incremental builds that
+  did not recompile untouched files. A `--no-incremental` build shows the repo's existing baseline - 208
+  warnings across 102 files, none in a file #448 touched and none naming a type or member it added or
+  changed - so the honest claim is "#448 adds no warnings", not "the build has none".
+- 2026-10-30: **Owner feedback round 1** (running it live: "it's so cool!") - four requests:
+  (1) randomise terrain, unit positions, movement and shooting every battle; (2) the pulse becomes a wave
+  crossing the table lengthwise instead of the ripple; (3) the camera's close-up always on fighting;
+  (4) remove the little fire. **(2)-(4) done** in one commit: `DrawFire`, `Burning`/`FireAt` deleted
+  (casualties stay as dashed bases); `HoloDirector.SweepX` - a scan line from 3" past the left short
+  edge to 3" past the right every 6s, drawn across the table's width with two echoes, lighting terrain
+  (per line midpoint / fill centroid) and the cross-table grid lines and ticks as it passes;
+  `HoloEngagement.Clashes` (unordered shooter/target pairs - a pair trading fire both ways is one) +
+  `FocusBox(index)` (box round both units' models, 4" margin, min 24"x18") drive the close-up, cycling
+  through the clashes battle by battle; the vehicle-measure close-up is gone. Tests: scan line runs one
+  way along X from past one short edge to past the other and repeats; close-up boxes cover the clash's
+  models and differ between clashes (first version keyed on Fights and the test caught two battles
+  framing the same pair); nothing to frame with no fights. Mutation-checked (sweep reversed, always the
+  first clash). (1) is the next commit.
+- 2026-10-30: **Slice 5 implemented.** `EMenuBackground` (Animated default / Still / Off) saved in
+  `SavedViewSettings.MenuBackground`, loaded through `ViewSettings` (a hand-edited out-of-range number
+  reads as Animated; an unknown NAME fails the whole file to defaults, the existing policy for every
+  enum there), a "Menu background" combo in the Options panel's Display section. `HoloClock`: the table's
+  own clock - only advances while animating and unpaused, clamps a frame to 0.1s so a hitch (a blocking
+  file dialog) cannot fast-forward the battle, wraps into a new battle (new pairing) each 32s.
+  `IAppScreen.MenuBackgroundPaused`: the main menu while its privacy notice / Options / an external
+  modal is up, and the Host/Join dialogs always - the table freezes and the cached frame is reused.
+  Rendering now only re-runs when live (Animated, unpaused) or stale (new pairing, resize, setting
+  changed); Still shows the overview at battle time 12s with the drift centred. Off presents plain dark.
+  **Perf:** `--menu-preview out.png WxH bench` times frames in the hidden window, synced by reading back
+  a 1x1 copy of the finished frame (the first attempt read back the whole screen, which cost more than
+  the scene and made Still look as slow as Animated). On this machine's NVIDIA GPU: Animated 1.67 ms
+  (1080p, 2x supersampled), 1.81 ms (1440p, 1x), 1.99 ms (4K, 1x); Still 0.06-0.07 ms. **Not done:** a
+  measurement on a weak/integrated GPU - none available here. If one runs Animated badly, Still is the
+  answer already in Options; a further lever is dropping the 2x supersample.
+  Tests: `MainMenuMotionTests` +4 (pause freezes and resumes in place, hitch clamp, battle wraps exactly
+  once per length + external restart, Still moment shows the whole fight on the overview);
+  `UserConfigTests` extended (default Animated, file round trip, bad number -> Animated, capture).
+  Mutation-checked: pause ignored, no hitch clamp, battle never wraps, enum unguarded, not captured,
+  default changed - each reddens its test.
+- 2026-10-30: **Slice 4 implemented.** `HoloDirector` (pure timeline): a 32s battle per pairing - 1s
+  hologram fade-in (with a stutter while fading), units with trails walk in over 8s (eased, by distance
+  along the polyline - `HoloUnit.OffsetAt`), fight/pulse from 1s, measure from 9s (after arrival),
+  camera glides in 14-18s, holds to 24s, back out by 28s, 2s fade-out, then a fresh pairing is dealt.
+  The close-up alternates per battle: the firefight (an 18"x13" box round the pulse centre) on even
+  battles, the vehicles' measuring line on odd ones. Camera drift on wall time underneath: yaw -16 +-7
+  deg (45s), pitch 47 +-3 deg (60s). `HoloCamera.Blend` lerps eye + lens shift between the overview
+  and close-up fits (same orientation by construction). `HoloEngagement` now only lets units WITHOUT a
+  trail fight (a tracer from where a walker will be is wrong) and gained a units-list overload so a test
+  can build a table the fixed layout never produces. `--menu-preview` takes `t=SECONDS` (default 12:
+  all arrived, fighting, measuring, overview); checked t=4 (vehicle mid-advance), 12, 21 (close-up).
+  Tests: `MainMenuMotionTests` (11) - fade in/out, schedule order (no fire while materialising, vehicles
+  arrive before they are measured, close-up after setup, back on the overview before the dissolve),
+  no curve jumps between 60fps frames, overview fits at every drift extreme on 4 screen shapes, blend
+  endpoints, trail walking (start, end, stays, halfway by distance), walkers never shoot (fixed layout
+  and a hand-built table). Mutation-checked: measure before arrival, glide snaps, blend ignores t,
+  never walks, walkers shoot (only the hand-built-table test sees it - the fixed layout never puts a
+  walker in range), no fade-in - each reddens its test.
+  **Deferred, not dropped:** the click-to-dive transition (camera plunges into the table when a menu
+  button is pressed). It was optional in the design; it needs the screen change held back a few hundred
+  ms, which touches every navigation callback in `Program.cs`. Left for a follow-up if wanted after the
+  owner sees the motion live.
+- 2026-10-30: **Slice 3 implemented.** `HoloEngagement.Plan` (pure): enemy squad pairs within 30" whose two
+  lines of fire (shooter's 2 models nearest the target -> target's 2 nearest the shooter) are both
+  `IsClear` (2D segment >= 0.4" from every footprint, neither end inside one), nearest first, up to 3
+  fights with distinct shooters; vehicles excluded so they carry the measure. Fire on a targeted unit
+  with casualties (else the first target), at its casualties' centroid. Measure: vehicle to vehicle,
+  base edge to base edge (reads `d - r1 - r2`), falling back to the nearest clear idle pair. Pulse centre
+  = mean of the engaged units. Renderer now redraws every frame (cache removed): pulse ring (4.5s, out to
+  26", clipped to the table, two echoes) that also brightens terrain pieces it crosses; faint line of
+  fire + two travelling white-hot dashes + muzzle flash per shot; three-layer flickering flame tongues
+  with rising embers and heat rings; measure draws out over 1.2s, holds to 5.5s with its `27.3"` label,
+  fades by 6.3s, rests to 7s. The tracer/fire/pulse/measure ANIMATION landed here rather than slice 4
+  (they are animated by nature); slice 4 keeps camera motion, unit advances and the director.
+  `MenuBackgroundRenderer` split into `Prepare` + `Present`: its passes switch render targets and end on
+  the default framebuffer, so the offscreen preview (which draws into its own target) must prepare
+  outside that target - found when the first per-frame preview came out blank (the cached frame had
+  masked it); the game draws straight to the screen and was never affected. Preview clock frozen at 3s.
+  Tests: `MainMenuEngagementTests` (7) - `IsClear` cases (through, grazing within pad, starting inside,
+  clear, beside), every shot + measure clear for all 476 ordered pairings, fight shape (<=3 fights, both
+  sides, no friendly fire, vehicles kept out, fire on a casualty-bearing target, vehicle measure),
+  base-to-base distance, shots from/to living models within range, pulse on table, and a blocked-table
+  plan (walls across every open-table line -> new choices must clear them). Mutation-checked: removing
+  the shot or measure LOS filter was invisible to the first six tests (the real layout's nearest picks
+  are clear anyway) - the blocked-table test was added for exactly that and now reddens on both; no pad,
+  centre-to-centre measure and fire-on-last-target each redden their test.
+- 2026-10-30: **Slice 2 implemented.** `MenuArmies` (25 armies + 12 clash groups, `CanFace`, `AllowedPairs`
+  = 238, `PickPair` uniform over pairs with random near/far), `HoloSkirmish` (the mockup's 8 unit slots:
+  near = 3-model command group, 10 squad, 5 squad, vehicle; far = 8 squad with 2 casualties, 5 squad,
+  3 large bases, walker; formations seeded per slot; labels `ABBR n`, tag `ABBR n xALIVE`), drawn by
+  `MenuBackgroundRenderer.DrawUnits` (base rings, dashed casualties, vehicle inner ring + facing tick, one
+  flag + pennant on the leader, tag text, dotted trails). A fresh pairing is dealt each time the menu
+  comes back into view (`RaylibRenderer` tracks last frame; Host/Join <-> menu keeps it).
+  `--menu-preview` takes a seed (default 1: C-BR vs E-DYN; 7: H-ELF vs D-ELF - H-ELF's pale blue stays
+  readable against the terrain cyan). Tests: `MainMenuArmiesTests` (9) - C# table/groups parsed against
+  `army_pairings_check.py` (drift fails), pairing rules, every army reachable on the near side, labels,
+  squads + one vehicle a side, bases on table / clear of terrain (+0.3") / not overlapping, trails.
+  Mutation-checked: colour drift, group drift, squad moved onto a forest, wild jitter, fixed near/far
+  each redden their test; dropping the explicit mirror check stays green because every army is in at
+  least one clash group (an equivalent mutant - the check guards a future army added to no group).
+  Formation jitter tightened to +-0.15" so bases can never touch.
+- 2026-10-30: **Slice 1 implemented.** `Rendering/MenuBackground/` (`HoloCamera` fit + lens shift,
+  `HoloTableScene` table/grid/ticks/labels + the 13 mockup terrain pieces with tagged footprints,
+  `MenuBackgroundRenderer` 2x-supersampled additive scene -> bright-pass + half/quarter Gaussian bloom ->
+  scanlines/vignette/panel shade, cached until resize), `MainMenuLayout` (shared by menu + background),
+  `HoloUi` (panel, brackets, 3 button tiers, modal style; `UiButton.Tinted` keeps the click cues),
+  `IAppScreen.ShowsMenuBackground` (menu + Host/Join dialogs). Privacy notice + Options modal restyled.
+  `MenuBoldFont` (bundled `DejaVuSans-Bold.ttf`, ASCII-only atlas) for title + buttons.
+  `--menu-preview out.png [WxH] [menu|privacy|options]` renders offscreen (hidden window) - checked at
+  1280x720, 1280x1024, 1920x1080, 2560x1080, 3840x2160. Tests: `MainMenuBackgroundTests` (29: fit inside
+  region on 8 screen shapes, tight fit, buttons inside panel/no overlap, tiers, footprints on table, no
+  overlap, piece lines over table, ASCII labels); mutation-checked (region under panel, no lens shift,
+  camera too far, box on forest - each reddens only its test).
+  **GUI hand-verify:** launch the game - menu shows the war table right of the panel; hover each button
+  (frame lights, chevron on the solid tiers); Host/Solo and Join dialogs show the dimmed table behind;
+  Options opens the restyled modal; F11 / resize re-fits the table; Quit still exits.
+- 2026-10-30: Design iterated with the owner over five mockup rounds (topographic planet section ->
+  6'x4' topo table -> terrain-piece table chosen). Army abbreviations/colours chosen by the owner;
+  clash groups added at their request and verified by the pairing script (it caught D-ELF/ROBOT and
+  DAO/TITAN, which were added to groups). Number 448 filed clean (see Reconciliations).
+
+## Decisions
+- **Projected 2D lines, not Camera3D/GL lines** (slice 1): wide GL lines are not portable (core profile caps
+  them at 1px), and projecting every point through one camera function means text, flags and later
+  overlays line up with the terrain for free. Depth sorting isn't needed - a hologram is see-through.
+- **Bloom bright-pass at ~0.16**: without it the dense 1" grid and the projector pool blurred into a solid
+  blue haze over the table (first real render); with it only terrain, rim and labels glow, as in the mockup.
+- **Bold title/buttons via a bundled `DejaVuSans-Bold.ttf`** (same family and licence as the existing
+  `DejaVuSans.ttf`), baked for printable ASCII only to keep the second large atlas entry small.
+- The Host/Join dialogs also opt into the background (behind their existing 60% backdrop) - they open
+  from the menu, and a flash to flat grey between them looked broken.
+- Terrain pieces over topography: reads as a real tabletop game; topography can't be "carved out" of a table.
+- Tracers white-hot instead of yellow so gold/amber/yellow armies (TITAN, RAT, E-DYN) don't blend with fire.
+- Labels use a space before the number because several abbreviations contain hyphens.
+- Pairing exclusions are hand-listed groups, not a computed colour distance, so the owner controls them;
+  the delta-E script is only a guard that the groups didn't miss a pair.
+
+## Outcome
+Closed 2026-10-31, hand-verified by the owner in the running game ("that looks great!"), pushed to
+master as `ce82c6f`. What shipped, after two owner feedback rounds:
+
+- The main menu shows a holographic 6'x4' wireframe war table with bloom, scanlines and a vignette,
+  framed to the right of a translucent left command panel. Buttons come in three tiers: HOST/SOLO and
+  JOIN, the three middle buttons, and Options + Quit as framed tertiary buttons. The title lines are the
+  same size, and the privacy notice and Options modal share the panel's styling.
+- Every 32s battle is freshly random: terrain, a contrasting army pairing (25 main armies,
+  12 hand-listed clash groups), unit positions, roles and shooting. Each side holds, advances (walks in,
+  then fires) and patrols (keeps moving the whole battle). Every model with line of sight fires at the
+  nearest enemy model it can see. No shot, measure, base or path crosses terrain, and moving units
+  never pass through anything. Titan Lords field only big single-model units. The camera drifts and
+  closes in on a fight in each battle.
+- Options -> "Menu background" offers Animated / Still / Off (persisted). The table pauses under
+  dialogs. Measured cost is ~1.7 ms/frame Animated and ~0.06 ms Still at 1080p.
+- Dropped at the owner's request: the radar pulse, then the lengthwise scan line that replaced it, the
+  fire on casualties, and the solid line under the bolts.
+- **Deferred (not built):** the click-to-dive transition on leaving the menu, and a perf measurement
+  on a weak GPU. Neither is filed. Re-file if wanted.
+- Tests: 76 menu tests in the app suite (3133 total at close), mutation-checked. The engine is
+  untouched.

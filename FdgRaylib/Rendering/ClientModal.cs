@@ -50,6 +50,13 @@ public class ClientModal : IAppScreen
     // one), so the fields are re-read from the config every time it opens, not just at construction.
     public void OnShown() => Reset();
 
+    /// <summary>#448: the dialog opens over the main menu, so the war table stays visible behind its
+    /// dimmed backdrop.</summary>
+    public bool ShowsMenuBackground => true;
+
+    /// <summary>A dialog over the table: it holds still behind it.</summary>
+    public bool MenuBackgroundPaused => true;
+
     public void Draw(int screenW, int screenH)
     {
         bool browserAvailable = ListServerConfig.IsConfigured;

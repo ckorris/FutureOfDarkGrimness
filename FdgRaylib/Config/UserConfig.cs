@@ -185,6 +185,14 @@ public sealed class UserConfig
 /// The Options panel's display and audio settings, as saved (#412). A record so <c>ViewSettings.Persist</c>
 /// can skip the write when nothing changed. Defaults match <c>ViewSettings</c>'s own.
 /// </summary>
+/// <summary>The main menu's war table (#448): animated, one still frame (no GPU work after it), or off.</summary>
+public enum EMenuBackground
+{
+    Animated,
+    Still,
+    Off,
+}
+
 public sealed record SavedViewSettings
 {
     public bool ShowLabels { get; set; } = true;
@@ -194,6 +202,7 @@ public sealed record SavedViewSettings
     public bool ShowVictoryFireworks { get; set; } = true;
     public float DiceLingerScale { get; set; } = 1f;
     public float MasterVolume { get; set; } = 1f;
+    public EMenuBackground MenuBackground { get; set; } = EMenuBackground.Animated;
 }
 
 /// <summary>

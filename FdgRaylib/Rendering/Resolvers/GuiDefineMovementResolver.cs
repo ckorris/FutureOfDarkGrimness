@@ -1624,35 +1624,13 @@ public class GuiDefineMovementResolver
         // offset it was PLACED with (captured by PathTemplate.AddStep) - so Done executes exactly the path
         // the committed markers show, and a late rotation never re-orients them.
         var results = pt.GetResultsAsList(EPathFacingDerivation.TravelDirection);
-        var enemyFootprints = GetEnemyFootprintsForRequest(request);
-        // #212: friendlies may be passed THROUGH but not ENDED on - so the Done gate must reject a move (esp.
-        // a group translate) that finishes on a friendly, exactly as the authoritative DefinePathStage does
-        // (#205). Single-mode placement is already blocked per-model by WouldOverlapAnyModel; this covers group.
-        var friendlyFootprints = GetFriendlyFootprintsForRequest(request);
-        // #093: validate each model against its OWN budget so Done gates exactly as the authoritative stage.
-        bool engineValid = MovementUtilities.ValidatePaths(results,
-            entry => { var (_, rush, maxDist) = request.BudgetFor(entry.Model.GetValue().ID);
-                       return new ModelMoveBudget(rush, maxDist); },
-            enemyFootprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out var engineErrors,
-            friendlyFootprints);
-        var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
-        var cohesion = CheckCohesion(finals);
-
         var issues = new List<string>();
-        if (!engineValid)
-        {
-            // Skip the engine's coherency errors — its check is broken; we report our own below.
+        if (!ValidateForDone(request, results, out var engineErrors))
             foreach (var e in engineErrors)
             {
-                if (e.ErrorReasonType == EErrorReasonType.TooFarFromAnyUnitModel ||
-                    e.ErrorReasonType == EErrorReasonType.TooFarFromAllUnitModels) continue;
-                issues.Add(MovementUtilities.ErrorReasonToString(e.ErrorReasonType));
+                string issue = MovementUtilities.ErrorReasonToString(e.ErrorReasonType);
+                if (!issues.Contains(issue)) issues.Add(issue);
             }
-        }
-        foreach (var t in cohesion.TooFarFromAny)
-            issues.Add($"Cohesion: model is {t.dist:F2}\" from nearest other (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES)}\")");
-        if (cohesion.FarthestPair.HasValue)
-            issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)}\")");
 
         // #333: who is still standing on the start line, in the roster's own order, so the confirmation
         // names the same "Model N" the greyed rows above do.
@@ -1715,13 +1693,22 @@ public class GuiDefineMovementResolver
         }
 
         ImGui.SameLine();
+        // The straight-line auto-advance knows nothing of impassible terrain, other units in the way or the
+        // table edge, so it goes through the same gate as Done; when the engine would refuse it the button is
+        // disabled (submitting it used to end the game) and the tooltip says why.
+        var autoMove = AutoAdvance(request);
+        bool autoValid = ValidateForDone(request, autoMove, out var autoErrors);
+        ImGui.BeginDisabled(!autoValid);
         bool autoPressed = ImGui.Button("Auto-advance",
             new Vector2(btnW, ResolverPanelLayout.ActionRowHeight()));
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Move the whole unit toward the nearest enemy, stopping ~1\" short. Stays within Advance distance so the unit can still shoot.");
-        if (autoPressed)
+        ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(autoValid
+                ? "Move the whole unit toward the nearest enemy, stopping ~1\" short. Stays within Advance distance so the unit can still shoot."
+                : "Auto-advance can't move this unit from here: " + MovementUtilities.DescribeErrors(autoErrors) + ".");
+        if (autoPressed && autoValid)
         {
-            Complete(tcs, AutoAdvance(request));
+            Complete(tcs, autoMove);
             ImGui.End();
             return;
         }
@@ -2089,6 +2076,25 @@ public class GuiDefineMovementResolver
     // allies) are not enemies - the mover passes through them, is only stopped from ENDING on them, and
     // gets no can-hit / can-charge indicators drawn on them (#313). The rule lives in TeamAwareness so
     // every resolver answers it the same way; this stays as a one-arg shorthand for the many call sites.
+    /// <summary>
+    /// #458: the Done gate - the same validator, inputs and coherency rule the engine applies to this reply
+    /// (DefinePathStage for a main move, MovementExecutor.ValidateMove for a triggered one - both lenient
+    /// per #159), so a move this panel accepts is never rejected downstream. It used to drop the engine's
+    /// coherency errors and substitute a hand-mirrored STRICT check that measured every base at its
+    /// RESTING facing, while the engine measures each base at the facing the move leaves it at (#312) - a
+    /// rectangular base turned by its travel direction could pass here and be rejected there. #212: the
+    /// friendlies are passed too - they may be moved THROUGH but not ENDED on (#205).
+    /// </summary>
+    internal bool ValidateForDone(DefineMovementPathRequest request, List<ModelMoveEntry> results,
+        out List<ReasonForInvalidMove> errors)
+        => MovementUtilities.ValidatePaths(results,
+            // #093: each model against its OWN budget, as the authoritative stage does.
+            entry => { var (_, rush, maxDist) = request.BudgetFor(entry.Model.GetValue().ID);
+                       return new ModelMoveBudget(rush, maxDist); },
+            GetEnemyFootprintsForRequest(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
+            request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out errors,
+            GetFriendlyFootprintsForRequest(request), lenientCoherency: true);
+
     private bool IsEnemyUnit(IUnit unit, DefineMovementPathRequest request)
         => TeamAwareness.IsEnemyUnit(_tableState, request.TargetPlayerID, unit);
 

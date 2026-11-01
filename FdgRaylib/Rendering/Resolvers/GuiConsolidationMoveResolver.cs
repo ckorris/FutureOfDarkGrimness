@@ -1,5 +1,6 @@
 using System.Numerics;
 using FDG;
+using FDG.Ai.Tactician;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
@@ -254,7 +255,7 @@ public class GuiConsolidationMoveResolver
         if (_formationMode.IsGroup)
         {
             DrawGroupMode(request, pt, dl, io, terrain, overTable, wantInput);
-            DrawInfoPanel(screenW, request, pt, tcs, terrain);
+            DrawInfoPanel(screenW, request, pt, tcs);
             return;
         }
 
@@ -361,13 +362,13 @@ public class GuiConsolidationMoveResolver
             }
         }
 
-        DrawInfoPanel(screenW, request, pt, tcs, terrain);
+        DrawInfoPanel(screenW, request, pt, tcs);
     }
 
     // #215: whole-unit group move. Drag translates the formation so its centroid follows the cursor; the
     // mouse wheel / R rotates the formation (Shift+R the other way). Reuses the same GroupFormationUtilities
     // (budget solve + out-of-coherency repair) the normal-move group mode uses; the authoritative
-    // ValidateConsolidationPaths in DrawInfoPanel still gates Done, so this only previews/commits legal steps.
+    // ValidateConsolidationPaths in DrawInfoPanel (ValidateForDone) gates Done, so this only previews/commits legal steps.
     private void DrawGroupMode(ConsolidationMoveRequest request, PathTemplate pt, ImDrawListPtr dl,
         ImGuiIOPtr io, List<ITerrain> terrain, bool overTable, bool wantInput)
     {
@@ -554,7 +555,7 @@ public class GuiConsolidationMoveResolver
     }
 
     private void DrawInfoPanel(int screenW, ConsolidationMoveRequest request, PathTemplate pt,
-        TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain)
+        TaskCompletionSource<List<ModelMoveEntry>> tcs)
     {
         float panelW = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         ImGui.SetNextWindowPos(new Vector2(ResolverPanelLayout.X, ResolverPanelLayout.Y), ImGuiCond.Always);
@@ -604,27 +605,13 @@ public class GuiConsolidationMoveResolver
         // own facing rotated by the offset each step was committed with (matching the phantoms), never the
         // travel direction. Unrotated paths carry identity facings, so single mode is unchanged.
         var results = pt.GetResultsAsList(EPathFacingDerivation.RotateInPlace);
-        // #090: enemy-check the consolidation preview so it matches the authoritative ConsolidateStage check.
-        var enemyFootprints = GetEnemyFootprintsForRequest(request);
-        bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxDistanceInches,
-            enemyFootprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out var engineErrors);
-        var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
-        var cohesion = CheckCohesion(finals);
-
         var issues = new List<string>();
-        if (!engineValid)
-        {
+        if (!ValidateForDone(_tableState, request, results, out var engineErrors))
             foreach (var e in engineErrors)
             {
-                if (e.ErrorReasonType == EErrorReasonType.TooFarFromAnyUnitModel ||
-                    e.ErrorReasonType == EErrorReasonType.TooFarFromAllUnitModels) continue;
-                issues.Add(MovementUtilities.ErrorReasonToString(e.ErrorReasonType));
+                string issue = MovementUtilities.ErrorReasonToString(e.ErrorReasonType);
+                if (!issues.Contains(issue)) issues.Add(issue);
             }
-        }
-        foreach (var t in cohesion.TooFarFromAny)
-            issues.Add($"Cohesion: model is {t.dist:F2}\" from nearest other (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES:F1}\")");
-        if (cohesion.FarthestPair.HasValue)
-            issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES:F1}\")");
 
         bool canSubmit = issues.Count == 0;
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
@@ -714,15 +701,34 @@ public class GuiConsolidationMoveResolver
         return list;
     }
 
+    /// <summary>
+    /// #458: the Done gate - the exact validator <see cref="ConsolidateStage"/> runs on the response, with the
+    /// same enemy, friendly and terrain inputs, so a move this button accepts can never come back as a
+    /// RequestResponseInvalidException that ends the game. This used to be ValidatePaths with its
+    /// coherency errors dropped and replaced by a hand-mirrored strict check that measured every base at
+    /// its RESTING facing - but the stage measures each base at the facing the move leaves it at (#312)
+    /// and with the lenient not-worsened rule (#159), so a group-rotated unit of rectangular bases could
+    /// pass here and be rejected there (Discord report, v0.3.0). It also skipped the end-on-friendly check.
+    /// </summary>
+    internal static bool ValidateForDone(ITableState tableState, ConsolidationMoveRequest request,
+        List<ModelMoveEntry> results, out List<ReasonForInvalidMove> errors)
+        => MovementUtilities.ValidateConsolidationPaths(results, request.MaxDistanceInches,
+            GetEnemyFootprintsForRequest(tableState, request), request.CanMoveThroughEnemies,
+            request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, tableState.Terrain.Objects,
+            out errors,
+            MovementPlanner.LiveFriendlyFootprints(tableState, request.TargetPlayerID,
+                request.UnitDataBinding.GetValue().ID));
+
     // Living enemy model footprints, tagged per-unit. Mirrors MovementUtilities.GetEnemyModelFootprints
     // but reads from ITableState (the resolver's view). #090.
-    private List<EnemyModelFootprint> GetEnemyFootprintsForRequest(ConsolidationMoveRequest request)
+    private static List<EnemyModelFootprint> GetEnemyFootprintsForRequest(ITableState tableState,
+        ConsolidationMoveRequest request)
     {
         var footprints = new List<EnemyModelFootprint>();
         int unitKey = 0;
-        foreach (var u in _tableState.Units.Objects)
+        foreach (var u in tableState.Units.Objects)
         {
-            if (!TeamAwareness.IsEnemyUnit(_tableState, request.TargetPlayerID, u)) continue;
+            if (!TeamAwareness.IsEnemyUnit(tableState, request.TargetPlayerID, u)) continue;
             bool uncontactable = FDG.Rules.Dispatch.AircraftRules.IsAircraft(u); // #029
             bool anyLiving = false;
             foreach (var m in u.Models)

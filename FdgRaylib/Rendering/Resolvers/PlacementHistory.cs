@@ -24,6 +24,7 @@ public class PlacementHistory<T>
     private sealed record Drag(int Index, PlacedObjectEntry<T> Before) : Step;
     private sealed record GroupDrop(float RotationRadians) : Step;
     private sealed record Restart(List<PlacedObjectEntry<T>> Entries) : Step;
+    private sealed record AutoPlace(List<PlacedObjectEntry<T>> Before) : Step;
 
     private readonly List<Step> _steps = new();
 
@@ -45,6 +46,11 @@ public class PlacementHistory<T>
     /// reference — the caller clears the live list right after).</summary>
     public void RecordRestart(IEnumerable<PlacedObjectEntry<T>> cleared) =>
         _steps.Add(new Restart(new List<PlacedObjectEntry<T>>(cleared)));
+
+    /// <summary>#458: Auto-place replaced the whole list. Snapshots <paramref name="before"/> (copy, not
+    /// reference) so one undo puts back exactly what was there, however many models it moved.</summary>
+    public void RecordAutoPlace(IEnumerable<PlacedObjectEntry<T>> before) =>
+        _steps.Add(new AutoPlace(new List<PlacedObjectEntry<T>>(before)));
 
     /// <summary>Forget everything — a new request is starting or the placement was committed.</summary>
     public void Clear() => _steps.Clear();
@@ -77,6 +83,10 @@ public class PlacementHistory<T>
             case Restart restart:
                 placed.Clear();
                 placed.AddRange(restart.Entries);
+                break;
+            case AutoPlace auto:
+                placed.Clear();
+                placed.AddRange(auto.Before);
                 break;
         }
         return true;

@@ -33,8 +33,13 @@ public sealed class PrivacyDialog
 
     private bool _open;
     private bool _noticeChoice = true;
+    private bool _forceShow;
 
     public bool IsOpen => _open;
+
+    /// <summary>Shows the notice even though it was acknowledged - only for the offscreen
+    /// <c>--menu-preview</c> render (#448), which never clicks OK.</summary>
+    internal void ForceOpen() => _forceShow = true;
 
     /// <summary>Opens the notice by itself while it has never been acknowledged, and draws it. Call once
     /// per frame from the main menu, outside its own window.</summary>
@@ -43,7 +48,7 @@ public sealed class PrivacyDialog
         const string popupId = "Usage statistics##privacy";
         if (!_open)
         {
-            if (UserConfig.Current.AnalyticsNoticeAcknowledged) return;
+            if (UserConfig.Current.AnalyticsNoticeAcknowledged && !_forceShow) return;
             _open = true;
             _noticeChoice = true;
             ImGui.OpenPopup(popupId);
@@ -51,9 +56,14 @@ public sealed class PrivacyDialog
 
         ImGui.SetNextWindowSize(new Vector2(Math.Min(screenW * 0.55f, 900f), 0f), ImGuiCond.Always);
         ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always, new Vector2(0.5f, 0.5f));
-        if (!ImGui.BeginPopupModal(popupId, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-                                            ImGuiWindowFlags.AlwaysAutoResize))
-            return;
+        // #448: wears the main menu's command-panel look (HoloUi), since it only ever opens over the menu.
+        float holoScale = HoloUi.ScaleFor(screenW, screenH);
+        HoloUi.PushModalStyle(holoScale);
+        bool open = ImGui.BeginPopupModal(popupId, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
+                                                   ImGuiWindowFlags.AlwaysAutoResize);
+        HoloUi.PopModalStyle();
+        if (!open) return;
+        HoloUi.DrawWindowBrackets(holoScale);
 
         ImGui.TextWrapped(IntroText);
         ImGui.Spacing();
@@ -63,7 +73,8 @@ public sealed class PrivacyDialog
         UiButton.Checkbox("Send anonymous usage statistics", ref _noticeChoice);
         ImGui.TextDisabled(ChangeLaterText);
         ImGui.Spacing();
-        if (UiButton.Confirm("OK", new Vector2(ImGui.GetContentRegionAvail().X, 0f)))
+        if (HoloUi.Button("OK", new Vector2(ImGui.GetContentRegionAvail().X, MathF.Max(ImGui.GetFrameHeight(), 44f * holoScale)), EHoloTier.Primary,
+                UiButton.EClass.Commit, holoScale, centered: true))
         {
             AcknowledgeNotice(_noticeChoice);
             _open = false;
