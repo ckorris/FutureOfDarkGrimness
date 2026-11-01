@@ -21,6 +21,14 @@ lobby-settings confirm fires on blocking problems, the layout logic and wording 
 smoke stays green.
 
 ## Notes
+- 2026-11-01 (owner review): Owner switched the row to **4x1 with short labels, Import first**
+  (`Import | Load | Random | Remove`), and asked to take width from Color. Done: the 2x2 grid, the sized
+  small-button overload and the vertical centring are gone, row height is back to the pre-#460 +25% padding,
+  Color's weight 0.12 -> 0.10, Actions stays a fixed column now measured as one line of hug-text buttons
+  (Remove's room reserved on every row). Also fixed: Load had no hover text (it never did) - Import and Load
+  now both have one, and when greyed out they say whose slot it is (the same words Random already used, now
+  one shared helper). The empty-slot tooltip says "Import or Load one (or roll Random)". App suite 3149 green,
+  build clean; GUI-only change, engine untouched.
 - 2026-11-01 (later): Implemented. Engine: `LaunchGate.SettingsProblems(army, limit, allowed)` - the per-army
   half of `BlockingProblems`, which now prefixes the player name onto its lines (output unchanged) + a test
   pinning that the two agree. App: `LobbyImportPopup` (popup), `LobbyArmyImport` (ImGui-free wording, save
@@ -31,9 +39,10 @@ smoke stays green.
   NOT yet verified: anything on screen - the GUI checks below are the owner's.
 
   GUI hand-verify checklist:
-  1. Lobby roster: every row's Actions cell is a 2x2 grid (Load Army | Import / Random Army | Remove), equal
-     button widths, no clipping; the other cells sit vertically centred. Check fullscreen and a small window.
-     A resume lobby shows Local | Tactician / Strategist | DerpBot in the same grid.
+  1. Lobby roster: every row's Actions cell is one line `Import | Load | Random | Remove`, nothing clipped,
+     Color still shows its name. Hover each: Import and Load explain themselves (and, greyed out on a row you
+     can't change, say whose it is). Check fullscreen and a small window; a resume lobby's
+     Local | Tactician | Strategist | DerpBot line fits too.
   2. Import on your row -> popup names the row, shows the Army Forge instructions; Paste a share link -> it
      fetches at once, preview lists units + any list errors / warnings / inert rules. Typing a link fetches
      after a short pause; junk text shows the "does not look like a link" hint.
@@ -67,11 +76,10 @@ smoke stays green.
   remembered (`UserConfig.ImportSavesCopy`); disabled when no armies folder exists. The copy is written
   BEFORE assigning - a failed write leaves the slot alone and says why (#307: never report a write that did
   not happen).
-- **Row layout: 2x2 grid with taller rows (owner).** The Actions column is now FIXED-width, measured from the
-  labels at the frame's font scale, instead of a 0.26 stretch weight - so the buttons can't clip, and the
-  stretch columns absorb a narrow window (their text already shrinks, #405). The old +25% cell padding is
-  mostly replaced by the second button line (rows are ~30% taller than before). Resume rows use the same
-  grid so the column fits both modes.
+- **Row layout: 4x1, short labels, Import first (owner, superseding an earlier 2x2 try the same day).** The
+  Actions column is FIXED-width, measured from the active label set at the frame's font scale, instead of a
+  0.26 stretch weight - so the buttons can't clip, and the stretch columns absorb a narrow window (their text
+  already shrinks, #405). Color gave up 0.02 of weight. Short labels lean on hover text for meaning.
 - **Which army is assigned:** `ArmyForgeScreen.ImportedFileToWrite` - Army Forge's verbatim units and points,
   with the editable session attached when a bundled book matched (#356). Same object as the saved copy and
   as a Forge Save As, so a lobby import, a reload of its copy, and a Forge-saved file all behave the same at

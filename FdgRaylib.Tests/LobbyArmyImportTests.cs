@@ -111,6 +111,7 @@ public class LobbyArmyImportTests
                      LobbyArmyImport.SettingsConfirmLead,
                      LobbyArmyImport.SettingsConfirmBody,
                      LobbyScreen.ImportTooltip,
+                     LobbyScreen.LoadArmyTooltip,
                  })
         {
             foreach (char c in text)

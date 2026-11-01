@@ -51,19 +51,6 @@ internal static class UiButton
         return clicked;
     }
 
-    /// <summary>#460: a SmallButton (no vertical frame padding) at a caller-chosen size, so a grid of them
-    /// can share one width - the lobby roster's 2x2 Actions cell. A zero height means the small height.</summary>
-    public static bool NavigateSmall(string label, Vector2 size)
-    {
-        PushClass(EClass.Go);
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, 0f));
-        bool clicked = ImGui.Button(label, size);
-        ImGui.PopStyleVar();
-        ImGui.PopStyleColor(3);
-        if (clicked) UiSound.Navigate();
-        return clicked;
-    }
-
     internal enum EClass
     {
         Back,
