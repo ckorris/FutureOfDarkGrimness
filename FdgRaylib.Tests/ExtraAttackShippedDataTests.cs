@@ -17,6 +17,9 @@ namespace FdgRaylib.Tests;
 //   Takedown Strike (OPR eyMkgYDVrP7C, 5 refs) - "Once per game, when it's this model's turn to attack in
 //     melee, it may make one attack at Quality 2+ with AP(2), Deadly(3), and Takedown."
 //   Takedown Shot (OPR LPEKodkJ6xPS, 2 refs) - the same, "when this model shoots ... against the target".
+// #438: OPR 3.6 rates both ("may make X attacks"; X is 1 at every site, #434 D11) - the 3.6.0 books carry them as
+// coreNumeric "Takedown Strike(1)" / "Takedown Shot(1)" (Strike 5 refs, Shot 3: Elven Jesters' Solitaire
+// Assassin joined).
 // Both were dead no-definition until 2026-07-30. The mechanism is pinned engine-side by
 // ExtraAttackRuleIntegrationTests; these pin the authored JSON, the corpus census the design leans on, the
 // embedded book copies, and a real-book compile.
@@ -32,7 +35,7 @@ public class ExtraAttackShippedDataTests
         "AlienHives", "ElvenJesters", "RatmenClans", "RebelGuerrillas", "SoulSnatcherCults",
     };
 
-    private static readonly string[] ShotBooks = { "HumanInquisition", "RatmenClans" };
+    private static readonly string[] ShotBooks = { "ElvenJesters", "HumanInquisition", "RatmenClans" };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
@@ -128,15 +131,20 @@ public class ExtraAttackShippedDataTests
         }
     }
 
-    private static bool Names(SpecialRuleEntry entry, string ruleName) =>
-        entry is SpecialRuleEntry_Core core && string.Equals(core.Name, ruleName, StringComparison.Ordinal);
+    // #438: the 3.6 sites are rated ("Takedown Shot(1)"), so a coreNumeric entry names the rule too.
+    private static bool Names(SpecialRuleEntry entry, string ruleName) => entry switch
+    {
+        SpecialRuleEntry_CoreNumeric numeric => string.Equals(numeric.Name, ruleName, StringComparison.Ordinal),
+        SpecialRuleEntry_Core core => string.Equals(core.Name, ruleName, StringComparison.Ordinal),
+        _ => false,
+    };
 
     // The census that made unit scope safe. "Upgrade with one" grants the rule to ONE model, which would be
     // the per-model scoping problem Sergeant had - except every carrier is a 1-model hero, so unit scope and
     // model scope are the same thing. If a book update ever puts one of these on a multi-model unit, the
     // scoping has to be re-decided (a Unit-scoped rule would offer the ability once per unit, not per model).
     [TestCase(Strike, 5)]
-    [TestCase(Shot, 2)]
+    [TestCase(Shot, 3)] // #438: 3.6.0 snapshots - Elven Jesters' Fool Champion item is the new third
     public void EveryCarrier_IsASingleModelUnit(string ruleName, int expectedRefs)
     {
         List<Site> sites = Sites(ruleName).ToList();
@@ -160,12 +168,13 @@ public class ExtraAttackShippedDataTests
     }
 
     // The invariant BuildTargetListStage's lifted melee gate rests on (#197 P16): Takedown used to be
-    // skipped for a swing, and the gate is gone so Takedown Strike can pick its victim. That is only a
-    // no-change for existing data because no MELEE weapon in any bundled book carries Takedown - every
-    // Takedown in the corpus is on a ranged profile. If that ever stops being true, the individual-model
-    // pick starts appearing in ordinary close combat and the ruling needs revisiting.
+    // skipped for a swing, and the gate is gone so Takedown Strike can pick its victim. That was a
+    // no-change for the 3.5 data because no MELEE weapon carried Takedown. #438: the 3.6.0 books have exactly
+    // one - High Elf Fleets' Stinger Dagger (A2, Bane, Takedown) - and the 3.6 text ("may pick any model in the
+    // target unit as its individual target for this weapon's attacks") applies to melee too, so the pick in
+    // close combat is the rule, not a regression (#438 D-entry, owner review). Any OTHER new carrier still fails.
     [Test]
-    public void NoMeleeWeaponInAnyBook_CarriesTakedown()
+    public void OnlyTheKnownMeleeWeapon_CarriesTakedown()
     {
         var offenders = new List<string>();
 
@@ -191,8 +200,8 @@ public class ExtraAttackShippedDataTests
             }
         }
 
-        Assert.That(offenders, Is.Empty,
-            "a melee weapon carrying Takedown would newly get the individual-model pick in close combat");
+        Assert.That(offenders, Is.EquivalentTo(new[] { "HighElfFleets/Stingers/Stinger Dagger" }),
+            "a melee weapon carrying Takedown gets the individual-model pick in close combat - re-check each new one");
     }
 
     private static void Record(string book, string unit, WeaponFileEntry weapon, List<string> offenders)
@@ -255,7 +264,7 @@ public class ExtraAttackShippedDataTests
         });
 
         UnitFileEntry unit = army.Units.Single();
-        Assert.That(unit.SpecialRules.Select(r => r.PrintableName), Does.Contain(Shot),
+        Assert.That(unit.SpecialRules.Select(r => r.PrintableName), Does.Contain(Shot + "(1)"),
             "the item's rule flattens onto the unit, which is exact for a 1-model hero");
     }
 }

@@ -19,19 +19,34 @@ public static class ScenarioLauncher
         FDGGame_AsLocal HumanGame, IReadOnlyList<PlayerSlotInfo> SavedInfos);
 
     /// <summary>A scenario JSON compiles in-memory; a .fdgsave loads directly.</summary>
-    public static GameDataStore LoadStore(string path) => LoadStoreWithReplay(path).Store;
+    public static GameDataStore LoadStore(string path) => LoadStore(path, out _);
 
     /// <summary>
-    /// <see cref="LoadStore"/>, plus the replay a .fdgsave carries (#453), for <c>ReplayRecorder.Continue</c>: the
-    /// resumed game's recording continues it. A compiled scenario carries none, so its recording starts fresh.
+    /// <see cref="LoadStore(string)"/>, also handing back the #444 D2 legacy-save line for a .fdgsave written under
+    /// an older OPR ruleset (or none - every pre-3.6 save), null when the save is current or the path is a scenario
+    /// JSON (compiled by this build, so never old). The line is printed to the console here, the way
+    /// <see cref="ArmyLoader"/> prints the #440 army notice, so headless and GUI runs both log it; the GUI caller
+    /// posts it into the game log as well.
     /// </summary>
-    public static (GameDataStore Store, byte[]? PriorReplay) LoadStoreWithReplay(string path)
+    public static GameDataStore LoadStore(string path, out string? legacySaveNotice) =>
+        LoadStoreWithReplay(path, out legacySaveNotice).Store;
+
+    /// <summary>
+    /// <see cref="LoadStore(string, out string?)"/>, plus the replay a .fdgsave carries (#453), for
+    /// <c>ReplayRecorder.Continue</c>: the resumed game's recording continues it. A compiled scenario carries none,
+    /// so its recording starts fresh.
+    /// </summary>
+    public static (GameDataStore Store, byte[]? PriorReplay) LoadStoreWithReplay(string path, out string? legacySaveNotice)
     {
+        legacySaveNotice = null;
         if (path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
         {
             if (!File.Exists(path))
                 throw new ScenarioCompileException($"Save file not found: {path}");
-            return GameSaveSerializer.LoadWithReplay(File.ReadAllText(path));
+            var loaded = GameSaveSerializer.LoadWithReplay(File.ReadAllText(path), out string? rulesVersion);
+            legacySaveNotice = LegacySaveNotice.Line(rulesVersion);
+            if (legacySaveNotice != null) Console.WriteLine(legacySaveNotice);
+            return loaded;
         }
 
         return (ScenarioCompiler.CompileFromFile(path), null);

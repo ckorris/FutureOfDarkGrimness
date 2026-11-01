@@ -67,7 +67,7 @@ UserConfig.EnsureExists();
 // #412: the Options panel's saved display/audio settings.
 FdgRaylib.Rendering.ViewSettings.Load(UserConfig.Current.View);
 
-// --menu-preview <out.png> [WxH] [menu|privacy|options] [seed] [t=SECONDS] (#448): the main menu rendered
+// --menu-preview <out.png> [WxH] [menu|privacy|options|host|join] [seed] [t=SECONDS] (#448): the main menu rendered
 // offscreen from a hidden window (war table + real ImGui menu), written to a PNG, then exit. The seed picks
 // the army pairing (default 1) and t the moment of its battle (default HoloDirector.StillMoment: everyone
 // who advances has arrived, fighting, measuring, camera on the overview), so a preview is reproducible. `bench` also times the live
@@ -77,7 +77,7 @@ if (menuPreviewIdx >= 0)
 {
     if (menuPreviewIdx + 1 >= args.Length)
     {
-        Console.Error.WriteLine("--menu-preview needs an output path: --menu-preview out.png [1920x1080] [menu|privacy|options] [seed] [t=SECONDS]");
+        Console.Error.WriteLine("--menu-preview needs an output path: --menu-preview out.png [1920x1080] [menu|privacy|options|host|join] [seed] [t=SECONDS]");
         Environment.Exit(2);
     }
     int previewW = 1920, previewH = 1080;
@@ -191,6 +191,14 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
         source: "OnePageRules - Army Forge (army-forge.onepagerules.com)",
         license: "CC-BY-SA 4.0",
         warn: msg => Console.WriteLine($"  {msg}"));
+    // #437: an Army Forge parent entry (OPR 3.6's 0-unit "Wormhole Daemons" / "Rift Daemons") is not a book - writing
+    // it would put an empty faction in the Forge list. Skipped, exit 0, so a bake loop over a snapshot folder simply
+    // passes over it.
+    if (OprBookImporter.IsParentEntry(book))
+    {
+        Console.WriteLine($"Skipped '{book.Name}' {book.Version}: an Army Forge parent entry (no units, no spells) - nothing written.");
+        return;
+    }
     var importSupplementPaths = TrailingPaths(args, importIdx + 3);
     if (importSupplementPaths.Count > 0)
     {
@@ -226,6 +234,9 @@ if (importArmyIdx >= 0 && importArmyIdx + 2 < args.Length)
                 Console.WriteLine($"  excluded (not in bundled book): {name} ({pts} pts)");
             foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
                 Console.WriteLine($"  base cost drift: {name} - bundled book {ours} pts, Army Forge {theirs} pts");
+            // #438 D3: the picks our compiler could not land (Army Forge bills them; we apply and charge nothing).
+            foreach (UnappliedReplace unapplied in session.UnappliedReplaces)
+                Console.WriteLine($"  not applied: {unapplied.Message}");
             if (session.UnpricedUpgradeCount > 0)
                 Console.WriteLine($"  {session.UnpricedUpgradeCount} selected upgrade(s) have no published " +
                     "Army Forge price - our total counts them as free (#219)");
@@ -279,7 +290,9 @@ if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
             if (!indexBySystem.TryGetValue(system, out var index))
                 indexBySystem[system] = index =
                     FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
-            if (!index.TryGetValue(book.Name, out string? uid))
+            // #437: a pre-rename bundled book finds its renamed OPR entry (OprBookNames).
+            if (!index.TryGetValue(book.Name, out string? uid)
+                && !index.TryGetValue(OprBookNames.Current(book.Name, book.GameSystem), out uid))
             {
                 Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
                 missing++;
@@ -330,7 +343,9 @@ if (shapesIdx >= 0 && shapesIdx + 1 < args.Length)
             if (!indexBySystem.TryGetValue(system, out var index))
                 indexBySystem[system] = index =
                     FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
-            if (!index.TryGetValue(book.Name, out string? uid))
+            // #437: a pre-rename bundled book finds its renamed OPR entry (OprBookNames).
+            if (!index.TryGetValue(book.Name, out string? uid)
+                && !index.TryGetValue(OprBookNames.Current(book.Name, book.GameSystem), out uid))
             {
                 Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
                 missing++;
@@ -379,6 +394,9 @@ if (spellsIdx >= 0 && spellsIdx + 2 < args.Length)
             string before = File.ReadAllText(path);
             BookFile book = JsonSerializer.Deserialize<BookFile>(before, RuleJson.Options)!;
             string snapshotPath = Path.Combine(snapshotDir, book.Name + ".json");
+            // #437: a pre-rename bundled book reads its renamed snapshot (OprBookNames).
+            if (!File.Exists(snapshotPath))
+                snapshotPath = Path.Combine(snapshotDir, OprBookNames.Current(book.Name, book.GameSystem) + ".json");
             if (!File.Exists(snapshotPath))
             {
                 Console.WriteLine($"  {book.Name}: no snapshot '{snapshotPath}' - skipped.");
@@ -521,10 +539,8 @@ if (editableIdx >= 0 && editableIdx + 1 < args.Length)
 
         // #378: the faction-name match is gated on the army's game system (absent = GDF), because four
         // AoF faction names collide with GDF books and the wrong book solves to the wrong upgrades.
-        BookFile? book = books.FirstOrDefault(b =>
-            (string.Equals(b.Faction, army.Faction, StringComparison.OrdinalIgnoreCase)
-             || string.Equals(b.Name, army.Faction, StringComparison.OrdinalIgnoreCase))
-            && FDG.ArmyBuilding.GameSystems.SameSystem(b.GameSystem, army.GameSystem));
+        // #437: and it holds across OPR's book renames (OprBookNames).
+        BookFile? book = books.FirstOrDefault(b => OprBookNames.Matches(b, army.Faction, army.GameSystem));
         if (book is null)
         {
             Console.WriteLine($"  NO BOOK    {name}: no bundled book matches faction '{army.Faction}'.");
@@ -571,6 +587,70 @@ if (editableIdx >= 0 && editableIdx + 1 < args.Length)
 
     Console.WriteLine($"Retrofit complete: {converted} converted, {alreadyEditable} already editable, " +
         $"{failed} left alone (of {targets.Count}).{(dryRun ? " [dry run - nothing written]" : "")}");
+    return;
+}
+
+// --reforge <fileOrDir> [more...] [--dry-run]  (#440): rebuild saved Forge armies against the CURRENT bundled
+// books (ArmyReforge): recover each unit's picks (SelectionSolver, then label translation of the file's own
+// selections), recompile, and write the result in place - stats, rules, spells, effect sets and points all the
+// bundled edition's, and the file reopens in the Forge. A file already on the bundled edition is recompiled from
+// its own selections (the hand-substitution loop). Prints a per-army report; units nothing could recover are
+// listed as UNSOLVED and left out of the written file. --dry-run reports without writing.
+int reforgeIdx = Array.IndexOf(args, "--reforge");
+if (reforgeIdx >= 0 && reforgeIdx + 1 < args.Length)
+{
+    bool dryRun = args.Contains("--dry-run");
+    List<string> targets = args.Skip(reforgeIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD, SearchOption.AllDirectories)
+                .OrderBy(p => p, StringComparer.Ordinal).ToArray()
+            : new[] { t })
+        .ToList();
+
+    var books = new List<BookFile>();
+    string booksDir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
+    foreach (string p in Directory.EnumerateFiles(booksDir, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p, StringComparer.Ordinal))
+        books.Add(JsonSerializer.Deserialize<BookFile>(File.ReadAllText(p), RuleJson.Options)!);
+
+    // Each file is independent and the search is CPU-bound, so files run in parallel; the reports print in
+    // file order once all are in. Every worker reads its own copy of the books (the compiler never mutates them,
+    // but a shared mutable list is not worth trusting across threads for a dev tool).
+    var reports = new ArmyReforge.Report?[targets.Count];
+    var unreadable = new string?[targets.Count];
+    Parallel.For(0, targets.Count, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount / 2) }, i =>
+    {
+        try
+        {
+            BuiltArmyFile? army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(targets[i]), RuleJson.Options);
+            if (army is null) { unreadable[i] = "not an army list"; return; }
+            List<BookFile> ownBooks = books.Select(b =>
+                JsonSerializer.Deserialize<BookFile>(JsonSerializer.Serialize(b, RuleJson.Options), RuleJson.Options)!).ToList();
+            reports[i] = ArmyReforge.Reforge(Path.GetFileName(targets[i]), army, ownBooks);
+        }
+        catch (Exception ex) { unreadable[i] = ex.Message; }
+    });
+
+    int written = 0, incomplete = 0, failed = 0;
+    for (int i = 0; i < targets.Count; i++)
+    {
+        string path = targets[i];
+        if (reports[i] is not { } report)
+        {
+            Console.WriteLine($"== {Path.GetFileName(path)}\n   UNREADABLE: {unreadable[i]}");
+            failed++;
+            continue;
+        }
+        foreach (string line in ArmyReforge.Format(report)) Console.WriteLine(line);
+        if (report.Rebuilt is null) { failed++; continue; }
+        if (report.Unsolved > 0) incomplete++;
+        if (!dryRun)
+        {
+            File.WriteAllText(path, JsonSerializer.Serialize(report.Rebuilt, report.Rebuilt.GetType(), RuleJson.Options));
+            written++;
+        }
+    }
+    Console.WriteLine($"Reforge complete: {(dryRun ? "[dry run - nothing written]" : $"{written} written")}, "
+        + $"{incomplete} with unsolved units, {failed} failed (of {targets.Count}).");
     return;
 }
 
@@ -733,7 +813,7 @@ if (headless)
     {
         try
         {
-            var (scenarioStore, priorReplay) = ScenarioLauncher.LoadStoreWithReplay(scenarioPath);
+            var (scenarioStore, priorReplay) = ScenarioLauncher.LoadStoreWithReplay(scenarioPath, out _);
             await app.RunScenarioAsync(scenarioStore, scenarioAllAi, scenarioLogDecisions, priorReplay);
         }
         catch (ScenarioCompileException ex)
@@ -829,9 +909,10 @@ else
 
         GameDataStore loadedStore;
         byte[]? priorReplay; // #453: the save's replay, which the resumed game's recording continues
+        string? saveRulesVersion;
         try
         {
-            (loadedStore, priorReplay) = GameSaveSerializer.LoadWithReplay(File.ReadAllText(path));
+            (loadedStore, priorReplay) = GameSaveSerializer.LoadWithReplay(File.ReadAllText(path), out saveRulesVersion);
         }
         catch (Exception ex)
         {
@@ -853,8 +934,13 @@ else
             return;
         }
 
+        // #444 D2: the save's rules stamp rides into the lobby, which shows the amber legacy-save line for a
+        // pre-3.6 save (no stamp) or one from another ruleset. Echoed to the console like the CLI does.
+        if (LegacySaveNotice.Line(saveRulesVersion) is string saveNotice) Console.WriteLine(saveNotice);
+
         // #310: the saved player name, same as a fresh host lobby uses.
-        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore, priorReplay);
+        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore,
+            saveRulesVersion, priorReplay);
         activeLobby = lobby;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
@@ -991,7 +1077,9 @@ else
         }
         try
         {
-            var (scenarioStore, scenarioPriorReplay) = ScenarioLauncher.LoadStoreWithReplay(scenarioPath);
+            // #444 D2: LoadStore prints the legacy-save line to the console; the GUI also gets it in the
+            // game log, posted once the log exists (below, beside the #168 rule-drop summary).
+            var (scenarioStore, scenarioPriorReplay) = ScenarioLauncher.LoadStoreWithReplay(scenarioPath, out string? legacySaveNotice);
             var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed, aiProfile,
                 scenarioAllAi,
                 scenarioLogDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null);
@@ -1024,6 +1112,7 @@ else
                 // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
                 // Launch attached the log - push any drops it just produced into the visible summary.
                 RuleLoadWarnings.FlushPending();
+                if (legacySaveNotice != null) RuleLoadWarnings.PostNotice(legacySaveNotice);
                 scenarioServer.OnGameEnded += result =>
                 {
                     WriteReplayForGameOver();

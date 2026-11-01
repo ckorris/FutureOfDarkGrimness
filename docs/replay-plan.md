@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** planning complete 2026-10-30; #450 (format + host recorder), #454 (playback engine) and #455 (headless `--replay` tools) done 2026-10-30; #451 (client recording), #452 (files on every game exit) and #453 (replay inside saves, resumes continue it) done 2026-10-31; #456 (GUI viewer) built 2026-10-31, awaiting Chris's hand-verify; #457 (verification) run 2026-10-31 on one machine - `master` merged into the branch, the master merge itself and the two-machine run wait on Chris. Umbrella work item: **#449**.
+**Status:** done 2026-11-01 - #450-#457 all shipped; `feature/replay` merged into `master` in both repos (after the OPR 3.6 merge). Umbrella work item: **#449** (closed). Follow-up: #461 (client of a resumed scenario save draws no model bases, pre-existing).
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.
@@ -347,15 +347,15 @@ With `--no-replay` a 2k headless game's play is 1.69 s vs 1.96 s recorded, and n
 
 | # | Title | Depends on | Status |
 |---|-------|------------|--------|
-| 449 | Umbrella: plan, ground rules, master merges, release gate | - | planning done |
+| 449 | Umbrella: plan, ground rules, master merges, release gate | - | done 2026-11-01 |
 | 450 | Engine: replay format + host-side `ReplayRecorder` (store, requests, beats, log, markers, snapshots, seed materialisation) | - | done 2026-10-30 |
 | 451 | Engine: decision payloads to clients (D2) + `ClientReplayRecorder` + `ReplayMarkerMessage` | 450 | done 2026-10-31 |
 | 452 | App: auto-write `.fdgreplay` on every game exit (host, client, headless, scenario, crash best-effort) | 450, 451 | done 2026-10-31 |
 | 453 | Replay inside `.fdgsave`: save embeds, resume continues, clients receive history | 450, 451 | done 2026-10-31 |
 | 454 | Engine: playback (`ReplayReader`, `ReplayTimeline`, `ReplayPlayer`, `StoreDeltaApplier`, step filter, describer) | 450 | done 2026-10-30 |
 | 455 | Headless tooling: `--replay` dump / stats / verify / export / make-save | 454 | done 2026-10-30 |
-| 456 | GUI replay viewer: browser screen, playback screen, controls, decision list | 454, 452 | built 2026-10-31; Chris's hand-verify open |
-| 457 | Verification + merge: networked hand-verify, size check, docs, merge `feature/replay` -> `master` | all | verified on one machine 2026-10-31; two-machine run + `master` merge wait on Chris |
+| 456 | GUI replay viewer: browser screen, playback screen, controls, decision list | 454, 452 | done 2026-11-01 |
+| 457 | Verification + merge: networked hand-verify, size check, docs, merge `feature/replay` -> `master` | all | done 2026-11-01 |
 
 Suggested order: 450 -> 454 -> 455 (an agent can now debug from a replay) -> 451 -> 452 -> 453 -> 456 -> 457.
 450/454 and 451 can run in parallel sessions once 450's event records exist.

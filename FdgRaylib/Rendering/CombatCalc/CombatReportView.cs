@@ -95,6 +95,10 @@ internal sealed record CombatReportView(
     }
 }
 
+/// <summary>One rule chip under a volley row: the label the chip shows and, when the chip has numbers behind it,
+/// the hover that carries them (#441 F4 - the Parry chip; the hit and save chips are their own detail).</summary>
+internal sealed record ChipView(string Label, string? Hover = null);
+
 /// <summary>One weapon's line in the results table, already in rules order: dice -> hit -> hits -> save
 /// -> wounds.</summary>
 internal sealed record VolleyRowView(
@@ -109,8 +113,8 @@ internal sealed record VolleyRowView(
     string Save,
     string Wounds,
     string Points,
-    IReadOnlyList<string> HitChips,
-    IReadOnlyList<string> SaveChips,
+    IReadOnlyList<ChipView> HitChips,
+    IReadOnlyList<ChipView> SaveChips,
     IReadOnlyList<SaveLineView> SaveLines,
     IReadOnlyList<string> Notes)
 {
@@ -133,10 +137,24 @@ internal sealed record VolleyRowView(
                 CombatReportView.PointsDealt(volley.ExpectedWounds, defenderWounds, defenderPoints)),
             // An empty tag list draws nothing at all. The old pane emitted the line regardless, so a
             // volley with no save modifiers left a blank gap where the tags would have been.
-            HitChips: volley.HitTags.Where(t => !string.IsNullOrWhiteSpace(t)).ToList(),
-            SaveChips: volley.SaveTags.Where(t => !string.IsNullOrWhiteSpace(t)).ToList(),
+            HitChips: Chips(volley.HitTags),
+            SaveChips: SaveChipsOf(volley),
             SaveLines: saves,
             Notes: volley.Notes);
+    }
+
+    private static List<ChipView> Chips(IEnumerable<string> tags) =>
+        tags.Where(t => !string.IsNullOrWhiteSpace(t)).Select(t => new ChipView(t)).ToList();
+
+    /// <summary>#441 F4 (signed off B): the defender's Parry step is a "Parry" chip, first on the Save line - it sits
+    /// between the hits landing and the saves, and what it changes is how many hits the save buckets carry - with the
+    /// dice / hits-ignored numbers in its hover. No note, no column.</summary>
+    internal static List<ChipView> SaveChipsOf(VolleyReport volley)
+    {
+        List<ChipView> chips = Chips(volley.SaveTags);
+        if (volley.Parry is { } parry)
+            chips.Insert(0, new ChipView(ParrySummary.ChipLabel, parry.Describe()));
+        return chips;
     }
 
     /// <summary>

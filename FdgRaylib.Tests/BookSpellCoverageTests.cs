@@ -31,6 +31,8 @@ public class BookSpellCoverageTests
     // bundled book resolves; a stale entry (the name starts resolving) fails the fixture too.
     // Still empty after #378 bundled the AoF books: their spells' references all resolve (the known
     // #381 Retreating Strike gap is unit-attached in Dark Elves, pinned by BookRuleCensusTests).
+    // #422 / #436 entries (Counter-Attack, Crack, Harassing Boost, Piercing Assault / Hunter, Resistance) went
+    // stale with the #438 3.6.0 re-bake and were removed - empty again.
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>();
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

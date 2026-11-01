@@ -1,6 +1,6 @@
 # 457 — Replay: verification, docs, merge feature/replay -> master
 
-**Status**: in-progress - verified on one machine 2026-10-31; the two-machine run and the `master` merge wait on Chris
+**Status**: done 2026-11-01 - merged into `master` in both repos
 **Related**: umbrella #449; all of #450-#456; parallel #415 (OPR 3.6) for merge ordering
 
 ## Goal
@@ -10,18 +10,18 @@ every sub-item's Outcome written, the docs updated, and a networked two-machine 
 the index lines for 449-457 are ticked and archived.
 
 ## Checklist
-- [~] Two-machine networked game (host + remote client over the real `FDGHost`/`FDGClient`): both write a
+- [x] Two-machine networked game (host + remote client over the real `FDGHost`/`FDGClient`): both write a
       `.fdgreplay` at game end; both open in the viewer; the client's file lists the host's decisions;
       `--verify` passes on both; step counts match. (#451's two-process GUI check. #452 ran it with two processes
       on one machine, early exits only - see its Notes; this item still wants a full game on two machines.)
-- [~] Save -> quit -> load -> finish on the host with a client reconnecting to the resumed game: one
+- [x] Save -> quit -> load -> finish on the host with a client reconnecting to the resumed game: one
       continuous replay on both sides (`Saved`, `Resumed` markers present, `--verify` passes). (#453 ran the host
       half in the GUI on one machine - save, Esc -> Load, finish - and pinned the client half in-process over the
       loopback transport; the two-machine run is still this item's.)
-- [~] Disconnect mid-game: the host writes both the #187 recovery save (with embedded replay) and the
+- [x] Disconnect mid-game: the host writes both the #187 recovery save (with embedded replay) and the
       replay file; the client writes its replay. Then resume the recovery save and finish: its replay shows
       `GameEnded` (Disconnect), `Resumed`, ..., `GameEnded` (Chris's #453 call), and `--verify` passes.
-- [~] Size check against `docs/replay-plan.md` section 5 on three real GUI games (`--stats`); update the
+- [x] Size check against `docs/replay-plan.md` section 5 on three real GUI games (`--stats`); update the
       table with real beat numbers if #450's measurement was from the headless path only.
 - [x] Headless: `printf "2\n2\n" | dotnet run ... --headless` exits 0 and prints the replay path;
       `--scenario` writes a replay; `--replay FILE --dump/--verify/--make-save` work on it.
@@ -34,18 +34,28 @@ the index lines for 449-457 are ticked and archived.
       paragraph ("Replays" folder, how to open one, send it with a bug report); `Scenarios/README.md`
       mentions `--make-save` from a replay as a repro path; `docs/ResolverGuide.md` notes that
       `StageTaskNotifyResolvedMessage` now carries payloads (D2).
-- [ ] Every sub-item's detail file has an Outcome and its index line is ticked and moved to
+- [x] Every sub-item's detail file has an Outcome and its index line is ticked and moved to
       `WorkItems/Archive.md`; plan section 6 statuses are `done`.
-- [~] Merge: `git fetch origin`; merge `origin/master` into `feature/replay` in the engine, run the suite,
+- [x] Merge: `git fetch origin`; merge `origin/master` into `feature/replay` in the engine, run the suite,
       then in the superproject (bump pointer), run everything, push the branch; then fast-forward or
       merge `feature/replay` into `master` in the engine, push; bump + merge in the superproject, push.
       If `feature/opr-3.6` has already landed (#444), the `master` merge-in step is where its conflicts
       surface (plan section 8 says where to expect them: `LobbyScreen`, `RaylibRenderer`, request
       shapes). If it has not, tell the #415 owner that `master` now has replay so their next
       `master` -> `feature/opr-3.6` merge picks it up.
-- [ ] Delete the remote `feature/replay` branches after the merge (both repos).
+- [x] Delete the remote `feature/replay` branches after the merge (both repos).
 
 ## Notes
+- **2026-11-01 - Chris's hand-verify and the merge.** Chris ran the viewer and a networked game on his own machines
+  and reported everything good (the one correction: round markers coloured for their initiative read as a leak -
+  made white). Merge: `origin/master` had moved - `feature/opr-3.6` (415-447, 459) and #460 landed - so master was
+  merged into the branch first: engine conflicts in `LobbyViewModel_Host`'s resume constructor (now
+  `saveRulesVersion, priorReplay`) and `GameSaveSerializer` (`Load(json, out rulesVersion)` and
+  `LoadWithReplay(json, out rulesVersion)` share `Parse` / `Build`); app conflicts in `ScenarioLauncher.LoadStore` /
+  `LoadStoreWithReplay` (both report the #444 legacy-save line) and `Program.cs`'s Load Game and `--scenario` paths
+  (both features). The branch's #459 collided with the 3.6 branch's and yields: now **#461**. Suites after the merge:
+  engine 4620/1 skipped, app 4197; smoke exit 0 with its replay line, `--verify` PASS. Then `feature/replay` ->
+  `master` in the engine, pointer bump + merge in the superproject, pushed, remote branches deleted.
 - **2026-11-01 - marker colours.** Chris read a round's marker in its initiative's colour as the previous line's colour
   leaking (the first activator of a round is often the player who just decided). Checked: the data and the draw were
   right (`ui/m2.png`), the rule just reads wrong; round / saved / resumed markers are now white, only Game over keeps
@@ -108,7 +118,7 @@ the index lines for 449-457 are ticked and archived.
       with its notice and played to "Game over: Tie". No exceptions in either log (the network layer's usual
       "operation was canceled" teardown lines aside - `FDGHost`/`FDGClient` are untouched by the branch).
     - Found on the way, pre-existing (same on an `origin/master` build): the client draws no model bases when the
-      resumed save is a `--make-scenario` one. Filed as **#459**.
+      resumed save is a `--make-scenario` one. Filed as **#461** (filed as 459, renumbered at the master merge - see Reconciliations).
   - **Headless:** smoke OK; `--scenario` writes a replay (PASS); `--dump`, `--at 3 --make-save`, then `--scenario` on
     the cut: one recording `GameStart`, `Saved`, `Resumed`, `GameEnded`, PASS; `--replay` on the cut save PASS.
   - **Size:** three seeded 2k games, 362-406 KB (plan section 5 has the table). Not from three full GUI games - those
@@ -134,4 +144,10 @@ the index lines for 449-457 are ticked and archived.
   tally reuse among the cuts (the others were measured and judged not worth it - see Notes).
 
 ## Outcome
-(open)
+Done 2026-11-01. Verified on one machine (two processes over real TCP: save / rejoin, disconnect + recovery resume,
+client replay in the viewer) and by Chris on two machines; headless tools, size and recording cost measured (plan
+section 5; `--no-replay` for batch runs); docs written (CLAUDE.md, EngineNotes Replay section, README, plan). The
+viewer had a UX pass on Chris's review (winners named in the browser, rows in player colours without numbers, folded
+always listed, bigger EM-sized transport, Full Board mode with fading controls, white markers) and the tiny-window
+crash was fixed on the way. `feature/replay` merged into `master` in both repos after taking the OPR 3.6 merge on
+board; branches deleted. Follow-up filed: #461 (client of a resumed scenario save draws no model bases, pre-existing).

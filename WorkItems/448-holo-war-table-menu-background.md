@@ -12,6 +12,7 @@ can turn the animation down or off.
 
 Reference image: `docs/menu-background/mockup-terrain.jpg` (rendered by `mockup_generator.py terrain`;
 it holds the camera maths, terrain shapes, formation and line-of-fire checks the real version follows).
+Both deleted 2026-11-01 at the owner's request (it showed the old stylized terrain); see git history.
 
 ## Design (signed off by the owner 2026-10-30)
 
@@ -103,6 +104,20 @@ re-run the script after any colour or group change.
    `--menu-preview out.png privacy`.)
 
 ## Notes
+- 2026-11-01: **Post-close owner request: Host/Join dialogs in the menu look** (not the lobbies). New
+  `HoloUi.PushDialogStyle`/`PopDialogStyle` (panel fill, cyan border + brackets, square navy fields, cyan
+  tabs/table lines) and `HoloUi.DialogTitle` (menu bold font); buttons are `HoloUi.Button` (CANCEL ghost,
+  CREATE/CONNECT primary, REFRESH/row JOIN secondary); the join password popup wears `PushModalStyle`.
+  `--menu-preview` gained `host` and `join` states (join shows two sample servers, no network).
+- 2026-11-01: **Post-close owner request: plain-shape terrain only** (no stylized art anywhere in the
+  project). Ruins are now flat-topped blocks - a bar, or one L-shaped outline with no seam at the corner
+  (Tetris-piece style), 1.5" thick (`RuinHalfThick` 0.35 -> 0.75); broken tops and windows gone. Trees
+  are single vertical lines, 3-6" tall, 8-11 per random forest (default layout: 10 and 8). Everything
+  else (boxes, bunker, crater, units) was already basic shapes. Same day, round 2: nothing stands
+  taller than the bunker (`BunkerHeight` 3" - ruins flat at 3", containers capped, trees 2.4-3.6");
+  the crater is now a rubble field of small low boxes (still area terrain); no forest boundary line
+  (the footprint still blocks); no bunker firing slit; rim ticks only on the two labelled sides; the
+  mockup image + its generator deleted. FdgRaylib.Tests + engine suite green.
 - 2026-10-30: **Owner feedback round 2** ("looks great!"): (1) remove the scrolling line; (2) remove the
   solid line under the blaster fire; (3) Titan Lords field ONLY big single-model units; (4) things that
   move keep moving the whole battle, and a unit can move then switch to shooting; (5, mid-turn) every

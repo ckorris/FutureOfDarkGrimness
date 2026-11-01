@@ -302,6 +302,12 @@ public class ArmyBuilderScreen : IAppScreen
         foreach (RuleDrop drop in ruleAudit.Drops.Where(d =>
                      d.Reason != ERuleDropReason.Unimplemented && d.Reason != ERuleDropReason.OutdatedList))
             Warn($"'{drop.RuleName}' on {drop.Owner} will be dropped at launch: {Describe(drop.Reason)}.");
+
+        // #441 F5 (#433): an Enhanced rule whose base rule the unit does not carry attaches fine and does nothing
+        // - not a drop, so the #168 audit is silent about it. Advisory like the lines above; a hand-edited list is
+        // the only way to get here (Army Forge offers Enhanced X only where X is present).
+        foreach (string inert in EnhancedRuleAudit.Audit(_army))
+            Warn(inert);
     }
 
     private static string Describe(ERuleDropReason reason) => reason switch

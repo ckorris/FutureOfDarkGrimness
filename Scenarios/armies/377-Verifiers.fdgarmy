@@ -74,30 +74,33 @@
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
-        "requireLineOfSight": false,
+        "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
-        "kind": "statModifier",
-        "roll": "Cast",
-        "delta": -3,
-        "lifetimeScope": "NextTrigger"
+        "kind": "consumeToken",
+        "tType": {
+          "id": "SpellTokens"
+        },
+        "count": 2
       }
     },
     {
       "name": "The Founder's Curse",
-      "threshold": 1,
+      "threshold": 2,
       "target": {
         "rangeInches": 18,
         "minCount": 1,
-        "maxCount": 1,
+        "maxCount": 2,
         "targetAffinity": "Foe",
-        "requireLineOfSight": false,
+        "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "markTarget",
@@ -106,39 +109,41 @@
     },
     {
       "name": "Battle Rune",
-      "threshold": 1,
+      "threshold": 2,
       "target": {
         "rangeInches": 12,
         "minCount": 1,
-        "maxCount": 1,
+        "maxCount": 2,
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "+6\" range when shooting",
+        "ruleName": "Increased Shooting Range",
         "scope": "NextTrigger"
       }
     },
     {
       "name": "Eternal Guidance",
-      "threshold": 3,
+      "threshold": 2,
       "target": {
         "rangeInches": 18,
         "minCount": 1,
-        "maxCount": 3,
+        "maxCount": 2,
         "targetAffinity": "Foe",
-        "requireLineOfSight": false,
+        "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "markTarget",
-        "ruleName": "+6\" range when shooting"
+        "ruleName": "Increased Shooting Range"
       }
     }
   ]

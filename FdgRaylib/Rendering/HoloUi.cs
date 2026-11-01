@@ -15,8 +15,9 @@ internal enum EHoloTier
 /// <summary>
 /// The holographic command-panel look shared by the main menu and the dialogs that open over it (#448):
 /// a translucent dark panel with a thin cyan border and bright corner brackets, square buttons in three
-/// tiers, and a matching modal style for the privacy notice and the Options popup. Colours come from the
-/// signed-off mockup (<c>docs/menu-background/mockup-terrain.jpg</c>).
+/// tiers, and a matching modal style for the privacy notice, the Options popup and the Host/Join dialogs
+/// (<see cref="PushDialogStyle"/>). Colours come from the
+/// signed-off mockup (since deleted, 2026-11-01).
 /// </summary>
 internal static class HoloUi
 {
@@ -73,14 +74,14 @@ internal static class HoloUi
     /// Back buttons).
     /// </summary>
     public static bool Button(string label, Vector2 size, EHoloTier tier, UiButton.EClass sound, float scale,
-        bool centered = false)
+        bool centered = false, float? padX = null)
     {
         bool ghost = tier == EHoloTier.Tertiary;
         bool center = centered || ghost;
 
         ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 0f);
         ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, center ? new Vector2(0.5f, 0.5f) : new Vector2(0f, 0.5f));
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(22f * scale, ImGui.GetStyle().FramePadding.Y));
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(padX ?? 22f * scale, ImGui.GetStyle().FramePadding.Y));
         ImGui.PushStyleColor(ImGuiCol.Border, WithAlpha(Cyan, ghost ? 0.43f : 0.59f));
         ImGui.PushStyleColor(ImGuiCol.Text, ghost ? GhostText : ButtonText);
 
@@ -125,6 +126,63 @@ internal static class HoloUi
     {
         ImGui.PopStyleColor(4);
         ImGui.PopStyleVar(2);
+    }
+
+    private static readonly Vector4 FieldIdle = Rgba(8, 28, 50, 0.85f);
+    private static readonly Vector4 FieldHovered = Rgba(14, 48, 82, 0.90f);
+    private static readonly Vector4 FieldActive = Rgba(20, 64, 108, 0.95f);
+
+    /// <summary>
+    /// Push before the <c>BeginChild</c> of a dialog drawn as a child panel over the menu (Host, Join) and
+    /// pop after its <c>EndChild</c>: the panel look (modal fill, thin cyan border, square corners) plus
+    /// the controls inside it - square navy input fields with a cyan edge, cyan tabs, check marks and
+    /// table lines. Draw <see cref="DrawWindowBrackets"/> straight after <c>BeginChild</c>.
+    /// </summary>
+    public static void PushDialogStyle(float scale)
+    {
+        Vector4 edge = WithAlpha(Cyan, 0.55f);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, ModalFill);
+        ImGui.PushStyleColor(ImGuiCol.Border, edge);
+        ImGui.PushStyleColor(ImGuiCol.FrameBg, FieldIdle);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, FieldHovered);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgActive, FieldActive);
+        ImGui.PushStyleColor(ImGuiCol.CheckMark, Cyan);
+        ImGui.PushStyleColor(ImGuiCol.TextSelectedBg, WithAlpha(Cyan, 0.35f));
+        ImGui.PushStyleColor(ImGuiCol.Tab, SolidIdle);
+        ImGui.PushStyleColor(ImGuiCol.TabHovered, SolidHovered);
+        ImGui.PushStyleColor(ImGuiCol.TabSelected, SolidActive);
+        ImGui.PushStyleColor(ImGuiCol.TabSelectedOverline, Cyan);
+        ImGui.PushStyleColor(ImGuiCol.TableHeaderBg, TitleBar);
+        ImGui.PushStyleColor(ImGuiCol.TableBorderStrong, edge);
+        ImGui.PushStyleColor(ImGuiCol.TableBorderLight, WithAlpha(Cyan, 0.22f));
+        ImGui.PushStyleColor(ImGuiCol.TableRowBgAlt, WithAlpha(Cyan, 0.05f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, MathF.Max(1f, scale));
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.TabRounding, 0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding, 0f);
+    }
+
+    public static void PopDialogStyle()
+    {
+        ImGui.PopStyleColor(15);
+        ImGui.PopStyleVar(5);
+    }
+
+    /// <summary>A dialog's heading, centred across <paramref name="width"/>: the menu title's bold font
+    /// and colour at <paramref name="px"/> pixels (the large body font when the menu font didn't load).
+    /// Leaves the window font scale at <paramref name="restoreScale"/>.</summary>
+    public static void DialogTitle(string text, float width, float px, float restoreScale)
+    {
+        bool menuFont = RaylibRenderer.MenuFontPx > 0f;
+        ImGui.PushFont(menuFont ? RaylibRenderer.MenuBoldFont : RaylibRenderer.LargeFont);
+        if (menuFont) ImGui.SetWindowFontScale(px / RaylibRenderer.MenuFontPx);
+        ImGui.PushStyleColor(ImGuiCol.Text, TitleText);
+        ImGui.SetCursorPosX((width - ImGui.CalcTextSize(text).X) * 0.5f);
+        ImGui.TextUnformatted(text);
+        ImGui.PopStyleColor();
+        ImGui.SetWindowFontScale(restoreScale);
+        ImGui.PopFont();
     }
 
     /// <summary>Corner brackets on the current window, drawn unclipped so they sit on its border.</summary>

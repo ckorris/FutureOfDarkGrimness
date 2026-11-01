@@ -819,3 +819,23 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-31 - number 459 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `46072fd`: index + archive max **458**, `origin/feature/opr-3.6` max 458 too, no `459` branch on either remote.
 > **459 = networked client of a resumed game draws no model bases** (found by #457). No collision.
+
+> **2026-11-01 - number 459 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `170ed4c` (the orchestrator's check earlier the same day at `46072fd` agreed): index + archive max **458**, no
+> `459` branch on either remote. **459 = Tactician assumed-token
+> overlay (Artillery's unmoved -1 on move candidates, #442 D9).** Filed on `feature/opr-3.6`; the replay effort
+> on `feature/replay` interleaves above it the usual way. No collision.
+
+> **2026-11-01 - number 460 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `170ed4c`: index + archive max **458**. Both `origin/feature/opr-3.6` (Tactician assumed-token overlay) and
+> `origin/feature/replay` (client resume draws no model bases) have independently filed **459** - a collision
+> between those two branches. Merging master on the same day (3.6 merge `083b2c2`) brought the 3.6 branch's 459
+> onto master, so by the "unmerged item yields" rule the replay branch's 459 is the one to renumber; left for
+> that branch. **460 = import an Army Forge link from the lobby**,
+> on branch `460-lobby-army-import`. No collision for 460.
+
+> **2026-11-01 - 459 collision resolved: the replay branch's item is now 461.** At the `feature/replay` -> master
+> merge, `origin/master` (`65cb57b`) carried the 3.6 branch's 459 (Tactician assumed-token overlay) and 460
+> (lobby Army Forge import); index + archive max **460**. The replay branch's unmerged 459 (networked client of a
+> resumed scenario save draws no model bases) yields: renumbered **461**, file
+> `WorkItems/461-client-resume-models-not-drawn.md`, index line and the #457 note updated. No code references.

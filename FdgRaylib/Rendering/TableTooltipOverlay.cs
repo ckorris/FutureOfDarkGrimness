@@ -21,6 +21,11 @@ namespace FdgRaylib.Rendering;
 /// </summary>
 public class TableTooltipOverlay
 {
+    /// <summary>#441: wrap width for the rule and token descriptions in the unit hover, in em. It was a flat 300px,
+    /// which at a 2x UI scale squeezed 3.6's longer rule texts into a column of a few words per line; 17em is the
+    /// same ~300px at the default 18px font.</summary>
+    internal const float DescriptionWrapEm = 17f;
+
     private ITableState? _tableState;
 
     // Same animated-position source the model bases and spotlight use, so name labels glide with the
@@ -192,7 +197,7 @@ public class TableTooltipOverlay
             {
                 var w = grp.First();
                 string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
-                string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
+                string range = WeaponStatFormatter.RangeLabel(w, "Melee");
                 string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
                 string wRules = WeaponStatFormatter.RuleList(w);
                 string wRuleSuffix = wRules.Length > 0 ? $"  {wRules}" : "";
@@ -218,8 +223,10 @@ public class TableTooltipOverlay
                 if (!string.IsNullOrEmpty(rule.Definition.Description))
                 {
                     ImGui.Indent();
-                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + 300f);
-                    ImGui.TextDisabled(rule.Definition.Description);
+                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + UiChrome.Em(DescriptionWrapEm));
+                    // #441 F7: the description plus the "Base rule: X." line for an Enhanced rule whose text never
+                    // names its base - the same text every other rule hover shows.
+                    ImGui.TextDisabled(EnhancedRuleGate.HoverDescription(rule.Definition, _ruleResolver));
                     ImGui.PopTextWrapPos();
                     ImGui.Unindent();
                 }
@@ -239,7 +246,7 @@ public class TableTooltipOverlay
                 if (!string.IsNullOrEmpty(ti.Description))
                 {
                     ImGui.Indent();
-                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + 300f);
+                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + UiChrome.Em(DescriptionWrapEm));
                     ImGui.TextWrapped(ti.Description);
                     ImGui.PopTextWrapPos();
                     ImGui.Unindent();
@@ -275,7 +282,7 @@ public class TableTooltipOverlay
         {
             var w = grp.First();
             string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
-            string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
+            string range = WeaponStatFormatter.RangeLabel(w, "Melee");
             string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
             string rules = WeaponStatFormatter.RuleList(w);
             string ruleSuffix = rules.Length > 0 ? $"  {rules}" : "";
@@ -520,8 +527,9 @@ public class TableTooltipOverlay
             float cy = _originY + (_tableH - p.z) * _scale;
 
             // Attack radii: one circle per distinct weapon range this model carries (melee weapons have no
-            // shooting radius -- the charge circle covers that reach).
-            foreach (var grp in m.Weapons.Where(w => w.RangeInches > 0f)
+            // shooting radius -- the charge circle covers that reach). #424: the seam, so an Assault pistol
+            // draws its shooting ring like any gun and its swing rides the charge circle.
+            foreach (var grp in m.Weapons.Where(w => w.IsRanged())
                                          .GroupBy(w => w.RangeInches)
                                          .OrderBy(g => g.Key))
             {

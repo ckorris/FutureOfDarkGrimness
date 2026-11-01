@@ -69,8 +69,12 @@ public class HazardousShippedDataTests
             "the unmodified hit dice are only readable at the hook that just rolled them.");
         Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor),
             "the SHOOTER is the one that overheats, so the rule sits in the Actor seat.");
-        Assert.That(entry.Effect, Is.EqualTo(new Effect.SelfWoundOnUnmodifiedRoll(OnRollValue: 1, Count: 1)),
-            "'takes one wound on unmodified rolls of 1 to hit' - one wound, on 1s.");
+        // #434 (3.6): "this model takes one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule".
+        Assert.That(entry.Effect, Is.EqualTo(new Effect.SelfWoundOnUnmodifiedRoll(OnRollValue: 1, Count: 1,
+                CountFromBlastOrDeadly: true)),
+            "one wound on each 1, or the weapon's Blast(X) / Deadly(X)");
+        Assert.That(rule.Description, Is.EqualTo("Gets AP(4), but on unmodified results of 1 to hit this model takes " +
+            "one wound, or X wounds if this weapon has the Blast(X)/Deadly(X) rule."));
     }
 
     // ---- What it produces in play ---------------------------------------------------------------------
@@ -144,14 +148,18 @@ public class HazardousShippedDataTests
         }
     }
 
+    // #438: the 3.6.0 census (2026-10-30 snapshots, weapons per unit, base + option): Ratmen Clans' 14 Plas-Charge
+    // weapons and Goblin Reclaimers' 16 Atom-Smasher weapons (3.5: 15, Ratmen only).
     [Test]
-    public void EveryReference_IsAWeaponInRatmenClans()
+    public void EveryReference_IsAWeapon_InRatmenClansOrGoblinReclaimers()
     {
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites.Count, Is.EqualTo(15),
-            "the audit's 15 references - a change here means the corpus moved, not the engine");
-        Assert.That(sites.Select(s => s.Book).Distinct(), Is.EquivalentTo(new[] { "RatmenClans" }));
+        Assert.That(sites.Count, Is.EqualTo(30),
+            "the 3.6.0 census's 30 references - a change here means the corpus moved, not the engine");
+        Assert.That(sites.Count(s => s.Book == "RatmenClans"), Is.EqualTo(14));
+        Assert.That(sites.Select(s => s.Book).Distinct(),
+            Is.EquivalentTo(new[] { "GoblinReclaimers", "RatmenClans" }));
     }
 
     [Test]

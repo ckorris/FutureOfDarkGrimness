@@ -162,7 +162,7 @@ public class ReplayToolTests
         Assert.That(StoreOnly(File.ReadAllText(outPath)), Is.EqualTo(GameSaveSerializer.Save(player.Store)), "the state step 3 was asked in");
 
         // #453: with the replay up to the cut, closed by a Saved marker.
-        var (store, prior) = ScenarioLauncher.LoadStoreWithReplay(outPath);
+        var (store, prior) = ScenarioLauncher.LoadStoreWithReplay(outPath, out _);
         ReplayDocument embedded = Read(prior!);
         long cut = timeline.Steps[3].RequestSeq;
         Assert.That(embedded.Events.Select(e => e.Seq), Is.EqualTo(Enumerable.Range(0, (int)cut + 1).Select(i => (long)i)));

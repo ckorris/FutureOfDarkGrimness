@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 // #197 Dash - the shipped data (6 refs, all in Custodian Brothers via the Envoy Banner option: 2 base +
-// 4 Aura). The trigger, the no-Yes/No prompting and the all-models gate are pinned by the engine's
+// 4 Aura). The trigger, the no-Yes/No prompting and the most-models gate are pinned by the engine's
 // DashRuleIntegrationTests; these pin the JSON, where the failure modes are silent ones - a rule authored
 // at the wrong hook still validates and lints, and an aura pointing at nothing leaves 4 of the 6 refs dead
 // while the other 2 keep working.
@@ -33,8 +33,8 @@ public class DashShippedDataTests
             "'when a unit ... ends its activation' - authored at the activation-START hook it would still " +
             "validate and lint, and would silently be Bounding");
         Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerRound>(), "'once per round'");
-        Assert.That(ability.AvailableWhen, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-            "#267: a unit-wide reposition must gate on all models, or one joined hero moves the squad");
+        Assert.That(ability.AvailableWhen, Is.TypeOf<Condition.MostModelsHaveThisRule>(),
+            "#267/#428: a unit-wide reposition must gate on most models, or one joined hero moves the squad");
 
         var effect = (Effect.RepositionAtActivation)ability.Effect;
         Assert.That(effect.Distance, Is.InstanceOf<DiceExpression.D3>());

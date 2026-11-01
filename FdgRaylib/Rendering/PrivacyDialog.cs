@@ -25,7 +25,7 @@ public sealed class PrivacyDialog
         "\n" +
         "With your permission, I'd like to collect some data on when and how you play. It can't be traced back to you, and there's nothing in it worth selling.\n" +
         "\n" +
-        "The biggest joy in making a game like this is knowing that people are playing and enjoying it. This is one way for me to do that. So I'd appreciate you letting me, but it's perfectly understandable if you'd rather not.\n" +
+        "This helps me understand how people play, so I know where to focus my efforts. But more than that, the biggest joy in making a game is knowing that people are playing it. This is one way for me to do that. So I'd appreciate you letting me, but it's perfectly understandable if you'd rather not.\n" +
         "\n" +
         "Either way, thanks for playing!";
 

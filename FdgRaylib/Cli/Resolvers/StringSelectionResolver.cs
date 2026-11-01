@@ -48,7 +48,8 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
                 foreach (StringSelectionRequest.OptionRule rule in rules)
                 {
                     if (string.IsNullOrWhiteSpace(rule.Description)) continue;
-                    Console.WriteLine($"        {rule.Name} - {rule.Description}");
+                    // #441 F7: a description may carry a second line ("Base rule: X."); keep it under the rule.
+                    Console.WriteLine($"        {rule.Name} - {rule.Description.Replace("\n", "\n          ")}");
                 }
             }
 
@@ -74,7 +75,7 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
                         Console.WriteLine($"          {rule.Name} - "
                             + (string.IsNullOrWhiteSpace(rule.Description)
                                 ? "not described; the engine may not enforce this rule."
-                                : rule.Description));
+                                : rule.Description.Replace("\n", "\n            ")));
                     }
                 }
             }

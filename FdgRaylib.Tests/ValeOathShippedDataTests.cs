@@ -14,12 +14,10 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #376 S2 - Vale Oath Boost (+ Aura) over the DATA as shipped. The engine's ClearTokenOnRollTests
-// prove the threshold fold (base 4+ plus Boost 3+ = ONE roll at 3+); these prove the supplement
-// authors the pair the way that fold expects: the Boost carries the FULL boosted band (3, the
-// min-threshold convention - an increment here would silently win every fold), it gates on the unit
-// actually having Vale Oath (a Boost granted to a unit without the base must not conjure a roll),
-// and the Aura confers the Boost.
+// #376 S2 - Vale Oath over the DATA as shipped: the base rule's Shaken-clear roll at 4+ through the real fold.
+// #432 deleted Vale Oath Boost (+ Aura) with the rest of the 3.5 Boost family (OPR 3.6 dropped them; #433's
+// Enhanced family replaces the mechanic), so only the base-rule case remains here. The engine's
+// ClearTokenOnRollTests still pin the min-threshold fold itself.
 [TestFixture]
 public class ValeOathShippedDataTests
 {
@@ -27,64 +25,20 @@ public class ValeOathShippedDataTests
         BookRuleSupplement.LoadDefinitions(File.ReadAllText(
             Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "AofRuleSupplement.json")));
 
-    private static SpecialRuleDefinition Definition(string name) =>
-        Supplement().Single(r => r.Name == name);
-
-    // ---- Structure ----------------------------------------------------------------------------------
-
-    [Test]
-    public void ValeOathBoost_RollsAtThree_GatedOnShakenAndTheBaseRule()
-    {
-        HookEntry entry = Definition("Vale Oath Boost").Passive.Single();
-        Assert.That(entry.HookID, Is.EqualTo(EHookID.Round_OnRoundStart));
-
-        var and = (Condition.And)entry.Condition;
-        Assert.That(((Condition.TokenPresent)and.Left).TType, Is.EqualTo(TokenType.Shaken));
-        Assert.That(((Condition.UnitHasRule)and.Right).RuleName, Is.EqualTo("Vale Oath"));
-
-        var effect = (Effect.ClearTokenOnRoll)entry.Effect;
-        Assert.That(effect.TType, Is.EqualTo(TokenType.Shaken));
-        Assert.That(effect.MinRoll, Is.EqualTo(3),
-            "min-threshold folds take the boosted value as authored, never an increment.");
-    }
-
-    [Test]
-    public void ValeOathBoostAura_ConfersTheBoost()
-    {
-        HookEntry entry = Definition("Vale Oath Boost Aura").Passive.Single();
-        Assert.That(entry.HookID, Is.EqualTo(EHookID.Lifecycle_OnUnitCreated));
-        Assert.That(((Effect.Aura)entry.Effect).RuleName, Is.EqualTo("Vale Oath Boost"));
-    }
-
-    // ---- The fold over shipped data -----------------------------------------------------------------
-
-    [Test]
-    public void ValeOathWithBoost_FoldsToOneRollAtThree()
-    {
-        var harness = new Harness("Vale Oath", "Vale Oath Boost");
-        IUnit unit = harness.BuildShakenUnit("Vale Oath", "Vale Oath Boost");
-
-        Assert.That(harness.FoldedEntries(unit), Is.EqualTo(new[] { (TokenType.Shaken, 3) }),
-            "base + Boost is a single roll at the boosted band, never two chances.");
-    }
-
     [Test]
     public void ValeOathAlone_RollsAtFour()
     {
-        var harness = new Harness("Vale Oath", "Vale Oath Boost");
+        var harness = new Harness("Vale Oath");
         IUnit unit = harness.BuildShakenUnit("Vale Oath");
 
         Assert.That(harness.FoldedEntries(unit), Is.EqualTo(new[] { (TokenType.Shaken, 4) }));
     }
 
     [Test]
-    public void BoostWithoutTheBaseRule_ConjuresNoRoll()
+    public void TheBoostIsGone()
     {
-        var harness = new Harness("Vale Oath", "Vale Oath Boost");
-        IUnit unit = harness.BuildShakenUnit("Vale Oath Boost");
-
-        Assert.That(harness.FoldedEntries(unit), Is.Empty,
-            "the Boost modifies Vale Oath's roll; without the base rule there is no roll to modify.");
+        Assert.That(Supplement().Select(r => r.Name), Has.None.StartsWith("Vale Oath Boost"),
+            "#432: OPR 3.6 dropped Vale Oath Boost and its Aura.");
     }
 
     /// <summary>Live resolver + evaluator over the shipped AoF definitions.</summary>

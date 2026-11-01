@@ -20,4 +20,19 @@ public static class WeaponStatFormatter
     /// <summary>A weapon's special-rule display names joined, or "" when the weapon carries none.</summary>
     public static string RuleList(IWeapon weapon) =>
         RuleList(weapon.RuleDefinitions.Select(r => r.RequestedName));
+
+    /// <summary>
+    /// #424: the compact "what is this weapon for" label the hover, the wound dialog and the unit picker print
+    /// next to a weapon's name - <c>24"</c> for a gun, <paramref name="meleeWord"/> for a close-combat weapon,
+    /// and <c>12"/melee</c> for a weapon that is BOTH (Assault), so the player can see the pistol swings too.
+    /// Reads the classification seam (<c>IsRanged</c> / <c>IsMelee</c>), never the range directly.
+    /// </summary>
+    public static string RangeLabel(IWeapon weapon, string meleeWord)
+    {
+        bool ranged = weapon.IsRanged();
+        bool melee = weapon.IsMelee();
+        string range = $"{weapon.RangeInches:0.#}\"";
+        if (ranged && melee) return $"{range}/{meleeWord}";
+        return ranged ? range : meleeWord;
+    }
 }

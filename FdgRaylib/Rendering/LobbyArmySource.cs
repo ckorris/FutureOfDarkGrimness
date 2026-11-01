@@ -38,5 +38,5 @@ public static class LobbyArmySource
     /// the host used to substitute a 100-pt "Test Army" stub, silently putting a player in a game with
     /// an army they never picked.</summary>
     public const string NoArmyTooltip =
-        "No army assigned.\nLoad one (or roll Random Army). Launch is blocked until every slot has one.";
+        "No army assigned.\nImport or Load one (or roll Random). Launch is blocked until every slot has one.";
 }

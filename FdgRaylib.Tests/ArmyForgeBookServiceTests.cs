@@ -17,7 +17,7 @@ public class ArmyForgeBookServiceTests
     // 5 on the protector). "free" is an explicit 0. "mystery" has neither - genuinely unpriced.
     private const string OprJson = """
     {
-      "name": "Cost Legion", "versionString": "3.5.3",
+      "name": "Cost Legion", "versionString": "3.6.0",
       "units": [
         { "id": "noble",    "name": "Noble",    "size": 1, "cost": 45, "quality": 3, "defense": 4, "upgrades": ["P1"] },
         { "id": "protector","name": "Protector","size": 1, "cost": 35, "quality": 4, "defense": 5, "upgrades": ["P1"] }
@@ -87,5 +87,22 @@ public class ArmyForgeBookServiceTests
 
         Assert.That(Opt(book, "Noble", "gone").Cost, Is.EqualTo(5), "an option the live book lacks is untouched");
         Assert.That(report.Unmatched, Is.EqualTo(1));
+    }
+
+    // #437: OPR 3.6's official index lists a 0-unit PARENT row per daemon family ("Wormhole Daemons" / "Rift
+    // Daemons") beside the real "Daemons of X" books; the index map leaves those rows out. Rows trimmed from the
+    // live 2026-10-29 index; a row without unitCount (older shape) is kept.
+    [Test]
+    public void IsParentIndexEntry_IsTheZeroUnitRow()
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse("""
+            [ {"uid":"i4ZEAmqeFSfAcw3f","name":"Wormhole Daemons","unitCount":0,"versionString":"3.6.0"},
+              {"uid":"04z57ua0bwth37zh","name":"Daemons of Change","unitCount":21,"versionString":"3.6.0"},
+              {"uid":"x","name":"No Count Field"} ]
+            """);
+        var rows = doc.RootElement.EnumerateArray().ToList();
+        Assert.That(ArmyForgeBookService.IsParentIndexEntry(rows[0]), Is.True);
+        Assert.That(ArmyForgeBookService.IsParentIndexEntry(rows[1]), Is.False);
+        Assert.That(ArmyForgeBookService.IsParentIndexEntry(rows[2]), Is.False);
     }
 }

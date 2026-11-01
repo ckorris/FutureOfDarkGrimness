@@ -5,9 +5,19 @@
 <img width="3829" height="2066" alt="Screenshot from 2026-08-15 15-29-15" src="https://github.com/user-attachments/assets/57c96d44-4360-4ef7-9077-51a42c22e0f0" />
 
 
-This is GrimDark Future as a video game. Use armies imported from the official Army Forge to play a quick 2k solo game in 20 minutes with the bot, battle your friends online, or team up with them for a comp-stomp. It’s the simplest, fastest way to play. 
+This is GrimDark Future (and Age of Fantasy) as a video game. Use armies imported from the official Army Forge to play a quick 2k solo game in 20 minutes with the bot, battle your friends online, or team up with them for a comp-stomp. It’s the simplest, fastest way to play. 
 
 This is a fan project that’s not officially affiliated with OnePageRules.
+
+<br>
+
+## Rules Version: OPR 3.6.0
+
+This release plays the OnePageRules **v3.6.0** core rules, for both Grimdark Future and Age of Fantasy. The Army Forge screen comes with all **48 Grimdark Future and 40 Age of Fantasy** official army books, under their 3.6 names: **Voidspace Stalkers** is new, the Wormhole Daemons of Change / Lust / Plague / War books (Rift Daemons in Age of Fantasy) are now **Daemons of Change / Lust / Plague / War**, and Saurian Starhost is now **Saurian Starhosts**.
+
+**What 3.6 changed for players:** melee reach is 3" instead of 2", and the side that *took* the most wounds loses the melee. Impact is rolled per model before anyone strikes, and Counter's "fewer Impact dice" half is now its own rule, Brace. Fatigued units no longer trigger "on a 6" rules with their 6s. There are new core rules: Parry (Age of Fantasy hand weapons), Assault weapons that count as both ranged and melee, Cumbersome artillery, and Spell Amplifier. Indirect only ignores line of sight when holding, but no longer gets -1 to hit after moving. Scouts deploy within 9" of their zone and over 9" from enemies. Unit-wide rules like Fearless, Stealth and Regeneration need *most* models to have them instead of all. Tough(9)+ Heroes lend their Quality for morale tests to units within 6". Dangerous terrain rolls as many dice as the wounds it would take to destroy the unit. Transports are entered by touching them. Each spell now says for itself whether it needs line of sight. Army building adds max. 1 unit per 200pts and max. 1 model or Tough per 20pts. Every army book was re-priced, with many weapons renamed and new spells.
+
+**Older files:** army files (`.fdgarmy`) made for 3.5 still load and play, but with 3.6 rules. The lobby shows an amber "built for OPR v3.5.x; it plays with 3.6 rules" notice when one is picked. Army Forge share links import as 3.6 lists, since Army Forge now serves every list with its 3.6 books. Saved games (`.fdgsave`) from earlier versions load too and play with 3.6 rules, keeping the 3.5 armies they were saved with; the resume lobby shows an amber "This save predates the OPR 3.6 upgrade; it plays with 3.6 rules" notice (saves now carry the rules version they were written under, so a save from another ruleset is named the same way). It never blocks the resume, but a fresh game is still the cleaner option.
 
 <br>
 
@@ -93,7 +103,9 @@ If you want to use an army from OnePageRules' Army Forge, then open that army. I
 <img width="1219" height="241" alt="Screenshot from 2026-08-15 15-58-12" src="https://github.com/user-attachments/assets/7190af7c-afeb-4d4b-aee3-2babb320e1ec" />
 
 
-Copy the link, then in Future of Dark Grimness, open the Army Forge. Press Import in the top right, and paste the link in the prompt. Then press Save As and put it in your Armies folder.
+Copy the link, then in Future of Dark Grimness, press **Import** on your row in the game lobby (next to Load Army) and paste the link. The list fetches by itself and shows any problems; press Import to play it. Leave "Save a copy to my armies folder" ticked to keep it for next time.
+
+You can also import from the Army Forge screen: press Import in the top right, paste the link, then press Save As and put it in your Armies folder (or Open in Forge to edit it).
 
 <img width="1090" height="442" alt="Screenshot from 2026-08-15 15-59-35" src="https://github.com/user-attachments/assets/150a5b67-9591-4d37-914f-14734689c659" />
 <img width="925" height="651" alt="Screenshot from 2026-08-15 15-59-46" src="https://github.com/user-attachments/assets/feaaa640-31a6-4e59-8d67-6fce54077578" />
@@ -134,7 +146,7 @@ Here’s places where I most expect bugs:
 
 There's a few things yet to come: 
 
-- **Age of Fantasy armies:** Sorry, I don't play fantasy, so this has not been a priority. I will add them eventually.
+- **3.6 terrain types:** Dense, Unstable, Steep and Climbable terrain from the 3.6 Beginner's Guide are not in yet. Terrain plays with the existing types.
 - **3D movement**: The engine _mostly_ supports three dimensions, but the UI doesn't have a good way of doing that since it's all rendered in 2D. That said, if someone used the rules engine with a 3D game engine, it's mostly a matter of implementing colliders.
 - **Campaign Rules and Multi-Army Lists:** I intend to do both. 
 - **Battle reports:** Replays are in; turning one into a battle report would be great.

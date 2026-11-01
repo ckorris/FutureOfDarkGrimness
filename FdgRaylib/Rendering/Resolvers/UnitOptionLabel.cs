@@ -27,6 +27,17 @@ public static class UnitOptionLabel
     public static (string Heading, IReadOnlyList<string> Details) Build(
         string displayName, int liveModelCount, int quality, int defense,
         IReadOnlyList<(string Name, float RangeInches, string Rules)> distinctWeapons)
+        => BuildWithRangeLabels(displayName, liveModelCount, quality, defense,
+            distinctWeapons.Select(w => (w.Name, w.RangeInches > 0f ? $"{w.RangeInches:0.#}\"" : "melee", w.Rules)).ToList());
+
+    /// <summary>
+    /// #424: the form the unit picker uses - the range column is a precomputed label
+    /// (<see cref="WeaponStatFormatter.RangeLabel"/>: <c>24"</c>, <c>melee</c>, or <c>12"/melee</c> for a weapon
+    /// that is both), so an Assault pistol reads as the two things it is.
+    /// </summary>
+    public static (string Heading, IReadOnlyList<string> Details) BuildWithRangeLabels(
+        string displayName, int liveModelCount, int quality, int defense,
+        IReadOnlyList<(string Name, string RangeLabel, string Rules)> distinctWeapons)
     {
         string plural = liveModelCount == 1 ? "model" : "models";
         var details = new List<string>
@@ -34,7 +45,7 @@ public static class UnitOptionLabel
             $"{liveModelCount} {plural}, Q{quality}+ D{defense}+",
             distinctWeapons.Count > 0
                 ? string.Join(", ", distinctWeapons.Select(w =>
-                    $"{w.Name} ({(w.RangeInches > 0f ? $"{w.RangeInches:0.#}\"" : "melee")}{(string.IsNullOrEmpty(w.Rules) ? "" : $", {w.Rules}")})"))
+                    $"{w.Name} ({w.RangeLabel}{(string.IsNullOrEmpty(w.Rules) ? "" : $", {w.Rules}")})"))
                 : "(no weapons)",
         };
         return (displayName, details);

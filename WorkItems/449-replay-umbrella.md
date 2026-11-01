@@ -1,6 +1,6 @@
 # 449 — Replay system umbrella
 
-**Status**: in-progress (planning done 2026-10-30; no code yet)
+**Status**: done 2026-11-01 - all of #450-#457 merged into `master`
 **Related**: plan `docs/replay-plan.md`; sub-items #450-#457; parallel effort #415 (OPR 3.6 upgrade, `feature/opr-3.6`)
 
 ## Goal
@@ -30,4 +30,7 @@ periodic `master` -> `feature/replay` merges (after each sub-item closes), the i
   the two efforts do not collide.
 
 ## Outcome
-(open)
+Done 2026-11-01. Every sub-item (#450-#457) shipped on `feature/replay` and merged into `master` in both repos
+with #457, after the OPR 3.6 upgrade (#415) had landed - the merge conflicts were the ones plan section 8
+predicted (resume constructor, save loader, `Program.cs` launch paths). Every game now writes a replay, saves carry
+theirs, clients record too, and the main menu's Replays opens any of them on the table. Open follow-up: #461.

@@ -54,7 +54,7 @@ public class RegenerativeStrengthShippedDataTests
         SpecialRuleDefinition rule = Supplement();
 
         Assert.That(rule.Activated, Is.Empty);
-        HookEntry entry = rule.Passive.Single();
+        HookEntry entry = rule.Passive.Single(e => e.HookID == EHookID.Lifecycle_OnWoundIgnored);
 
         Assert.That(entry.HookID, Is.EqualTo(EHookID.Lifecycle_OnWoundIgnored),
             "the hook was declared since #042 but had no context and no fire site until this slice - a " +
@@ -75,7 +75,8 @@ public class RegenerativeStrengthShippedDataTests
     [Test]
     public void TheMarker_IsAManualOnlyAccumulator_OfItsOwnTokenType()
     {
-        var effect = (Effect.GrantIgnoredWoundMarker)Supplement().Passive.Single().Effect;
+        var effect = (Effect.GrantIgnoredWoundMarker)Supplement().Passive
+            .Single(e => e.HookID == EHookID.Lifecycle_OnWoundIgnored).Effect;
 
         Assert.That(effect.TType.Id, Is.EqualTo(MarkerTokenId),
             "its own type, not the shared AccumulatorTokens pool that Spell Accumulator lends from");
@@ -83,6 +84,24 @@ public class RegenerativeStrengthShippedDataTests
             "and the engine constant the read side looks up must be the same type the data grants");
         Assert.That(effect.Clear, Is.InstanceOf<TokenClearTrigger.ManualOnly>(),
             "markers are never spent and last the whole game - a RoundEnd sweep would erase them nightly");
+    }
+
+    // #434: the 3.6 consumer - "Once per round, when it's this model's turn to strike in melee, roll as many dice as
+    // tokens on it before attacking, unless this unit is Fatigued. For each 4+ the target takes one wound." Rule data
+    // now (the 3.5 "+X attacks on one weapon" stage code is gone): the token total as one pool at 4+, rolled by
+    // ResolveRavageWoundsStage with Ravage's once-per-round gate.
+    [Test]
+    public void The36Consumer_IsATokenSizedFourPlusWoundPool_BeforeStriking()
+    {
+        SpecialRuleDefinition rule = Supplement();
+        HookEntry strike = rule.Passive.Single(e => e.HookID == EHookID.Melee_OnChargeContact);
+
+        Assert.That(strike.Condition, Is.EqualTo(new Condition.Not(new Condition.CountsAsFatiguedInMelee())));
+        Assert.That(strike.Effect, Is.EqualTo(new Effect.DealAutoWounds(
+            new ValueSource.TokenTotal(TokenType.RegenerativeStrengthMarker), SuccessThreshold: 4, PerModel: false)));
+        Assert.That(rule.Description, Is.EqualTo("Place one token on this model when it ignores a wound. Once per " +
+            "round, when it's this model's turn to strike in melee, roll as many dice as tokens on it before attacking, " +
+            "unless this unit is Fatigued. For each 4+ the target takes one wound."));
     }
 
     // ---- The corpus census -----------------------------------------------------------------------------
@@ -107,9 +126,15 @@ public class RegenerativeStrengthShippedDataTests
 
                 if (hit)
                 {
+                    // #438: plus whatever rides in the SAME grant - the 3.6 Carnivo-Rex's "Psy-Nemesis (Regenerative
+                    // Strength, Spell Resistance)" brings its own wound-ignore source.
+                    IEnumerable<SpecialRuleEntry> granted = unit.Sections.SelectMany(section => section.Options)
+                        .Where(option => option.RulesGained.Any(Names) || option.ItemsGained.Any(item => item.Rules.Any(Names)))
+                        .SelectMany(option => option.RulesGained.Concat(option.ItemsGained.SelectMany(item => item.Rules)));
+                    List<SpecialRuleEntry> rules = unit.Rules.Concat(granted).ToList();
                     yield return new Site(bookName, unit.Name, unit.MinModels, unit.MaxModels,
-                        unit.Rules.OfType<SpecialRuleEntry_Core>().Select(r => r.Name)
-                            .Concat(unit.Rules.OfType<SpecialRuleEntry_CoreNumeric>().Select(r => r.Name))
+                        rules.OfType<SpecialRuleEntry_Core>().Select(r => r.Name)
+                            .Concat(rules.OfType<SpecialRuleEntry_CoreNumeric>().Select(r => r.Name))
                             .ToList());
                 }
             }
@@ -128,9 +153,12 @@ public class RegenerativeStrengthShippedDataTests
         // pool before allocation decides which model takes them.
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites.Count, Is.EqualTo(2), "the audit's 2 references");
+        // #438: the 3.6.0 GDF census (2026-10-30 snapshots) - Alien Hives' carrier is now the Carnivo-Rex (3.5:
+        // Psycho-Rex); the two AoF Dark Elves sites (Avatar of Flames, Hydra) are single-model too but outside this
+        // GDF census.
+        Assert.That(sites.Count, Is.EqualTo(2), "the 3.6.0 census's 2 GDF references");
         Assert.That(sites.Select(s => s.Unit),
-            Is.EquivalentTo(new[] { "Engine of Suffering", "Psycho-Rex" }));
+            Is.EquivalentTo(new[] { "Engine of Suffering", "Carnivo-Rex" }));
         Assert.That(sites.Select(s => s.Book),
             Is.EquivalentTo(new[] { "DarkElfRaiders", "AlienHives" }));
 
@@ -149,7 +177,7 @@ public class RegenerativeStrengthShippedDataTests
         // Standing lesson 1 in census form: the rule resolving is not the rule working. Regenerative
         // Strength triggers on ignoring a wound, so a carrier with no wound-ignore source would carry a
         // rule that is structurally live and practically inert.
-        string[] woundIgnoreRules = { "Regeneration", "Resistance" };
+        string[] woundIgnoreRules = { "Regeneration", "Spell Resistance" }; // #438: 3.6 renamed Resistance
 
         foreach (Site site in Sites())
         {
@@ -166,7 +194,8 @@ public class RegenerativeStrengthShippedDataTests
         foreach (string book in new[] { "DarkElfRaiders", "AlienHives" })
         {
             SpecialRuleDefinition embedded = LoadBook(book).RuleDefinitions.Single(d => d.Name == RuleName);
-            HookEntry entry = embedded.Passive.Single();
+            // #438: the 3.6 copy carries the #434 consumer too, so pick the marker entry by its hook.
+            HookEntry entry = embedded.Passive.Single(e => e.HookID == EHookID.Lifecycle_OnWoundIgnored);
 
             Assert.That(entry.Effect, Is.InstanceOf<Effect.GrantIgnoredWoundMarker>(), book);
             Assert.That(entry.HookID, Is.EqualTo(EHookID.Lifecycle_OnWoundIgnored), book);

@@ -277,3 +277,19 @@ Detail files (where they exist) live beside this file as `NNN-slug.md`.
 - [x] 453 — Replay inside `.fdgsave`: a save embeds the replay so far (`Saved` marker), a resume continues it
   (`Resumed` + snapshot), a resumed game's clients get the history on the launch message. **Done 2026-10-31** on
   `feature/replay`; verified in the GUI (save -> Load -> finish = one replay). ([WorkItems/453](WorkItems/453-replay-in-save.md))
+- [x] 416 — 3.6 reference snapshot (90 Army Forge books, core rules, common-rules API) + `scripts/census-opr-books.py` + coverage baseline. Done 2026-10-29. ([WorkItems/416](416-opr-3-6-reference-snapshot-census.md))
+- [x] 419 — Melee result 3.6: loser = most wounds TAKEN this activation; Fear(X) adds to the enemy's taken count. Done 2026-10-29; owner review asked on D1/D3. ([WorkItems/419](419-melee-result-wounds-taken.md))
+- [x] 427 — Core small batch 3.6: Unstoppable, Aircraft, Flying, Transport contact-to-enter, Spell Amplifier, Immobile/Strider confirm. Done 2026-10-29; owner review asked on D1, D2, D3, D5, D6. ([WorkItems/427](427-core-small-batch-3-6.md))
+- [x] 428 — "Most models have this rule" replaces every "all models" gate (Fearless, Regeneration, Stealth, Artillery, ~40 faction rules). Done 2026-10-29; owner review asked on D2/D3. ([WorkItems/428](428-most-models-gating.md))
+- [x] 431 — New weapon-rule family: Anti-Cover, Anti-Regen, Smash, Pierce, Fracture, Fragment, Puncture, Obliterate, Decimate, Destructive, Disintegrate, Demolish, Purge, Reap, Scourge, Unwieldy, Imprecise, Crossing Strike. Done 2026-10-29; owner review asked on D2/D3/D5/D8. ([WorkItems/431](431-new-weapon-rules-3-6.md))
+- [x] 432 — Range-conditional army-wide rules: the "over 9"/6" when shooting/charging (or shot/charged)" family + range debuffs/buffs; Boosts deleted. Done 2026-10-29; owner review asked on D1/D2/D4/D5. ([WorkItems/432](432-range-conditional-army-rules.md))
+- [x] 435 — AoF supplement sweep to 3.6 + book overrides (all moot, deleted) + AoF core: Sergeant AP, Banner, Musician, Brace in Melee. ([WorkItems/435](435-aof-supplement-3-6.md))
+  Done 2026-10-30; Enhanced family -> #433, Parry -> #423; owner review asked on D2, D3, D7.
+- [x] 436 — Remove dropped 3.5 definitions (catalog + supplements) and bring every kept description to 3.6 wording for the glossary. Done 2026-10-30; Unique -> #438; owner review asked on D1, D2, D3, D5, D6. ([WorkItems/436](436-drop-3-5-definitions-text-parity.md))
+- [x] 437 — Importer 3.6: snapshot shape, `OPR v3.6.0` stamp, renamed/parent books, share-link version gate, Assault weapon class. Done 2026-10-30; owner review asked on D1, D2. ([WorkItems/437](437-importer-3-6.md))
+- [x] 438 — Re-bake all 88 books from the 3.6.0 snapshots: unified bake script, post-bake passes, effect-set keywords. Done 2026-10-30; owner review asked on D1-D5. ([WorkItems/438](438-rebake-books-3-6.md))
+- [x] 439 — Spells 3.6: parser grammar (LoS clause, weapon-scoped grants, new rule names), re-import, per-book parity verification. ([WorkItems/439](439-spells-3-6.md))
+  Done 2026-10-31; 527/528 spells (one truncated at source), parity 527/527; owner review asked on D1-D5.
+- [x] 449 — Replay system umbrella: plan, ground rules, master merges into the branch, release gate. **Done 2026-11-01**, merged into `master`. ([WorkItems/449](WorkItems/449-replay-umbrella.md))
+- [x] 456 — GUI replay viewer (main menu -> Replays): browser, table view with real beats, play/pause/step/seek/speed, decision list + details. **Done 2026-11-01**, merged into `master`. ([WorkItems/456](WorkItems/456-replay-gui-viewer.md))
+- [x] 457 — Replay verification (two-machine networked, resume, disconnect, size, perf), docs, merge `feature/replay` -> `master` in both repos. **Done 2026-11-01**, merged into `master`. ([WorkItems/457](WorkItems/457-replay-verify-and-merge.md))

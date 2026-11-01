@@ -1,6 +1,6 @@
 # 456 — GUI replay viewer
 
-**Status**: built 2026-10-31 (engine cc57a476 on `feature/replay`); Chris's hand-verify of the acceptance list open (forks F1, F2 answered 2026-10-30 - see Decisions)
+**Status**: done 2026-11-01 - hand-verified by Chris; merged into `master` with #457 (forks F1, F2 answered 2026-10-30 - see Decisions)
 **Related**: plan `docs/replay-plan.md` sections 4.3, 4.4, 7; depends on #454, #452; reuses the in-game canvas (`RaylibRenderer.TransitionToGame`), `PresentationPlayer`, `GameLog`
 
 ## Goal
@@ -68,13 +68,13 @@ game, and the acceptance list below is ticked.
 - Decision-list row text for each marker kind and for a folded step.
 
 ## Acceptance (Chris, hand-verify)
-- [ ] Open a replay of a local GUI game; models and terrain appear at step 0; stepping forward plays
+- [x] Open a replay of a local GUI game; models and terrain appear at step 0; stepping forward plays
       shooting beams / dice / wounds exactly as in play; log scrolls in sync.
-- [ ] Step back from the middle; the table reverts; step forward again replays the same beats.
-- [ ] Autoplay at 2x runs to the end without stalling; `Instant` finishes a 300-step game in under 30 s.
-- [ ] Open a `.fdgsave` with an embedded replay; the `Saved`/`Resumed` separators appear.
-- [ ] Open a client-recorded replay of a networked game; other players' decisions are listed.
-- [ ] Esc returns to the browser; the browser lists the file just watched; Delete removes it.
+- [x] Step back from the middle; the table reverts; step forward again replays the same beats.
+- [x] Autoplay at 2x runs to the end without stalling; `Instant` finishes a 300-step game in under 30 s.
+- [x] Open a `.fdgsave` with an embedded replay; the `Saved`/`Resumed` separators appear.
+- [x] Open a client-recorded replay of a networked game; other players' decisions are listed.
+- [x] Esc returns to the browser; the browser lists the file just watched; Delete removes it.
 
 ## Verification
 `dotnet build`; FdgRaylib.Tests green; headless smoke unaffected; acceptance list above.
@@ -139,7 +139,7 @@ Built 2026-10-31 on `feature/replay` (engine cc57a476): main menu -> Replays lis
 line; any replay or replay-carrying save opens on the real table view with its animations, pause / play at four speeds
 or Instant, step forward and back, seeks by list row, slider and Home / End, the decision list with markers and folded
 requests, and the current step's details and raw reply. Verified by 15 new tests and run through end to end in the
-GUI (Notes). **Open:** the acceptance list is Chris's hand-verify, including a client-recorded replay of a networked
-game, which no run here produced - carried into #457's Notes. Known and left: a step's deltas apply at once and its
+GUI (Notes). Chris ticked the acceptance list 2026-11-01 (client-recorded networked replay included) after #457's UX
+pass (see its Notes: winners in the browser, player-coloured rows, Full Board mode). Known and left: a step's deltas apply at once and its
 beats play after, so the round HUD can read the next round while the previous round's last shot animates; replays
 recorded before today (formats 1 and 2) list as unreadable.

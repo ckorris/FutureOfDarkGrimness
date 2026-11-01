@@ -68,6 +68,10 @@ public class LobbyScreen : IAppScreen
     // on the next frame - and so a slot whose roll found nothing is asked once, not every frame.
     private readonly HashSet<Guid> _autoArmiedSlots = new();
 
+    // #460: a row's Import button - an Army Forge share link straight into that slot.
+    private LobbyImportPopup? _importPopup;
+    private LobbyImportPopup ImportPopup => _importPopup ??= new LobbyImportPopup(AssignHandPickedArmy);
+
     // Host connection info shown so the host knows what address to share (QF9). The port mirrors
     // CommandProtocol.TEMP_PORT (internal to the engine assembly, so it's restated here).
     private const int ListenPort = 6389;
@@ -213,7 +217,7 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(margin, playerListY));
         ImGui.BeginChild("##players", new Vector2(mainW, playerListH), ImGuiChildFlags.Borders);
         ImGui.SetWindowFontScale(panelScale);  // rows + font ~50% bigger than the rest of the lobby
-        DrawPlayerList(mainW, panelScale);
+        DrawPlayerList(mainW, panelScale, ws);
         ImGui.EndChild();
 
         // ── Chat Log ──────────────────────────────────────────────────────────
@@ -275,7 +279,7 @@ public class LobbyScreen : IAppScreen
         ImGui.End();
     }
 
-    private void DrawPlayerList(float panelW, float panelScale)
+    private void DrawPlayerList(float panelW, float panelScale, float uiScale)
     {
         AutoArmyNewSlots();
 
@@ -303,12 +307,15 @@ public class LobbyScreen : IAppScreen
             ImGui.TableSetupColumn("Faction", ImGuiTableColumnFlags.WidthStretch, 0.12f);
             ImGui.TableSetupColumn("Pts",     ImGuiTableColumnFlags.WidthStretch, 0.051f);
             ImGui.TableSetupColumn("Team",    ImGuiTableColumnFlags.WidthStretch, 0.085f);
-            ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.12f);
-            // #372: every row now carries Load Army AND Random Army, so Actions takes the width back
-            // from Army/Faction (both of which wrap gracefully; a clipped button does not).
-            // #405: Remove makes it three buttons on most rows, hence the extra width. The weights are
-            // normalized by SizingStretchProp, so raising this one narrows the rest proportionally.
-            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.26f);
+            // #460: Color gives up some width to Actions; its dropdown only ever shows one short colour name.
+            ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.10f);
+            // #460: Actions is one line of four short buttons (Import | Load | Random | Remove), so it is
+            // a FIXED column exactly that wide, measured from the labels at this frame's font scale - a
+            // stretch weight clipped the buttons on some window sizes, and a clipped button is the one
+            // thing in the row that can't degrade gracefully. The stretch columns share what is left
+            // (their text shrinks to fit, #405).
+            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthFixed,
+                ActionRowWidth(_viewModel.IsResumeMode ? ResumeActionLabels : ActionLabels));
             ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
             ImGui.TableHeadersRow();
             ImGui.PopStyleColor();
@@ -360,10 +367,23 @@ public class LobbyScreen : IAppScreen
                 else
                 {
                     bool canModify = _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID);
+                    // #460: Import first - an Army Forge share link straight into this slot, same gate as
+                    // Load. The short labels leave the full meaning to the hover text, which is shown when
+                    // greyed out too (AllowWhenDisabled), saying whose slot it is.
                     ImGui.BeginDisabled(!canModify);
-                    if (UiButton.NavigateSmall($"Load Army##{i}"))
+                    if (UiButton.NavigateSmall($"Import##{i}"))
+                        ImportPopup.Open(info.PlayerID, info.PlayerName);
+                    ImGui.EndDisabled();
+                    if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                        UiText.Tooltip(canModify ? ImportTooltip : NotYourSlotTooltip(info));
+
+                    ImGui.SameLine();
+                    ImGui.BeginDisabled(!canModify);
+                    if (UiButton.NavigateSmall($"Load##{i}"))
                         TryLoadArmyForPlayer(info.PlayerID);
                     ImGui.EndDisabled();
+                    if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                        UiText.Tooltip(canModify ? LoadArmyTooltip : NotYourSlotTooltip(info));
 
                     // #372: roll a random army from the folder. Offered on EVERY row, not just bots -
                     // it is the fastest way for a human to get a legal list too. Who may press it is
@@ -373,7 +393,7 @@ public class LobbyScreen : IAppScreen
                     // roll for a bot.
                     ImGui.SameLine();
                     ImGui.BeginDisabled(!canModify || !ArmyCatalogReady);
-                    if (UiButton.NavigateSmall($"Random Army##{i}"))
+                    if (UiButton.NavigateSmall($"Random##{i}"))
                         AssignRandomArmy(info.PlayerID);
                     ImGui.EndDisabled();
                     // AllowWhenDisabled: the greyed-out case is the one that most needs explaining.
@@ -405,6 +425,23 @@ public class LobbyScreen : IAppScreen
 
         ImGui.PopStyleVar(); // CellPadding (taller rows)
 
+        // #440 (plan Q5): one amber line per army built for an older OPR ruleset, (#444 D2) one for a
+        // resumed save written under an older ruleset, and (#441 F1) one per army over its force-org caps,
+        // the cap lines themselves in its hover. Advice only - none of them blocks the launch. The army
+        // lines read off the synced roster, so every machine shows them; the save line is host-side.
+        foreach (LobbyNotice notice in RosterNotices(players, _viewModel.IsResumeMode, _viewModel.SaveRulesVersion))
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, LegacyNoticeColor);
+            UiText.Wrapped(notice.Line);
+            ImGui.PopStyleColor();
+            if (notice.Hover is string hover && ImGui.IsItemHovered())
+                UiText.Tooltip(hover);
+        }
+
+        // #460: drawn here, in the scope its Import buttons opened it from (OpenPopup and BeginPopupModal
+        // must share an ID scope).
+        _importPopup?.Draw(_viewModel, uiScale);
+
         // Slots are fixed when resuming a saved game, so no add/remove there.
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
@@ -435,6 +472,43 @@ public class LobbyScreen : IAppScreen
             if (ImGui.IsItemHovered())
                 UiText.Tooltip(DerpBotTooltip);
         }
+    }
+
+    // #460 -----------------------------------------------------------------------------------------
+    // The Actions cell: one line of small buttons. Remove's room is reserved on every row, so the column
+    // doesn't change width as rows gain or lose it.
+
+    private static readonly string[] ActionLabels = { "Import", "Load", "Random", "Remove" };
+    private static readonly string[] ResumeActionLabels = { "Local", "Tactician", "Strategist", "DerpBot" };
+
+    internal const string ImportTooltip =
+        "Paste an Army Forge share link to play that list in this slot -\n" +
+        "no need to save it in the Army Forge screen first.";
+
+    internal const string LoadArmyTooltip =
+        "Load a saved army file (.fdgarmy) into this slot.";
+
+    /// <summary>Why Import / Load are greyed out: the same words as Random's, since the same gate
+    /// (CheckCanModifyPlayerIDInfo) decides all three.</summary>
+    private static string NotYourSlotTooltip(LobbyPlayerInfoSummary info) =>
+        $"{info.PlayerName} picks their own army - only they can change it.";
+
+    /// <summary>The width of a line of small buttons with these labels, at this frame's font scale
+    /// (CalcTextSize honours SetWindowFontScale, see <see cref="FitFontScale"/>).</summary>
+    private static float ActionRowWidth(IReadOnlyList<string> labels)
+    {
+        ImGuiStylePtr style = ImGui.GetStyle();
+        return labels.Sum(l => ImGui.CalcTextSize(l).X + style.FramePadding.X * 2f)
+            + style.ItemSpacing.X * (labels.Count - 1);
+    }
+
+    /// <summary>A slot's army, chosen by hand (Load Army or Import).</summary>
+    private void AssignHandPickedArmy(PlayerID playerID, ArmyListFile army)
+    {
+        // #372: a hand-picked army marks the slot as served, so AutoArmyNewSlots never overwrites it on a
+        // later frame (it would, for a slot whose army was loaded before the folder scan came back).
+        _autoArmiedSlots.Add(playerID.ID);
+        _viewModel!.UpdateArmyListFile(playerID, army);
     }
 
     // #372/#388 ---------------------------------------------------------------------------------------
@@ -475,7 +549,7 @@ public class LobbyScreen : IAppScreen
     private static string RandomArmyTooltip(bool canModify, LobbyPlayerInfoSummary info)
     {
         if (!canModify)
-            return $"{info.PlayerName} picks their own army - only they can change it.";
+            return NotYourSlotTooltip(info);
         if (!ArmyCatalogReady)
             return "Reading the armies folder...";
         return "Roll another army from the armies folder, closest to the points limit\n" +
@@ -592,6 +666,63 @@ public class LobbyScreen : IAppScreen
     }
 
     private static readonly Vector4 OverPointsColor  = new(1f, 0.3f, 0.3f, 1f);
+    private static readonly Vector4 LegacyNoticeColor = new(1f, 0.7f, 0.2f, 1f); // amber (#440)
+
+    /// <summary>#440 (Q5): the legacy-ruleset notice for every assigned army whose embedded book predates the
+    /// current OPR ruleset, in roster order, one line per distinct army. ImGui-free so it is testable.</summary>
+    internal static IReadOnlyList<string> LegacyArmyNotices(IEnumerable<LobbyPlayerInfoSummary> players) =>
+        players.Where(p => p.ArmyListSummary.IsAssigned)
+            .Select(p => FDG.ArmyBuilding.LegacyArmyNotice.Line(p.ArmyListSummary.ArmyName, p.ArmyListSummary.RulesVersion))
+            .OfType<string>()
+            .Distinct()
+            .ToList();
+
+    /// <summary>#444 D2: the legacy-ruleset notice for the save a resume lobby was loaded from, or null when the
+    /// lobby is not a resume or the save is current. A resume with no stamp at all is legacy (every pre-3.6 save).</summary>
+    internal static string? LegacySaveNoticeLine(bool isResume, string? saveRulesVersion) =>
+        isResume ? FDG.SaveLoad.LegacySaveNotice.Line(saveRulesVersion) : null;
+
+    /// <summary>Every amber legacy line the roster shows, save line first, then the #440 army lines. ImGui-free.</summary>
+    internal static IReadOnlyList<string> LegacyNotices(IEnumerable<LobbyPlayerInfoSummary> players, bool isResume,
+        string? saveRulesVersion)
+    {
+        var lines = new List<string>();
+        if (LegacySaveNoticeLine(isResume, saveRulesVersion) is string saveLine) lines.Add(saveLine);
+        lines.AddRange(LegacyArmyNotices(players));
+        return lines;
+    }
+
+    /// <summary>One amber advisory line under the roster: the text, and the hover that carries its detail (null
+    /// for a line that is its own detail).</summary>
+    internal sealed record LobbyNotice(string Line, string? Hover = null);
+
+    /// <summary>#441 F1: the one-line force-org notice for an army over the caps at the lobby's points limit, the cap
+    /// lines themselves (the same strings the Forge and the Army Builder print) in the hover. Null within the caps.
+    /// The host computes the report (ArmyListSummary.ForceOrgWarnings), so a client shows the same line.</summary>
+    internal static LobbyNotice? ForceOrgNotice(ArmyListSummary summary)
+    {
+        if (!summary.IsAssigned || summary.ForceOrgWarnings is not { Count: > 0 } caps) return null;
+        string plural = caps.Count == 1 ? "force-org cap" : "force-org caps";
+        return new LobbyNotice($"Army '{summary.ArmyName}' is over {caps.Count} {plural}", string.Join("\n", caps));
+    }
+
+    /// <summary>The #441 F1 lines for every assigned army, in roster order, one per distinct army.</summary>
+    internal static IReadOnlyList<LobbyNotice> ForceOrgNotices(IEnumerable<LobbyPlayerInfoSummary> players) =>
+        players.Select(p => ForceOrgNotice(p.ArmyListSummary))
+            .OfType<LobbyNotice>()
+            .Distinct()
+            .ToList();
+
+    /// <summary>Every amber line under the roster, in display order: the legacy lines (save, then armies), then the
+    /// force-org lines. ImGui-free so the order and the hovers are testable.</summary>
+    internal static IReadOnlyList<LobbyNotice> RosterNotices(IEnumerable<LobbyPlayerInfoSummary> players, bool isResume,
+        string? saveRulesVersion)
+    {
+        List<LobbyPlayerInfoSummary> roster = players.ToList();
+        var notices = LegacyNotices(roster, isResume, saveRulesVersion).Select(line => new LobbyNotice(line)).ToList();
+        notices.AddRange(ForceOrgNotices(roster));
+        return notices;
+    }
     private static readonly Vector4 UnderPointsColor = new(1f, 0.85f, 0.25f, 1f);
 
     // The Pts cell. Red over the limit (the #153 launch gate flags it), yellow well under it. The rule
@@ -823,12 +954,11 @@ public class LobbyScreen : IAppScreen
         ImGui.BeginDisabled(locked);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints,
-            tooltip: "The point budget each player's army is built to. An army over this limit is\n" +
-                     "flagged red on its row and blocks the launch. Higher points means bigger battles.",
+            tooltip: ArmyPointsTooltip(_viewModel.AllowedGameSystems),
             step: 250);
         // #402: which OPR collections' armies this table takes. All is the default and accepts anything,
         // including an army from neither collection (OPR's custom-book tool makes those).
-        DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, _viewModel.SetAllowedGameSystems,
+        DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, SetArmySource,
             displayName: GameSystems.DisplayName,
             tooltip: "Which game systems' armies this lobby accepts.\n" +
                      "All: anything, GDF and AoF at the same table if that is the plan.\n" +
@@ -1238,10 +1368,7 @@ public class LobbyScreen : IAppScreen
         string path = paths?.FirstOrDefault() ?? "";
         if (LoadArmyFile(path) is not { } loaded) return;
 
-        // #372: a hand-picked army marks the slot as served, so AutoArmyNewSlots never overwrites it on a
-        // later frame (it would, for a slot whose army was loaded before the folder scan came back).
-        _autoArmiedSlots.Add(playerID.ID);
-        _viewModel!.UpdateArmyListFile(playerID, loaded);
+        AssignHandPickedArmy(playerID, loaded);
     }
 
     private void HandleLaunch(IFDGGame game)
@@ -1269,6 +1396,42 @@ public class LobbyScreen : IAppScreen
             tableBackground: _viewModel!.TableBackground,
             // #384: likewise synced, so every player's fire-line previews match the engine's LoS.
             seeThroughFriendlyUnits: _viewModel!.SeeThroughFriendlyUnits);
+    }
+
+    /// <summary>
+    /// #430: the host picked an Army Source. The suggested game sizes differ per system (GDF 1000 / 2000, AoF
+    /// 750 / 1500), so a budget still sitting on the old source's suggested size follows to the new source's
+    /// (2000 -> 1500 on switching to Age of Fantasy); a hand-typed budget is left alone. "All" reads as
+    /// Grimdark Future, the default system. Only the live combo does this - loading a saved host config sets
+    /// both values straight through the view model, so a remembered pair is never rewritten.
+    /// </summary>
+    private void SetArmySource(EAllowedGameSystems allowed)
+    {
+        int points = ForceOrgLimits.Retarget(_viewModel.ArmyPoints, _viewModel.AllowedGameSystems, allowed);
+        _viewModel.SetAllowedGameSystems(allowed);
+        if (points != _viewModel.ArmyPoints)
+            _viewModel.SetArmyPoints(points);
+    }
+
+    /// <summary>The Army Points hover (ASCII only; it is game text): what the number does, plus the suggested
+    /// game sizes of the lobby's Army Source (#430, Core Rules v3.6.0).</summary>
+    internal static string ArmyPointsTooltip(EAllowedGameSystems allowed)
+    {
+        ForceOrgLimits gdf = ForceOrgLimits.GrimdarkFuture;
+        ForceOrgLimits aof = ForceOrgLimits.AgeOfFantasy;
+        string suggested = allowed switch
+        {
+            EAllowedGameSystems.AgeOfFantasy =>
+                $"Suggested for Age of Fantasy: {aof.SuggestedStartPoints} to start, {aof.SuggestedFullPoints} for a full match.",
+            EAllowedGameSystems.GrimdarkFuture =>
+                $"Suggested for Grimdark Future: {gdf.SuggestedStartPoints} to start, {gdf.SuggestedFullPoints} for a full match.",
+            _ =>
+                $"Suggested: Grimdark Future {gdf.SuggestedStartPoints} to start, {gdf.SuggestedFullPoints} for a full match; " +
+                $"Age of Fantasy {aof.SuggestedStartPoints} / {aof.SuggestedFullPoints}.",
+        };
+        return "The point budget each player's army is built to. An army over this limit is\n" +
+               "flagged red on its row and blocks the launch. Higher points means bigger battles.\n" +
+               suggested;
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter, string? tooltip = null,
