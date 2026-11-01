@@ -327,6 +327,11 @@ Army Forge / lobby / calculator screens:
 - [ ] **#442** (Notes "Awaiting GUI hand-verify") - Combat Calculator, melee, charging: the "Charged from (in), 0 = not
       set" field appears (whole inches, default 0) and only while charging; a Ravage / Regenerative Strength attacker
       shows its own "Ravage" row; the shooting checkbox reads "Attacker advanced (untick = Hold)".
+- [ ] **#459 D4** (Combat Calculator, built 2026-11-01) - shooting, defender = a unit with Artillery (GDF Alien Hives
+      "Invasion Artillery Spore", or any AoF "<faction> Artillery" unit, e.g. Dwarf Artillery), 18" -> a third tick "Defender moved
+      this round" appears on its own line under "Attacker advanced"; untick = the hit column needs one more (Artillery's
+      -1); ticked = plain; hover names the rule; swap the defender to a plain unit -> the tick vanishes (stays visible
+      only while ticked, so it can be cleared).
 - [ ] **#444** (D2, built 2026-10-31) - Main menu -> Load Game on a pre-3.6 save (any `.fdgsave` written before this
       build, e.g. one from the repo root) -> the resume lobby shows the amber line "This save predates the OPR 3.6
       upgrade; it plays with 3.6 rules" under the roster, beside any #440 army lines; Resume is not blocked; a save

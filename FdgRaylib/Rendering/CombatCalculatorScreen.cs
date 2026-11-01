@@ -64,6 +64,12 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string FatiguedLabel = "Attacker is fatigued";
     // #442 (#432): where the charge was declared from - the "charges / is charged from over 6in" rules read it.
     internal const string ChargeFromLabel = "Charged from (in), 0 = not set";
+    // #459 D4: offered only while a rule on the defender reads its moved state (CombatReport.DefenderMovedMatters),
+    // or while it is ticked, so a swap to a plain defender never strands a hidden tick.
+    internal const string DefenderMovedLabel = "Defender moved this round";
+    internal const string DefenderMovedTooltip =
+        "A rule on the defender reads whether it moved this round (Artillery: -1 to hit it from over 12\" only " +
+        "while it has not moved). Tick to price the shot after the defender moved.";
     internal const string ChargeFromTooltip =
         "How far apart the units stood, base to base, when the charge was declared. Rules such as Ferocious " +
         "or a Changebound defender's -1 to hit read it. Leave at 0 to ignore it.";
@@ -956,7 +962,26 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.SameLine(0f, ImGui.GetTextLineHeight());
         bool moved = _situation.AttackerMoved;
         if (ImGui.Checkbox(MovedLabel, ref moved)) _situation = _situation with { AttackerMoved = moved };
+
+        DrawDefenderMovedIfOffered();
     }
+
+    /// <summary>#459 D4: the defender-side moved tick, on its own line, only when <see cref="OffersDefenderMoved"/>.</summary>
+    private void DrawDefenderMovedIfOffered()
+    {
+        if (!OffersDefenderMoved(_report, _situation)) return;
+        bool defenderMoved = _situation.DefenderMoved;
+        if (ImGui.Checkbox(DefenderMovedLabel, ref defenderMoved))
+            _situation = _situation with { DefenderMoved = defenderMoved };
+        if (ImGui.IsItemHovered()) UiText.Tooltip(DefenderMovedTooltip);
+    }
+
+    /// <summary>
+    /// Whether the "Defender moved this round" input is shown: when the last report says a rule on the defender
+    /// reads its moved state, or while the tick is already set (so it can always be cleared). Never for no report.
+    /// </summary>
+    internal static bool OffersDefenderMoved(CombatReport? report, CombatSituation situation) =>
+        situation.DefenderMoved || report is { DefenderMovedMatters: true };
 
     /// <summary>
     /// The distance slider, full width, painted over three bands: green where every weapon in the fight
@@ -1118,6 +1143,8 @@ public class CombatCalculatorScreen : IAppScreen
         bool fatigued = _situation.AttackerFatigued;
         if (ImGui.Checkbox(FatiguedLabel, ref fatigued))
             _situation = _situation with { AttackerFatigued = fatigued };
+
+        DrawDefenderMovedIfOffered();
 
         // #442 (#432): only a charge has a launch distance.
         if (!_situation.AttackerCharging) return;

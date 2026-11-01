@@ -350,7 +350,9 @@ Post-release follow-up (recorded here so it is not lost; NOT a gate for the 3.6 
   no Shard Carbine to replace, not charged") needs a per-choice applied/unapplied report from `ListCompiler`.
 - **#442 D9 -> #459 (filed and built on the branch 2026-11-01).** The Tactician's move candidates kept Artillery's
   unmoved -1 in their incoming-fire estimate; #459 adds the read-only assumed-token overlay (`AssumedTokens` on the
-  evaluator's named query) and the planner prices a move candidate as moved. Awaiting the orchestrator's verification.
+  evaluator's named query) and the planner prices a move candidate as moved. Verified 2026-11-01. Its D4 (Combat
+  Calculator "Defender moved" tick, shown only when a defender rule reads the moved state) was built the same day at
+  Chris's request.
 
 ---
 

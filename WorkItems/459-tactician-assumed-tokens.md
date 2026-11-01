@@ -85,6 +85,16 @@ with a negative control. No bench (a pricing correction on a narrow case).
   calculator reads the defender's live tokens through the real stages, which is what it should show. If a "Defender
   moved" tick is ever wanted, `AttackContext.DefenderMoved` is the shape to copy and it should feed the stages a
   real token on a scratch unit, not the overlay (the calculator runs live stages, not queries).
+  **Chris 2026-11-01: "I'd make a 'Defender Moved' input appear only when there's a relevant rule, unless that is
+  overly complicated."** Built the same day: `CombatSituation.DefenderMoved` stamps the real MovedThisRound token on
+  the scratch defender (as D4 prescribed, not the overlay); `CombatReport.DefenderMovedMatters` is
+  `TokenReadership.IsReadByAnyRule(defender, MovedThisRound)` (the #308 walk that already decides the Moved chip), so
+  the screen's "Defender moved this round" tick (`CombatCalculatorScreen.OffersDefenderMoved`) shows only for a
+  defender whose rules read its moved state (3.6 Artillery), or while already ticked so a swap to a plain defender
+  can clear it. Own line under the attacker ticks, in both panes; tooltip names the rule. Tests: engine
+  `ADefenderMoved_DropsArtillerysMinusOne_AndTheReportSaysTheInputMatters` (18", Q4 shooters: 5+ held, 4+ moved;
+  plain target flags false), screen `TheDefenderMovedInputIsOfferedOnlyWhenADefenderRuleReadsIt`,
+  `APlainDefenderFromTheBook_DoesNotFlagTheInput`, labels in the ASCII pin.
 - **D5 - no bench (2026-11-01).** The change only lowers the planner's incoming-fire estimate for an Artillery unit's
   move candidates (a few percent of the retaliation term for one rule); a 6,400-game bench cannot resolve it and is
   not owed. The planner pin with its negative control is the evidence that the term moved the right way.

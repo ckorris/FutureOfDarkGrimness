@@ -84,7 +84,8 @@ Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
   the range / charge-distance rules, Ravage, Hazardous, Scourge and Tag tokens. It uses Spell Drain and prices its
   Versatile picks and the 3.6 activation-start moves.
 - The Combat Calculator takes a charge distance and shows Ravage; a defender's Parry is a "Parry" chip on the volley's
-  save line, with the dice and hits ignored in its hover.
+  save line, with the dice and hits ignored in its hover. Against a defender whose rules care whether it moved
+  (Artillery), a "Defender moved this round" tick appears.
 - The lobby flags an army over the optional force-org caps for the game's points limit with one amber line per army
   ("Army 'X' is over 2 force-org caps"; the caps in its hover). Advice only, it never blocks the launch.
 - The Army Forge says so, in amber, when it opens a list built for an older ruleset ("... was built for OPR v3.5.3; it
