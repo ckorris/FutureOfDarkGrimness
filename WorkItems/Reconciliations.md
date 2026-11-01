@@ -834,8 +834,10 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > that branch. **460 = import an Army Forge link from the lobby**,
 > on branch `460-lobby-army-import`. No collision for 460.
 
-> **2026-11-01 - 459 collision resolved: the replay branch's item is now 461.** At the `feature/replay` -> master
-> merge, `origin/master` (`65cb57b`) carried the 3.6 branch's 459 (Tactician assumed-token overlay) and 460
-> (lobby Army Forge import); index + archive max **460**. The replay branch's unmerged 459 (networked client of a
-> resumed scenario save draws no model bases) yields: renumbered **461**, file
-> `WorkItems/461-client-resume-models-not-drawn.md`, index line and the #457 note updated. No code references.
+> **2026-11-01 - 459 collision resolved: the replay branch's item is now 463.** At the `feature/replay` -> master
+> merge, `origin/master` carried the 3.6 branch's 459 (Tactician assumed-token overlay) and 460 (lobby Army Forge
+> import), so the replay branch's unmerged 459 (networked client of a resumed scenario save draws no model bases)
+> yielded and was renumbered 461 - and while that merge was being verified, master (`0dda312`) filed 461 (dead
+> upgrade picks) and 462 (FdgLab twins). Renumbered again, from `origin/master` at `0dda312`, index + archive max
+> **462**: now **463**, file `WorkItems/463-client-resume-models-not-drawn.md`; index line and the #457 / #449 /
+> plan notes updated. No code references. Lesson: when master is live, fetch again right before the push.

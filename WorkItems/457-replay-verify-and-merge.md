@@ -53,7 +53,7 @@ the index lines for 449-457 are ticked and archived.
   `saveRulesVersion, priorReplay`) and `GameSaveSerializer` (`Load(json, out rulesVersion)` and
   `LoadWithReplay(json, out rulesVersion)` share `Parse` / `Build`); app conflicts in `ScenarioLauncher.LoadStore` /
   `LoadStoreWithReplay` (both report the #444 legacy-save line) and `Program.cs`'s Load Game and `--scenario` paths
-  (both features). The branch's #459 collided with the 3.6 branch's and yields: now **#461**. Suites after the merge:
+  (both features). The branch's #459 collided with the 3.6 branch's and yields: now **#463**. Suites after the merge:
   engine 4620/1 skipped, app 4197; smoke exit 0 with its replay line, `--verify` PASS. Then `feature/replay` ->
   `master` in the engine, pointer bump + merge in the superproject, pushed, remote branches deleted.
 - **2026-11-01 - marker colours.** Chris read a round's marker in its initiative's colour as the previous line's colour
@@ -118,7 +118,7 @@ the index lines for 449-457 are ticked and archived.
       with its notice and played to "Game over: Tie". No exceptions in either log (the network layer's usual
       "operation was canceled" teardown lines aside - `FDGHost`/`FDGClient` are untouched by the branch).
     - Found on the way, pre-existing (same on an `origin/master` build): the client draws no model bases when the
-      resumed save is a `--make-scenario` one. Filed as **#461** (filed as 459, renumbered at the master merge - see Reconciliations).
+      resumed save is a `--make-scenario` one. Filed as **#463** (filed as 459, renumbered twice at the master merge - see Reconciliations).
   - **Headless:** smoke OK; `--scenario` writes a replay (PASS); `--dump`, `--at 3 --make-save`, then `--scenario` on
     the cut: one recording `GameStart`, `Saved`, `Resumed`, `GameEnded`, PASS; `--replay` on the cut save PASS.
   - **Size:** three seeded 2k games, 362-406 KB (plan section 5 has the table). Not from three full GUI games - those
@@ -150,4 +150,4 @@ section 5; `--no-replay` for batch runs); docs written (CLAUDE.md, EngineNotes R
 viewer had a UX pass on Chris's review (winners named in the browser, rows in player colours without numbers, folded
 always listed, bigger EM-sized transport, Full Board mode with fading controls, white markers) and the tiny-window
 crash was fixed on the way. `feature/replay` merged into `master` in both repos after taking the OPR 3.6 merge on
-board; branches deleted. Follow-up filed: #461 (client of a resumed scenario save draws no model bases, pre-existing).
+board; branches deleted. Follow-up filed: #463 (client of a resumed scenario save draws no model bases, pre-existing).

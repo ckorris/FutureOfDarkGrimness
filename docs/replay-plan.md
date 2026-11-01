@@ -1,6 +1,6 @@
 # Replay system plan
 
-**Status:** done 2026-11-01 - #450-#457 all shipped; `feature/replay` merged into `master` in both repos (after the OPR 3.6 merge). Umbrella work item: **#449** (closed). Follow-up: #461 (client of a resumed scenario save draws no model bases, pre-existing).
+**Status:** done 2026-11-01 - #450-#457 all shipped; `feature/replay` merged into `master` in both repos (after the OPR 3.6 merge). Umbrella work item: **#449** (closed). Follow-up: #463 (client of a resumed scenario save draws no model bases, pre-existing).
 **Branch:** `feature/replay` in BOTH repos (superproject `fdg-raylib` and the engine submodule
 `FutureOfDarkGrimness`), branched from `master` (NOT from `feature/opr-3.6`). Nothing lands on `master`
 until #457 says the whole plan is green.

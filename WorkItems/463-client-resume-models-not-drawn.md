@@ -1,4 +1,4 @@
-# 461 — Networked client of a resumed game draws no model bases (labels only)
+# 463 — Networked client of a resumed game draws no model bases (labels only)
 
 **Status**: todo
 **Related**: found by #457's two-process networked runs; #309 (client model instances replaced per update);
