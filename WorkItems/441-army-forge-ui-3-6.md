@@ -1,6 +1,6 @@
 # 441 — Army Forge + glossary UI for 3.6
 
-**Status**: done pending hand-verify and F6 (built 2026-10-31; forks F1-F5, F7-F9 ruled and built; F6 open; GUI hand-verify pending)
+**Status**: done pending hand-verify (built 2026-10-31; forks F1-F9 all ruled, built or declined; GUI hand-verify pending)
 **Related**: #415, #424 (Assault), #430 (force org), #437/#438, #259 (rule hover), #168 (import summary), #304 (join warnings), #378 (system filter)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / medium. Read `docs/ResolverGuide.md` and `ArmyForgeScreen.cs` structure first.
 
@@ -46,6 +46,13 @@ Tests green; hand-verify checklist in this file ticked by Chris.
 
 ## Notes
 
+- 2026-10-31 (last) **F6 ruled C and built** (Chris: "I agree, F6 should be C."). No new plumbing: the compiled unit's
+  weapon list already holds the item's weapons (the importer routes them there, #438 D4) and `CompileUnitDetailed`
+  hands the card the final items with their `ItemEntry.Weapons`, so the attribution is computed at draw time by a
+  pure row model, `ForgeUnitDetail.GearRows` (D18), splitting rows on the compiler's own merge key, which the engine
+  now exposes as `ListCompiler.SameProfile` (D19, the only engine change). Every fork is now ruled and built or
+  declined. Gates: engine 4485 / 1 skipped, app 4062 (+7), build 0 errors / 6 warnings (pre-existing), headless smoke
+  exit 0 `Game result:`, ASCII grep clean.
 - 2026-10-31 (later) **F3 and F7 ruled** (Chris: "For F3, I think A is okay." / "For F7, let's do B."). F3 = A, nothing
   to build. F7 = B built: engine `1a2badd4` (`EnhancedRuleGate`, `IRuleResolver.Definitions`, the four request-text
   sites); the app change, the submodule bump and this note ride one superproject commit. One composition point for the "Base rule: X." line (D17); the base is read off the
@@ -304,8 +311,25 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   indents a continuation line under its rule (`StringSelectionResolver`). `SpecialRuleDefinition.Description` itself
   is untouched - OPR verbatim (#436 D3) and serialized. Alternatives: a computed `DisplayDescription` property on the
   record (System.Text.Json would write it into books and saves); per-surface composition (nine copies of one line).
+- **D18 - F6 is a draw-time row model over the compiled unit and its items; nothing new is compiled or stored.**
+  `ForgeUnitDetail.GearRows(unit, items)` returns the card's `WeaponRow`s (`Weapon`, `Quantity`, `SourceItem`; `Name`
+  = "Explosive Spear (Beast Rider)", `Cell` = the counted name) and the item lines to print. For each compiled weapon
+  entry it peels off, per item with `Weapons`, up to `bundled.Quantity x item.Quantity` copies whose profile matches,
+  tags them with the item NAME (so two copies of one item tag ONE row, and the tag is part of the row key: an
+  item's Explosive Spear and the unit's own identical one never share a row), and leaves the remainder untagged -
+  untagged first, then the items' rows in item order. An item's line is dropped only when it has no rules AND at
+  least one of its weapons was found; an item whose weapons are all gone (a Replace that took the weapon by name
+  and left the mount) keeps its bare line so nothing the unit carries disappears. Alternatives: an optional
+  "source item" on `WeaponFileEntry` set by the compiler (a schema field that would ride into every saved army and
+  into play, for a display tag); tagging in the importer's weapon NAME (would change books and the merge key, and
+  "(Beast Rider)" would then show in game, the shoot panel and the CLI, where the Sergeant rename already shows
+  how a name-tag spreads).
+- **D19 - The split uses the compiler's merge key, exposed as `ListCompiler.SameProfile` (engine, visibility only).**
+  The compiler merges weapons on name + range + attacks + AP + rule list; the card must split on exactly that key,
+  or it would split a row the compiler merged or merge two it kept apart. #441 D1 / #324 set the precedent of
+  sharing the predicate over an app-side copy. The engine change is one word and a comment; no behaviour moves.
 
-## Forks (F1-F5, F7-F9 signed off 2026-10-31; F6 open)
+## Forks (F1-F9 all signed off 2026-10-31)
 
 - **F1 - A force-org line in the lobby (#430 hand-off).** Today the lobby shows only `LaunchGate` blockers and, on
   launch, the Errors as a confirm; the amber caps live in the Forge and the Army Builder. (A) Nothing (status quo).
@@ -357,7 +381,15 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   nested, the weapons left out of the table. (C) Keep the weapons in the table but tag them with the item ("Explosive
   Spear (Beast Rider)") and drop the bare item line when the item has no rules of its own. **Recommend C** - the table
   stays complete for comparing guns and the origin stays visible.
-  **Open - not yet ruled (2026-10-31).**
+  **Signed off C, built 2026-10-31** (Chris: "I agree, F6 should be C."): on the Forge card (the config pane; the
+  Combat Calculator's unit block draws through the same `ForgeUnitDetail.DrawGear`) a weapon row that comes from a
+  mount/crew item reads "Explosive Spear (Beast Rider)" in the Weapon column, its stat cells unchanged; the bare
+  "1x Beast Rider" line is gone because the item has no rules of its own. An item with rules keeps its line
+  ("1x Light Chariot (Armor(4), Fast, Impact(4), Tough(6))") and its Tusks row is tagged "(Light Chariot)" all the
+  same. A unit's own weapon never gets a tag. Display only: the compile, the books, the saved army and play are
+  untouched; the roster PREVIEW (a book unit, not a built one) and the list pane's one-line weapon summaries are as
+  before. D18, D19. Tests: app `ForgeItemWeaponRowsTests` (Jackals Charger / Scavenger Beast, AoF Beastmen's Light
+  Chariot, every shipped item with weapons, the synthetic merge/split and vanished-weapon cases).
 - **F7 - (new) The two "Enhanced" hovers that do not name their base rule.** Enhanced Watchborn (Watch Brothers, Watch
   Prime Brothers) and Enhanced Vinci Tech (AoF Duchies of Vinci) read "If this model has Versatile Attack ... from
   Versatile Attack" (OPR 3.6.0 verbatim; #436 D3 keeps grammar verbatim); the unit carries Watchborn / Vinci Tech, not
@@ -436,7 +468,7 @@ AoF (Dwarves, Shadow Stalkers, Sky-City Dwarves):
       (1 per 375) and say "Unique Hero "Gamharl" taken 2 times (once per army)."
 - [ ] Lobby: field a 3.5 file (e.g. `FdgRaylib.Tests/Fixtures/legacy-3.5/`) - the amber Q5 line appears (#440).
 
-Forks built 2026-10-31 (F1, F2, F4, F5, F7):
+Forks built 2026-10-31 (F1, F2, F4, F5, F6, F7):
 - [ ] F1, lobby: Host a GDF lobby at 1000 pts and assign an army with three Heroes (e.g. the HDF list from the Rixxon
       step above, saved; or any Forge list with 3 Heroes) -> under the roster an amber "Army '<name>' is over 1
       force-org cap"; hovering it shows "Too many Heroes: 3 (max 2 at 1000 pts; 1 per 500)."; set Army Points to 2000
@@ -451,6 +483,12 @@ Forks built 2026-10-31 (F1, F2, F4, F5, F7):
 - [ ] F5, Army Builder: open a Daemons of Lust list, add the rule "Enhanced Lustbound" to a unit that has no Lustbound
       -> amber "! <unit>: Enhanced Lustbound does nothing without Lustbound" under the points box; add "Lustbound" to
       the unit (or to a Hero joined to it) -> the line goes; Save and the lobby launch are not blocked either way.
+- [ ] F6, Forge: Grimdark Future -> Jackals -> add Charger Beast; in the config pane the weapon table has one row,
+      "Explosive Spear (Beast Rider)" (RNG -, ATK A4, AP -, SPE Shred - the stat cells as before), and NO bare "1x Beast
+      Rider" line under the table; add Scavenger Beast -> "Stomp" untagged and "Fumigator (Beast Gunner)". Age of Fantasy ->
+      Beastmen -> Waheni Hunt Master, take "Light Chariot" -> "Tusks (Light Chariot)" in the table AND the line "1x
+      Light Chariot (Armor(4), Fast, Impact(4), Tough(6))" stays under it. Combat Calculator with the Charger Beast ->
+      the same row text. The list pane's one-line summary and the roster preview are unchanged.
 - [ ] F7, Forge: Grimdark Future -> Watch Brothers -> add Watch Battle Brothers, take the "Enhanced Watchborn" upgrade
       (or Watch Prime Brothers); in the config pane hover "Enhanced Watchborn" -> the hover is OPR's "If this model
       has Versatile Attack ..." text and ENDS with the line "Base rule: Watchborn."; hover "Watchborn" on the same unit
@@ -468,8 +506,9 @@ case. Two defects found and fixed: Spawn/Split hovered as "not enforced" (D2) an
 combo after a counted swap (D1). Three wording/layout choices made with one obvious reading, for owner review: D3,
 D4, D5. Nine UI forks (F1-F9) written up; 2026-10-31 Chris ruled six (F1, F2, F4, F5 = B, built: engine `e610806e`, `f88e2e05`,
 `54341597`; app `1e60fd2`, `6b670f2`, `251f518`, `568dce7`; F8, F9 = A), and later the same day F3 = A (nothing to build) and
-F7 = B (built: engine `1a2badd4`; app with the submodule bump, one commit); F6 open. Not built, by design: naming each stale #262 selection
-(plan section 7 post-release). Gates: engine 4485 passed / 1 skipped, app 4055, build 0 errors,
+F7 = B (built: engine `1a2badd4`; app with the submodule bump, one commit), and last F6 = C (built: engine `a858941e`
+(visibility only); app with the submodule bump, one commit). Every fork is ruled and built or declined. Not built, by design: naming each stale #262 selection
+(plan section 7 post-release). Gates: engine 4485 passed / 1 skipped, app 4062, build 0 errors,
 `--validate-rules` OK 401, shipped Dead 0, headless smoke exit 0.
 
 ## Rules for the agent (plan section 1, restated)

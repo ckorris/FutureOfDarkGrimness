@@ -85,7 +85,8 @@ Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
 - The lobby flags an army over the optional force-org caps for the game's points limit with one amber line per army
   ("Army 'X' is over 2 force-org caps"; the caps in its hover). Advice only, it never blocks the launch.
 - The Army Forge says so, in amber, when it opens a list built for an older ruleset ("... was built for OPR v3.5.3; it
-  plays with 3.6 rules").
+  plays with 3.6 rules"), and its unit card names the mount or crew a weapon comes from ("Explosive Spear (Beast
+  Rider)") instead of listing the bare item.
 - The Army Builder warns when a unit carries an Enhanced rule without the rule it enhances ("Enhanced Lustbound does
   nothing without Lustbound").
 - The Strategist's learned leaf was trained on 3.5 armies and has not been re-trained yet (planned after the release).

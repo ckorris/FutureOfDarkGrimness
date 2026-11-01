@@ -283,8 +283,8 @@ Army Forge / lobby / calculator screens:
       scale); share link `UGDhJMMH0QBP` import (no "RULES NOT ENFORCED"; the grey stale-"Replace X" note under the
       2380-vs-2465 row); in-game #424 pistol melee line and #438 D5 Stinger Dagger Takedown pick; AoF 750 start, Dwarves
       Gamharl twice, Shadow Stalkers' 5 spells + amber Combat Possession line, Sky-City Dwarves "Loses 2 spell tokens",
-      Army Builder AoF warnings, lobby amber Q5 line for a 3.5 fixture. Forks: F1, F2, F4, F5, F7 built (below); F3,
-      F8, F9 status quo; F6 still open.
+      Army Builder AoF warnings, lobby amber Q5 line for a 3.5 fixture. Forks: F1, F2, F4, F5, F6, F7 built (below);
+      F3, F8, F9 status quo.
 - [ ] **#441 F1** (lobby, "Forks built 2026-10-31") - GDF lobby at 1000 pts, an army with 3 Heroes -> amber "Army '<name>'
       is over 1 force-org cap" under the roster, hover "Too many Heroes: 3 (max 2 at 1000 pts; 1 per 500)."; Army Points
       2000 -> gone; LAUNCH never greyed by it; a joined client sees the same line.
@@ -297,6 +297,10 @@ Army Forge / lobby / calculator screens:
 - [ ] **#441 F5** (Army Builder) - a Daemons of Lust list, "Enhanced Lustbound" on a unit without Lustbound -> amber "!
       <unit>: Enhanced Lustbound does nothing without Lustbound" under the points box; add Lustbound -> gone; nothing
       blocked.
+- [ ] **#441 F6** (Forge) - Grimdark Future, Jackals, add Charger Beast -> the config pane's weapon table reads
+      "Explosive Spear (Beast Rider)" and there is no bare "1x Beast Rider" line under it; Scavenger Beast -> "Stomp"
+      untagged, "Fumigator (Beast Gunner)"; AoF Beastmen Waheni Hunt Master + "Light Chariot" -> "Tusks (Light Chariot)"
+      AND the "1x Light Chariot (Armor(4), Fast, Impact(4), Tough(6))" line stays.
 - [ ] **#441 F7** (Forge) - Grimdark Future, Watch Brothers, a Watch Battle Brothers unit with the "Enhanced Watchborn"
       upgrade -> hovering "Enhanced Watchborn" in the config pane shows OPR's "If this model has Versatile Attack ..."
       text ending with the line "Base rule: Watchborn."; a normal Enhanced rule hover (e.g. "Enhanced Lustbound") has no
