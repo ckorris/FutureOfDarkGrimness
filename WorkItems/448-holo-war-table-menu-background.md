@@ -104,6 +104,11 @@ re-run the script after any colour or group change.
    `--menu-preview out.png privacy`.)
 
 ## Notes
+- 2026-11-01: **Post-close owner request: Host/Join dialogs in the menu look** (not the lobbies). New
+  `HoloUi.PushDialogStyle`/`PopDialogStyle` (panel fill, cyan border + brackets, square navy fields, cyan
+  tabs/table lines) and `HoloUi.DialogTitle` (menu bold font); buttons are `HoloUi.Button` (CANCEL ghost,
+  CREATE/CONNECT primary, REFRESH/row JOIN secondary); the join password popup wears `PushModalStyle`.
+  `--menu-preview` gained `host` and `join` states (join shows two sample servers, no network).
 - 2026-11-01: **Post-close owner request: plain-shape terrain only** (no stylized art anywhere in the
   project). Ruins are now flat-topped blocks - a bar, or one L-shaped outline with no seam at the corner
   (Tetris-piece style), 1.5" thick (`RuinHalfThick` 0.35 -> 0.75); broken tops and windows gone. Trees

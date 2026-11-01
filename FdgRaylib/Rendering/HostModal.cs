@@ -65,26 +65,18 @@ public class HostModal : IAppScreen
         float scale = Math.Min(screenW / 1920f, screenH / 1080f);
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
-        // Charcoal panel from the app theme (same tone as the lobby's panels) so the dialog reads as the
-        // same surface as the rest of the UI, not a bespoke blue slab.
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGuiTheme.DialogPanelBg);
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
+        // The main menu's command-panel look (HoloUi), since it opens over the menu; the lobby it leads
+        // to keeps the app theme.
+        HoloUi.PushDialogStyle(scale);
         ImGui.BeginChild("##HostDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.PopStyleColor();
-        ImGui.PopStyleVar();
+        HoloUi.DrawWindowBrackets(scale);
 
         float pad = 32f * scale;
         ImGui.SetCursorPos(new Vector2(pad, pad));
         // Set up front so the title doesn't ride the previous frame's leftover scale (#414).
         ImGui.SetWindowFontScale(scale);
-
-        // Title — light-blue header accent, echoing the lobby's section headers.
-        ImGui.PushFont(RaylibRenderer.LargeFont);
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiTheme.HeaderAccent);
-        CenterText("HOST SERVER", dw);
-        ImGui.PopStyleColor();
-        ImGui.PopFont();
+        HoloUi.DialogTitle("HOST SERVER", dw, 40f * scale, scale);
 
         ImGui.SetCursorPosX(pad);
         DrawLabeledInput("Your Name",   ref _yourName,   dw, scale);
@@ -128,20 +120,21 @@ public class HostModal : IAppScreen
         _requiredDialogH = contentBottom + 8f * scale + btnH + pad;
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
 
-        if (UiButton.Back("CANCEL", new Vector2(btnW, btnH)))
+        if (HoloUi.Button("CANCEL", new Vector2(btnW, btnH), EHoloTier.Tertiary, UiButton.EClass.Back, scale))
         {
             Reset();
             OnCancel?.Invoke();
         }
 
         ImGui.SameLine(0, gap);
-        if (UiButton.Confirm("CREATE", new Vector2(btnW, btnH)))
+        if (HoloUi.Button("CREATE", new Vector2(btnW, btnH), EHoloTier.Primary, UiButton.EClass.Commit, scale, centered: true))
         {
             if (Validate())
                 CreateServer();
         }
 
         ImGui.EndChild();
+        HoloUi.PopDialogStyle();
         ImGui.End();
     }
 
