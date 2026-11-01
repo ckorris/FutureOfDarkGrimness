@@ -68,6 +68,16 @@ left: the Impact Fatigue gate, deleting Counter's impact facet, adding Brace(X),
 
 ## Notes
 
+- **2026-11-01 (post-merge fix, found in Chris's hand-verify game).** After a Counter swap the pile-in moved the
+  CHARGER: `PileInStage` read `AttackingUnit`/`DefendingUnit`, which `DetermineStrikeOrderStage` had already swapped,
+  so the log read "Pile in: 5 defender model(s)" for 5 Warriors charging 3 Gunners and the Warriors walked up to 3"
+  into the Gunners. 3.6 C1 says the charged defenders pile in. The stage now takes the charger from the context's
+  immutable `ChargingUnit` capture (as `ApplyFatigueStage` / `PostMeleeStage` do) and the charged unit as the other
+  side; `CounterRuleIntegrationTests.CounterSwap_StillPilesInTheChargedUnit_NotTheCharger` (fails on the old stage:
+  the charger moved ~1") plus a no-Counter control. Same game: "Determine In Range Attackers: 1 of 3" for a lone
+  surviving Gunner - the denominator counted the two Impact casualties; both in-range lines now use
+  `MeleeRangeUtilities.CountLiving` (pinned). Pre-existing since the Counter swap (#042), not a 3.6 regression.
+
 - 2026-10-29: **Landed.** Engine commit `4f23f9b2` (submodule, `feature/opr-3.6`); the superproject commit bumps it
   with the supplement data, app tests and docs.
   - **Survey finding confirmed.** Impact already resolved before either unit attacks: `MeleeStage` runs

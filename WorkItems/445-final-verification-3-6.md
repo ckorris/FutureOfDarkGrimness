@@ -220,12 +220,14 @@ In game, built-in army (one or two games cover all of these):
       no forced-charge highlight; end inside 1" -> "FORCED CHARGE", Pass greyed; end just past 3" -> Charge greyed
       "No enemies within the 3" melee range."; charge from ~2.5" -> defenders pile in up to 3" and everyone within 3"
       strikes.
-- [ ] **#422** (Notes) - Charge fresh Heavy Gunners with fresh Warriors -> "Impact Hits" beat first, then the
+- [ ] **#422** (Notes; pile-in fixed 2026-11-01) - Charge fresh Heavy Gunners with fresh Warriors -> "Impact Hits" beat first, then the
       "counters the charge - strikes first!" banner and the Gunners' swings, then the Warriors'; charge with Warriors
       that already fought this round -> no Impact beat; charge Gunners that already fought -> no counter banner.
       Brace no longer needs a hand-edited file: Chivalrous Kingdoms (and many AoF books) carry Brace - charge such a
       unit with an Impact unit -> the Impact beat shows the reduced count and the spear row underlines "Brace".
-      Combat Calculator, melee, charging, "attacker fatigued", an Impact unit -> no Impact row.
+      Combat Calculator, melee, charging, "attacker fatigued", an Impact unit -> no Impact row. After the Counter
+      banner the GUNNERS step toward the Warriors (log "Pile in: N defender model(s)" with N <= living Gunners) and
+      the Warriors stay where the charge left them; "Determine In Range Attackers: 1 of 1" for a lone survivor.
 - [ ] **#447** (Notes "GUI hand-verify") - Charge with full-strength Warriors that all end within 3" of the target ->
       the "Impact Hits" beat throws 10 dice, context "Warriors: 5 models x Impact(2)", Offense colour, panel wide
       enough; at 3 models -> 6 dice; vs a Brace unit -> "... - N Brace", and no beat at all when Brace cancels
