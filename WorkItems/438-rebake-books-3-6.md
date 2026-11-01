@@ -1,6 +1,6 @@
 # 438 — Re-bake all 88 books from the 3.6.0 snapshots
 
-**Status**: done 2026-10-30 (owner review: D1, D2, D3, D4, D5)
+**Status**: done 2026-10-30 (owner review: D1, D2, D4, D5; D3 accepted 2026-11-01, its message built the same day - D13-D15)
 **Related**: #415, #437 (importer first), #436 (supplements final first), #378 (`bake-aof-books.sh`), #219/#383/#239/#225/#357/#377 (post-bake passes), #440 (derived data), #441
 **Branch**: `feature/opr-3.6`. Model/effort: Sonnet 5.5 / medium.
 
@@ -73,6 +73,23 @@ get none until the tables are updated).
 
 ## Notes
 
+- 2026-11-01 (D3 follow-up, owner request): the "why is the total off" message. `ListCompiler.CompileUnitDetailed` takes
+  an optional collector; after `ApplyStarvedReplaces` reaches its fixpoint every parked Replace still owing applications
+  becomes one `UnappliedReplace` (unit, section label, gained names, shortfall, scarce targets, `Message`). Carried on
+  `BuiltArmyFile.UnappliedReplaces` (JsonIgnore - a compile-time finding, never in the file),
+  `OprForgeSessionResult.UnappliedReplaces` and `EditableSessionDrift.UnappliedReplaces`. Shown: Forge import summary
+  (grey, under the per-unit deltas, before the generic note), the reopen drift modal (under "Points:"), the
+  "Imported ... into the Forge" status (" - N upgrade(s) not applied"), `--import-army` ("  not applied: ..."). Tests:
+  engine 4518 -> 4524 (exact text for the Hand-Weapon-less combo, the D3 case clean, the consuming rival's shortfall, a
+  partial Any "needs 2 more", a parked All "the unit has no Sword", the mutual pair reporting both, not serialized, and
+  the importer surfacing it); app 4143 -> 4146 (note yields per unit, drift message, and an 88-book census: 3662 Replace
+  sections, 841 cannot land ALONE on the base loadout - fed by another section, e.g. "Replace Sgt. Hand Weapon" below
+  the Sergeant grant - and report exactly one line each, 51 D3 pass-through pairs all land with no line). Full build
+  208 = 208 warnings, smoke exit 0. Surprise: Wood Elves' Treeman Elder has two same-labelled "Replace Weaving Branch
+  and Strangle-Root" sections on ONE branch; the lower hands only the Strangle-Root back, so D3 yields the upper to it
+  and the upper is the one reported ("needs 1 more Weaving Branch") - a genuine contradiction either way (the Forge
+  itself cannot pick both), and the line is exactly what the message is for. Not run: the OFFLINE bake (the compile path
+  is unchanged; the census test walks all 88 books instead). Engine `91280078`, superproject `fff8e96`.
 - 2026-10-30 (done): the 88 books are the OPR 3.6.0 books, baked by `scripts/bake-books.sh` from the 2026-10-30
   re-fetch. Commits: engine `70fa2c08` (effect-set keywords, Crossing Strike bombs, Voidspace Stalkers row, section
   uid), `dd6f5661` (Forge compile: pass-through reservation, item-bundled weapons), `9b521899` (Unique arm),
@@ -306,7 +323,11 @@ get none until the tables are updated).
   hands the target BACK; the parked remainder is retried after (#323's fixpoint), so the any-swap still lands in full
   and both purchases are charged. Alternatives: allowlist the 15 pairs (ships the dropped purchase), reorder choices
   globally, or reserve for every counted rival (changes book-order outcomes where the pool genuinely cannot cover
-  both - pinned unchanged by `ReplaceAny_DoesNotYieldToAConsumingRival`).
+  both - pinned unchanged by `ReplaceAny_DoesNotYieldToAConsumingRival`). **Accepted by Chris 2026-11-01; he asked
+  for a message naming the conflict - built 2026-11-01:** every Replace the compile still cannot land after the #323
+  retry is reported as an `UnappliedReplace` line, `<unit>: '<section label> -> <gains>' not applied (needs N more
+  <target>)` (D13), shown grey in the Forge import summary and the reopen drift modal and printed by `--import-army`
+  (D14); the generic #441 D4 note yields to it (D15). Engine `91280078`, superproject `fff8e96`.
 - **D4 - Base-loadout items keep their nested weapons; removing the item removes them (engine). OWNER REVIEW.** OPR
   3.6 bundles mounts' and crews' weapons inside items (12 sites: Jackals' Charger Beast had NO weapon left, the
   Goblin Pump Plane lost its Bombing Run, Saurian Starhosts' Dread Titan its tail and claws, Duchies of Vinci's titan
@@ -358,6 +379,24 @@ get none until the tables are updated).
   Energy Lance -> Sgt. Pistol, Sgt. Hand Weapon" feeds "Replace Sgt. Hand Weapon -> Energy Lance", which hands the
   lance back; the grantor is starved in the baseline, so neither the leftover pool nor the granted price compares.
   Both purchases landing is asserted as naked + grant + swap x n.
+- **D13 - Message shape (D3 follow-up, 2026-11-01).** `<unit>: '<section label> -> <gained names>' not applied (needs N
+  more <target>[, N more <target>])`. The gains are the option's weapon/item NAMES ("Heavy Pistol, Energy Hammer"), not
+  its priced label ("Heavy Pistol (9", A1, AP(1), Assault), Energy Hammer (...)") - the label repeats the profile and
+  the player knows the pick by name; the label is the fallback when the option gains nothing nameable, and a bare
+  section label falls back to "Replace <targets>". The scarce targets are those whose matched copies fall short of what
+  is still owed (the MIN-over-targets rule), so a combo short of only its Hand Weapon names the Hand Weapon; the count
+  is in copies ("2 more Rapid Shard Cannon" for a "2x" target owed once). A parked "Replace all" has no count ("every
+  match" of nothing), so it reads "(the unit has no X or Y)". Alternatives: one line per unit summarising, or a count
+  only (neither names the gear to re-pick).
+- **D14 - Where it shows.** Every surface that already shows a price delta: the Forge import summary (grey, one line
+  each, under the per-unit deltas), the reopen drift modal (under "Points: a -> b"), the import status hint, and
+  `--import-army`. NOT the live config pane: the Forge greys out a section whose pool is empty, so a stale pick cannot
+  be made there, only imported or reopened. Deferred (not asked): a per-row marker in the Forge list for a reopened
+  session carrying one.
+- **D15 - The generic #441 D4 note yields per unit, by name.** It stays only for an under-priced
+  `UnitPointsDeltas` row whose unit name has no `UnappliedReplace` line. Caveat: the delta row carries the share list's
+  display name (a custom name if set) while the line carries the roster name, so a custom-named unit keeps both the
+  line and the generic note - harmless (both true), and the BuilderUnit has no custom-name field to key on.
 
 
 ## Outcome

@@ -57,8 +57,10 @@ Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
   headless CLI) shows an amber notice: "Army '...' was built for OPR v3.5.x; it plays with 3.6 rules". It does not
   block the launch.
 - **Army Forge share links** import as 3.6 lists (Army Forge now serves every list with its 3.6 books). The import
-  summary explains a unit priced below Army Forge's figure (a stale "Replace X" pick from an old list), and says why
-  Age of Fantasy Shadow Stalkers has five spells.
+  summary explains a unit priced below Army Forge's figure (a stale "Replace X" pick from an old list), names each
+  upgrade our Forge could not apply and the gear it lacked ("Assault Brothers: 'Replace one Heavy Pistol and Hand
+  Weapon -> Heavy Pistol, Energy Hammer' not applied (needs 1 more Hand Weapon)"), and says why Age of Fantasy Shadow
+  Stalkers has five spells.
 - **Saved games from v0.3.x and earlier load and play with 3.6 rules**, keeping the 3.5 armies they were saved with.
   The resume lobby (and the headless `--scenario` console) shows an amber notice: "This save predates the OPR 3.6
   upgrade; it plays with 3.6 rules". It does not block the resume. Saves written by 0.4.0 carry their rules version,

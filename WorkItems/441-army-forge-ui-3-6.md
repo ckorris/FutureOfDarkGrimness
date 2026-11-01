@@ -223,6 +223,9 @@ Tests green; hand-verify checklist in this file ticked by Chris.
   Alternatives: name each stale selection (needs a per-choice applied/unapplied report from `ListCompiler` - not
   built, recorded as post-release in the plan's section 7); recolour the red "Points check" line amber (would also
   hide a real #218-style pricing bug).
+  2026-11-01: the per-choice report IS now built (#438 D13-D15, owner request on D3): the reconciliation lists each
+  unapplied Replace by name in the same grey, and this generic note yields to them - it stays only for an under-priced
+  unit no specific line explains (`StaleReplaceNote`, `TheStaleReplaceNote_YieldsToASpecificUnappliedLine_ForThatUnit`).
 - **D5 - Shadow Stalkers' missing spell is a one-line amber note under the spell list, from an app-side table.
   OWNER REVIEW (wording).** "Combat Possession: text missing in OPR's 3.6.0 data, so it is not listed or castable."
   under the roster pane's SPELLS and every caster's spell list (`ArmyForgeScreen.SpellDataNotes`, keyed by game system

@@ -309,6 +309,12 @@ Army Forge / lobby / calculator screens:
       upgrade -> hovering "Enhanced Watchborn" in the config pane shows OPR's "If this model has Versatile Attack ..."
       text ending with the line "Base rule: Watchborn."; a normal Enhanced rule hover (e.g. "Enhanced Lustbound") has no
       such line; the same unit in game shows the line in the table hover and the army list overlay.
+- [ ] **#438 D3 message** (Forge, built 2026-11-01) - no shipped fixture triggers it (a Forge-authored list cannot hold a
+      pick its own compile cannot land, and the Forge greys such sections out), so it is test-covered and needs no
+      glance (`ArmyForgeCompilerTests` exact text, `ArmyForge36Tests` 88-book census). To see it anyway: import a share
+      list carrying a Replace whose target the unit lacks (e.g. a 3.6 list where Army Forge kept a stale "Replace Sgt.
+      Hand Weapon" without the Sergeant) -> a grey "<unit>: '<section> -> <gains>' not applied (needs 1 more <gear>)"
+      line under the FORGE RECONCILIATION deltas, and the same line in the "Open for editing?" modal on reopen.
 - [ ] **#430** ("Forge hand-verify (Chris)") - Forge GDF at 1000 with six squads -> amber "Too many units: 6 (max 5 at
       1000 pts; 1 per 200)." and the copies line; switch to AoF (1000 -> 750; caps 5 / 2); hover "pts limit" for the
       suggested sizes; a unit over 35% -> "is too large"; a 20+ model unit -> "Too many models/Tough"; lobby (host) Army

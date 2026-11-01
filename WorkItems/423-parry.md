@@ -243,7 +243,9 @@ AoF infantry unit with hand weapons parries a charge in the GUI (list under "GUI
   so at the table it is a separate "takes hits" moment, and the sign-off's budget sentence speaks of "every weapon
   profile the attacker swings". Alternative: one pool spanning Impact and the swings (a 5-model Parry(1) unit charged by
   Impact(6) cavalry would then parry nothing of the swings). Implemented as the former: `ResolveImpactHitsStage`'s child
-  metadata carries no shared budget, so the step sizes a fresh one.
+  metadata carries no shared budget, so the step sizes a fresh one. CONFIRMED by Chris 2026-11-01: a Discord discussion (no
+  official OPR ruling) agrees Parry applies to Impact and is rolled separately - Impact, a Parry roll, then the strikes
+  and another Parry roll. Kept as built.
 - D4: the pool is sized once, when the attack's first hits land, and never re-counted: a carrier that dies between two
   swings does not shrink it (pinned), and a model that... cannot appear mid-attack, so it never grows. The pool chip
   describes the carriers standing at the current swing while the "N of M used" chip reports the pool as set, so the two
