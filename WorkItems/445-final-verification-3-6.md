@@ -226,9 +226,13 @@ In game, built-in army (one or two games cover all of these):
       Brace no longer needs a hand-edited file: Chivalrous Kingdoms (and many AoF books) carry Brace - charge such a
       unit with an Impact unit -> the Impact beat shows the reduced count and the spear row underlines "Brace".
       Combat Calculator, melee, charging, "attacker fatigued", an Impact unit -> no Impact row.
-- [ ] **#447** (Notes "GUI hand-verify") - Charge with full-strength Warriors -> the "Impact Hits" beat throws 10
-      dice, context "Warriors: 5 models x Impact(2)", Offense colour, panel wide enough; at 3 models -> 6 dice; vs a
-      Brace unit -> "... - N Brace", and no beat at all when Brace cancels everything.
+- [ ] **#447** (Notes "GUI hand-verify") - Charge with full-strength Warriors that all end within 3" of the target ->
+      the "Impact Hits" beat throws 10 dice, context "Warriors: 5 models x Impact(2)", Offense colour, panel wide
+      enough; at 3 models -> 6 dice; vs a Brace unit -> "... - N Brace", and no beat at all when Brace cancels
+      everything. D1 (reversed 2026-11-01): charge with a STRUNG-OUT Impact unit (a long line of Warriors hitting the
+      corner of a unit, so only 2-3 models end the charge within 3") -> the beat throws 2 x the in-reach count and its
+      context reads "Warriors: 3 of 5 models in melee range x Impact(2)"; the console line says the same; the later
+      "Determine In Range Attackers" line (after pile-in) may show a different count - expected.
 - [ ] **#418** (Status) - A fatigued unit in melee (strike back once, then fight again the same round) -> the dice
       panel's 6s do not ring as special-rule 6s; the token tooltip / log line says fatigued hits do not count as 6s.
 - [ ] **#426** ("GUI hand-verify") - Deployment: the Heavy Gunners' Scout placement shows the blue band 9" past your

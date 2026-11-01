@@ -25,7 +25,8 @@ Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
 - **Melee:** models within **3"** (was 2") strike. The side that **took** the most wounds during the activation loses
   the melee (was: caused the fewest); Fear(X) now counts as X extra wounds taken by the enemy.
 - **Impact, Counter, Brace:** Impact is rolled **per model, before either unit attacks**, and not at all by a Fatigued
-  charger. Counter now only strikes first; its "enemy gets fewer Impact dice" half is the new core rule **Brace(X)**.
+  charger; only the charging models that end the charge within melee range (3") of the target roll, and the log says
+  "3 of 5 models in melee range" when some do not. Counter now only strikes first; its "enemy gets fewer Impact dice" half is the new core rule **Brace(X)**.
 - **Fatigue:** a Fatigued unit's 6s to hit in melee no longer trigger "on a 6" special rules.
 - **New core rules:** **Parry(X)** (Age of Fantasy hand weapons; 6+ ignores a melee hit, the worst hits go first),
   **Assault** (one weapon counts as both ranged and melee), **Cumbersome** (Hold or Advance only, no shooting after

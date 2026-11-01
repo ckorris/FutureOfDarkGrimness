@@ -270,7 +270,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | steps 1-7 done 2026-10-31; master merged into the branch 2026-10-31 evening; D2 ruled B, legacy-save amber notice built 2026-10-31 (D13-D20); merge + tag pending |
 | 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | pass 1 done 2026-10-31 (14 green / 0 red / 4 amber); pass 2 done 2026-10-31 evening on the final branch (13 green / 0 red / 1 amber = the owed GUI hand-verify list) |
 | 446 | Units that activate in Dangerous terrain take the test (pre-existing gap found by #420) | 2 | #420 | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4) |
-| 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | done 2026-10-30 (owner review: D1, D3) |
+| 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | done 2026-10-30; D1 reversed by Chris and rebuilt 2026-11-01 (melee-reach carriers only, "N of M models in melee range" log); owner review: D3 |
 
 Each number has a detail file `WorkItems/NNN-*.md` with the goal, the 3.6 text, the code anchors
 (Appendix A), the acceptance test, and the branch rules restated.

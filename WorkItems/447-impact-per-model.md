@@ -1,8 +1,9 @@
 # 447 — Impact(X) is rolled per unit; the rule is per model
 
 **Status**: done 2026-10-30 (engine `5fd93128` + `26d9e71e`; the superproject commit `447: ...` bumps them with the
-app shipped-data test, docs and this ledger) - awaiting Chris's GUI hand-verify (list below). Owner review asked on
-D1 and D3. Filed 2026-10-29 from #422's D8.
+app shipped-data test, docs and this ledger); D1 reversed by Chris and rebuilt 2026-11-01 (engine `9acb7790`:
+melee-reach carriers only) - awaiting Chris's GUI hand-verify (list below, item 6 added). D3 still with the owner.
+Filed 2026-10-29 from #422's D8.
 **Related**: #422 (Impact Fatigue gate, Brace; landed), #355 (Impact unreachable on vehicles - 3.6 replaced vehicle Impact with Overrun weapons), #442 (AI parity), #438 (re-bake brings the 3.6 Impact carriers)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / medium. Schedule in phase 2, after #422.
 
@@ -37,6 +38,65 @@ Impact(3) in a unit without it adds 3; a unit-scoped Impact granted by an aura c
 
 ## Notes
 
+- 2026-11-01: **D1 reversed by Chris and rebuilt.** Verbatim ruling: "D1, make it every model in melee range only. Make
+  the log message say that when the total differs from the total model count." Engine `9acb7790`; the superproject
+  commit bumps it with the docs.
+  - **The rule.** Impact(X) dice come only from the charging unit's living carriers in melee reach of the target when
+    `ResolveImpactHitsStage` runs (charge contact, before either unit attacks, before pile-in). "In reach" is the melee
+    stage's own strike reach, `MeleeRangeUtilities.AreModelsInMeleeRange` (3" base to base horizontally,
+    `GameWideConstants.MELEE_RANGE_INCHES_HORIZONTAL`; 4" vertically) - the predicate `DetermineInRangeAttackersStage`
+    reads after pile-in to pick who may strike; nothing new was invented. New
+    `ResolveImpactHitsStage.ModelsInMeleeReach(attacker, defender)` (a living charger model counts when it is in that
+    reach of any living defender model) feeds `ChargerParticipantInReach(attacker, defender)`, which
+    `ChargeContactParticipants` now uses; `ChargerParticipant(attacker)` (every living model) stays for callers without
+    positions (D6).
+  - **How the count reaches the effect (D7).** `RuleInvocation` gains `ParticipantModels` - the models the firing
+    participant brought (`RuleParticipant.Models`), threaded through `RuleEvaluator.CollectTagged` ->
+    `CollectFromRules` / `CollectGrantedRules` for the unit's, the granted, the weapon's and the per-model walks.
+    `Effect.ChargeImpactHits.CountCarriers(invocation, among)` counts carriers among those models when set, among
+    every living model otherwise; which models CARRY the copy is still read off the whole unit (D2 unchanged). A
+    joined hero's own copy is found by walking the participant's models, so an out-of-reach hero's Impact never
+    fires. When carriers stand out of reach the effect still emits a zero-dice op (`DiceCount` 0, `Carriers` M) so
+    the stage can explain the missing roll. `DealAutoWounds` (Ravage, #434) calls `CountCarriers` without a subset
+    and its stage passes every living model: unchanged.
+  - **The log line.** `RuleOperation.ChargeImpactHits` gains `Carriers` (living carriers wherever they stand) and
+    `PerModel` (the X, kept so a zero-dice op still names it). `DescribeDicePool` prints the plain shape when every
+    carrier is in reach ("5 models x Impact(1)" - no existing log changes) and "N of M models in melee range x
+    Impact(X)" otherwise, merging sources per rule and X as before (a resumed game's one-model attachments sum their
+    N and M). Exact new texts: "Riders' Impact rolled 2 dice (2 of 5 models in melee range x Impact(1)) -> 2 hit(s) on
+    the charge."; with a hero in reach and two host stragglers: "Knights' Impact rolled 6 dice (3 of 5 models in
+    melee range x Impact(1) + 1 model x Impact(3)) -> 6 hit(s) on the charge."; Brace composes: "(3 of 5 models in
+    melee range x Impact(2) - 2 Brace)"; nobody in reach: "Riders' Impact rolls no dice (0 of 5 models in melee range x
+    Impact(1))." The same text is the dice beat's `Context` ("Riders: 2 of 5 models in melee range x Impact(1)"), so
+    the GUI's Impact Hits beat says it too (no app code changed). The evaluator's op line reads "rolled 2 impact dice
+    on the charge (2 of 5 models in melee range x 1)".
+  - **CombatMath / Combat Calculator (D6).** `CombatMath.EstimateMelee` keeps `ChargerParticipant` - every living
+    carrier - because it prices a charge that has not happened (the charger stands out of reach, so the in-reach
+    participant would read 0 dice); comment in place, pinned by
+    `CombatMathPinTests.EstimateMelee_ImpactDice_CountEveryCarrier_PositionsAreNotModelled`. The Combat Calculator
+    uses `ChargeContactParticipants` (now in-reach) AND runs the real stage; it stacks both units edge to edge
+    (`PlaceAtGap(..., 0)`), so every model is in reach and its Impact row is unchanged (the app
+    `PerModelImpactShippedDataTests` pass untouched). Follow-up, not built: the calculator already takes a charge
+    distance, so a cheap honest approximation ("models within charge distance + 3" of the target count") is possible
+    there - noted for #442, not done here.
+  - **Tests.** Engine 4488 -> 4507 passed (1 skipped before and after). `ImpactPerModelRuleIntegrationTests` + 9:
+    strung-out 2 of 5 = 2 dice + exact line; all 5 in reach (spread within 3") = 5 dice with the unchanged line; a
+    joined hero out of reach adds nothing (plain line); a hero in reach + 2 host stragglers = 6 dice with both
+    sources; Brace subtracts from the in-reach total (6 - 2 = 4, line composes); no carrier in reach = no roll, no
+    wounds, the "rolls no dice (0 of 5 ...)" line; the dice beat's context; `ModelsInMeleeReach` equals
+    `MeleeRangeUtilities.GetModelsInMeleeRange` and honours 3.0" in / 3.1" out / 4.5" up out / dead out;
+    `DescribeDicePool` merges "2 of 5" + "1 of 1" + "0 of 1" into "3 of 7". `RuleOperationDescribeTests` + 3 cases;
+    `CombatMathPinTests` + 1 (above). No existing test pinned the old all-models behaviour: every earlier charger
+    stood at the target. FdgRaylib.Tests 4143 -> 4143.
+  - **Verification.** Engine suite green; FdgRaylib.Tests green; full `dotnet build` 0 errors, warnings unchanged
+    (engine 202 before and after; the app projects untouched); headless smoke exit 0 with `Game result:`; the
+    built-in Warriors' charges still log the plain shape ("Warriors' Impact rolled 10 dice (5 models x Impact(2))")
+    because the whole unit ends the charge in contact. ASCII grep over added .cs lines clean.
+  - **GUI hand-verify (Chris), added item 6:** charge with a strung-out Impact unit (move the Warriors so that only
+    2-3 models can end the charge within 3" of the target - e.g. a long line charging the corner of a unit): the
+    "Impact Hits" beat throws 2 x the in-reach count and its context line reads "Warriors: 3 of 5 models in melee
+    range x Impact(2)"; the console line matches; the melee's "Determine In Range Attackers: N of 5 models in melee
+    range" line (after pile-in) may differ from the Impact count, which is read before pile-in - expected.
 - 2026-10-30: **Landed.** Engine commits `5fd93128` (the rule, presentation, parity, compiler routing) and `26d9e71e`
   (the compiler guard, D3) on the submodule's `feature/opr-3.6`; the superproject commit bumps them with the app
   shipped-data test, `docs/EngineNotes.md` and this ledger.
@@ -148,8 +208,11 @@ Impact(3) in a unit without it adds 3; a unit-scoped Impact granted by an aura c
 
 ## Decisions
 
-- **D1 - which models count (2026-10-30) - OWNER REVIEW.** ALL living models of the charging unit that carry the
-  rule, wherever they stand. The 3.6 text ("When charging, before either unit attacks, roll X dice, unless this unit is
+- **D1 - which models count (2026-10-30) - OWNER REVIEW.** REVERSED by Chris 2026-11-01: melee-range models only; log
+  says 'N of M models in melee range' when they differ. Built: `ModelsInMeleeReach` / `ChargerParticipantInReach` on
+  the stage, `RuleInvocation.ParticipantModels`, `CountCarriers(invocation, among)`, `Carriers` + `PerModel` on the
+  op, the pool text (Notes 2026-11-01; D6, D7). The original text follows. ALL living models of the charging unit
+  that carry the rule, wherever they stand. The 3.6 text ("When charging, before either unit attacks, roll X dice, unless this unit is
   Fatigued") has no reach condition, and every charging model moves into contact if it can. Alternative: only the
   models that end the charge in melee range (the #320 Limited-style subset, i.e. the models within 3" of the target
   at charge contact). It would make a strung-out unit roll fewer dice, but it reads a condition the text does not
@@ -187,12 +250,32 @@ Impact(3) in a unit without it adds 3; a unit-scoped Impact granted by an aura c
   one-model attachments read like a fresh one's), the authored "(X)" stripped from the attached name, cancels as
   " - N Brace". The beat moves to the Offense category (Ravage's pool already uses it). A charge whose dice Brace
   cancels completely now says so in one line instead of skipping silently. ASCII only.
+- **D6 - CombatMath keeps every carrier; the calculator is unchanged (2026-11-01).** The AI's estimate prices a charge
+  before it is made: the charger stands where it stands, out of reach, so the stage's in-reach participant would read
+  0 dice for every charge and the AI would never value Impact. It has no model of how the unit will land, so it
+  keeps `ChargerParticipant` (every living carrier) - the upper bound and the expected case for a unit charging in a
+  line - with the reason in a comment and a pin test. Alternative: assume a fixed fraction in reach; rejected as an
+  invented number. The Combat Calculator stacks both units edge to edge and runs the real stage, so its in-reach
+  count equals every carrier; an honest refinement from its charge-distance input is a #442 follow-up, not built.
+- **D7 - the subset travels on the invocation, not the hook context (2026-11-01).** The effect learns which models the
+  participant brought through a new `RuleInvocation.ParticipantModels`, set by the evaluator for every rule the
+  participant fires (unit copy, grants, weapon, per-model walks). One list decides both which per-model copies fire
+  (the walk) and how many carriers a unit copy counts, so they cannot disagree. Alternative: a "models in reach"
+  field on `ChargeContactContext` read by the effect; rejected because the list would then be passed twice (context
+  and participant) and could diverge, and because the AI passes the same context without positions. A zero-dice op
+  is emitted when carriers stand out of reach (never when every carrier is dead), so the stage can log
+  "rolls no dice (0 of 5 models in melee range x Impact(1))" instead of skipping silently.
 
 ## Ledger
 
 | Facet | Code anchor | Test |
 |-------|-------------|------|
 | X per living carrier, unit-attached = native models | `Effect.ChargeImpactHits` (`CountCarriers`) | `ImpactPerModelRuleIntegrationTests.FiveModels_WithImpactOne_RollFiveDice`, `CasualtiesBeforeTheCharge_ReduceTheDice` |
+| D1: only carriers in melee reach roll (3" strike reach) | `ResolveImpactHitsStage.ModelsInMeleeReach`, `ChargerParticipantInReach`; `RuleInvocation.ParticipantModels`; `CountCarriers(invocation, among)` | `StrungOut_TwoOfFiveCarriersInReach_RollTwoDice_AndTheLogSaysSo`, `EveryCarrierInReach_RollsEveryDie_AndTheLogKeepsItsPlainShape`, `ModelsInMeleeReach_IsTheMeleeStagesOwnStrikeReach`, `NoCarrierInReach_RollsNoDice_AndTheLogSaysWhy` |
+| D1: a joined hero's Impact counts only in reach | the per-model walk over `ParticipantModels` | `AJoinedHerosImpact_CountsOnlyWhenTheHeroIsInReach`, `AJoinedHeroInReach_AddsItsDice_WhileTheHostsStragglersDoNot` |
+| D1: Brace subtracts from the in-reach total | `ImpactSink` | `Brace_SubtractsFromTheInReachTotal` |
+| D1: "N of M models in melee range" text / beat context | `DescribeDicePool`; `RuleOperation.ChargeImpactHits.Carriers`, `PerModel` | `TheDiceBeatsContext_SaysInMeleeRange_WhenCarriersStandOut`, `DescribeDicePool_SaysInMeleeRange_...`, `RuleOperationDescribeTests` (+3) |
+| D6: CombatMath counts every carrier (no positions) | `CombatMath.EstimateMelee` (`ChargerParticipant`) | `CombatMathPinTests.EstimateMelee_ImpactDice_CountEveryCarrier_PositionsAreNotModelled` |
 | model-attached copies count their carriers | same; `ResolveImpactHitsStage.ChargerParticipant` | `ThreeModels_TwoCarryingImpactTwo_RollFourDice` |
 | resume-safe (per-model attachments after a load) | `Matches` on the attachment, evaluator dedup | `ThreeModels_TwoCarryingImpactTwo_StillRollFourDiceAfterASaveAndLoad` |
 | joined hero's own Impact adds; host copy skips the hero | `ChargerParticipant`; `IsJoinedHero` | `AJoinedHerosImpactThree_AddsToAFiveModelImpactOneUnit_EightDice`, `AJoinedHeroWithoutImpact_AddsNothing_...`, `AJoinedHerosImpact_InAUnitWithoutImpact_...`, `OnlyTheJoinedHeroLeft_WithoutImpact_RollsNoDice` |
@@ -214,8 +297,11 @@ charger's unit copy counts its native models, a joined hero's own Impact and per
 carriers, a unit-wide grant counts every model; Brace(X) subtracts from that total (floor 0) and the Fatigue gate still
 zeroes it. The impact log line, the dice beat's context and the calculator's Impact row show the sum ("5 models x
 Impact(1)"); CombatMath and the calculator share the stage's participants. One-model Impact items compile to model
-grants. Engine `5fd93128`, `26d9e71e`. Open: Chris's GUI hand-verify; D1 and D3 for the owner; a joined hero's
-Ravage (handed to #434).
+grants. Engine `5fd93128`, `26d9e71e`. 2026-11-01: D1 reversed by Chris and rebuilt (engine `9acb7790`) - only the
+charger's living carriers within the melee stage's 3" reach of the target at charge contact roll; the log line and
+the dice beat say "N of M models in melee range" when the counts differ and keep the plain shape otherwise;
+CombatMath keeps every carrier (D6). Open: Chris's GUI hand-verify (items 1-6); D3 for the owner; a joined hero's
+Ravage (handed to #434); the calculator's charge-distance approximation (#442).
 
 ## Rules for the agent (plan section 1, restated)
 

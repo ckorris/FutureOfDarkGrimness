@@ -48,7 +48,7 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [~] 444 — Version, docs, release: 0.4.0 / OPR_3_6_0, README/CLAUDE.md/docs, archive, release-notes draft done on the branch 2026-10-31; merge + tag wait for hand-verify, fork sign-off and #445. ([WorkItems/444](WorkItems/444-version-docs-release-3-6.md))
 - [~] 445 — Final verification: pass 1 and pass 2 done 2026-10-31 (pass 2 on the final branch with master merged in: 13 green / 0 red / 1 amber); the amber is Chris's 25-line GUI hand-verify list. ([WorkItems/445](WorkItems/445-final-verification-3-6.md))
 - [x] 446 — Dangerous terrain: a unit that activates in Dangerous terrain takes the test first thing in its activation; one test per activation on either trigger. Done 2026-10-30; owner review asked on D1, D2, D3, D4. ([WorkItems/446](WorkItems/446-activate-in-dangerous-terrain.md))
-- [x] 447 — Impact(X) is per model: X dice per living model carrying it (a joined hero's own Impact adds), Brace subtracts from the total. Done 2026-10-30; owner review asked on D1, D3. ([WorkItems/447](WorkItems/447-impact-per-model.md))
+- [x] 447 — Impact(X) is per model: X dice per living model carrying it that is in melee reach of the target (a joined hero's own Impact adds when in reach), Brace subtracts from the total. Done 2026-10-30; D1 ruled by Chris and rebuilt 2026-11-01; owner review open on D3. ([WorkItems/447](WorkItems/447-impact-per-model.md))
 
 ---
 
