@@ -36,7 +36,7 @@ public class ProtectionFeatShippedDataTests
         ActivatedAbility ability = rule.Activated.Single();
         Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Activation_OnActivationStart));
         Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerGame>());
-        Assert.That(ability.AvailableWhen, Is.InstanceOf<Condition.AllModelsHaveThisRule>());
+        Assert.That(ability.AvailableWhen, Is.TypeOf<Condition.MostModelsHaveThisRule>());
 
         var grant = (Effect.AddRule)ability.Effect;
         Assert.That(grant.RuleName, Is.EqualTo("Protection Feat Guard"));

@@ -14,7 +14,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #197 misc - the Grounded family (Grounded Reinforcement / Precision / Stealth, 8 refs), over the DATA as
+// #197 misc - the Grounded family (3.6: Grounded Defense / Precision / Evasion), over the DATA as
 // shipped. The engine's GroundedTerrainRuleIntegrationTests prove the mechanism and geometry; these prove
 // the supplement authors each rule the way that mechanism expects - the right hook and seat (a Hit delta on
 // the wrong hook nets zero; the wrong seat aims the modifier at the wrong side), the terrain gate, and that
@@ -31,11 +31,11 @@ public class GroundedShippedDataTests
 
     // ---- Structure: the terrain gate and the right hook/seat/effect ---------------------------------
 
-    [TestCase("Grounded Reinforcement", EHookID.Shooting_OnHitRollComplete, ERuleSeat.Subject,
+    // #434: the 3.6 names Grounded Defense / Grounded Evasion carry the 3.5 Grounded Reinforcement / Grounded Stealth
+    // shapes word for word; #436 deleted the 3.5 names (no 3.6.0 book prints them).
+    [TestCase("Grounded Defense", EHookID.Shooting_OnHitRollComplete, ERuleSeat.Subject,
         ERollKind.Save, 1)]
-    [TestCase("Grounded Precision", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Actor,
-        ERollKind.Hit, 1)]
-    [TestCase("Grounded Stealth", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Subject,
+    [TestCase("Grounded Evasion", EHookID.Shooting_OnHitRollModifier, ERuleSeat.Subject,
         ERollKind.Hit, -1)]
     public void EachRule_GatesOnTerrain_AndAppliesTheRightModifierAtTheRightHookAndSeat(
         string name, EHookID hook, ERuleSeat seat, ERollKind roll, int delta)
@@ -47,8 +47,8 @@ public class GroundedShippedDataTests
 
         Assert.That(entry.Condition, Is.InstanceOf<Condition.And>());
         var and = (Condition.And)entry.Condition;
-        Assert.That(and.Left, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-            "'a unit where all models have this rule'.");
+        Assert.That(and.Left, Is.TypeOf<Condition.MostModelsHaveThisRule>(),
+            "'a unit where most models have this rule' (#428).");
         Assert.That(and.Right, Is.InstanceOf<Condition.MostModelsWithinInchesOfTerrain>(),
             "'... has most of them within 1in of terrain'.");
         Assert.That(((Condition.MostModelsWithinInchesOfTerrain)and.Right).DistanceInches, Is.EqualTo(1f));
@@ -59,8 +59,24 @@ public class GroundedShippedDataTests
         Assert.That(mod.Delta, Is.EqualTo(delta));
     }
 
-    [TestCase("Grounded Reinforcement Aura", "Grounded Reinforcement")]
+    // #434: 3.6 Grounded Precision - "If most models in this unit are within 1" of terrain, this model gets +1 to hit
+    // rolls when attacking." No "where most models have this rule" clause any more: the terrain gate alone.
+    [Test]
+    public void GroundedPrecision_36_GatesOnTerrainOnly_NotOnItsCarriers()
+    {
+        SpecialRuleDefinition rule = Definition("Grounded Precision");
+        HookEntry entry = rule.Passive.Single();
+
+        Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollModifier));
+        Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor));
+        Assert.That(entry.Condition, Is.EqualTo(new Condition.MostModelsWithinInchesOfTerrain(1f)));
+        Assert.That(entry.Effect, Is.EqualTo(new Effect.RollModifier(ERollKind.Hit, 1)));
+        Assert.That(rule.Description, Is.EqualTo(
+            "If most models in this unit are within 1\" of terrain, this model gets +1 to hit rolls when attacking."));
+    }
+
     [TestCase("Grounded Precision Aura", "Grounded Precision")]
+    [TestCase("Grounded Defense Aura", "Grounded Defense")]
     public void EachAura_ConfersItsBaseRule(string auraName, string baseName)
     {
         HookEntry entry = Definition(auraName).Passive.Single();
@@ -72,10 +88,10 @@ public class GroundedShippedDataTests
     // ---- Net effect over shipped data, gated on terrain ---------------------------------------------
 
     [Test]
-    public void GroundedReinforcement_NetsPlusOneDefense_OnlyWhenMostModelsAreInTerrain()
+    public void GroundedDefense_NetsPlusOneDefense_OnlyWhenMostModelsAreInTerrain()
     {
-        var harness = new Harness("Grounded Reinforcement");
-        IUnit defender = harness.BuildUnit("P1", "Grounded Reinforcement"); // models at origin
+        var harness = new Harness("Grounded Defense");
+        IUnit defender = harness.BuildUnit("P1", "Grounded Defense"); // models at origin
         IUnit attacker = harness.BuildUnit("P2");
 
         Assert.That(harness.NetSave(attacker, defender, Harness.OriginTerrain), Is.EqualTo(1));
@@ -84,10 +100,10 @@ public class GroundedShippedDataTests
     }
 
     [Test]
-    public void GroundedStealth_NetsMinusOneToEnemyHit_OnlyWhenMostModelsAreInTerrain()
+    public void GroundedEvasion_NetsMinusOneToEnemyHit_OnlyWhenMostModelsAreInTerrain()
     {
-        var harness = new Harness("Grounded Stealth");
-        IUnit defender = harness.BuildUnit("P1", "Grounded Stealth");
+        var harness = new Harness("Grounded Evasion");
+        IUnit defender = harness.BuildUnit("P1", "Grounded Evasion");
         IUnit attacker = harness.BuildUnit("P2");
 
         Assert.That(harness.NetEnemyHit(attacker, defender, Harness.OriginTerrain), Is.EqualTo(-1));

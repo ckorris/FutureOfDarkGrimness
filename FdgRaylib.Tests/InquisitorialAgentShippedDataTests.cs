@@ -39,8 +39,8 @@ public class InquisitorialAgentShippedDataTests
             "the hook DeterminePlayerTurnStage fires before the player picks their next unit");
         Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerGame>(), "'once per game'");
         Assert.That(ability.TargetSelector!.TargetAffinity, Is.EqualTo(ETargetAffinity.Self));
-        Assert.That(ability.AvailableWhen, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-            "'if ALL models in this unit have this rule'");
+        Assert.That(ability.AvailableWhen, Is.TypeOf<Condition.EveryModelHasThisRule>(),
+            "'if ALL models in this unit have this rule' - one of the two rules OPR 3.6 keeps on 'all' (#428)");
         Assert.That(ability.Effect, Is.EqualTo(
                 new Effect.Reactivate(ClearsFatigue: true, ArmyRoundQuotaDivisor: 3)),
             "'stops being fatigued when activated for the second time', and 'only up to one THIRD of the " +
@@ -100,8 +100,9 @@ public class InquisitorialAgentShippedDataTests
     {
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites.Count, Is.EqualTo(20),
-            "the audit's 20 references - a change here means the corpus moved, not the engine");
+        // #438: 21 in the 3.6.0 snapshots (2026-10-30; all Human Inquisition unit rules, 3.5: 20).
+        Assert.That(sites.Count, Is.EqualTo(21),
+            "the 3.6.0 census's 21 references - a change here means the corpus moved, not the engine");
 
         foreach (string bookName in sites.Select(s => s.Book).Distinct())
         {

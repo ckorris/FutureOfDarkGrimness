@@ -4,10 +4,10 @@
     {
       "level": "1k",
       "sideA": [
-        "armies/1k - Human Defense Force.fdgarmy"
+        "armies/GDF/1k - Human Defense Force.fdgarmy"
       ],
       "sideB": [
-        "armies/1k - Prime Brothers.fdgarmy"
+        "armies/GDF/1k - Prime Brothers.fdgarmy"
       ]
     },
     {
@@ -31,19 +31,19 @@
     {
       "level": "3k",
       "sideA": [
-        "armies/3k - Dark Elf Raiders.fdgarmy"
+        "armies/GDF/3k - Dark Elf Raiders.fdgarmy"
       ],
       "sideB": [
-        "armies/3k - High Elf Fleets.fdgarmy"
+        "armies/GDF/3k - High Elf Fleets.fdgarmy"
       ]
     },
     {
       "level": "4k",
       "sideA": [
-        "armies/4k - Alien Hives.fdgarmy"
+        "armies/GDF/4k - Alien Hives.fdgarmy"
       ],
       "sideB": [
-        "armies/4k - High Elf Fleets.fdgarmy"
+        "armies/GDF/4k - High Elf Fleets.fdgarmy"
       ]
     },
     {
@@ -62,34 +62,34 @@
     "points-1k": [
       {
         "sideA": [
-          "armies/1k - Alien Hives.fdgarmy"
+          "armies/GDF/1k - Alien Hives.fdgarmy"
         ],
         "sideB": [
-          "armies/1k - Blood Brothers.fdgarmy"
+          "armies/GDF/1k - Blood Brothers.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/1k - Alien Hives.fdgarmy"
+          "armies/GDF/1k - Alien Hives.fdgarmy"
         ],
         "sideB": [
-          "armies/Wormhole Demons of Change 1k.fdgarmy"
+          "armies/GDF/1k - Daemons of Change.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/1k - Blood Brothers.fdgarmy"
+          "armies/GDF/1k - Blood Brothers.fdgarmy"
         ],
         "sideB": [
-          "armies/1k - Human Defense Force.fdgarmy"
+          "armies/GDF/1k - Human Defense Force.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/Wormhole Demons of Change 1k.fdgarmy"
+          "armies/GDF/1k - Daemons of Change.fdgarmy"
         ],
         "sideB": [
-          "armies/1k - Prime Brothers.fdgarmy"
+          "armies/GDF/1k - Prime Brothers.fdgarmy"
         ]
       }
     ],
@@ -130,68 +130,68 @@
     "points-3k": [
       {
         "sideA": [
-          "armies/3k - Battle Brothers.fdgarmy"
+          "armies/GDF/3k - Battle Brothers.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Goblin Reclaimers.fdgarmy"
+          "armies/GDF/3k - Goblin Reclaimers.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/3k - Knight Brothers.fdgarmy"
+          "armies/GDF/3k - Knight Brothers.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Robot Legions.fdgarmy"
+          "armies/GDF/3k - Robot Legions.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/3k - Saurian Starhost.fdgarmy"
+          "armies/GDF/3k - Saurian Starhosts.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Soul-Snatcher Cults.fdgarmy"
+          "armies/GDF/3k - Soul-Snatcher Cults.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/3k - Eternal Dynasty.fdgarmy"
+          "armies/GDF/3k - Eternal Dynasty.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - DAO Union.fdgarmy"
+          "armies/GDF/3k - DAO Union.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/3k - Titan Lords.fdgarmy"
+          "armies/GDF/3k - Titan Lords.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Goblin Reclaimers.fdgarmy"
+          "armies/GDF/3k - Goblin Reclaimers.fdgarmy"
         ]
       }
     ],
     "points-4k": [
       {
         "sideA": [
-          "armies/4k - Alien Hives.fdgarmy"
+          "armies/GDF/4k - Alien Hives.fdgarmy"
         ],
         "sideB": [
-          "armies/4k - Havoc Brothers.fdgarmy"
+          "armies/GDF/4k - Havoc Brothers.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/4k - Alien Hives.fdgarmy"
+          "armies/GDF/4k - Alien Hives.fdgarmy"
         ],
         "sideB": [
-          "armies/4k - High Elf Fleets.fdgarmy"
+          "armies/GDF/4k - High Elf Fleets.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/4k - Havoc Brothers.fdgarmy"
+          "armies/GDF/4k - Havoc Brothers.fdgarmy"
         ],
         "sideB": [
-          "armies/4k - High Elf Fleets.fdgarmy"
+          "armies/GDF/4k - High Elf Fleets.fdgarmy"
         ]
       }
     ],
@@ -238,44 +238,44 @@
       },
       {
         "sideA": [
-          "armies/3k - Saurian Starhost.fdgarmy",
-          "armies/3k - Goblin Reclaimers.fdgarmy"
+          "armies/GDF/3k - Saurian Starhosts.fdgarmy",
+          "armies/GDF/3k - Goblin Reclaimers.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Soul-Snatcher Cults.fdgarmy",
-          "armies/3k - Dark Elf Raiders.fdgarmy"
+          "armies/GDF/3k - Soul-Snatcher Cults.fdgarmy",
+          "armies/GDF/3k - Dark Elf Raiders.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/3k - Battle Brothers.fdgarmy",
-          "armies/3k - Knight Brothers.fdgarmy"
+          "armies/GDF/3k - Battle Brothers.fdgarmy",
+          "armies/GDF/3k - Knight Brothers.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Robot Legions.fdgarmy",
-          "armies/3k - Titan Lords.fdgarmy"
+          "armies/GDF/3k - Robot Legions.fdgarmy",
+          "armies/GDF/3k - Titan Lords.fdgarmy"
         ]
       }
     ],
     "shape-2v2-3k": [
       {
         "sideA": [
-          "armies/3k - Saurian Starhost.fdgarmy",
-          "armies/3k - Goblin Reclaimers.fdgarmy"
+          "armies/GDF/3k - Saurian Starhosts.fdgarmy",
+          "armies/GDF/3k - Goblin Reclaimers.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Soul-Snatcher Cults.fdgarmy",
-          "armies/3k - Dark Elf Raiders.fdgarmy"
+          "armies/GDF/3k - Soul-Snatcher Cults.fdgarmy",
+          "armies/GDF/3k - Dark Elf Raiders.fdgarmy"
         ]
       },
       {
         "sideA": [
-          "armies/3k - Battle Brothers.fdgarmy",
-          "armies/3k - Knight Brothers.fdgarmy"
+          "armies/GDF/3k - Battle Brothers.fdgarmy",
+          "armies/GDF/3k - Knight Brothers.fdgarmy"
         ],
         "sideB": [
-          "armies/3k - Robot Legions.fdgarmy",
-          "armies/3k - Titan Lords.fdgarmy"
+          "armies/GDF/3k - Robot Legions.fdgarmy",
+          "armies/GDF/3k - Titan Lords.fdgarmy"
         ]
       }
     ],

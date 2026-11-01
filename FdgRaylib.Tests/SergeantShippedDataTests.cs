@@ -29,7 +29,7 @@ public class SergeantShippedDataTests
 
     private static readonly string[] Books =
     {
-        "WormholeDaemonsofChange", "WormholeDaemonsofLust", "WormholeDaemonsofPlague", "WormholeDaemonsofWar",
+        "DaemonsofChange", "DaemonsofLust", "DaemonsofPlague", "DaemonsofWar", // #438: 3.6 names (3.5 "Wormhole Daemons of X")
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
@@ -46,7 +46,7 @@ public class SergeantShippedDataTests
     // ---- The authored definition ----------------------------------------------------------------------
 
     [Test]
-    public void Sergeant_IsAWeaponScopedSurgeBody()
+    public void Sergeant_IsAWeaponScopedApBody()
     {
         SpecialRuleDefinition rule = Sergeant();
         HookEntry entry = rule.Passive.Single();
@@ -56,12 +56,14 @@ public class SergeantShippedDataTests
         // copy at all.
         Assert.That(rule.Scope, Is.EqualTo(ERuleScope.Weapon));
 
-        Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollComplete),
-            "the shared hit-complete hook - fires for shooting AND melee, as 'when this model attacks' asks");
-        Assert.That(entry.Condition, Is.InstanceOf<Condition.UnmodifiedRollEquals>());
-        Assert.That(entry.Effect, Is.InstanceOf<Effect.AddExtraHit>());
-        Assert.That(((Effect.AddExtraHit)entry.Effect).OnRollValue, Is.EqualTo(6));
+        // #434: 3.6.0 - "This model gets AP(+1) when attacking." (3.5 was a Surge body.) The shared hit-complete
+        // hook fires for shooting AND melee, as "when attacking" asks; carried by the champion's weapon copy, the
+        // AP rides only that copy's volley.
+        Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollComplete));
+        Assert.That(entry.Condition, Is.InstanceOf<Condition.Always>());
+        Assert.That(entry.Effect, Is.EqualTo(new Effect.RollModifier(ERollKind.Save, -1)));
         Assert.That(rule.EngineArgumentCount, Is.EqualTo(0));
+        Assert.That(rule.Description, Is.EqualTo("This model gets AP(+1) when attacking."));
     }
 
     // ---- The corpus: the exact shape the compiler gate keys on -----------------------------------------
@@ -115,8 +117,9 @@ public class SergeantShippedDataTests
                 .Single(d => d.Name == RuleName);
 
             Assert.That(embedded.Scope, Is.EqualTo(ERuleScope.Weapon), bookName);
-            Assert.That(embedded.Passive.Single().Effect, Is.InstanceOf<Effect.AddExtraHit>(),
-                $"{bookName}: the embedded copy carries the extra-hit body - re-run --apply-rules");
+            // #438: the 3.6 body (AP(+1), the supplement pinned above) - the 3.5 books embedded the extra-hit one.
+            Assert.That(embedded.Passive.Single().Effect, Is.EqualTo(new Effect.RollModifier(ERollKind.Save, -1)),
+                $"{bookName}: the embedded copy carries the supplement's AP(+1) body - re-run --apply-rules");
         }
     }
 
@@ -125,7 +128,7 @@ public class SergeantShippedDataTests
     [Test]
     public void BloodWarriors_BuyingASergeant_GetOneMarkedCopyPerWeaponProfile()
     {
-        BookFile book = LoadBook("WormholeDaemonsofWar");
+        BookFile book = LoadBook("DaemonsofWar");
         RosterUnit warriors = book.Units.Single(u => u.Name == "Blood Warriors");
         UpgradeSection champions = warriors.Sections
             .Single(s => s.Options.Any(o => o.Label == "Sergeant") && s.Targets.Count == 0);

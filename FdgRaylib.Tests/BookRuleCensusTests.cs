@@ -26,9 +26,10 @@ public class BookRuleCensusTests
     // fails the fixture too - that is the reminder to delete it when the blocking item lands.
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-        // Empty since #381 landed (Retreating Strike, the last dead AoF name) - both corpora are at
-        // zero dead references. Add entries only for a name that is KNOWINGLY dead, with the item that
-        // owns it.
+        // Empty from #381 (Retreating Strike, the last dead AoF name) until #422, and again since #438: the
+        // #422 (Counter-Attack + Aura) and #436 (Courage Aura, Crack, Strafing, the Boost Auras, Resistance,
+        // Piercing Assault / Hunter, Darkborn variants, Storm of X) entries went stale when the 3.6.0 re-bake
+        // replaced the 3.5 books. Add entries only for a name that is KNOWINGLY dead, with the item that owns it.
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

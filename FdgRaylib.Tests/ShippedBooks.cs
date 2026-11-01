@@ -11,7 +11,7 @@ namespace FdgRaylib.Tests;
 /// counts and populations that were closed against the 47-book GDF corpus, so they enumerate
 /// <see cref="GdfPaths"/>; the AoF corpus carries its own census (#375) and is pinned by the
 /// all-books fixtures (BookRuleCensusTests, BookSpellCoverageTests, BookRuleScopeTests). AoF bundles
-/// are filename-prefixed "AoF-" by scripts/bake-aof-books.sh - the filename convention IS the
+/// are filename-prefixed "AoF-" by scripts/bake-books.sh - the filename convention IS the
 /// contract here, and the census fixtures verify the books' GameSystem field independently.
 /// </summary>
 internal static class ShippedBooks

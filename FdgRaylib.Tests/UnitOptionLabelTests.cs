@@ -49,6 +49,16 @@ public class UnitOptionLabelTests
         Assert.That(details[1], Is.EqualTo("(no weapons)"));
     }
 
+    // #424: the unit picker's range column is a precomputed label, so an Assault pistol reads as both.
+    [Test]
+    public void BuildWithRangeLabels_PrintsTheLabelVerbatim_SoAnAssaultPistolReadsAsBoth()
+    {
+        var (_, details) = UnitOptionLabel.BuildWithRangeLabels("Pistoleers", 5, 4, 4,
+            new[] { ("Heavy Pistol", "12\"/melee", "AP(1), Assault"), ("Knife", "melee", "") });
+
+        Assert.That(details[1], Is.EqualTo("Heavy Pistol (12\"/melee, AP(1), Assault), Knife (melee)"));
+    }
+
     [Test]
     public void Build_OmitsUnitWideSpecialRules()
     {

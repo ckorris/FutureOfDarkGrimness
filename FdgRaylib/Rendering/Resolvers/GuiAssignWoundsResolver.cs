@@ -295,7 +295,7 @@ public class GuiAssignWoundsResolver
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 28f);
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * RuleHoverText.TooltipWrapEm);
                 ImGui.TextUnformatted(WoundAssignmentText.ChipTooltip(results, i, RowOf));
                 ImGui.PopTextWrapPos();
                 ImGui.EndTooltip();
@@ -426,7 +426,7 @@ public class GuiAssignWoundsResolver
         {
             var w = grp.First();
             int count = grp.Count();
-            string range  = w.RangeInches > 0f ? $"{w.RangeInches:0.#}\"" : "melee";
+            string range  = WeaponStatFormatter.RangeLabel(w, "melee");
             string prefix = count > 1 ? $"{count}x " : "";
             lines.Add($"{prefix}{w.Name} ({range})");
         }

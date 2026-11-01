@@ -13,7 +13,7 @@ namespace FdgRaylib.Import;
 
 // #241 — the online half of the Army Forge share-link import: parse a share link (or bare list id),
 // fetch the resolved list JSON (/api/tts) plus every referenced army book (/api/army-books, needed for
-// the 3.5.x version gate), run the engine's OprListImporter, then attach the matching bundled book's
+// the OPR version gate - 3.6.x since #437), run the engine's OprListImporter, then attach the matching bundled book's
 // rule/spell definitions so faction rules enforce like a Forge-built army. The /api/tts endpoint is the
 // one OPR's own Tabletop Simulator mod uses — undocumented but long-stable; every failure path here
 // surfaces as a plain-language InvalidOperationException for the UI/CLI to show.
@@ -146,7 +146,9 @@ public static class ArmyForgeShareService
 
     // The same bundled snapshots the Forge screen offers (Assets/Books). Name match is case-insensitive
     // and system-gated (#378: four AoF faction names collide with GDF books; absent system means GDF);
-    // OPR book names and our imported book names come from the same source strings.
+    // OPR book names and our imported book names come from the same source strings - across OPR's renames
+    // too (#437: OprBookNames, so a list stamped with a pre-3.6 name such as "Wormhole Daemons of War" still
+    // finds the bundled 3.6 "Daemons of War" book).
     private static BookFile? MatchBundledBook(string factionName, string? gameSystem)
     {
         if (string.IsNullOrWhiteSpace(factionName)) return null;
@@ -158,8 +160,7 @@ public static class ArmyForgeShareService
             try
             {
                 BookFile? book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options);
-                if (book is not null && string.Equals(book.Name, factionName, StringComparison.OrdinalIgnoreCase)
-                    && GameSystems.SameSystem(book.GameSystem, gameSystem))
+                if (book is not null && OprBookNames.SameBook(book.Name, book.GameSystem, factionName, gameSystem))
                     return book;
             }
             catch { /* skip a malformed book, same tolerance as the Forge screen */ }

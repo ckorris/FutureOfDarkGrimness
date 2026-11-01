@@ -30,7 +30,7 @@ public class ReanimationShippedDataTests
 
         Assert.That(entry.HookID, Is.EqualTo(EHookID.Activation_OnActivationStart),
             "'when a unit ... is activated'");
-        Assert.That(entry.Condition, Is.InstanceOf<Condition.AllModelsHaveThisRule>());
+        Assert.That(entry.Condition, Is.TypeOf<Condition.MostModelsHaveThisRule>());
         Assert.That(((Effect.RestoreWounds)entry.Effect).MinRoll, Is.EqualTo(5), "'for each 5+'");
     }
 

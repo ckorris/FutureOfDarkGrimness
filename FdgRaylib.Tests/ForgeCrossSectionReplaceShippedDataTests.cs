@@ -74,6 +74,21 @@ public class ForgeCrossSectionReplaceShippedDataTests
                     int left = ListCompiler.AvailableApplications(both.Weapons, bothItems, section.Targets);
                     string where = $"{roster.Name} / \"{section.Label}\" fed by \"{grantor.Label}\" ({grant.Label})";
 
+                    // #438: in a MUTUAL pair the grantor is starved in the baseline (it consumes what only this
+                    // swap hands out - 3.6 Biker Sisters: "Replace one Energy Lance -> Sgt. Pistol, Sgt. Hand
+                    // Weapon" feeds "Replace Sgt. Hand Weapon -> Energy Lance", which hands the lance back), so
+                    // neither the pool left over nor the granted price is comparable. Both purchases landing is
+                    // still checkable from the NAKED unit: it must be charged the grant plus every application.
+                    if (Mutual(section, swap, grantor))
+                    {
+                        int naked = Compile(book, roster).Item1.PointCost;
+                        int expectedBoth = naked + grant.Cost + swap.Cost * wanted;
+                        if (both.PointCost != expectedBoth)
+                            failures.Add($"{where} (mutual): charged {both.PointCost}, expected {expectedBoth} "
+                                + $"({naked} + {grant.Cost} + {swap.Cost}x{wanted}) - a purchase was dropped.");
+                        continue;
+                    }
+
                     if (left != pool - wanted)
                     {
                         failures.Add($"{where}: asked for {wanted} of a {pool} pool, but {left} target(s) " +
@@ -82,11 +97,8 @@ public class ForgeCrossSectionReplaceShippedDataTests
 
                     // Exact price, EXCEPT where the two sections feed each other (DAO Union's Tactical
                     // Grunts trade a Pulse Rifle + CCW for a Pulse Pistol, which the next section trades
-                    // back for a Pulse Rifle). There the grantor is itself starved in the baseline compile
-                    // and only becomes payable once this swap applies, so the baseline is not comparable -
-                    // the applications-landed check above still covers it.
-                    if (Mutual(section, swap, grantor)) continue;
-
+                    // back for a Pulse Rifle) - handled above: the grantor is itself starved in the baseline
+                    // compile and only becomes payable once this swap applies, so the baseline is not comparable.
                     int expectedCost = granted.PointCost + swap.Cost * wanted;
                     if (both.PointCost != expectedCost)
                     {
@@ -193,6 +205,11 @@ public class ForgeCrossSectionReplaceShippedDataTests
     // Lord's Heavy Razor Claws, and the Orc Marauders Beast Titan's Heavy Mortars among them. Those are the
     // ones the pre-#323 compiler mis-clamped; the test above proves each can now spend its pool.
     //
+    // #438: the 3.6.0 books have 47 across 25 books - the Titan Lords mini-titans, Gravity Pistols and the Hive Lord
+    // left; the Brothers' Assault squads ("Replace any Heavy Pistol" above the pistol-returning combo, the #438
+    // pass-through shape ListCompiler now yields to), Pathfinder Bikers, Havoc Destroyers, the HDF Combat Walker and
+    // the Orc Veterans came in. Each is proven able to spend its pool by the test above.
+    //
     // A 55th, the Dark Brother Bikers' "Replace Energy Sword", is fed from BOTH directions - the earlier
     // feed made it look safe, but a player who takes only the later one hit the same bug. It is deliberately
     // not in this count (the test above covers it, grantor direction being irrelevant there).
@@ -221,10 +238,10 @@ public class ForgeCrossSectionReplaceShippedDataTests
             }
         }
 
-        Assert.That(fedFromBelow, Has.Count.EqualTo(54),
+        Assert.That(fedFromBelow, Has.Count.EqualTo(47),
             "census drift - re-run the audit and re-check the fix covers the new shape:\n  "
             + string.Join("\n  ", fedFromBelow));
-        Assert.That(fedFromBelow, Has.Some.Contains("TitanLordsWarDisciples/War Errant Mini-Titan"));
-        Assert.That(fedFromBelow, Has.Some.Contains("AlienHives/Hive Lord"));
+        Assert.That(fedFromBelow, Has.Some.Contains("HumanDefenseForce/Combat Walker/Replace any Walker Sword"));
+        Assert.That(fedFromBelow, Has.Some.Contains("BattleBrothers/Assault Brothers/Replace any Heavy Pistol"));
     }
 }

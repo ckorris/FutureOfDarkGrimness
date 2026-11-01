@@ -24,8 +24,7 @@ public class BookRuleFireLintTests
 {
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>
     {
-        ["Unique"] = "list-building marker: no dispatch entries; enforced at army-build time by " +
-            "ListValidator ('the army may only include one copy'), never during play.",
+        // #438: "Unique" left with the 3.5 books (3.6 books carry the catalog "Unique Hero").
         ["Ethereal"] = "activated teleport enacted by TeleportStage (routed on Effect.Teleport), not by operations.",
     };
 

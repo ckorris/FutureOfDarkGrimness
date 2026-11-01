@@ -375,7 +375,7 @@ public sealed class ArmyListOverlay
             {
                 new($"{group.Count()}x {w.Name} (", null, null),
             };
-            segments.AddRange(RuleHoverText.WeaponStatLine(w));
+            segments.AddRange(RuleHoverText.WeaponStatLine(w, _ruleResolver));
             segments.Add(new RuleHoverText.Segment(")", null, null));
             DrawWrappedSegments(segments, ImGui.GetContentRegionAvail().X);
         }
@@ -452,15 +452,17 @@ public sealed class ArmyListOverlay
         }
     }
 
-    /// <summary>The comma-joined hoverable segment list for a set of resolved rules.</summary>
-    private static List<RuleHoverText.Segment> RuleSegmentsFor(IReadOnlyList<ResolvedRule> rules)
+    /// <summary>The comma-joined hoverable segment list for a set of resolved rules. The hover text is
+    /// <see cref="EnhancedRuleGate.HoverDescription(FDG.Rules.Definitions.SpecialRuleDefinition, IRuleResolver)"/>
+    /// (#441 F7: the "Base rule: X." line for an Enhanced rule whose text never names its base).</summary>
+    private List<RuleHoverText.Segment> RuleSegmentsFor(IReadOnlyList<ResolvedRule> rules)
     {
         var segments = new List<RuleHoverText.Segment>();
         foreach (ResolvedRule rule in rules)
         {
             if (segments.Count > 0) segments.Add(new RuleHoverText.Segment(", ", null, null));
             segments.Add(new RuleHoverText.Segment(rule.RequestedName, rule.RequestedName,
-                rule.Definition.Description));
+                EnhancedRuleGate.HoverDescription(rule.Definition, _ruleResolver)));
         }
         return segments;
     }
@@ -690,7 +692,7 @@ public sealed class ArmyListOverlay
             ImGui.TextUnformatted(ArmyListLayout.ApText(w.ArmorPenetration));
 
             ImGui.TableSetColumnIndex(4);
-            var ruleSegments = RuleHoverText.RuleSegments(w);
+            var ruleSegments = RuleHoverText.RuleSegments(w, _ruleResolver);
             if (ruleSegments.Count == 0)
             {
                 UiText.Disabled("-");

@@ -58,9 +58,21 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string CancelLabel = "Cancel";
     internal const string DistanceLabel = "Distance (in)";
     internal const string CoverLabel = "Defender is in cover";
-    internal const string MovedLabel = "Attacker moved this activation";
+    // #442 (#425): named for the action it stands for - 3.6's Hold-only rules (Indirect, Artillery, Slayer) read it.
+    internal const string MovedLabel = "Attacker advanced (untick = Hold)";
     internal const string ChargingLabel = "Attacker is charging";
     internal const string FatiguedLabel = "Attacker is fatigued";
+    // #442 (#432): where the charge was declared from - the "charges / is charged from over 6in" rules read it.
+    internal const string ChargeFromLabel = "Charged from (in), 0 = not set";
+    // #459 D4: offered only while a rule on the defender reads its moved state (CombatReport.DefenderMovedMatters),
+    // or while it is ticked, so a swap to a plain defender never strands a hidden tick.
+    internal const string DefenderMovedLabel = "Defender moved this round";
+    internal const string DefenderMovedTooltip =
+        "A rule on the defender reads whether it moved this round (Artillery: -1 to hit it from over 12\" only " +
+        "while it has not moved). Tick to price the shot after the defender moved.";
+    internal const string ChargeFromTooltip =
+        "How far apart the units stood, base to base, when the charge was declared. Rules such as Ferocious " +
+        "or a Changebound defender's -1 to hit read it. Leave at 0 to ignore it.";
 
     private static readonly Vector4 DimText = new(0.62f, 0.62f, 0.62f, 1f);
     private static readonly Vector4 BrightText = new(1f, 1f, 1f, 1f);
@@ -914,13 +926,13 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.Unindent();
     }
 
-    private static void DrawChipLine(string label, IReadOnlyList<string> chips, string result)
+    private static void DrawChipLine(string label, IReadOnlyList<ChipView> chips, string result)
     {
         UiText.Colored(DimText, label);
-        foreach (string chip in chips)
+        foreach (ChipView chip in chips)
         {
             ImGui.SameLine();
-            UiChrome.DrawChip(chip);
+            UiChrome.DrawChip(chip.Label, chip.Hover);
         }
         ImGui.SameLine();
         UiText.Colored(DimText, "->");
@@ -950,7 +962,26 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.SameLine(0f, ImGui.GetTextLineHeight());
         bool moved = _situation.AttackerMoved;
         if (ImGui.Checkbox(MovedLabel, ref moved)) _situation = _situation with { AttackerMoved = moved };
+
+        DrawDefenderMovedIfOffered();
     }
+
+    /// <summary>#459 D4: the defender-side moved tick, on its own line, only when <see cref="OffersDefenderMoved"/>.</summary>
+    private void DrawDefenderMovedIfOffered()
+    {
+        if (!OffersDefenderMoved(_report, _situation)) return;
+        bool defenderMoved = _situation.DefenderMoved;
+        if (ImGui.Checkbox(DefenderMovedLabel, ref defenderMoved))
+            _situation = _situation with { DefenderMoved = defenderMoved };
+        if (ImGui.IsItemHovered()) UiText.Tooltip(DefenderMovedTooltip);
+    }
+
+    /// <summary>
+    /// Whether the "Defender moved this round" input is shown: when the last report says a rule on the defender
+    /// reads its moved state, or while the tick is already set (so it can always be cleared). Never for no report.
+    /// </summary>
+    internal static bool OffersDefenderMoved(CombatReport? report, CombatSituation situation) =>
+        situation.DefenderMoved || report is { DefenderMovedMatters: true };
 
     /// <summary>
     /// The distance slider, full width, painted over three bands: green where every weapon in the fight
@@ -1112,7 +1143,29 @@ public class CombatCalculatorScreen : IAppScreen
         bool fatigued = _situation.AttackerFatigued;
         if (ImGui.Checkbox(FatiguedLabel, ref fatigued))
             _situation = _situation with { AttackerFatigued = fatigued };
+
+        DrawDefenderMovedIfOffered();
+
+        // #442 (#432): only a charge has a launch distance.
+        if (!_situation.AttackerCharging) return;
+        ImGui.SetNextItemWidth(ImGui.GetFontSize() * 3.2f);
+        float from = _situation.ChargeFromInches;
+        if (ImGui.InputFloat("##calc-charge-from", ref from, 0f, 0f, "%.0f"))
+            _situation = _situation with { ChargeFromInches = SnapChargeFrom(from) };
+        if (ImGui.IsItemHovered()) UiText.Tooltip(ChargeFromTooltip);
+        ImGui.SameLine();
+        UiText.Colored(DimText, ChargeFromLabel);
     }
+
+    /// <summary>
+    /// #442: the charge's launch distance lands on whole inches, like the shooting distance, between 0 (not given)
+    /// and the longest charge a unit can declare. Internal so the rounding is pinned without a window.
+    /// </summary>
+    internal static float SnapChargeFrom(float inches) =>
+        Math.Clamp(MathF.Round(inches), 0f, MaxChargeFromInches);
+
+    /// <summary>A Fast unit's charge with every bonus the corpus prints stays well inside this.</summary>
+    internal const float MaxChargeFromInches = 24f;
 
     /// <summary>
     /// A tick on the distance slider at every range this fight's weapons actually reach, so the player

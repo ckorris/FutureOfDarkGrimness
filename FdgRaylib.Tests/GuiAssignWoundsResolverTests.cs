@@ -87,6 +87,22 @@ public class GuiAssignWoundsResolverTests
         return (resolver, unit);
     }
 
+    // #424: the wound dialog's weapon lines read the classification seam, so an Assault pistol says it is both.
+    [Test]
+    public void WeaponLines_AnAssaultPistol_ReadsAsRangedAndMelee()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var pistol = new Weapon("Heavy Pistol", 12f, 1, 1);
+        pistol.AttachRuleDefinition(new FDG.Rules.Dispatch.ResolvedRule("Assault", AssaultTestRules.Assault));
+        var model = new ModelData(baseRadiusInches: 0.5f,
+            weapons: new List<Weapon> { pistol, pistol, new Weapon("Knife", 0f, 1, 0) },
+            initialPosition: new Position(10f, 10f), gameDataStore: store);
+
+        List<string> lines = GuiAssignWoundsResolver.WeaponLines(model);
+
+        Assert.That(lines, Is.EqualTo(new[] { "2x Heavy Pistol (12\"/melee)", "Knife (melee)" }));
+    }
+
     private static DataBinding<UnitData> MakeUnit(IReadWriteableGameDataStore store, int modelCount)
     {
         var modelBindings = new List<DataBinding<ModelData>>();
