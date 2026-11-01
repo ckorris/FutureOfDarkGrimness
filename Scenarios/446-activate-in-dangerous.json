@@ -1,0 +1,28 @@
+{
+  "name": "#446 - units that activate in Dangerous terrain take the test (once per activation); Flying ignores, Strider does not, adjacent does not",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Realistic", "diceSeed": 446 },
+  "terrain": [
+    { "type": "Dangerous", "shape": "Rectangle", "center": [24, 12], "size": [10, 6] },
+    { "type": "Dangerous", "shape": "Circle", "center": [48, 38], "diameter": 6 }
+  ],
+  "players": [
+    {
+      "army": "armies/446-LavaWalkers.fdgarmy",
+      "units": [
+        { "unit": "Lava Squad", "models": [[20.5, 10], [21.7, 10], [22.9, 10], [24.1, 10], [25.3, 10]] },
+        { "unit": "Strider Beasts", "models": [[21, 13], [22.5, 13]] },
+        { "unit": "Flying Scouts", "models": [[25.5, 13], [26.7, 13], [27.9, 13]] },
+        { "unit": "Edge Squad", "models": [[17.8, 12], [16.6, 12], [15.4, 12]] }
+      ]
+    },
+    {
+      "army": "armies/446-MireRaiders.fdgarmy",
+      "units": [
+        { "unit": "Mire Raiders", "models": [[47, 38], [48.2, 38], [49.4, 38]] },
+        { "unit": "Watchers", "models": [[36, 40], [37.2, 40], [38.4, 40], [39.6, 40], [40.8, 40]] }
+      ]
+    }
+  ]
+}

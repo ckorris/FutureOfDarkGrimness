@@ -36,6 +36,19 @@ public class ArmyBuilderScreenTests
             Is.EqualTo("1x Heavy Serrated Blade (A6, AP(4), Reliable)"));
     }
 
+    // #424: an Assault weapon is printed ONCE, as the ranged line it is, with Assault among its rules - never as a
+    // second, range-less copy.
+    [Test]
+    public void WeaponSummary_AssaultPistol_PrintsOnce_WithRangeAndTheRule()
+    {
+        var w = new WeaponFileEntry
+        {
+            Name = "Heavy Pistol", Quantity = 5, RangeInches = 12, Attacks = 1, ArmorPenetration = 1,
+            SpecialRules = { new SpecialRuleEntry_Core("Assault") },
+        };
+        Assert.That(ArmyBuilderScreen.WeaponSummary(w), Is.EqualTo("5x Heavy Pistol (12\", A1, AP(1), Assault)"));
+    }
+
     [Test]
     public void WeaponSummary_NoRulesNoAp_JustCountAndAttacks()
     {

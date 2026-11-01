@@ -88,19 +88,90 @@ internal static class ForgeUnitDetail
     /// </summary>
     internal static void DrawGear(UnitFileEntry unit, IReadOnlyList<ItemEntry> items, RuleGlossary glossary)
     {
-        DrawWeaponTable(unit, glossary);
+        (IReadOnlyList<WeaponRow> rows, IReadOnlyList<ItemEntry> itemLines) = GearRows(unit, items);
+        DrawWeaponTable(rows, glossary);
 
         ImGui.Indent();
-        foreach (ItemEntry item in items)
+        foreach (ItemEntry item in itemLines)
             RuleTextFlow.Draw(RuleTextFlow.ItemLine(item), glossary, ImGuiCol.TextDisabled);
         if (unit.SpecialRules.Count > 0)
             RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.SpecialRules), glossary, ImGuiCol.TextDisabled);
         ImGui.Unindent();
     }
 
-    private static void DrawWeaponTable(UnitFileEntry unit, RuleGlossary glossary)
+    /// <summary>
+    /// One row of the card's weapon table: a compiled weapon entry (or the part of one) with the mount/crew
+    /// item it came from, when it came from one. <see cref="Name"/> is the Weapon cell before the count -
+    /// "Explosive Spear (Beast Rider)" for an item's weapon, the bare name otherwise.
+    /// </summary>
+    internal sealed record WeaponRow(WeaponFileEntry Weapon, int Quantity, string? SourceItem)
     {
-        if (unit.Weapons.Count == 0) return;
+        public string Name => SourceItem is null ? Weapon.Name : $"{Weapon.Name} ({SourceItem})";
+
+        /// <summary>The Weapon cell as drawn: "2x Tusks (Light Chariot)", "Stomp".</summary>
+        public string Cell => ArmyListLayout.CountedName(Quantity, Name);
+    }
+
+    /// <summary>
+    /// #441 F6: the card's weapon rows and wargear lines from a compiled unit and its final items. OPR 3.6
+    /// bundles a mount's or crew's weapons inside the item (#438 D4): the compiler puts them in the unit's
+    /// weapon list, where they fight, and keeps them on <see cref="ItemEntry.Weapons"/>. Here each such
+    /// copy is peeled off the compiled row it merged into and tagged with the item's name, so the table stays
+    /// complete for comparing guns (the printed Army Forge list names the item under the unit) and the origin
+    /// stays visible; a bare item line ("1x Beast Rider") would then say nothing, so an item with no rules of
+    /// its own loses its line once a weapon carries its name. An item with rules keeps its line (the rules
+    /// are what the line is for); an item none of whose weapons could be found keeps its line too, so nothing
+    /// the unit carries disappears from the card.
+    ///
+    /// <para>
+    /// Rows split on exactly the key the compiler merges on (<see cref="ListCompiler.SameProfile"/>): a
+    /// unit's own Sharp Claws and a mount's identical Sharp Claws land in one compiled entry, and come out
+    /// as "Sharp Claws" and "Sharp Claws (Mount)" - the item's count worth, in item order, the untagged
+    /// remainder first. The tag is the item NAME, so two copies of one item tag a single row.
+    /// </para>
+    /// </summary>
+    internal static (IReadOnlyList<WeaponRow> Weapons, IReadOnlyList<ItemEntry> ItemLines) GearRows(
+        UnitFileEntry unit, IReadOnlyList<ItemEntry> items)
+    {
+        var rows = new List<WeaponRow>();
+        var attributed = new HashSet<ItemEntry>(ReferenceEqualityComparer.Instance);
+        // Every bundled copy the items account for, counted down as rows claim them - so one item copy never
+        // tags two rows even when the compiled list holds the same profile twice (a roster's own entries are
+        // cloned, not merged).
+        var owed = new List<(ItemEntry Item, WeaponFileEntry Bundled, int Remaining)>();
+        foreach (ItemEntry item in items)
+            foreach (WeaponFileEntry bundled in item.Weapons ?? new List<WeaponFileEntry>())
+                owed.Add((item, bundled, Math.Max(1, bundled.Quantity) * Math.Max(1, item.Quantity)));
+
+        foreach (WeaponFileEntry weapon in unit.Weapons)
+        {
+            int untagged = weapon.Quantity;
+            var tagged = new List<WeaponRow>();
+            for (int o = 0; o < owed.Count && untagged > 0; o++)
+            {
+                (ItemEntry item, WeaponFileEntry bundled, int remaining) = owed[o];
+                if (remaining <= 0 || !ListCompiler.SameProfile(weapon, bundled)) continue;
+                int take = Math.Min(untagged, remaining);
+
+                owed[o] = (item, bundled, remaining - take);
+                untagged -= take;
+                attributed.Add(item);
+                int at = tagged.FindIndex(r => r.SourceItem == item.Name);
+                if (at >= 0) tagged[at] = tagged[at] with { Quantity = tagged[at].Quantity + take };
+                else tagged.Add(new WeaponRow(weapon, take, item.Name));
+            }
+
+            if (untagged > 0) rows.Add(new WeaponRow(weapon, untagged, null));
+            rows.AddRange(tagged);
+        }
+
+        List<ItemEntry> itemLines = items.Where(i => i.Rules.Count > 0 || !attributed.Contains(i)).ToList();
+        return (rows, itemLines);
+    }
+
+    private static void DrawWeaponTable(IReadOnlyList<WeaponRow> rows, RuleGlossary glossary)
+    {
+        if (rows.Count == 0) return;
         if (!ImGui.BeginTable("##gear", 5,
             ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp)) return;
 
@@ -112,12 +183,13 @@ internal static class ForgeUnitDetail
         ImGui.TableSetupColumn("SPE", ImGuiTableColumnFlags.WidthStretch, 2f);
         ImGui.TableHeadersRow();
 
-        foreach (WeaponFileEntry weapon in unit.Weapons)
+        foreach (WeaponRow row in rows)
         {
+            WeaponFileEntry weapon = row.Weapon;
             ImGui.TableNextRow();
 
             ImGui.TableSetColumnIndex(0);
-            ImGui.TextUnformatted(ArmyListLayout.CountedName(weapon.Quantity, weapon.Name));
+            ImGui.TextUnformatted(row.Cell);
             ImGui.TableSetColumnIndex(1);
             UiText.Disabled(ArmyListLayout.RangeText(weapon.RangeInches));
             ImGui.TableSetColumnIndex(2);
@@ -172,6 +244,14 @@ internal static class ForgeUnitDetail
             // just because the current pick consumed the target (hand-verify round 2). Also drives the
             // header: "(none to replace)" only when there's no target even without this section's choice.
             int switchAvailable = isReplace ? ArmyForgeScreen.AvailableExcludingSection(book, bu, section) : int.MaxValue;
+            // #441: a pass-through option ("Heavy Pistol, Energy Hammer") stays offered when a counted swap above has
+            // taken every copy - the swap yields to it (#438 D3). Only measured when the section looks empty.
+            int PassThrough(UpgradeOption o, bool excludeOwn) =>
+                isReplace && (excludeOwn ? switchAvailable : available) == 0
+                    ? ArmyForgeScreen.PassThroughPool(book, bu, roster, section, o, excludeOwn)
+                    : 0;
+            bool noneToReplace = isReplace && switchAvailable == 0
+                && !section.Options.Any(o => PassThrough(o, excludeOwn: true) > 0);
 
             ImGui.TextUnformatted(section.Label);
             if (linked)
@@ -179,7 +259,7 @@ internal static class ForgeUnitDetail
                 ImGui.SameLine();
                 UiText.Colored(CyanText, "[linked]");
             }
-            if (isReplace && switchAvailable == 0)
+            if (noneToReplace)
             {
                 ImGui.SameLine();
                 UiText.Disabled("(none to replace)");
@@ -197,8 +277,9 @@ internal static class ForgeUnitDetail
                 foreach (UpgradeOption option in section.Options)
                 {
                     int v = BuilderListEditing.ChoiceCount(bu, section.Id, option.Id);
+                    int optionAvailable = Math.Max(available, PassThrough(option, excludeOwn: false));
                     DrawStepper(bu, glossary, section, option, v,
-                        ArmyForgeScreen.StepperMax(section, roster, compiledUnit, available, v, sectionTotal - v));
+                        ArmyForgeScreen.StepperMax(section, roster, compiledUnit, optionAvailable, v, sectionTotal - v));
                 }
             }
             else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
@@ -209,7 +290,8 @@ internal static class ForgeUnitDetail
                 foreach (UpgradeOption option in section.Options)
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
-                    ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
+                    ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen
+                        && PassThrough(option, excludeOwn: true) == 0);
                     string id = $"{section.Id}-{option.Id}";
                     bool hit = ImGui.RadioButton($"##{id}", chosen);
                     ImGui.SameLine();
@@ -223,7 +305,8 @@ internal static class ForgeUnitDetail
                 foreach (UpgradeOption option in section.Options)
                 {
                     bool chosen = BuilderListEditing.IsChosen(bu, section.Id, option.Id);
-                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
+                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen
+                        && PassThrough(option, excludeOwn: false) == 0);
                     string id = $"{section.Id}-{option.Id}";
                     bool hit = ImGui.Checkbox($"##{id}", ref chosen);
                     ImGui.SameLine();

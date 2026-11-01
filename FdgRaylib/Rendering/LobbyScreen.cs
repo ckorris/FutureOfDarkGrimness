@@ -405,6 +405,19 @@ public class LobbyScreen : IAppScreen
 
         ImGui.PopStyleVar(); // CellPadding (taller rows)
 
+        // #440 (plan Q5): one amber line per army built for an older OPR ruleset, (#444 D2) one for a
+        // resumed save written under an older ruleset, and (#441 F1) one per army over its force-org caps,
+        // the cap lines themselves in its hover. Advice only - none of them blocks the launch. The army
+        // lines read off the synced roster, so every machine shows them; the save line is host-side.
+        foreach (LobbyNotice notice in RosterNotices(players, _viewModel.IsResumeMode, _viewModel.SaveRulesVersion))
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, LegacyNoticeColor);
+            UiText.Wrapped(notice.Line);
+            ImGui.PopStyleColor();
+            if (notice.Hover is string hover && ImGui.IsItemHovered())
+                UiText.Tooltip(hover);
+        }
+
         // Slots are fixed when resuming a saved game, so no add/remove there.
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
@@ -592,6 +605,63 @@ public class LobbyScreen : IAppScreen
     }
 
     private static readonly Vector4 OverPointsColor  = new(1f, 0.3f, 0.3f, 1f);
+    private static readonly Vector4 LegacyNoticeColor = new(1f, 0.7f, 0.2f, 1f); // amber (#440)
+
+    /// <summary>#440 (Q5): the legacy-ruleset notice for every assigned army whose embedded book predates the
+    /// current OPR ruleset, in roster order, one line per distinct army. ImGui-free so it is testable.</summary>
+    internal static IReadOnlyList<string> LegacyArmyNotices(IEnumerable<LobbyPlayerInfoSummary> players) =>
+        players.Where(p => p.ArmyListSummary.IsAssigned)
+            .Select(p => FDG.ArmyBuilding.LegacyArmyNotice.Line(p.ArmyListSummary.ArmyName, p.ArmyListSummary.RulesVersion))
+            .OfType<string>()
+            .Distinct()
+            .ToList();
+
+    /// <summary>#444 D2: the legacy-ruleset notice for the save a resume lobby was loaded from, or null when the
+    /// lobby is not a resume or the save is current. A resume with no stamp at all is legacy (every pre-3.6 save).</summary>
+    internal static string? LegacySaveNoticeLine(bool isResume, string? saveRulesVersion) =>
+        isResume ? FDG.SaveLoad.LegacySaveNotice.Line(saveRulesVersion) : null;
+
+    /// <summary>Every amber legacy line the roster shows, save line first, then the #440 army lines. ImGui-free.</summary>
+    internal static IReadOnlyList<string> LegacyNotices(IEnumerable<LobbyPlayerInfoSummary> players, bool isResume,
+        string? saveRulesVersion)
+    {
+        var lines = new List<string>();
+        if (LegacySaveNoticeLine(isResume, saveRulesVersion) is string saveLine) lines.Add(saveLine);
+        lines.AddRange(LegacyArmyNotices(players));
+        return lines;
+    }
+
+    /// <summary>One amber advisory line under the roster: the text, and the hover that carries its detail (null
+    /// for a line that is its own detail).</summary>
+    internal sealed record LobbyNotice(string Line, string? Hover = null);
+
+    /// <summary>#441 F1: the one-line force-org notice for an army over the caps at the lobby's points limit, the cap
+    /// lines themselves (the same strings the Forge and the Army Builder print) in the hover. Null within the caps.
+    /// The host computes the report (ArmyListSummary.ForceOrgWarnings), so a client shows the same line.</summary>
+    internal static LobbyNotice? ForceOrgNotice(ArmyListSummary summary)
+    {
+        if (!summary.IsAssigned || summary.ForceOrgWarnings is not { Count: > 0 } caps) return null;
+        string plural = caps.Count == 1 ? "force-org cap" : "force-org caps";
+        return new LobbyNotice($"Army '{summary.ArmyName}' is over {caps.Count} {plural}", string.Join("\n", caps));
+    }
+
+    /// <summary>The #441 F1 lines for every assigned army, in roster order, one per distinct army.</summary>
+    internal static IReadOnlyList<LobbyNotice> ForceOrgNotices(IEnumerable<LobbyPlayerInfoSummary> players) =>
+        players.Select(p => ForceOrgNotice(p.ArmyListSummary))
+            .OfType<LobbyNotice>()
+            .Distinct()
+            .ToList();
+
+    /// <summary>Every amber line under the roster, in display order: the legacy lines (save, then armies), then the
+    /// force-org lines. ImGui-free so the order and the hovers are testable.</summary>
+    internal static IReadOnlyList<LobbyNotice> RosterNotices(IEnumerable<LobbyPlayerInfoSummary> players, bool isResume,
+        string? saveRulesVersion)
+    {
+        List<LobbyPlayerInfoSummary> roster = players.ToList();
+        var notices = LegacyNotices(roster, isResume, saveRulesVersion).Select(line => new LobbyNotice(line)).ToList();
+        notices.AddRange(ForceOrgNotices(roster));
+        return notices;
+    }
     private static readonly Vector4 UnderPointsColor = new(1f, 0.85f, 0.25f, 1f);
 
     // The Pts cell. Red over the limit (the #153 launch gate flags it), yellow well under it. The rule
@@ -823,12 +893,11 @@ public class LobbyScreen : IAppScreen
         ImGui.BeginDisabled(locked);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints,
-            tooltip: "The point budget each player's army is built to. An army over this limit is\n" +
-                     "flagged red on its row and blocks the launch. Higher points means bigger battles.",
+            tooltip: ArmyPointsTooltip(_viewModel.AllowedGameSystems),
             step: 250);
         // #402: which OPR collections' armies this table takes. All is the default and accepts anything,
         // including an army from neither collection (OPR's custom-book tool makes those).
-        DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, _viewModel.SetAllowedGameSystems,
+        DrawEnumCombo("Army Source",   _viewModel.AllowedGameSystems, SetArmySource,
             displayName: GameSystems.DisplayName,
             tooltip: "Which game systems' armies this lobby accepts.\n" +
                      "All: anything, GDF and AoF at the same table if that is the plan.\n" +
@@ -1269,6 +1338,42 @@ public class LobbyScreen : IAppScreen
             tableBackground: _viewModel!.TableBackground,
             // #384: likewise synced, so every player's fire-line previews match the engine's LoS.
             seeThroughFriendlyUnits: _viewModel!.SeeThroughFriendlyUnits);
+    }
+
+    /// <summary>
+    /// #430: the host picked an Army Source. The suggested game sizes differ per system (GDF 1000 / 2000, AoF
+    /// 750 / 1500), so a budget still sitting on the old source's suggested size follows to the new source's
+    /// (2000 -> 1500 on switching to Age of Fantasy); a hand-typed budget is left alone. "All" reads as
+    /// Grimdark Future, the default system. Only the live combo does this - loading a saved host config sets
+    /// both values straight through the view model, so a remembered pair is never rewritten.
+    /// </summary>
+    private void SetArmySource(EAllowedGameSystems allowed)
+    {
+        int points = ForceOrgLimits.Retarget(_viewModel.ArmyPoints, _viewModel.AllowedGameSystems, allowed);
+        _viewModel.SetAllowedGameSystems(allowed);
+        if (points != _viewModel.ArmyPoints)
+            _viewModel.SetArmyPoints(points);
+    }
+
+    /// <summary>The Army Points hover (ASCII only; it is game text): what the number does, plus the suggested
+    /// game sizes of the lobby's Army Source (#430, Core Rules v3.6.0).</summary>
+    internal static string ArmyPointsTooltip(EAllowedGameSystems allowed)
+    {
+        ForceOrgLimits gdf = ForceOrgLimits.GrimdarkFuture;
+        ForceOrgLimits aof = ForceOrgLimits.AgeOfFantasy;
+        string suggested = allowed switch
+        {
+            EAllowedGameSystems.AgeOfFantasy =>
+                $"Suggested for Age of Fantasy: {aof.SuggestedStartPoints} to start, {aof.SuggestedFullPoints} for a full match.",
+            EAllowedGameSystems.GrimdarkFuture =>
+                $"Suggested for Grimdark Future: {gdf.SuggestedStartPoints} to start, {gdf.SuggestedFullPoints} for a full match.",
+            _ =>
+                $"Suggested: Grimdark Future {gdf.SuggestedStartPoints} to start, {gdf.SuggestedFullPoints} for a full match; " +
+                $"Age of Fantasy {aof.SuggestedStartPoints} / {aof.SuggestedFullPoints}.",
+        };
+        return "The point budget each player's army is built to. An army over this limit is\n" +
+               "flagged red on its row and blocks the launch. Higher points means bigger battles.\n" +
+               suggested;
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter, string? tooltip = null,

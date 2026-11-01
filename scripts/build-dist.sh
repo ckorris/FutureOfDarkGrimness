@@ -21,7 +21,7 @@
 # third-party license notices, and a copy of the repo's armies/ sample lists.
 #
 # Output lands in dist/ (archives carry BOTH the app version and the OPR rules
-# version, e.g. v0.2.0-OPR_3_5_1, so a downloaded file names both axes):
+# version, e.g. v0.4.0-OPR_3_6_0, so a downloaded file names both axes):
 #   dist/FdgRaylib-win-x64/     + FdgRaylib-win-x64-<APP>-<RULES_VERSION>.zip
 #   dist/FdgRaylib-linux-x64/   + FdgRaylib-linux-x64-<APP>-<RULES_VERSION>.tar.gz
 #   dist/FdgRaylib-osx-arm64/   + FdgRaylib-osx-arm64-<APP>-<RULES_VERSION>.tar.gz
@@ -36,8 +36,8 @@ PROJECT="$ROOT_DIR/FdgRaylib/FdgRaylib.csproj"
 DIST_DIR="$ROOT_DIR/dist"
 
 # Release archives are stamped with the OnePageRules rules-set version the build
-# implements, e.g. FdgRaylib-win-x64-OPR_3_5_1.zip. Override: RULES_VERSION=... scripts/build-dist.sh
-RULES_VERSION="${RULES_VERSION:-OPR_3_5_1}"
+# implements, e.g. FdgRaylib-win-x64-v0.4.0-OPR_3_6_0.zip. Override: RULES_VERSION=... scripts/build-dist.sh
+RULES_VERSION="${RULES_VERSION:-OPR_3_6_0}"
 
 # Trimming is intentionally OFF: the app uses Newtonsoft with TypeNameHandling.Auto
 # (reflection-based) for .fdgarmy files, which a trimmer would break.
@@ -48,10 +48,10 @@ COMMON_ARGS=(-c Release --self-contained true -p:PublishTrimmed=false)
 # The stamp leads with the app version from Directory.Build.props so the binaries'
 # ProductVersion stays recognizable, then carries
 # the OPR rules version and the git commit as SemVer build metadata after the '+':
-#   0.2.0+opr.3.5.1.git-<sha>-<date>
+#   0.4.0+opr.3.6.0.git-<sha>-<date>
 # so the ProductVersion in the binary names both the app and the rules version too.
 APP_VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$ROOT_DIR/Directory.Build.props")"
-# OPR_3_5_1 -> opr.3.5.1 : SemVer build metadata only allows [0-9A-Za-z-] in dot-separated
+# OPR_3_6_0 -> opr.3.6.0 : SemVer build metadata only allows [0-9A-Za-z-] in dot-separated
 # identifiers, so fold the underscores (which are not allowed) to dots and lowercase.
 RULES_TOKEN="$(printf '%s' "$RULES_VERSION" | tr 'A-Z_' 'a-z.')"
 GIT_SHA="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)"
@@ -61,8 +61,8 @@ COMMON_ARGS+=("-p:InformationalVersion=$GIT_STAMP")
 echo ">> Build stamp: $GIT_STAMP"
 
 # Release archive suffix: both axes, so the file itself names the app AND rules version
-# (e.g. FdgRaylib-win-x64-v0.2.0-OPR_3_5_1.zip). Keep RULES_VERSION verbatim here - the
-# archive name is for humans, not SemVer, so the readable OPR_3_5_1 form is right.
+# (e.g. FdgRaylib-win-x64-v0.4.0-OPR_3_6_0.zip). Keep RULES_VERSION verbatim here - the
+# archive name is for humans, not SemVer, so the readable OPR_3_6_0 form is right.
 ARCHIVE_SUFFIX="v${APP_VERSION:-0.0.0}-${RULES_VERSION}"
 echo ">> Archive suffix: $ARCHIVE_SUFFIX"
 

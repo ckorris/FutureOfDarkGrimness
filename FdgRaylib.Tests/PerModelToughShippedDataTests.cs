@@ -46,12 +46,14 @@ public class PerModelToughShippedDataTests
         rule is SpecialRuleEntry_CoreNumeric { Name: "Tough" }
         || rule is SpecialRuleEntry_Alias { AliasedRule: SpecialRuleEntry_CoreNumeric { Name: "Tough" } };
 
+    // #438: 18 in the 3.6.0 books (2026-10-30 snapshots: HDF Infantry Squad 6 + Veterans 6, AoF Ratmen Warriors 6;
+    // 3.5: 16) - still every one a "Weapon Team" on a "Replace one" section.
     [Test]
-    public void ThePopulation_IsTheSixteenWeaponTeams()
+    public void ThePopulation_IsTheEighteenWeaponTeams()
     {
         List<Site> sites = Sites().ToList();
 
-        Assert.That(sites, Has.Count.EqualTo(16),
+        Assert.That(sites, Has.Count.EqualTo(18),
             "a new site means a new per-model Tough shape - check it compiles the same way before re-pinning");
         Assert.That(sites.Select(s => s.Book).Distinct(), Is.EquivalentTo(new[] { "HumanDefenseForce", "AoF-Ratmen" }));
         Assert.That(sites.Select(s => s.Option.ItemsGained.Single(i => i.Rules.Any(IsTough)).Name).Distinct(),

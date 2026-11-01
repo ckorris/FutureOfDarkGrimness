@@ -1,9 +1,10 @@
 {
   "name": "Elven Jesters",
   "faction": "Elven Jesters",
-  "version": "OPR v3.5.3",
+  "version": "OPR v3.6.0",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
+  "gameSystem": "grimdark-future",
   "defaultRangedEffectSet": "mortar-artillery",
   "defaultMeleeEffectSet": "blade-standard",
   "units": [
@@ -15,7 +16,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 75,
+      "basePointCost": 70,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -24,39 +25,12 @@
       },
       "weapons": [
         {
-          "name": "Master Fragment Pistol",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Disintegrate"
-            }
-          ]
-        },
-        {
-          "name": "Dagger",
+          "name": "Hand Weapon",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
+          "attacks": 3,
           "armorPenetration": 0,
           "specialRules": []
-        },
-        {
-          "name": "Deathly Touch",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
         }
       ],
       "rules": [
@@ -79,27 +53,406 @@
         },
         {
           "kind": "core",
-          "name": "Evasive"
+          "name": "Stealth"
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Jester Buckler",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Armor",
+              "numericValue": 4
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "CLInrkS",
-          "label": "Replace Master Fragment Pistol",
+          "id": "ggZu7erI8J",
+          "label": "Replace Hand Weapon and Jester Buckler",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Master Fragment Pistol"
+            "Hand Weapon",
+            "Jester Buckler"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "TMkgLRV",
-              "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
+              "id": "u29Cg70DUv",
+              "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown), Strike (A1)",
               "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "NFIFS37qxl",
+              "label": "Atom Pistol (9\u0022, A1, Assault, Bane), Hand Weapon (A3)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Atom Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ynCyGTBMGn",
+              "label": "Dual Arm-Claws (A4, AP(1), Surge)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Arm-Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "yXv84bmc7R",
+              "label": "Seer Staff (A2, Spell Amplifier)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Seer Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "iRruKO2jLV",
+          "label": "Replace Sniper Rifle",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sniper Rifle"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "cW6rghRKe5",
+              "label": "Explosive Jester-Sling (12\u0022, A1, Blast(3), Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Explosive Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "JH7wSfWFgn",
+              "label": "Mirage-Launcher (6\u0022, A1, Blast(3), Reliable, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mirage-Launcher",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Ddx5Tb10da",
+              "label": "Fragment Sniper Rifle (24\u0022, A2, Reliable, Anti-Cover, Destructive, Takedown)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-91VuvHFf-",
+              "label": "Fragment Jester-Sling (12\u0022, A3, Anti-Cover, Assault, Destructive)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "2n3r-",
+          "label": "Replace Atom Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Atom Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "41Pa7DX1Ro",
+              "label": "EMP Pistol (9\u0022, A1, Rending, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "EMP Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "K_CVSiO1WP",
+              "label": "Fragment Pistol (12\u0022, A1, Anti-Cover, Assault, Destructive)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "jN6aPspwQG",
+              "label": "Mesmer Pistol (9\u0022, A1, Assault, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mesmer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "TMkgLRV",
+              "label": "Fusion Pistol (6\u0022, A1, AP(4), Assault)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -110,9 +463,8 @@
                   "armorPenetration": 4,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -120,19 +472,33 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
+            }
+          ]
+        },
+        {
+          "id": "lhAyM",
+          "label": "Replace Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
             {
-              "id": "Norbj",
-              "label": "Hallucination-GL (18\u0022, A1, Blast(3))",
+              "id": "iTPQJgCs63",
+              "label": "Arm-Whip (A1, AP(1), Blast(3))",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Hallucination-GL",
+                  "name": "Arm-Whip",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 0,
                   "attacks": 1,
-                  "armorPenetration": 0,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -147,21 +513,21 @@
               "modelsGained": 0
             },
             {
-              "id": "yzRwZ",
-              "label": "Master Neuron Pistol (12\u0022, A3, Bane)",
+              "id": "KvW-2KZ_X3",
+              "label": "Star-Spear (A3, Thrust)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Master Neuron Pistol",
+                  "name": "Star-Spear",
                   "quantity": 1,
-                  "rangeInches": 12,
+                  "rangeInches": 0,
                   "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Bane"
+                      "name": "Thrust"
                     }
                   ]
                 }
@@ -171,130 +537,17 @@
               "modelsGained": 0
             },
             {
-              "id": "a08lo",
-              "label": "Jester Sniper Rifle (24\u0022, A2, Reliable, Disintegrate, Takedown)",
-              "cost": 35,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Jester Sniper Rifle",
-                  "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Disintegrate"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Reliable"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Takedown"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "pM-eUpX",
-          "label": "Replace Dagger and Deathly Touch",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Dagger",
-            "Deathly Touch"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "vG-EHi2qrA",
-              "label": "2x CCW (A2)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "CCW",
-                  "quantity": 2,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "MrAeY",
-              "label": "Dagger (A1), Deathly Kiss (A1, AP(2), Deadly(3))",
+              "id": "15IBUhUA8V",
+              "label": "Arm-Blade (A3, Rending)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Deathly Kiss",
+                  "name": "Arm-Blade",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 2,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    }
-                  ]
-                },
-                {
-                  "name": "Dagger",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
+                  "attacks": 3,
                   "armorPenetration": 0,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "w64SPrK",
-          "label": "Replace any CCW",
-          "variant": "Replace",
-          "affects": "Any",
-          "targets": [
-            "CCW"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "iIYJ-",
-              "label": "Deathly Caress (A2, AP(1), Rending)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Deathly Caress",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -308,18 +561,43 @@
               "modelsGained": 0
             },
             {
-              "id": "3dK0V",
-              "label": "Deathly Embrace (A2, AP(4))",
+              "id": "5t1_KlD_F0",
+              "label": "Arm-Baton (A3, AP(2))",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Deathly Embrace",
+                  "name": "Arm-Baton",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 4,
+                  "attacks": 3,
+                  "armorPenetration": 2,
                   "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "gvubRPsYBb",
+              "label": "Arm-Spike (A1, AP(4), Deadly(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Spike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "rulesGained": [],
@@ -329,7 +607,7 @@
           ]
         },
         {
-          "id": "YLLoaDp",
+          "id": "QknvZyHG",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -341,7 +619,7 @@
             {
               "id": "bt3UaC_8",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -362,7 +640,7 @@
           ]
         },
         {
-          "id": "eKylclY",
+          "id": "XMA4o",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -373,7 +651,7 @@
           "options": [
             {
               "id": "3Xy0FrTy5e",
-              "label": "Joker Hoverpack (Flying, Point-Blank Surge)",
+              "label": "Joker Hoverpack (Flying)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
@@ -386,10 +664,6 @@
                     {
                       "kind": "core",
                       "name": "Flying"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Point-Blank Surge"
                     }
                   ]
                 }
@@ -398,7 +672,7 @@
             },
             {
               "id": "iZ8BlN_LPm",
-              "label": "Prankster Suit (Ambush, Regeneration)",
+              "label": "Prankster Suit (Regeneration, Scout)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
@@ -410,11 +684,11 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Ambush"
+                      "name": "Regeneration"
                     },
                     {
                       "kind": "core",
-                      "name": "Regeneration"
+                      "name": "Scout"
                     }
                   ]
                 }
@@ -422,21 +696,56 @@
               "modelsGained": 0
             },
             {
-              "id": "XOaf1OI",
-              "label": "Jetbike (Fragment Cannon (24\u0022, A3, AP(1), Disintegrate), Fast, Strider, Tough(3))",
+              "id": "bz-6ZNQ2FR",
+              "label": "Raptor Beast (Fast, Impact(3), Tough(3))",
+              "cost": 70,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Raptor Beast",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Impact",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "yvy3FFXaoB",
+              "label": "Combat Jetbike (Fragment Cannon (36\u0022, A3, Anti-Cover, Destructive), Fast, Strider, Tough(3))",
               "cost": 135,
               "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fragment Cannon",
                   "quantity": 1,
-                  "rangeInches": 24,
+                  "rangeInches": 36,
                   "attacks": 3,
-                  "armorPenetration": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Disintegrate"
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
                     }
                   ]
                 }
@@ -444,7 +753,7 @@
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Jetbike",
+                  "name": "Combat Jetbike",
                   "quantity": 1,
                   "rules": [
                     {
@@ -460,6 +769,100 @@
                       "name": "Tough",
                       "numericValue": 3
                     }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Fragment Cannon",
+                      "quantity": 1,
+                      "rangeInches": 36,
+                      "attacks": 3,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "core",
+                          "name": "Anti-Cover"
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Destructive"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "XOaf1OI",
+              "label": "Assault Jetbike (Assault Fragment Cannon (18\u0022, A3, Anti-Cover, Assault, Destructive), Fast, Strider, Tough(3))",
+              "cost": 145,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Assault Fragment Cannon",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Assault Jetbike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Assault Fragment Cannon",
+                      "quantity": 1,
+                      "rangeInches": 18,
+                      "attacks": 3,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "core",
+                          "name": "Anti-Cover"
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Assault"
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Destructive"
+                        }
+                      ]
+                    }
                   ]
                 }
               ],
@@ -468,7 +871,7 @@
           ]
         },
         {
-          "id": "h4BFXjj",
+          "id": "0itSx",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -478,9 +881,52 @@
           "maxPicks": 1,
           "options": [
             {
+              "id": "4kL02NYN-h",
+              "label": "Death Dealer (Increased Shooting Range Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Death Dealer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "JYCXwZv22l",
+              "label": "Trickster Assassin (Takedown Strike(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trickster Assassin",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Takedown Strike",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "-bQNR",
               "label": "Stage Master (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -499,51 +945,9 @@
               "modelsGained": 0
             },
             {
-              "id": "iE0JQj09Gt",
-              "label": "Solitaire Assassin (Takedown Strike)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Solitaire Assassin",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Takedown Strike"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "4kL02NYN-h",
-              "label": "Death Dealer (Shred when Shooting Aura)",
-              "cost": 30,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Death Dealer",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred when Shooting Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "8fydS",
-              "label": "Troupe Lord (Rapid Blink Boost Aura)",
-              "cost": 30,
+              "label": "Troupe Lord (Enhanced Rapid Blink Aura)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -554,7 +958,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Rapid Blink Boost Aura"
+                      "name": "Enhanced Rapid Blink Aura"
                     }
                   ]
                 }
@@ -585,7 +989,7 @@
             {
               "id": "IF6uP",
               "label": "Jester Seer (Caster(2))",
-              "cost": 45,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -607,7 +1011,7 @@
             {
               "id": "IebOQAo",
               "label": "Master Jester Seer (Caster(3))",
-              "cost": 75,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -647,23 +1051,27 @@
       },
       "weapons": [
         {
-          "name": "Master Fragment Pistol",
+          "name": "Atom Pistol",
           "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 2,
+          "rangeInches": 9,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Disintegrate"
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Bane"
             }
           ]
         },
         {
-          "name": "CCW",
-          "quantity": 2,
+          "name": "Hand Weapon",
+          "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 3,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -688,13 +1096,13 @@
         },
         {
           "kind": "core",
-          "name": "Evasive"
+          "name": "Stealth"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "d92nU7R",
+          "id": "nC2C_oFp",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -704,9 +1112,73 @@
           "maxPicks": 1,
           "options": [
             {
+              "id": "fGCgLFDh",
+              "label": "Death Dealer (Increased Shooting Range Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Death Dealer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "Yyz_0me6",
+              "label": "Harlequin (Teleport Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Harlequin",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Teleport Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "7BJAwqboPf",
+              "label": "Solitaire Assassin (Takedown Shot(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Solitaire Assassin",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Takedown Shot",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "63Z8NNSs",
               "label": "Stage Master (Shielded Aura)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -725,30 +1197,9 @@
               "modelsGained": 0
             },
             {
-              "id": "fGCgLFDh",
-              "label": "Death Dealer (Shred when Shooting Aura)",
-              "cost": 30,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Death Dealer",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Shred when Shooting Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
               "id": "4WMBoEP2Vt",
-              "label": "Troupe Lord (Rapid Blink Boost Aura)",
-              "cost": 30,
+              "label": "Troupe Lord (Enhanced Rapid Blink Aura)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -759,7 +1210,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Rapid Blink Boost Aura"
+                      "name": "Enhanced Rapid Blink Aura"
                     }
                   ]
                 }
@@ -769,7 +1220,7 @@
             {
               "id": "INTCopeN",
               "label": "Jester Seer (Caster(2))",
-              "cost": 45,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -787,22 +1238,354 @@
                 }
               ],
               "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "K7blbolrjx",
+          "label": "Replace Atom Pistol and Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Atom Pistol",
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "40JCnb35Zm",
+              "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown), Hand Weapon (A1)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
             },
             {
-              "id": "Yyz_0me6",
-              "label": "Harlequin (Teleport Aura)",
-              "cost": 50,
+              "id": "0KICyo5fi2",
+              "label": "Fragment Sniper Rifle (24\u0022, A2, Reliable, Anti-Cover, Destructive, Takedown), Hand Weapon (A1)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "W7fTY-FMjO",
+              "label": "Seer Staff (A2, Spell Amplifier)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Seer Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "kzkAwQR8",
+          "label": "Replace Atom Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Atom Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "pwVCcnFSkb",
+              "label": "Fragment Pistol (12\u0022, A1, Anti-Cover, Assault, Destructive)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "3gF8i350",
+              "label": "EMP Pistol (9\u0022, A1, Rending, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "EMP Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "KhY8gAm6h6",
+              "label": "Mesmer Pistol (9\u0022, A1, Assault, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mesmer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "rxpclA8A",
+          "label": "Replace Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "m1z4VQdg",
+              "label": "Arm-Baton (A3, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Baton",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "LuME3kj8",
+              "label": "Arm-Blade (A3, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Blade",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "8vxzUrBnab",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "juRu01S2ty",
+              "label": "Solitaire Suit (Ambushing Piercing Shot)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Harlequin",
+                  "name": "Solitaire Suit",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Teleport Aura"
+                      "name": "Ambushing Piercing Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "o5Xlwh4nHW",
+              "label": "Trickster Suit (Infiltrating Precision Strike)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trickster Suit",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Infiltrating Precision Strike"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "shvgY66QzK",
+              "label": "Pet Raptor (Repel Ambushers)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Pet Raptor",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Repel Ambushers"
                     }
                   ]
                 }
@@ -830,23 +1613,27 @@
       },
       "weapons": [
         {
-          "name": "Fragment Pistol",
+          "name": "Atom Pistol",
           "quantity": 5,
-          "rangeInches": 12,
+          "rangeInches": 9,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Disintegrate"
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Bane"
             }
           ]
         },
         {
-          "name": "CCW",
+          "name": "Hand Weapon",
           "quantity": 5,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -862,94 +1649,43 @@
         },
         {
           "kind": "core",
-          "name": "Evasive"
-        }
-      ],
-      "items": [],
-      "sections": []
-    },
-    {
-      "id": "CPnUv7L",
-      "name": "Jesters",
-      "quality": 3,
-      "defense": 5,
-      "baseModelCount": 5,
-      "minModels": 5,
-      "maxModels": 5,
-      "basePointCost": 150,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Fragment Pistol",
-          "quantity": 5,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Disintegrate"
-            }
-          ]
-        },
-        {
-          "name": "CCW",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Furious"
-        },
-        {
-          "kind": "core",
-          "name": "Rapid Blink"
-        },
-        {
-          "kind": "core",
-          "name": "Evasive"
+          "name": "Stealth"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "2ZvB09K",
-          "label": "Replace any Fragment Pistol",
+          "id": "hkyx4CSm",
+          "label": "Replace all Atom Pistols",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "All",
           "targets": [
-            "Fragment Pistol"
+            "Atom Pistols"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "llGIxy1",
-              "label": "Neuron Pistol (12\u0022, A2, Bane)",
+              "id": "uKFyxNYPfD",
+              "label": "Mesmer Pistol (9\u0022, A1, Assault, Shred)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Neuron Pistol",
+                  "name": "Mesmer Pistol",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 2,
+                  "rangeInches": 9,
+                  "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Bane"
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
                     }
                   ]
                 }
@@ -957,38 +1693,59 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "SSjv36X",
-          "label": "Replace one Fragment Pistol",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Fragment Pistol"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
+            },
             {
-              "id": "XLcx0",
-              "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
+              "id": "OCEYPdlrz2",
+              "label": "Fragment Pistol (12\u0022, A1, Anti-Cover, Assault, Destructive)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Fusion Pistol",
+                  "name": "Fragment Pistol",
                   "quantity": 1,
-                  "rangeInches": 6,
+                  "rangeInches": 12,
                   "attacks": 1,
-                  "armorPenetration": 4,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "sCL_Gv7dY8",
+              "label": "EMP Pistol (9\u0022, A1, Rending, Assault)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "EMP Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -1000,29 +1757,29 @@
           ]
         },
         {
-          "id": "KpFd9C8",
-          "label": "Replace any CCW",
+          "id": "t8VBASzm",
+          "label": "Replace all Hand Weapons",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "All",
           "targets": [
-            "CCW"
+            "Hand Weapons"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "y9P_vwx",
-              "label": "Deathly Caress (A2, AP(1), Rending)",
-              "cost": 10,
+              "id": "ZoZjolvO",
+              "label": "Arm-Blade (A1, Rending)",
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Deathly Caress",
+                  "name": "Arm-Blade",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
+                  "attacks": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -1034,57 +1791,93 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
-            },
-            {
-              "id": "tD1bdD3",
-              "label": "Deathly Embrace (A2, AP(4))",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Deathly Embrace",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 4,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "21l7WJf",
+      "name": "Tricksters",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 110,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "weapons": [
+        {
+          "name": "Dual Atom Pistols",
+          "quantity": 5,
+          "rangeInches": 9,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Furious"
         },
         {
-          "id": "4ROdqKV",
-          "label": "Replace one CCW",
+          "kind": "core",
+          "name": "Rapid Blink"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "U3r-zHQf",
+          "label": "Replace all Dual Atom Pistols",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "All",
           "targets": [
-            "CCW"
+            "Dual Atom Pistols"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "3tg6i",
-              "label": "Deathly Touch (A1, Blast(3))",
-              "cost": 5,
+              "id": "8vHbkfATvP",
+              "label": "Dual Mesmer Pistols (9\u0022, A2, Assault, Shred)",
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Deathly Touch",
+                  "name": "Dual Mesmer Pistols",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
                     }
                   ]
                 }
@@ -1094,22 +1887,57 @@
               "modelsGained": 0
             },
             {
-              "id": "zxtNS",
-              "label": "Deathly Kiss (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "id": "ITJFbmB1xY",
+              "label": "Dual Fragment Pistols (12\u0022, A2, Anti-Cover, Assault, Destructive)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Deathly Kiss",
+                  "name": "Dual Fragment Pistols",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 2,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "2ypQlRMBn7",
+              "label": "Dual EMP Pistols (9\u0022, A2, Rending, Assault)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual EMP Pistols",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
                 }
@@ -1121,7 +1949,7 @@
           ]
         },
         {
-          "id": "sPftjFs",
+          "id": "5gfWSovHRg",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1131,20 +1959,20 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "NUHZ1",
-              "label": "Twisted Illusion (Ambush Re-Deployment)",
-              "cost": 35,
+              "id": "gth9zRajN2",
+              "label": "Dramatic Entrance (Infiltrating Precision Strike)",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Twisted Illusion",
+                  "name": "Dramatic Entrance",
                   "quantity": 1,
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Ambush Re-Deployment"
+                      "name": "Infiltrating Precision Strike"
                     }
                   ]
                 }
@@ -1163,7 +1991,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 215,
+      "basePointCost": 130,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1172,11 +2000,11 @@
       },
       "weapons": [
         {
-          "name": "Energy Glaive",
+          "name": "Star-Spear",
           "quantity": 5,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
+          "attacks": 1,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
@@ -1186,10 +2014,6 @@
         }
       ],
       "rules": [
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
         {
           "kind": "core",
           "name": "Furious"
@@ -1204,13 +2028,81 @@
         },
         {
           "kind": "core",
-          "name": "Evasive"
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "sPftjFs",
+          "id": "S7jYDjNJ",
+          "label": "Replace one Star-Spear",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Star-Spear"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "rtHcpw6w",
+              "label": "Arm-Whip (A1, AP(1), Blast(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Whip",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "rpVnytnc",
+              "label": "Arm-Spike (A1, AP(4), Deadly(3))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Spike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "PSN1w",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1222,7 +2114,7 @@
             {
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1234,6 +2126,574 @@
                     {
                       "kind": "core",
                       "name": "Ambush Re-Deployment"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CPnUv7L",
+      "name": "Jesters",
+      "quality": 3,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 145,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Atom Pistol",
+          "quantity": 5,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
+        },
+        {
+          "name": "Hand Weapon",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Rapid Blink"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "6vXdYYK",
+          "label": "Replace all Atom Pistols",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Atom Pistols"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "EVxlB5E6Rx",
+              "label": "Mesmer Pistol (9\u0022, A1, Assault, Shred)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mesmer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "7t9IFOholw",
+              "label": "EMP Pistol (9\u0022, A1, Rending, Assault)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "EMP Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "n6aenwUc19",
+              "label": "Fragment Pistol (12\u0022, A1, Anti-Cover, Assault, Destructive)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "l5O6jLf",
+          "label": "Replace all Hand Weapons",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "y9P_vwx",
+              "label": "Arm-Blade (A1, Rending)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Blade",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "tD1bdD3",
+              "label": "Arm-Baton (A1, AP(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Baton",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ziNSA",
+          "label": "Replace one Atom Pistol and Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Atom Pistol",
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "SXAiD_t89M",
+              "label": "Mirage-Launcher (6\u0022, A1, Blast(3), Reliable, Assault), Strike (A1)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mirage-Launcher",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "DwxuceGEOG",
+              "label": "Atom Pistol (9\u0022, A1, Assault, Bane), Arm-Whip (A1, AP(1), Blast(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Atom Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                },
+                {
+                  "name": "Arm-Whip",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "I-Es6JCEOw",
+              "label": "Atom Pistol (9\u0022, A1, Assault, Bane), Arm-Spike (A1, AP(4), Deadly(3))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Atom Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                },
+                {
+                  "name": "Arm-Spike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "XLcx0",
+              "label": "Burst Fusion Pistol (6\u0022, A1, AP(4), Deadly(3), Assault), Strike (A1)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Burst Fusion Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "PSN1w",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "NUHZ1",
+              "label": "Twisted Illusion (Ambush Re-Deployment)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Twisted Illusion",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush Re-Deployment"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A245fK3",
+      "name": "Solitaires",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 95,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "weapons": [
+        {
+          "name": "Sniper Rifle",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Takedown"
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Rapid Blink"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Qh54CW2k2p",
+          "label": "Replace all Sniper Rifles",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Sniper Rifles"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "qlstih50lO",
+              "label": "Fragment Sniper Rifle (24\u0022, A2, Reliable, Anti-Cover, Destructive, Takedown)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "sRVm2vNnMX",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "FYV3OUhlgz",
+              "label": "Grand Arrival (Ambushing Piercing Shot)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Grand Arrival",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambushing Piercing Shot"
                     }
                   ]
                 }
@@ -1252,7 +2712,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 120,
+      "basePointCost": 140,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -1261,7 +2721,7 @@
       },
       "weapons": [
         {
-          "name": "Exploding Bolas",
+          "name": "Explosive Jester-Sling",
           "quantity": 3,
           "rangeInches": 12,
           "attacks": 1,
@@ -1271,14 +2731,18 @@
               "kind": "coreNumeric",
               "name": "Blast",
               "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
             }
           ]
         },
         {
-          "name": "CCW",
+          "name": "Strike",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -1294,21 +2758,17 @@
         },
         {
           "kind": "core",
-          "name": "Point-Blank Surge"
-        },
-        {
-          "kind": "core",
           "name": "Rapid Blink"
         },
         {
           "kind": "core",
-          "name": "Evasive"
+          "name": "Stealth"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "sPftjFs",
+          "id": "PSN1w",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1320,7 +2780,7 @@
             {
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1339,18 +2799,64 @@
               "modelsGained": 0
             }
           ]
+        },
+        {
+          "id": "z6Sauwn2tB",
+          "label": "Replace all Explosive Jester-Slings",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Explosive Jester-Slings"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "BNlPcp37ku",
+              "label": "Fragment Jester-Sling (12\u0022, A3, Anti-Cover, Assault, Destructive)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
         }
       ]
     },
     {
-      "id": "cek8t2a",
-      "name": "Jetbikes",
+      "id": "2L1brSN",
+      "name": "Raptor Riders",
       "quality": 3,
-      "defense": 4,
+      "defense": 5,
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 285,
+      "basePointCost": 200,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
@@ -1359,37 +2865,10 @@
       },
       "weapons": [
         {
-          "name": "Exploding Bolas",
-          "quantity": 3,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        },
-        {
-          "name": "Fragment Pistol",
-          "quantity": 3,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Disintegrate"
-            }
-          ]
-        },
-        {
-          "name": "CCW",
+          "name": "Hand Weapon",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -1405,7 +2884,7 @@
         },
         {
           "kind": "core",
-          "name": "Strider"
+          "name": "Rapid Blink"
         },
         {
           "kind": "coreNumeric",
@@ -1414,39 +2893,240 @@
         },
         {
           "kind": "core",
-          "name": "Rapid Blink"
-        },
-        {
-          "kind": "core",
-          "name": "Evasive"
+          "name": "Stealth"
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Jester Buckler",
+          "quantity": 3,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Armor",
+              "numericValue": 4
+            }
+          ]
+        },
+        {
+          "name": "Raptor Charge",
+          "quantity": 3,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Impact",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "-u9dkoh",
-          "label": "Replace any Exploding Bolas",
+          "id": "Dpt642jX",
+          "label": "Replace all Hand Weapons and Jester Bucklers and Raptor Charges",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "All",
           "targets": [
-            "Exploding Bolas"
+            "Hand Weapons",
+            "Jester Bucklers",
+            "Raptor Charges"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "WI6kVsPqdP",
-              "label": "Energy Glaive (A2, AP(1), Thrust)",
+              "id": "SfIAQAUBpz",
+              "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown), Strike (A1)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Energy Glaive",
+                  "name": "Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 2,
-                  "armorPenetration": 1,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "4_GW32mP",
+          "label": "Replace all Jester Bucklers",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Jester Bucklers"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "UjPH-b-qv4",
+              "label": "Atom Pistol (9\u0022, A1, Assault, Bane)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Atom Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bane"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "HQf7_bvz",
+              "label": "Mesmer Pistol (9\u0022, A1, Assault, Shred)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mesmer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "IRxiiDfA",
+              "label": "EMP Pistol (9\u0022, A1, Rending, Assault)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "EMP Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "uTaD18Kb",
+              "label": "Fragment Pistol (12\u0022, A1, Anti-Cover, Assault, Destructive)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "jTT01CDu",
+          "label": "Replace all Hand Weapons",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Zj6gAm96Gn",
+              "label": "Star-Spear (A1, Thrust)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Star-Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
@@ -1460,16 +3140,16 @@
               "modelsGained": 0
             },
             {
-              "id": "kmggBz1BuT",
-              "label": "Light EMP Cannon (24\u0022, A3, Rending)",
-              "cost": 30,
+              "id": "y8f5QE79",
+              "label": "Arm-Blade (A1, Rending)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Light EMP Cannon",
+                  "name": "Arm-Blade",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 3,
+                  "rangeInches": 0,
+                  "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
@@ -1484,21 +3164,191 @@
               "modelsGained": 0
             },
             {
-              "id": "G-sDIWr",
-              "label": "Fragment Cannon (24\u0022, A3, AP(1), Disintegrate)",
-              "cost": 40,
+              "id": "Hn3xFNjK",
+              "label": "Arm-Baton (A1, AP(2))",
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Fragment Cannon",
+                  "name": "Arm-Baton",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 3,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "L9MwcDtJAG",
+          "label": "Replace one Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "H1NgURvUvJ",
+              "label": "Arm-Whip (A1, AP(1), Blast(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Whip",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
                   "armorPenetration": 1,
                   "specialRules": [
                     {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "BFKP46IfEh",
+              "label": "Arm-Spike (A1, AP(4), Deadly(3))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arm-Spike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "RcNyUXwFNv",
+          "label": "Replace all Sniper Rifles",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Sniper Rifles"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "pAWpQIZRZE",
+              "label": "Explosive Jester-Sling (12\u0022, A1, Blast(3), Assault)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Explosive Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
                       "kind": "core",
-                      "name": "Disintegrate"
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Wq0cNfYb4v",
+              "label": "Fragment Sniper Rifle (24\u0022, A2, Reliable, Anti-Cover, Destructive, Takedown)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "6DHC_hkzgB",
+              "label": "Fragment Jester-Sling (12\u0022, A3, Anti-Cover, Assault, Destructive)",
+              "cost": 85,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
                     }
                   ]
                 }
@@ -1512,40 +3362,48 @@
       ]
     },
     {
-      "id": "cZ2fRIl",
-      "name": "Heavy Jetbike",
+      "id": "cek8t2a",
+      "name": "Jetbike Riders",
       "quality": 3,
-      "defense": 2,
-      "baseModelCount": 1,
-      "minModels": 1,
-      "maxModels": 1,
-      "basePointCost": 250,
+      "defense": 4,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 315,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 1.8110236,
-        "heightInches": 2.952756
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
-          "name": "Twin Fragment Pistol",
-          "quantity": 1,
+          "name": "Assault Fragment Bike-Rifle",
+          "quantity": 3,
           "rangeInches": 12,
-          "attacks": 2,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
-              "name": "Disintegrate"
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Destructive"
             }
           ]
         },
         {
-          "name": "Energy Glaive",
-          "quantity": 1,
+          "name": "Star-Spear",
+          "quantity": 3,
           "rangeInches": 0,
-          "attacks": 5,
-          "armorPenetration": 1,
+          "attacks": 3,
+          "armorPenetration": 0,
           "specialRules": [
             {
               "kind": "core",
@@ -1564,9 +3422,295 @@
           "name": "Furious"
         },
         {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
           "kind": "coreNumeric",
-          "name": "Impact",
+          "name": "Tough",
           "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Rapid Blink"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "TFQm46fte1",
+          "label": "Replace all Assault Fragment Bike-Rifles and Star-Spears",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Assault Fragment Bike-Rifles",
+            "Star-Spears"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ghm0zMgn9A",
+              "label": "EMP Cannon (30\u0022, A3, Rending), Fragment Bike-Rifle (24\u0022, A1, Anti-Cover, Destructive), Strike (A1)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "EMP Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                },
+                {
+                  "name": "Fragment Bike-Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ngJ8zvWjpl",
+              "label": "Fragment Cannon (36\u0022, A3, Anti-Cover, Destructive), Fragment Bike-Rifle (24\u0022, A1, Anti-Cover, Destructive), Strike (A1)",
+              "cost": 60,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Cannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                },
+                {
+                  "name": "Fragment Bike-Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "7wWphgfP1v",
+          "label": "Replace all Star-Spears",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Star-Spears"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "M0vfLPUMct",
+              "label": "Explosive Jester-Sling (12\u0022, A1, Blast(3), Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Explosive Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Liji3TM5ti",
+              "label": "Fragment Jester-Sling (12\u0022, A3, Anti-Cover, Assault, Destructive)",
+              "cost": 70,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cZ2fRIl",
+      "name": "Heavy Jetbike",
+      "quality": 3,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 245,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.8110236,
+        "heightInches": 2.952756
+      },
+      "weapons": [
+        {
+          "name": "Assault Fragment Cannon",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Destructive"
+            }
+          ]
+        },
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Star-Spear",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Rapid Blink"
         },
         {
           "kind": "core",
@@ -1579,43 +3723,133 @@
         },
         {
           "kind": "core",
-          "name": "Rapid Blink"
-        },
-        {
-          "kind": "core",
-          "name": "Evasive"
+          "name": "Stealth"
         }
       ],
       "items": [],
       "sections": [
         {
-          "id": "WwT8ChU",
-          "label": "Replace Energy Glaive",
+          "id": "rKHS5O4k",
+          "label": "Replace Star-Spear",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Energy Glaive"
+            "Star-Spear"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "vcWkzrkkA5",
-              "label": "Twin Light Fragment Cannon (24\u0022, A4, AP(1), Disintegrate)",
-              "cost": 15,
+              "id": "Ywbr18iJ",
+              "label": "Explosive Jester-Sling (12\u0022, A1, Blast(3), Assault)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Twin Light Fragment Cannon",
+                  "name": "Explosive Jester-Sling",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 4,
-                  "armorPenetration": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "xOG-hbMo",
+              "label": "Fragment Jester-Sling (12\u0022, A3, Anti-Cover, Assault, Destructive)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Jester-Sling",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Disintegrate"
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dKG6DbRVVa",
+              "label": "2x Scatter Cannon (18\u0022, A1, AP(1), Blast(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scatter Cannon",
+                  "quantity": 2,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "HOvrfQ62P1",
+              "label": "Assault Fragment Cannon (18\u0022, A3, Anti-Cover, Assault, Destructive)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Assault Fragment Cannon",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
                     }
                   ]
                 }
@@ -1627,27 +3861,27 @@
           ]
         },
         {
-          "id": "feCRoRq",
-          "label": "Replace Twin Fragment Pistol",
+          "id": "iKzVxfR_5A",
+          "label": "Replace any Scatter Cannon",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
-            "Twin Fragment Pistol"
+            "Scatter Cannon"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "XH7Dxk4aJT",
-              "label": "Light EMP Cannon (24\u0022, A3, Rending)",
-              "cost": 30,
+              "id": "SN3r9QhKMg",
+              "label": "EMP Cannon (30\u0022, A3, Rending)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Light EMP Cannon",
+                  "name": "EMP Cannon",
                   "quantity": 1,
-                  "rangeInches": 24,
+                  "rangeInches": 30,
                   "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
@@ -1663,40 +3897,15 @@
               "modelsGained": 0
             },
             {
-              "id": "iohEw2cMnf",
-              "label": "Focus Cannon (24\u0022, A1, AP(2), Blast(3))",
-              "cost": 30,
+              "id": "mTVP6_vivi",
+              "label": "Focal Cannon (18\u0022, A1, AP(3), Deadly(3))",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Focus Cannon",
+                  "name": "Focal Cannon",
                   "quantity": 1,
-                  "rangeInches": 24,
-                  "attacks": 1,
-                  "armorPenetration": 2,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "1RvKm0tAz3",
-              "label": "Light Laser Cannon (24\u0022, A1, AP(3), Deadly(3))",
-              "cost": 45,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Light Laser Cannon",
-                  "quantity": 1,
-                  "rangeInches": 24,
+                  "rangeInches": 18,
                   "attacks": 1,
                   "armorPenetration": 3,
                   "specialRules": [
@@ -1711,18 +3920,46 @@
               "rulesGained": [],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "wS7maIhq0M",
+              "label": "Fragment Cannon (36\u0022, A3, Anti-Cover, Destructive)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fragment Cannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Anti-Cover"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Destructive"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "R8zHiw1",
+          "id": "CWRP2Ny3fj",
           "label": "Upgrade with any",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 2,
+          "maxPicks": 3,
           "options": [
             {
               "id": "SpMyLGg9gH",
@@ -1747,9 +3984,31 @@
               "modelsGained": 0
             },
             {
+              "id": "jb8BsjqPi8",
+              "label": "Extra Armor (Armor(2))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Extra Armor",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Armor",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
               "id": "CJX9zCdqu9",
               "label": "Spectacle of Death (Slayer Mark)",
-              "cost": 60,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1774,31 +4033,17 @@
   ],
   "ruleDefinitions": [
     {
-      "name": "Disintegrate",
+      "name": "Destructive",
       "passive": [
-        {
-          "hookID": "Shooting_OnSaveRollComplete",
-          "condition": {
-            "kind": "always"
-          },
-          "effect": {
-            "kind": "ignoreRule",
-            "ruleName": "Regeneration"
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "statGreaterOrEqualTo",
-            "stat": "Defense",
-            "statValue": 2
+            "kind": "targetAboveHalfStrength"
           },
           "effect": {
             "kind": "rollModifier",
             "rollKind": "Save",
-            "delta": -2
+            "delta": -1
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -1808,7 +4053,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Ignores Regeneration. Against units with Defense 2\u002B, this weapon gets AP(\u002B2)."
+      "description": "When attacking units with more than half of their total size or Tough value (for single-model units), those hits get AP(\u002B1)."
     },
     {
       "name": "Slayer Mark",
@@ -1827,7 +4072,8 @@
             "requireLineOfSight": true,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "markTarget",
@@ -1842,40 +4088,70 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Melee Slayer."
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which friendly units gets Slayer against once (next time the effect would apply)."
     },
     {
-      "name": "Point-Blank Surge",
+      "name": "Counter in Melee",
       "passive": [
         {
-          "hookID": "Shooting_OnHitRollComplete",
+          "hookID": "Melee_OnCounterTrigger",
           "condition": {
-            "kind": "and",
-            "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
-              "kind": "and",
-              "left": {
-                "kind": "not",
-                "inner": {
-                  "kind": "distanceGreaterThan",
-                  "distanceInches": 12
-                }
-              },
-              "right": {
-                "kind": "unmodifiedRollEquals",
-                "dieValue": 6
-              }
+            "kind": "not",
+            "inner": {
+              "kind": "countsAsFatiguedInMelee"
             }
           },
           "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
-            "count": 1
+            "kind": "strikeFirst"
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model gets Counter on its weapons in melee."
+    },
+    {
+      "name": "Infiltrating Precision Strike",
+      "passive": [
+        {
+          "hookID": "Deployment_OnPreDeploymentSelect",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "deferDeployment",
+            "timing": "LaterRound",
+            "placementRangeInches": 3,
+            "minArrivalRound": 2,
+            "mandatoryArrival": false,
+            "enemyClearanceInches": 0
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isMelee"
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "ArrivedFromReserve"
+              },
+              "minCount": 1
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -1885,7 +4161,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When shooting enemies within 12 inches, each unmodified 6 to hit scores an extra hit."
+      "description": "Counts as having Infiltrate, and gets \u002B1 to hit rolls in melee on the round in which it deploys via this rule."
     },
     {
       "name": "Rapid Blink",
@@ -1893,14 +4169,15 @@
         {
           "hookID": "Activation_OnActivationStart",
           "condition": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "effect": {
             "kind": "repositionAtActivation",
             "distance": {
               "kind": "d3"
             },
-            "plusInches": 0
+            "plusInches": 0,
+            "move": true
           },
           "lifetime": "ThisActivation",
           "seat": "Actor"
@@ -1910,35 +4187,10 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this unit is activated, it may place all its models anywhere fully within D3 inches of their position."
+      "description": "When this unit is activated, you may move all models with this rule in it by up to D3\u0022."
     },
     {
-      "name": "Rapid Blink Boost",
-      "passive": [
-        {
-          "hookID": "Activation_OnActivationStart",
-          "condition": {
-            "kind": "allModelsHaveThisRule"
-          },
-          "effect": {
-            "kind": "repositionAtActivation",
-            "distance": {
-              "kind": "d3"
-            },
-            "plusInches": 0
-          },
-          "lifetime": "ThisActivation",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "If this model has Rapid Blink, it may be placed within 2D3 inches instead of only D3 inches."
-    },
-    {
-      "name": "Rapid Blink Boost Aura",
+      "name": "Armor",
       "passive": [
         {
           "hookID": "Lifecycle_OnUnitCreated",
@@ -1946,8 +4198,33 @@
             "kind": "always"
           },
           "effect": {
-            "kind": "aura",
-            "ruleName": "Rapid Blink Boost"
+            "kind": "setDefense",
+            "defense": {
+              "kind": "arg",
+              "index": 0
+            }
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Counts as having Defense X\u002B."
+    },
+    {
+      "name": "Repel Ambushers",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "repelAmbushers",
+            "distanceInches": 12
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -1957,7 +4234,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Rapid Blink Boost."
+      "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
     },
     {
       "name": "Ambush Re-Deployment",
@@ -1976,7 +4253,8 @@
             "timing": "LaterRound",
             "placementRangeInches": 9,
             "minArrivalRound": 2,
-            "mandatoryArrival": true
+            "mandatoryArrival": true,
+            "enemyClearanceInches": 0
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -1996,13 +4274,14 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "ambushRedeploy"
           },
           "availableWhen": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "label": "Ambush Re-Deployment"
         }
@@ -2011,6 +4290,64 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per game, when a unit where all models have this rule ends its activation, you may immediately remove it from the table (dropping any objectives it might hold within 1\u0022), and deploy it as if it had Ambush at the beginning of the next round."
+    },
+    {
+      "name": "Ambushing Piercing Shot",
+      "passive": [
+        {
+          "hookID": "Deployment_OnPreDeploymentSelect",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "deferDeployment",
+            "timing": "LaterRound",
+            "placementRangeInches": 9,
+            "minArrivalRound": 2,
+            "mandatoryArrival": false,
+            "enemyClearanceInches": 0
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "isMelee"
+                }
+              },
+              "right": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "ArrivedFromReserve"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as having Ambush, and its weapons get AP(\u002B1) when shooting on the round in which it deploys via this rule."
     },
     {
       "name": "Takedown Strike",
@@ -2029,7 +4366,8 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "extraAttack",
@@ -2051,7 +4389,149 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per game, when it\u0027s this model\u0027s turn to attack in melee, it may make one extra attack at Quality 2\u002B with AP(2), Deadly(3), and Takedown."
+      "description": "Once per game, when it\u0027s this model\u0027s turn to strike in melee, it may make X attacks at Quality 2\u002B with AP(2), Deadly(3), and Takedown."
+    },
+    {
+      "name": "Takedown Shot",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Combat_OnAttackWindow",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "extraAttack",
+            "weaponName": "Takedown Shot",
+            "attacks": 1,
+            "armorPenetration": 2,
+            "withRules": [
+              "Reliable",
+              "Deadly(3)",
+              "Takedown"
+            ]
+          },
+          "availableWhen": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, when this model shoots, it may make X extra attacks against the target at Quality 2\u002B with AP(2), Deadly(3), and Takedown."
+    },
+    {
+      "name": "Anti-Cover",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon ignores Cover."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
+    },
+    {
+      "name": "Enhanced Rapid Blink",
+      "passive": [
+        {
+          "hookID": "Activation_OnActivationStart",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Rapid Blink"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "repositionAtActivation",
+            "distance": {
+              "kind": "d3"
+            },
+            "plusInches": 0,
+            "move": true
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Rapid Blink, it may move by up to 2D3\u0022 from Rapid Blink (instead of only D3\u0022)."
+    },
+    {
+      "name": "Enhanced Rapid Blink Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Enhanced Rapid Blink"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Enhanced Rapid Blink."
     },
     {
       "name": "Melee Slayer",
@@ -2081,7 +4561,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model charges, its weapons get AP(\u002B2) against units where most models have Tough 3\u002B."
+      "description": "When charging, this model\u0027s weapons get AP(\u002B2) if most models in the target have Tough(3) or higher."
     }
   ],
   "spells": [
@@ -2096,11 +4576,12 @@
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
-        "ruleName": "Counter-Attack",
+        "ruleName": "Counter in Melee",
         "scope": "NextTrigger"
       }
     },
@@ -2112,10 +4593,11 @@
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
-        "requireLineOfSight": true,
+        "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
@@ -2127,22 +4609,22 @@
       }
     },
     {
-      "name": "Shadow Dance",
+      "name": "Veil of Madness",
       "threshold": 2,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 2,
-        "targetAffinity": "Friend",
-        "requireLineOfSight": false,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
-        "kind": "addRule",
-        "ruleName": "Rapid Blink Boost",
-        "scope": "NextTrigger"
+        "kind": "markTarget",
+        "ruleName": "Slayer"
       }
     },
     {
@@ -2156,47 +4638,51 @@
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 4,
+        "count": 6,
         "withRules": [
-          "Disintegrate"
+          "Destructive"
         ],
-        "armorPenetration": 1
+        "armorPenetration": 0
       }
     },
     {
-      "name": "Veil of Madness",
+      "name": "Shadow Dance",
       "threshold": 3,
       "target": {
         "rangeInches": 18,
         "minCount": 1,
         "maxCount": 3,
-        "targetAffinity": "Foe",
+        "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
-        "kind": "markTarget",
-        "ruleName": "Slayer"
+        "kind": "addRule",
+        "ruleName": "Enhanced Rapid Blink",
+        "scope": "NextTrigger"
       }
     },
     {
       "name": "Fatal Sorrow",
       "threshold": 3,
       "target": {
-        "rangeInches": 18,
+        "rangeInches": 24,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",

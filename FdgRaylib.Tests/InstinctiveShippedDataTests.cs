@@ -60,8 +60,8 @@ public class InstinctiveShippedDataTests
 
         Assert.That(entry.HookID, Is.EqualTo(EHookID.Lifecycle_OnCapabilityQuery),
             "the capability ChooseActionStage reads when the unit activates, to decide whether to bind it");
-        Assert.That(entry.Condition, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
-            "#267: the compulsion binds the WHOLE unit's action, so a joined hero without it frees the unit");
+        Assert.That(entry.Condition, Is.TypeOf<Condition.MostModelsHaveThisRule>(),
+            "#267/#428: the compulsion binds the WHOLE unit's action, so it binds while most of the unit has it");
         Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor));
     }
 
@@ -162,9 +162,9 @@ public class InstinctiveShippedDataTests
 
         foreach (Site site in sites)
         {
-            // The AllModelsHaveThisRule gate is load-bearing only while every carrier is an affects-All
-            // section (the whole squad gains the rule, so the gate holds). A future partial upgrade would
-            // make the gate silently turn the rule off for that unit - re-decide the scoping then.
+            // The MostModelsHaveThisRule gate holds trivially while every carrier is an affects-All section
+            // (the whole squad gains the rule). A future partial upgrade would make the gate turn the rule
+            // off for that unit whenever the upgraded models are not a majority - re-decide the scoping then.
             Assert.That(site.SectionAffects, Is.EqualTo("All"), $"{site.Book}/{site.Unit}");
         }
     }
@@ -204,6 +204,6 @@ public class InstinctiveShippedDataTests
         });
 
         Assert.That(army.Units.Single().SpecialRules.Select(r => r.PrintableName), Does.Contain(RuleName),
-            "the affects-All item rule flattens onto the unit, satisfying the all-models gate");
+            "the affects-All item rule flattens onto the unit, satisfying the most-models gate");
     }
 }

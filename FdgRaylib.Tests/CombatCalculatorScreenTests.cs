@@ -571,6 +571,21 @@ public class CombatCalculatorScreenTests
         });
     }
 
+    // #442 (#432): the charge's launch distance is typed in whole inches too, 0 meaning "not given".
+    [Test]
+    public void ChargeFromLandsOnWholeInches_ZeroMeansNotSet()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.SnapChargeFrom(6.6f), Is.EqualTo(7f));
+            Assert.That(CombatCalculatorScreen.SnapChargeFrom(-2f), Is.EqualTo(0f), "never below 'not set'");
+            Assert.That(CombatCalculatorScreen.SnapChargeFrom(99f),
+                Is.EqualTo(CombatCalculatorScreen.MaxChargeFromInches));
+            Assert.That(new CombatCalculatorScreen().Situation.ChargeFromInches, Is.EqualTo(0f),
+                "defaults to not set, so an untouched calculator reports exactly what it did before");
+        });
+    }
+
     [Test]
     public void TheSteppersLandOnMultiplesRatherThanCarryingAnOffsetAlong()
     {
@@ -597,6 +612,39 @@ public class CombatCalculatorScreenTests
     {
         Assert.That(CombatCalculatorScreen.BigStepInches,
             Is.EqualTo(CombatCalculatorScreen.StepInches * 2f));
+    }
+
+    [Test]
+    public void TheDefenderMovedInputIsOfferedOnlyWhenADefenderRuleReadsIt()
+    {
+        // #459 D4: a plain target never shows the tick; a report flagged DefenderMovedMatters does; and a tick
+        // already set stays visible after a swap to a plain defender, so it can be cleared rather than stranded.
+        CombatReport plain = ReportOf(24f);
+        CombatReport reads = plain with { DefenderMovedMatters = true };
+        var off = new CombatSituation();
+        var on = new CombatSituation(DefenderMoved: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CombatCalculatorScreen.OffersDefenderMoved(null, off), Is.False, "no report");
+            Assert.That(CombatCalculatorScreen.OffersDefenderMoved(plain, off), Is.False, "nothing reads it");
+            Assert.That(CombatCalculatorScreen.OffersDefenderMoved(reads, off), Is.True, "a defender rule reads it");
+            Assert.That(CombatCalculatorScreen.OffersDefenderMoved(plain, on), Is.True, "ticked: stays clearable");
+        });
+    }
+
+    [Test]
+    public void APlainDefenderFromTheBook_DoesNotFlagTheInput()
+    {
+        // The flag comes from the engine's readership walk over the compiled defender (the positive case, an Artillery
+        // unit, is pinned in the engine's CombatCalculatorTests); a plain book unit must leave the tick hidden.
+        var shooters = new CalculatorSide();
+        shooters.SetUnit(Book, "warriors");
+        var targets = new CalculatorSide();
+        targets.SetUnit(Book, "warriors");
+        CombatReport plain = CombatCalculator.Run(shooters.Compile(), targets.Compile(),
+            new CombatSituation(DistanceInches: 18f));
+        Assert.That(plain.DefenderMovedMatters, Is.False, "Warriors carry nothing that reads MovedThisRound");
     }
 
     [Test]
@@ -631,6 +679,10 @@ public class CombatCalculatorScreenTests
             CombatCalculatorScreen.MovedLabel,
             CombatCalculatorScreen.ChargingLabel,
             CombatCalculatorScreen.FatiguedLabel,
+            CombatCalculatorScreen.ChargeFromLabel,
+            CombatCalculatorScreen.ChargeFromTooltip,
+            CombatCalculatorScreen.DefenderMovedLabel,
+            CombatCalculatorScreen.DefenderMovedTooltip,
         };
 
         // The engine's own notes and warnings are shown verbatim, so they are held to the same rule.

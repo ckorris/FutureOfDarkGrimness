@@ -60,7 +60,10 @@ public static class UiChrome
     /// explained in the calculator ("Quality 4+", "Stealth -1") looks like the one the player watches
     /// land in a live game. Reserves its own layout space; put it after a <c>SameLine</c>.
     /// </summary>
-    public static void DrawChip(string text)
+    /// <param name="text">The chip's label.</param>
+    /// <param name="hover">#441 F4: a tooltip shown while the chip is hovered (the numbers behind a chip whose
+    /// label is just the rule's name), or null for a chip that is its own detail.</param>
+    public static void DrawChip(string text, string? hover = null)
     {
         Vector2 padding = new(ImGui.GetStyle().FramePadding.X, ImGui.GetStyle().FramePadding.Y * 0.5f);
         Vector2 size = ImGui.CalcTextSize(text) + (padding * 2f);
@@ -70,7 +73,9 @@ public static class UiChrome
         dl.AddRectFilled(pos, pos + size, ImGui.GetColorU32(ChipBg), size.Y * 0.175f);
         dl.AddText(pos + padding, ImGui.GetColorU32(ChipText), text);
 
-        ImGui.Dummy(size);
+        ImGui.Dummy(size); // the item the hover test reads
+        if (hover is not null && ImGui.IsItemHovered())
+            UiText.Tooltip(hover);
     }
 
     // The chip palette, defined once. The dice overlay paints its chips with Raylib on the canvas and

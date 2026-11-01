@@ -13,35 +13,39 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #376 S3 - Ravage Aura over the DATA as shipped. Owner ruling: a data-only standalone def, NOT an
-// argumented grant (the grant path is name-only, LAT-1). It works because ResolveRavageWoundsStage
-// groups InvokeDealAutoWounds ops by threshold and SUMS the dice: a Unit-scoped def contributing 1
-// die per living model alongside core Ravage(X)'s X-per-carrier is arithmetically identical to every
-// model having Ravage(X+1). Champion items fold their rules into unit.SpecialRules at list-compile
-// (ListCompiler.AddGrantedRule), so the def fires from the unit at the stage's model-less Actor seat.
+// #376 S3 - Ravage Aura over the DATA as shipped. Owner ruling: NOT an argumented grant (the grant path is name-only,
+// LAT-1). It works because ResolveRavageWoundsStage SUMS the dice of one pool: one extra die per living model alongside
+// core Ravage(X)'s X-per-carrier is arithmetically identical to every model having Ravage(X+1).
+// #434 (3.6, "This model and its unit get Ravage(+1)."): moved to the GDF file (Daemons of Plague names it; AoF merges
+// the GDF file first), and re-shaped as a real aura - the bearer grants "Ravage (Aura)", a literal one-die Ravage with
+// Ravage's 3.6 Fatigue gate, to its unit, because since #434 the stage counts carriers per ATTACHMENT (#447's template)
+// and a token grant is the one attachment that counts every living model, a joined hero included. The stage strips
+// the "(Aura)" label, so the die joins the Ravage pool.
 [TestFixture]
 public class RavageAuraShippedDataTests
 {
     private static IReadOnlyList<SpecialRuleDefinition> Supplement() =>
         BookRuleSupplement.LoadDefinitions(File.ReadAllText(
-            Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "AofRuleSupplement.json")));
+            Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "GdfRuleSupplement.json")));
 
     private static SpecialRuleDefinition Definition(string name) =>
         Supplement().Single(r => r.Name == name);
 
     [Test]
-    public void RavageAura_DealsOneAutoWoundDiePerModel_AtChargeContact()
+    public void RavageAura_GrantsTheOneDieHelper_ToItsUnit()
     {
-        SpecialRuleDefinition rule = Definition("Ravage Aura");
-        Assert.That(rule.Scope, Is.EqualTo(ERuleScope.Unit),
-            "unit scope makes DealAutoWounds count every living model - the 'and its unit' half.");
+        SpecialRuleDefinition aura = Definition("Ravage Aura");
+        Assert.That(aura.Passive.Single().HookID, Is.EqualTo(EHookID.Lifecycle_OnUnitCreated));
+        Assert.That(aura.Passive.Single().Effect, Is.EqualTo(new Effect.Aura("Ravage (Aura)")));
+        Assert.That(aura.Description, Is.EqualTo("This model and its unit get Ravage(+1)."));
 
-        HookEntry entry = rule.Passive.Single();
+        HookEntry entry = Definition("Ravage (Aura)").Passive.Single();
         Assert.That(entry.HookID, Is.EqualTo(EHookID.Melee_OnChargeContact),
             "core Ravage's hook - the stage only consumes InvokeDealAutoWounds there.");
-        var effect = (Effect.DealAutoWounds)entry.Effect;
-        Assert.That(((ValueSource.Literal)effect.DiceCountPerModel).Value, Is.EqualTo(1));
-        Assert.That(effect.SuccessThreshold, Is.EqualTo(6), "same threshold pool as core Ravage.");
+        Assert.That(entry.Condition, Is.EqualTo(new Condition.Not(new Condition.CountsAsFatiguedInMelee())),
+            "Ravage's 3.6 'unless this unit is Fatigued'");
+        Assert.That(entry.Effect, Is.EqualTo(new Effect.DealAutoWounds(new ValueSource.Literal(1), 6)),
+            "one die per carrier, the same 6+ pool as core Ravage");
     }
 
     [Test]
@@ -79,6 +83,7 @@ public class RavageAuraShippedDataTests
         {
             var byName = Supplement().ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
             _resolver.Register(byName["Ravage Aura"]);
+            _resolver.Register(byName["Ravage (Aura)"]);
             _evaluator = new RuleEvaluator(new ProbabilisticDiceRoller(), ruleResolver: _resolver);
         }
 
@@ -94,6 +99,8 @@ public class RavageAuraShippedDataTests
             var unit = new UnitData(new PlayerID(Guid.NewGuid()), "Unit", quality: 4, defense: 4,
                 modelBindings: bindings);
             foreach (string name in ruleNames) unit.AttachRuleDefinition(_resolver.Resolve(name));
+            // The aura lands as UnitCreationRules applies it: a RuleGrant token on the unit.
+            OperationApplier.ApplyTokenOperations(_evaluator.Evaluate(unit, ERuleSeat.Actor, new UnitCreatedContext(unit)));
             return unit;
         }
 
@@ -103,7 +110,7 @@ public class RavageAuraShippedDataTests
 
         public int DiceAtSix(IUnit attacker, IUnit defender) =>
             _evaluator.EvaluateAll(new ChargeContactContext(attacker, defender),
-                    RuleParticipant.Actor(attacker))
+                    FDG.Stages.ResolveImpactHitsStage.ChargerParticipant(attacker))
                 .OfType<RuleOperation.InvokeDealAutoWounds>()
                 .Where(op => op.SuccessThreshold == 6)
                 .Sum(op => op.DiceCount);

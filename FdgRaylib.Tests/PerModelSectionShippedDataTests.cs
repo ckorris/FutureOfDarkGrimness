@@ -9,8 +9,9 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #383 - the shipped per-model section stamp (22 sections across 19 GDF books, classified against the
-// live army-books API 2026-08-22 and transferred by --import-section-shapes). OPR's "Any model may
+// #383 - the shipped per-model section stamp (3.5: 22 sections across 19 GDF books, classified against the
+// live army-books API 2026-08-22 and transferred by --import-section-shapes; #438: the 3.6.0 import classifies
+// them itself - 16 sections across 15 GDF books, every one an "Any model may take ... attachment"). OPR's "Any model may
 // replace/take ..." sections spend one pick per MODEL, repeatable across models; the identically-
 // selected "Upgrade with any" subset sections do not. The bundled snapshots can't re-derive the
 // distinction (the raw `select`/`model` fields aren't stored), so these pin the stamp itself: lose it
@@ -37,7 +38,8 @@ public class PerModelSectionShippedDataTests
             .Where(s => s.Section.Label.StartsWith("Any model may ", StringComparison.Ordinal))
             .ToList();
 
-        Assert.That(anyModel, Has.Count.EqualTo(22), "the 2026-08-22 census of the live API");
+        Assert.That(anyModel, Has.Count.EqualTo(16),
+            "the 3.6.0 census (2026-10-30 snapshots: select.type any + model true, variant attachment)");
         foreach ((string bookName, RosterUnit unit, UpgradeSection section) in anyModel)
         {
             Assert.That(section.PerModelBudget, Is.True, $"{bookName} / {unit.Name} / {section.Label}");
@@ -61,10 +63,11 @@ public class PerModelSectionShippedDataTests
         Assert.That(strays, Is.Empty);
     }
 
-    // The two reported units, by name - the census total above can absorb a swap; these cannot.
-    [TestCase("AlienHives", "Hive Warriors", "Any model may replace one Razor Claws")]
-    [TestCase("RobotLegions", "Robot Snakes", "Any model may replace Spike Whips")]
-    [TestCase("RobotLegions", "Robot Snakes", "Any model may replace one Metal Fangs")]
+    // Named sections - the census total above can absorb a swap; these cannot. #438: the two reported 3.5 units
+    // (Hive Warriors, Robot Snakes) have no per-model section in 3.6; these are two of the 3.6 attachments.
+    [TestCase("BattleBrothers", "Veteran Battle Brothers", "Any model may take any Burst Battle Rifle attachment")]
+    [TestCase("WatchBrothers", "Watch Battle Brothers", "Any model may take one Heavy Machinegun attachment")]
+    [TestCase("PrimeBrothers", "Veteran Prime Brothers", "Any model may take one Burst Heavy Rifle attachment")]
     public void TheReportedSections_AreStamped(string bookFile, string unitName, string label)
     {
         BookFile book = JsonSerializer.Deserialize<BookFile>(

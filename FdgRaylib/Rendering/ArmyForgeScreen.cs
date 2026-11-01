@@ -15,7 +15,9 @@ using TinyDialogsNet;
 namespace FdgRaylib.Rendering;
 
 /// <summary>#307: how a Save/Load status line should read. A failure must never share the success channel.</summary>
-internal enum EForgeStatusKind { Info, Success, Error }
+/// <summary>The status line's colour. <see cref="Notice"/> (#441 F2) is the amber advisory of the lobby's legacy
+/// lines (LobbyScreen.LegacyNoticeColor): the list opened fine, and there is something the player should know.</summary>
+internal enum EForgeStatusKind { Info, Success, Error, Notice }
 
 /// <summary>What a load attempt did. Anything but <see cref="Adopted"/> means the screen still holds its
 /// previous list, and the caller owes the user a modal saying so.</summary>
@@ -58,11 +60,14 @@ public class ArmyForgeScreen : IAppScreen
 {
     public Action? OnBack;
 
-    private const int DefaultPointsLimit = 1000;
+    /// <summary>#430: a new list starts at its game system's suggested starter size (GDF 1000, AoF 750 -
+    /// "we suggest ... to start", Core Rules v3.6.0).</summary>
+    private static int DefaultPointsLimit(BookFile book) => ForceOrgLimits.For(book.GameSystem).SuggestedStartPoints;
 
     private static readonly Vector4 RedText    = new(0.90f, 0.40f, 0.40f, 1f);
     private static readonly Vector4 YellowText = new(0.90f, 0.80f, 0.35f, 1f);
     private static readonly Vector4 GreenText  = new(0.45f, 0.85f, 0.45f, 1f);
+    private static readonly Vector4 AmberText  = new(1f, 0.7f, 0.2f, 1f); // the lobby's legacy-notice amber (#440)
     private static readonly Vector4 WhiteText  = new(1f, 1f, 1f, 1f);
     private static readonly Vector4 CyanText   = new(0.45f, 0.80f, 0.90f, 1f);
 
@@ -70,7 +75,7 @@ public class ArmyForgeScreen : IAppScreen
         $"FDG Army (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
 
-    // The public ctor loads the library on a worker task: parsing all 47 bundled books (~9 MB of JSON)
+    // The public ctor loads the library on a worker task: parsing every bundled book (88 since 3.6, ~19 MB of JSON)
     // took ~0.5s on the startup path, before the window even existed. Every member that reads the
     // books/list joins the task via EnsureLibrary() first; the test-seam ctor fills these synchronously.
     private Task<List<BookFile>>? _libraryTask;
@@ -157,7 +162,7 @@ public class ArmyForgeScreen : IAppScreen
         InitSystems();
         _bookIndex = _visibleBooks[0];
         UseBook(_library[_bookIndex]);
-        _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
+        _list = new BuilderList { PointsLimit = DefaultPointsLimit(_book), BookName = _book.Name };
     }
 
     /// <summary>#378: pick the first system that has books (GDF in the shipped layout) and build the
@@ -209,7 +214,7 @@ public class ArmyForgeScreen : IAppScreen
         InitSystems();
         _bookIndex = _visibleBooks[0];
         UseBook(_library[_bookIndex]);
-        _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
+        _list = new BuilderList { PointsLimit = DefaultPointsLimit(_book), BookName = _book.Name };
     }
 
     // #378 test accessors (the combo state itself only exists inside Draw).
@@ -229,8 +234,13 @@ public class ArmyForgeScreen : IAppScreen
     {
         if (index < 0 || index >= _library.Count) return;
         _bookIndex = index;
+        BookFile previous = _book;
         UseBook(_library[index]);
-        _list = new BuilderList { PointsLimit = _list.PointsLimit, BookName = _book.Name };
+        // #430: a limit still sitting on the old system's suggested size follows the new system's
+        // (GDF 2000 -> AoF 1500); a hand-typed limit is kept.
+        int limit = ForceOrgLimits.Retarget(_list.PointsLimit,
+            ForceOrgLimits.For(previous.GameSystem), ForceOrgLimits.For(_book.GameSystem));
+        _list = new BuilderList { PointsLimit = limit, BookName = _book.Name };
         _selectedListIndex = null;
         _selectedRosterId = null;
     }
@@ -355,6 +365,7 @@ public class ArmyForgeScreen : IAppScreen
     {
         EForgeStatusKind.Error => RedText,
         EForgeStatusKind.Success => GreenText,
+        EForgeStatusKind.Notice => AmberText,
         _ => ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled],
     };
 
@@ -388,12 +399,8 @@ public class ArmyForgeScreen : IAppScreen
         if (_importTask is { IsCompleted: true } finished)
         {
             _importTask = null;
-            if (finished.IsFaulted)
-                _importError = finished.Exception?.GetBaseException().Message ?? "Import failed.";
-            else if (finished.IsCanceled)
-                _importError = "Import was canceled.";
-            else
-                _importOutcome = finished.Result;
+            _importError = ImportErrorText(finished);
+            if (_importError is null) _importOutcome = finished.Result;
         }
         bool busy = _importTask is not null;
 
@@ -511,6 +518,13 @@ public class ArmyForgeScreen : IAppScreen
                     UiText.Colored(RedText, $"Excluded (not in bundled book): {name} ({pts} pts)");
                 foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
                     UiText.Colored(YellowText, $"{name}: our Forge {ours} pts, Army Forge {theirs} pts");
+                // #438 D3: the picks our compiler could not land, one grey line each ("Assault Brothers: 'Replace one
+                // Heavy Pistol and Hand Weapon -> Heavy Pistol, Energy Hammer' not applied (needs 1 more Hand
+                // Weapon)"); the generic #262 note below only for an under-priced unit no such line explains.
+                ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled]);
+                foreach (UnappliedReplace unapplied in session.UnappliedReplaces) UiText.Wrapped(unapplied.Message);
+                if (StaleReplaceNote(session) is { } note) UiText.Wrapped(note);
+                ImGui.PopStyleColor();
                 ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
                 foreach (string warning in session.Warnings) UiText.Wrapped(warning);
                 ImGui.PopStyleColor();
@@ -575,6 +589,7 @@ public class ArmyForgeScreen : IAppScreen
         string hint = $"Imported '{session.Selections.Name}' into the Forge";
         if (session.ExcludedUnits.Count > 0) hint += $" - {session.ExcludedUnits.Count} unit(s) excluded";
         if (session.UnitPointsDeltas.Count > 0) hint += $" - {session.UnitPointsDeltas.Count} points delta(s) vs Army Forge";
+        if (session.UnappliedReplaces.Count > 0) hint += $" - {session.UnappliedReplaces.Count} upgrade(s) not applied";
         SetStatus(EForgeStatusKind.Success, hint);
 
         // #307: an import IS a successful adopt - the screen now holds this list, so a later Save is
@@ -590,6 +605,35 @@ public class ArmyForgeScreen : IAppScreen
     /// disclosed at reopen, not silently applied.</summary>
     internal static ArmyListFile ImportedFileToWrite(ArmyListFile army, BuilderList? selections, BookFile? book) =>
         selections is not null && book is not null ? EditableSession.Attach(army, selections, book) : army;
+
+    /// <summary>
+    /// #441: what the import popup prints for a finished fetch - the failure's own message (an
+    /// <see cref="OprVersionMismatchException"/> carries #437's two remedies: an older book "has not been updated
+    /// to this OPR version yet", a newer one means "the game's data needs an update"), or null for a result.
+    /// </summary>
+    internal static string? ImportErrorText(Task finished)
+    {
+        if (finished.IsFaulted) return finished.Exception?.GetBaseException().Message ?? "Import failed.";
+        if (finished.IsCanceled) return "Import was canceled.";
+        return null;
+    }
+
+    /// <summary>
+    /// #441 (#262): the line under the reconciliation when a unit prices BELOW Army Forge. On an older list that is
+    /// almost always a stale "Replace X" pick whose X the unit no longer has - Army Forge still bills it, our
+    /// compiler applies nothing and charges nothing (#262, ruled an upstream Army Forge quirk) - and without this
+    /// it reads as our bug. Null when no unit is under. ASCII.
+    /// <para>#438 D3: yields to the specific lines - an under-priced unit that has its own
+    /// <see cref="OprForgeSessionResult.UnappliedReplaces"/> entry is already explained by name, so the generic note
+    /// stays only for an under-priced unit no line covers.</para>
+    /// </summary>
+    internal static string? StaleReplaceNote(OprForgeSessionResult session) =>
+        session.UnitPointsDeltas.Any(d => d.OurPoints < d.TheirPoints
+                                          && !UnappliedReplace.ForUnit(session.UnappliedReplaces, d.Name).Any())
+            ? "A unit below Army Forge's price usually carries a stale \"Replace X\" pick for gear it no longer has " +
+              "(common on older lists). Army Forge still charges it; it changes nothing on the table, so our Forge " +
+              "charges nothing. Re-pick that unit's upgrades on Army Forge to clear it."
+            : null;
 
     private bool SaveImported(ArmyForgeShareService.ImportOutcome outcome)
     {
@@ -787,6 +831,8 @@ public class ArmyForgeScreen : IAppScreen
         int limit = _list.PointsLimit;
         if (ImGui.InputInt("pts limit", ref limit, 250) && limit > 0)
             _list.PointsLimit = limit;
+        if (ImGui.IsItemHovered())
+            UiText.Tooltip(PointsLimitTooltip(_book));
 
         string header = PointsHeader(compiled.TotalPoints, _list.PointsLimit);
         float headerW = ImGui.CalcTextSize(header).X;
@@ -820,8 +866,28 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.SameLine();
             UiText.Disabled(FDG.Stages.SpellText.Describe(spell));
         }
+        foreach (string note in SpellDataNotes(_book))
+            UiText.Colored(YellowText, note);
         ImGui.PopTextWrapPos();
     }
+
+    /// <summary>
+    /// #441: spells OPR's own 3.6.0 data leaves out, one line per gap, keyed by (game system, book name) - so a
+    /// five-spell list reads as a known data gap, not a dropped spell. The importer skips a spell whose source text
+    /// is truncated (#439 D1) and the book cannot record what it skipped, hence a table here;
+    /// <c>ArmyForge36Tests</c> fails when a re-bake makes an entry stale (or a new book falls short). ASCII.
+    /// </summary>
+    private static readonly (string System, string Book, string Note)[] SpellGaps =
+    {
+        (GameSystems.AgeOfFantasy, "Shadow Stalkers",
+            "Combat Possession: text missing in OPR's 3.6.0 data, so it is not listed or castable."),
+    };
+
+    internal static IReadOnlyList<string> SpellDataNotes(BookFile book) => SpellGaps
+        .Where(g => GameSystems.SameSystem(g.System, book.GameSystem)
+                    && string.Equals(g.Book, book.Name, StringComparison.OrdinalIgnoreCase))
+        .Select(g => g.Note)
+        .ToList();
 
     /// <summary>#403: what the import popup leads with. Held as constants rather than inline so the
     /// ASCII-only rule (the ImGui atlas bakes Basic Latin + Latin-1; anything else draws as '?') can be
@@ -1252,6 +1318,35 @@ public class ArmyForgeScreen : IAppScreen
         return ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
     }
 
+    /// <summary>
+    /// #441 (#438 D3 in the Forge): the pool <paramref name="option"/> may draw on once every counted swap above
+    /// that YIELDS to it (<see cref="ListCompiler.CountedSwapYieldsTo"/>) is set aside - those copies come back,
+    /// because the option hands its target back. 0 when no such swap is chosen, so a caller simply takes the larger
+    /// of this and its ordinary availability. Without it, taking all five of the 3.6 Assault Brothers' Plasma
+    /// Pistols grayed out the "Heavy Pistol, Energy Hammer" combo below, though the compiler lands both.
+    /// <paramref name="excludeOwn"/> releases this section's own picks too (the radio-switching pool).
+    /// </summary>
+    internal static int PassThroughPool(BookFile book, BuilderUnit bu, RosterUnit roster, UpgradeSection section,
+        UpgradeOption option, bool excludeOwn)
+    {
+        if (section.Variant != UpgradeVariant.Replace
+            || !bu.Choices.Any(c => ListCompiler.CountedSwapYieldsTo(roster, c.SectionId, section, option)))
+            return 0;
+
+        var view = new BuilderUnit
+        {
+            RosterUnitId = bu.RosterUnitId,
+            ModelCount = bu.ModelCount,
+            Choices = bu.Choices
+                .Where(c => !(excludeOwn && c.SectionId == section.Id)
+                            && !YieldsTo(roster, c.SectionId, section)
+                            && !ListCompiler.CountedSwapYieldsTo(roster, c.SectionId, section, option))
+                .ToList(),
+        };
+        (UnitFileEntry unit, List<ItemEntry> items) = ListCompiler.CompileUnitDetailed(book, view);
+        return ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
+    }
+
     // Read-only profile of an available (roster) unit, mirroring what the real Army Forge shows in its config
     // column when you select a unit on the left: stats, default gear, rules, base, the caster spell list (for
     // caster units), and every upgrade section with all its options - all non-interactive. The upgrade option
@@ -1383,6 +1478,9 @@ public class ArmyForgeScreen : IAppScreen
             lines.Add($"    Units: {drift.SavedUnitCount} -> {drift.RebuiltUnitCount}");
         if (drift.DroppedUnits.Count > 0)
             lines.Add("    Dropped: " + string.Join(", ", drift.DroppedUnits));
+        // #438 D3: the picks the rebuild could not land - the usual reason the rebuilt price is the lower one.
+        foreach (UnappliedReplace unapplied in drift.UnappliedReplaces)
+            lines.Add("    " + unapplied.Message);
 
         return $"{fileName} came from Army Forge. It PLAYS with Army Forge's own numbers, but the Forge edits "
             + "it by rebuilding it against the bundled book - and the two do not match.\n\n"
@@ -1439,9 +1537,19 @@ public class ArmyForgeScreen : IAppScreen
         }
         _loadFailureMessage = null;
         _failedLoadFingerprint = null;
-        SetStatus(EForgeStatusKind.Success, $"Loaded {fileName}");
+        (EForgeStatusKind kind, string text) = LoadedStatus(loaded, fileName);
+        SetStatus(kind, text);
         return true;
     }
+
+    /// <summary>The status line after a list is opened. #441 F2 (signed off B): a list whose embedded book is stamped
+    /// for an older OPR ruleset gets the lobby's / CLI's legacy line (<see cref="LegacyArmyNotice.Line(ArmyListFile)"/>)
+    /// in amber - the Forge edits it against its own embedded book, and the player should know it plays under the
+    /// current rules. A current list says only that it loaded. Pure, unit-tested.</summary>
+    internal static (EForgeStatusKind Kind, string Text) LoadedStatus(BuiltArmyFile loaded, string fileName) =>
+        LegacyArmyNotice.Line(loaded) is string legacy
+            ? (EForgeStatusKind.Notice, $"Loaded {fileName} - {legacy}")
+            : (EForgeStatusKind.Success, $"Loaded {fileName}");
 
     private void RecordLoadFailure(string fileName, string reason)
     {
@@ -1505,6 +1613,19 @@ public class ArmyForgeScreen : IAppScreen
     internal (EForgeStatusKind Kind, string? Text) Status => (_statusKind, _statusHint);
 
     // ── Pure formatting seams (unit-tested; ImGui itself is hand-verified) ──────────────────────────────
+
+    /// <summary>#430: the hover on the points-limit box - the system's suggested game sizes and the force-org
+    /// numbers the amber warnings are measured against (ASCII only; it is game text).</summary>
+    internal static string PointsLimitTooltip(BookFile book)
+    {
+        ForceOrgLimits limits = ForceOrgLimits.For(book.GameSystem);
+        return $"{GameSystems.DisplayName(book.GameSystem)}: {limits.SuggestedStartPoints} pts to start, " +
+               $"{limits.SuggestedFullPoints} pts for a full match.\n" +
+               $"Force Org (optional, shown as warnings): 1 Hero per {limits.PointsPerHero} pts; " +
+               $"copies of one unit: 1 + 1 per {limits.PointsPerExtraCopy} pts;\n" +
+               $"no unit over {limits.MaxUnitSharePercent}% of the army; 1 unit per {limits.PointsPerUnit} pts; " +
+               $"1 model or Tough per {limits.PointsPerModelOrTough} pts.";
+    }
 
     internal static string PointsHeader(int total, int limit) => $"{total} / {limit} pts";
 

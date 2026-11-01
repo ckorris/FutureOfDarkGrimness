@@ -62,11 +62,12 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
     {
         UnitData unit = option.GetValue();
         int liveModels = unit.Models.Count(m => m.GetIsAlive());
+        // #424: the range column comes off the classification seam, so an Assault pistol reads "12\"/melee".
         var weapons = unit.AllWeapons()
             .DistinctBy(w => w.Name)
-            .Select(w => (w.Name, w.RangeInches, WeaponStatFormatter.RuleList(w)))
+            .Select(w => (w.Name, WeaponStatFormatter.RangeLabel(w, "melee"), WeaponStatFormatter.RuleList(w)))
             .ToList();
-        return UnitOptionLabel.Build(name, liveModels, unit.Quality, unit.Defense, weapons);
+        return UnitOptionLabel.BuildWithRangeLabels(name, liveModels, unit.Quality, unit.Defense, weapons);
     }
 
     // #337: the engine appends a status badge to the picker label of a unit whose activation will not be a

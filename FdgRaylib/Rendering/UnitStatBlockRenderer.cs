@@ -50,6 +50,9 @@ public static class UnitStatBlockRenderer
         {
             ImGui.Spacing();
             ImGui.TextUnformatted("Special Rules:");
+            // #441 F7: an Enhanced rule whose text never names its base gets the "Base rule: X." line, read
+            // against the unit's own rules - no resolver is in reach here, and the base rides the same unit.
+            var candidates = unit.RuleDefinitions.Select(r => r.Definition).ToList();
             foreach (var rule in rules)
             {
                 ImGui.TextUnformatted($"- {rule.RequestedName}");
@@ -57,7 +60,7 @@ public static class UnitStatBlockRenderer
                 {
                     ImGui.Indent();
                     ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + descriptionWrapWidth);
-                    ImGui.TextDisabled(rule.Definition.Description);
+                    ImGui.TextDisabled(EnhancedRuleGate.HoverDescription(rule.Definition, candidates));
                     ImGui.PopTextWrapPos();
                     ImGui.Unindent();
                 }

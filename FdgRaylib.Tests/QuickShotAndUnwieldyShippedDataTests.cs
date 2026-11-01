@@ -30,6 +30,9 @@ public class QuickShotAndUnwieldyShippedDataTests
     private const string QuickShotMark = "Quick Shot Mark";
     private const string Unwieldy = "Unwieldy in melee";
     private const string UnwieldyDebuff = "Unwieldy Debuff";
+    // #439: the 3.6 Debuff's "gets Unwieldy on its weapons in melee" is "Unwieldy in melee" - the weapon-scope suffix is
+    // a scope, not a name (the #434 clone "Unwieldy on its weapons in melee" was deleted with the other phrase clones).
+    private const string UnwieldyPhraseClone = "Unwieldy on its weapons in melee";
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
@@ -104,7 +107,9 @@ public class QuickShotAndUnwieldyShippedDataTests
         Assert.That(ability.TargetSelector!.RangeInches, Is.EqualTo(18f));
         Assert.That(ability.TargetSelector.RequireLineOfSight, Is.True, "'in line of sight'");
         Assert.That(ability.Effect, Is.EqualTo(new Effect.AddRule(Unwieldy, ELifetime.NextTrigger)),
-            "'gets Unwieldy in melee ONCE (next time the effect would apply)'");
+            "'gets Unwieldy on its weapons in melee ONCE (next time the effect would apply)' - the canonical name");
+        Assert.That(Supplement().Any(r => string.Equals(r.Name, UnwieldyPhraseClone, StringComparison.OrdinalIgnoreCase)),
+            Is.False, "the #434 phrase clone is gone (#439)");
     }
 
     // Every grant target must actually resolve, and to a definition with dispatch entries. A grant naming

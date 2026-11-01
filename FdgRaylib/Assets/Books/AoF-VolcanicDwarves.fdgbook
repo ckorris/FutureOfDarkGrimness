@@ -1,7 +1,7 @@
 {
   "name": "Volcanic Dwarves",
   "faction": "Volcanic Dwarves",
-  "version": "OPR v3.5.3",
+  "version": "OPR v3.6.0",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
   "gameSystem": "age-of-fantasy",
@@ -16,7 +16,7 @@
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 50,
+      "basePointCost": 65,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -25,546 +25,10 @@
       },
       "weapons": [
         {
-          "name": "Heavy Hand Weapon",
+          "name": "Dual Hand Weapons",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": []
-        }
-      ],
-      "rules": [
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Furious"
-        },
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
-          "kind": "core",
-          "name": "Slow"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Drakesworn"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "WPuapuP",
-          "label": "Replace Heavy Hand Weapon",
-          "variant": "Replace",
-          "affects": "One",
-          "targets": [
-            "Heavy Hand Weapon"
-          ],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "z30pKdt",
-              "label": "Heavy Great Axe (A1, AP(4), Deadly(3))",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Great Axe",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 4,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "kN1FY-p",
-              "label": "Dual Heavy Hand Weapons (A4, AP(1))",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Dual Heavy Hand Weapons",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "OYMS8r3",
-              "label": "Heavy Great Weapon (A3, AP(3))",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Great Weapon",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 3,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "N_9TwZfG6O",
-              "label": "Heavy Spear (A3, AP(1), Counter)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Heavy Spear",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 1,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Counter"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "GqAXskK",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "qZjJhj0J0z",
-              "label": "Lava Long-Shooter (18\u0022, A1, Destructive)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Lava Long-Shooter",
-                  "quantity": 1,
-                  "rangeInches": 18,
-                  "attacks": 1,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Destructive"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "sgY4_kluFr",
-              "label": "Lava Shooter (12\u0022, A2, Destructive)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Lava Shooter",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 2,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Destructive"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "KgPCdk3",
-              "label": "Throwing Axes (12\u0022, A2, AP(1))",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Throwing Axes",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 2,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "y03NEbI",
-              "label": "Beast Slayer Javelin (12\u0022, A1, AP(2), Deadly(3))",
-              "cost": 25,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Beast Slayer Javelin",
-                  "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 1,
-                  "armorPenetration": 2,
-                  "specialRules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "iGoiCld",
-          "label": "Upgrade with",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "-UaFhFqg",
-              "label": "Oath of Wrath (Grounded Speed)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Oath of Wrath",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Grounded Speed"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "LECoY7p",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "zX-xTpfOVx",
-              "label": "Berserker Leader (Regeneration)",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Berserker Leader",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Regeneration"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "k3Sxf",
-              "label": "Magma Drake (Stomp (A4, AP(1)), Magma Claws (A6, Rending), Armor(3), Breath Attack, Fear(2), Regeneration, Strider, Swift, Tough(12))",
-              "cost": 425,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Stomp",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 1,
-                  "specialRules": []
-                },
-                {
-                  "name": "Magma Claws",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 6,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Rending"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Magma Drake",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Armor",
-                      "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Breath Attack"
-                    },
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Fear",
-                      "numericValue": 2
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Regeneration"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Strider"
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Swift"
-                    },
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Tough",
-                      "numericValue": 12
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        },
-        {
-          "id": "MA7l_iR",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "FisnLxT7DL",
-              "label": "Grudge Bearer (Takedown Strike)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Grudge Bearer",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Takedown Strike"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "xiUmaaMM",
-              "label": "Grim Lord (Unstoppable in Melee Aura)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Grim Lord",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Unstoppable in Melee Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "gaV1Y7ZL",
-              "label": "Veteran Seeker (Swift Aura)",
-              "cost": 15,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Veteran Seeker",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Swift Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "cr_PCBl2",
-              "label": "Ancient Icon Bearer (Fear(2))",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Ancient Icon Bearer",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "coreNumeric",
-                      "name": "Fear",
-                      "numericValue": 2
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "wBeQPUiw",
-              "label": "Auric Lord (Grounded Protection Aura)",
-              "cost": 20,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Auric Lord",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Grounded Protection Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "pyWpLMt2",
-              "label": "Smite Forger (Quick Shot Aura)",
-              "cost": 35,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Smite Forger",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Quick Shot Aura"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "v2vdu9x",
-      "name": "Volcanic Leader",
-      "quality": 4,
-      "defense": 5,
-      "baseModelCount": 1,
-      "minModels": 1,
-      "maxModels": 1,
-      "basePointCost": 35,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Hand Weapon",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 4,
           "armorPenetration": 0,
           "specialRules": []
         }
@@ -599,7 +63,202 @@
       "items": [],
       "sections": [
         {
-          "id": "hOyInc9",
+          "id": "Uuy5qQ6iAi",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "4OnS7OtOjs",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "0ND9GMuby7",
+              "label": "Master Halberd (A3, AP(1), Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "2d3KXhaCih",
+              "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "rcwpZ1VWbr",
+              "label": "Master Great Weapon (A3, AP(4))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "uNR1bHEtEc",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "yKi8p4D1",
+              "label": "Rapid Lava Shooter (12\u0022, A4, Demolish), Strike (A1)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Lava Shooter",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Demolish"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "RDG-Q2wx",
+              "label": "Throwing Axes (12\u0022, A1, Assault), Hand Weapon (A3, Parry(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Throwing Axes",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "cEYYEF8w",
           "label": "Replace Hand Weapon",
           "variant": "Replace",
           "affects": "One",
@@ -611,52 +270,9 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "h3Xmi",
-              "label": "Dual Hand Weapons (A4)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Dual Hand Weapons",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 0,
-                  "specialRules": []
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "D5BbhR8ZM9",
-              "label": "Spear (A3, Counter)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [
-                {
-                  "name": "Spear",
-                  "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 3,
-                  "armorPenetration": 0,
-                  "specialRules": [
-                    {
-                      "kind": "core",
-                      "name": "Counter"
-                    }
-                  ]
-                }
-              ],
-              "rulesGained": [],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
-              "id": "jwnqa",
+              "id": "BEA3kPo1",
               "label": "Halberd (A3, Rending)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -678,22 +294,26 @@
               "modelsGained": 0
             },
             {
-              "id": "cdV1l",
-              "label": "Great Axe (A1, AP(3), Deadly(3))",
-              "cost": 10,
+              "id": "pSQ6cOS1",
+              "label": "Spear (A3, Counter, Brace(1))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Great Axe",
+                  "name": "Spear",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 1,
-                  "armorPenetration": 3,
+                  "attacks": 3,
+                  "armorPenetration": 0,
                   "specialRules": [
                     {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
                       "kind": "coreNumeric",
-                      "name": "Deadly",
-                      "numericValue": 3
+                      "name": "Brace",
+                      "numericValue": 1
                     }
                   ]
                 }
@@ -703,7 +323,7 @@
               "modelsGained": 0
             },
             {
-              "id": "jz_9a",
+              "id": "BSYjoLxA",
               "label": "Great Weapon (A3, AP(2))",
               "cost": 10,
               "costUnpriced": false,
@@ -724,31 +344,37 @@
           ]
         },
         {
-          "id": "z7Po_gh",
-          "label": "Upgrade with one",
-          "variant": "Upgrade",
+          "id": "hPIMSnVV",
+          "label": "Replace Throwing Axes",
+          "variant": "Replace",
           "affects": "One",
-          "targets": [],
+          "targets": [
+            "Throwing Axes"
+          ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
             {
-              "id": "NglTp08x0z",
-              "label": "Lava Long-Shooter (18\u0022, A1, Destructive)",
-              "cost": 10,
+              "id": "GIJsd-8Q",
+              "label": "Throwing Lava-Axes (12\u0022, A1, Assault, Demolish)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Lava Long-Shooter",
+                  "name": "Throwing Lava-Axes",
                   "quantity": 1,
-                  "rangeInches": 18,
+                  "rangeInches": 12,
                   "attacks": 1,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Destructive"
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Demolish"
                     }
                   ]
                 }
@@ -758,21 +384,59 @@
               "modelsGained": 0
             },
             {
-              "id": "qAVflUOdMT",
-              "label": "Lava Shooter (12\u0022, A2, Destructive)",
-              "cost": 10,
+              "id": "tJchq5UM",
+              "label": "Throwing Magma-Axes (9\u0022, A1, AP(1), Assault)",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Lava Shooter",
+                  "name": "Throwing Magma-Axes",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 2,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "7IeA1gf3",
+          "label": "Replace Rapid Lava Shooter",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rapid Lava Shooter"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "U-vNWaCV",
+              "label": "Rapid Lava Long-Shooter (24\u0022, A3, Demolish)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Lava Long-Shooter",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Destructive"
+                      "name": "Demolish"
                     }
                   ]
                 }
@@ -782,16 +446,35 @@
               "modelsGained": 0
             },
             {
-              "id": "H3GCE",
-              "label": "Throwing Axes (12\u0022, A2, AP(1))",
-              "cost": 10,
+              "id": "JSri8Ugq",
+              "label": "Rapid Magma Shooter (12\u0022, A4, AP(1))",
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Throwing Axes",
+                  "name": "Rapid Magma Shooter",
                   "quantity": 1,
                   "rangeInches": 12,
-                  "attacks": 2,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "o2EhL_Z7",
+              "label": "Rapid Magma Long-Shooter (18\u0022, A3, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Magma Long-Shooter",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
                   "armorPenetration": 1,
                   "specialRules": []
                 }
@@ -803,7 +486,7 @@
           ]
         },
         {
-          "id": "kPioZ-y",
+          "id": "Y2kvNGhN",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -813,7 +496,7 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "Lh1cGS1Z",
+              "id": "EZ6saXcG",
               "label": "Oath of Wrath (Grounded Speed)",
               "cost": 5,
               "costUnpriced": false,
@@ -836,7 +519,7 @@
           ]
         },
         {
-          "id": "hDGFj48",
+          "id": "daVJ0SAl",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -846,38 +529,17 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "_-wy4ZGdbi",
-              "label": "Shield Leader (Shielded)",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Shield Leader",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Shielded"
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "IJSX1C1pmc",
-              "label": "Volcanic Lizard (Spit Lava (12\u0022, A2, Blast(3), Destructive), Heavy Claws (A3, AP(1)), Armor(3), Fear(1), Strider, Swift, Tough(6))",
-              "cost": 175,
+              "id": "jHuDjUwH",
+              "label": "Volcanic Lizard (Flame Burst (12\u0022, A2, AP(1), Blast(3), Reliable), Heavy Claws (A2, AP(1)), Armor(3), Fear(1), Strider, Swift, Tough(6))",
+              "cost": 205,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Spit Lava",
+                  "name": "Flame Burst",
                   "quantity": 1,
                   "rangeInches": 12,
                   "attacks": 2,
-                  "armorPenetration": 0,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
                       "kind": "coreNumeric",
@@ -886,7 +548,7 @@
                     },
                     {
                       "kind": "core",
-                      "name": "Destructive"
+                      "name": "Reliable"
                     }
                   ]
                 },
@@ -894,7 +556,7 @@
                   "name": "Heavy Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 3,
+                  "attacks": 2,
                   "armorPenetration": 1,
                   "specialRules": []
                 }
@@ -928,30 +590,72 @@
                       "name": "Tough",
                       "numericValue": 6
                     }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Flame Burst",
+                      "quantity": 1,
+                      "rangeInches": 12,
+                      "attacks": 2,
+                      "armorPenetration": 1,
+                      "specialRules": [
+                        {
+                          "kind": "coreNumeric",
+                          "name": "Blast",
+                          "numericValue": 3
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Reliable"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Heavy Claws",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 2,
+                      "armorPenetration": 1,
+                      "specialRules": []
+                    }
                   ]
                 }
               ],
               "modelsGained": 0
             },
             {
-              "id": "FJ_Uo4uaUm",
-              "label": "Magma Drake (Stomp (A4, AP(1)), Magma Claws (A6, Rending), Armor(3), Breath Attack, Fear(2), Regeneration, Strider, Swift, Tough(12))",
-              "cost": 385,
+              "id": "LwC2xiaH",
+              "label": "Magma Drake (Flame Breath (6\u0022, A1, Blast(3), Reliable, Assault), Sharp Claws (A8, Rending), Stomp (A4, AP(1)), Armor(3), Fear(2), Regeneration, Strider, Swift, Tough(12))",
+              "cost": 490,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Stomp",
+                  "name": "Flame Breath",
                   "quantity": 1,
-                  "rangeInches": 0,
-                  "attacks": 4,
-                  "armorPenetration": 1,
-                  "specialRules": []
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
                 },
                 {
-                  "name": "Magma Claws",
+                  "name": "Sharp Claws",
                   "quantity": 1,
                   "rangeInches": 0,
-                  "attacks": 6,
+                  "attacks": 8,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
@@ -959,6 +663,14 @@
                       "name": "Rending"
                     }
                   ]
+                },
+                {
+                  "name": "Stomp",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -971,10 +683,6 @@
                       "kind": "coreNumeric",
                       "name": "Armor",
                       "numericValue": 3
-                    },
-                    {
-                      "kind": "core",
-                      "name": "Breath Attack"
                     },
                     {
                       "kind": "coreNumeric",
@@ -998,6 +706,51 @@
                       "name": "Tough",
                       "numericValue": 12
                     }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Flame Breath",
+                      "quantity": 1,
+                      "rangeInches": 6,
+                      "attacks": 1,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "coreNumeric",
+                          "name": "Blast",
+                          "numericValue": 3
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Reliable"
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Assault"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Sharp Claws",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 8,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "core",
+                          "name": "Rending"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Stomp",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 4,
+                      "armorPenetration": 1,
+                      "specialRules": []
+                    }
                   ]
                 }
               ],
@@ -1006,7 +759,7 @@
           ]
         },
         {
-          "id": "qYlWrrj",
+          "id": "J0HqF1rw",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1016,9 +769,116 @@
           "maxPicks": 1,
           "options": [
             {
-              "id": "ZHbPYOB4xM",
-              "label": "Veteran Seeker (Swift Aura)",
+              "id": "pyWpLMt2",
+              "label": "Smite Forger (Quick Shot Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Smite Forger",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Quick Shot Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "xiUmaaMM",
+              "label": "Grim Lord (Unstoppable in Melee Aura)",
               "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Grim Lord",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable in Melee Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "FisnLxT7DL",
+              "label": "Grudge Bearer (Takedown Strike(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Grudge Bearer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Takedown Strike",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "wBeQPUiw",
+              "label": "Auric Lord (Grounded Protection Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Auric Lord",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Grounded Protection Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "cr_PCBl2",
+              "label": "Ancient Icon Bearer (Fear(2))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Ancient Icon Bearer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Fear",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "gaV1Y7ZL",
+              "label": "Veteran Seeker (Swift Aura)",
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1030,6 +890,811 @@
                     {
                       "kind": "core",
                       "name": "Swift Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v2vdu9x",
+      "name": "Volcanic Leader",
+      "quality": 4,
+      "defense": 5,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 55,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Dual Hand Weapons",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Drakesworn"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "mC8iOIDoVN",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "eF0OFTng6M",
+              "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "JlM8420zhn",
+              "label": "Master Halberd (A3, AP(1), Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "aucwazYCi9",
+              "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "9m3JoWipFf",
+              "label": "Master Great Weapon (A3, AP(4))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Master Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "MN_r3pQgy9",
+          "label": "Replace Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "AkrA9WaCIh",
+              "label": "Volcanic Bombs (12\u0022, A1, Blast(3), Assault), Strike (A1)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Volcanic Bombs",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "q7xrqN_tGq",
+              "label": "Throwing Axes (12\u0022, A1, Assault), Hand Weapon (A3, Parry(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Throwing Axes",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hand Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Parry",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mLDaJ0bvRg",
+              "label": "Dual Throwing Axes (12\u0022, A4, Assault)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Throwing Axes",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "lzrGSXStJj",
+              "label": "Rune Smith Staff (A2, Spell Amplifier)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rune Smith Staff",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Amplifier"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "RXMUz",
+          "label": "Replace Hand Weapon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hand Weapon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "h3Xmi",
+              "label": "Halberd (A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "D5BbhR8ZM9",
+              "label": "Spear (A3, Counter, Brace(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "jz_9a",
+              "label": "Great Weapon (A3, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Weapon",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "TnqMqTA8R_",
+          "label": "Replace Throwing Axes",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Throwing Axes"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "xVnjZANIwL",
+              "label": "Throwing Magma-Axes (9\u0022, A1, AP(1), Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Throwing Magma-Axes",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-6fmVVacHH",
+              "label": "Throwing Lava-Axes (12\u0022, A1, Assault, Demolish)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Throwing Lava-Axes",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Demolish"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "P13XzjA3er",
+          "label": "Replace Volcanic Bombs",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Volcanic Bombs"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "YG-7t1040V",
+              "label": "Giantslayer Harpoons (9\u0022, A1, AP(2), Deadly(3), Assault)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Giantslayer Harpoons",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "RMf1cXfd",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Lh1cGS1Z",
+              "label": "Oath of Wrath (Grounded Speed)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Oath of Wrath",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Grounded Speed"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "28UXeAqdEg",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "IJSX1C1pmc",
+              "label": "Volcanic Lizard (Flame Burst (12\u0022, A2, AP(1), Blast(3), Reliable), Heavy Claws (A2, AP(1)), Armor(3), Fear(1), Strider, Swift, Tough(6))",
+              "cost": 185,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Burst",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                },
+                {
+                  "name": "Heavy Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Volcanic Lizard",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Armor",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Fear",
+                      "numericValue": 1
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Swift"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 6
+                    }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Flame Burst",
+                      "quantity": 1,
+                      "rangeInches": 12,
+                      "attacks": 2,
+                      "armorPenetration": 1,
+                      "specialRules": [
+                        {
+                          "kind": "coreNumeric",
+                          "name": "Blast",
+                          "numericValue": 3
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Reliable"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Heavy Claws",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 2,
+                      "armorPenetration": 1,
+                      "specialRules": []
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "FJ_Uo4uaUm",
+              "label": "Magma Drake (Flame Breath (6\u0022, A1, Blast(3), Reliable, Assault), Sharp Claws (A8, Rending), Stomp (A4, AP(1)), Armor(3), Fear(2), Regeneration, Strider, Swift, Tough(12))",
+              "cost": 445,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Breath",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Sharp Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                },
+                {
+                  "name": "Stomp",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Magma Drake",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Armor",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Fear",
+                      "numericValue": 2
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Swift"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 12
+                    }
+                  ],
+                  "weapons": [
+                    {
+                      "name": "Flame Breath",
+                      "quantity": 1,
+                      "rangeInches": 6,
+                      "attacks": 1,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "coreNumeric",
+                          "name": "Blast",
+                          "numericValue": 3
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Reliable"
+                        },
+                        {
+                          "kind": "core",
+                          "name": "Assault"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Sharp Claws",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 8,
+                      "armorPenetration": 0,
+                      "specialRules": [
+                        {
+                          "kind": "core",
+                          "name": "Rending"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Stomp",
+                      "quantity": 1,
+                      "rangeInches": 0,
+                      "attacks": 4,
+                      "armorPenetration": 1,
+                      "specialRules": []
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "pWVmRL-Q",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "YGBEex3L",
+              "label": "Smite Forger (Quick Shot Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Smite Forger",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Quick Shot Aura"
                     }
                   ]
                 }
@@ -1051,6 +1716,27 @@
                     {
                       "kind": "core",
                       "name": "Grounded Protection Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ZHbPYOB4xM",
+              "label": "Veteran Seeker (Swift Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Veteran Seeker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Swift Aura"
                     }
                   ]
                 }
@@ -1081,7 +1767,7 @@
             {
               "id": "OpPiZ_-w",
               "label": "Rune Smith (Caster(2))",
-              "cost": 35,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1094,27 +1780,6 @@
                       "kind": "coreNumeric",
                       "name": "Caster",
                       "numericValue": 2
-                    }
-                  ]
-                }
-              ],
-              "modelsGained": 0
-            },
-            {
-              "id": "YGBEex3L",
-              "label": "Smite Forger (Quick Shot Aura)",
-              "cost": 35,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
-                {
-                  "name": "Smite Forger",
-                  "quantity": 1,
-                  "rules": [
-                    {
-                      "kind": "core",
-                      "name": "Quick Shot Aura"
                     }
                   ]
                 }
@@ -1133,7 +1798,7 @@
       "baseModelCount": 10,
       "minModels": 10,
       "maxModels": 10,
-      "basePointCost": 120,
+      "basePointCost": 155,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1147,7 +1812,13 @@
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Parry",
+              "numericValue": 1
+            }
+          ]
         }
       ],
       "rules": [
@@ -1161,10 +1832,6 @@
         },
         {
           "kind": "core",
-          "name": "Shielded"
-        },
-        {
-          "kind": "core",
           "name": "Slow"
         },
         {
@@ -1172,10 +1839,22 @@
           "name": "Drakesworn"
         }
       ],
-      "items": [],
+      "items": [
+        {
+          "name": "Combat Shield",
+          "quantity": 10,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Armor",
+              "numericValue": 4
+            }
+          ]
+        }
+      ],
       "sections": [
         {
-          "id": "316g-L-",
+          "id": "UkxBvgO",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1200,24 +1879,9 @@
               "modelsGained": 0
             },
             {
-              "id": "qy-lqs4",
-              "label": "Banner",
-              "cost": 10,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "qOsANqm",
               "label": "Musician",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -1228,11 +1892,26 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "qy-lqs4",
+              "label": "Banner",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "WOPQ0gR",
+          "id": "899dra9",
           "label": "Replace all Hand Weapons",
           "variant": "Replace",
           "affects": "All",
@@ -1244,9 +1923,38 @@
           "maxPicks": 1,
           "options": [
             {
+              "id": "sWrtfVyRSh",
+              "label": "Spear (A1, Counter, Brace(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Brace",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
               "id": "8Uy-mIw",
               "label": "Halberd (A1, Rending)",
-              "cost": 30,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1270,7 +1978,7 @@
           ]
         },
         {
-          "id": "iWXGPi7",
+          "id": "L5cHI-NG",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -1282,7 +1990,7 @@
             {
               "id": "F-tuiNo7",
               "label": "Volcanic Banner (Strider Aura)",
-              "cost": 30,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1312,7 +2020,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 90,
+      "basePointCost": 95,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1354,7 +2062,7 @@
       "items": [],
       "sections": [
         {
-          "id": "316g-L-",
+          "id": "UkxBvgO",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1379,24 +2087,9 @@
               "modelsGained": 0
             },
             {
-              "id": "qy-lqs4",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "qOsANqm",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -1407,11 +2100,93 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "qy-lqs4",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "ExRVWwT",
+          "id": "9YGEy6sOYB",
+          "label": "Replace one Dual Hand Weapons",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Hand Weapons"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "DWc_NgbJi7",
+              "label": "Dual Throwing Axes (12\u0022, A4, Assault)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Throwing Axes",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Y1_QbKLw-v",
+              "label": "Great Berserker Axe (A1, AP(2), Deadly(3), Reliable)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Berserker Axe",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "qc3b9uoEo4",
           "label": "Upgrade one model with any",
           "variant": "Upgrade",
           "affects": "One",
@@ -1422,7 +2197,7 @@
           "options": [
             {
               "id": "2vYGDjz7Cb",
-              "label": "Magmatic Protection (Grounded Reinforcement Aura)",
+              "label": "Magmatic Protection (Grounded Defense Aura)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
@@ -1434,7 +2209,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Grounded Reinforcement Aura"
+                      "name": "Grounded Defense Aura"
                     }
                   ]
                 }
@@ -1444,7 +2219,7 @@
             {
               "id": "Bj4eYQg571",
               "label": "Volcanic Banner (Strider Aura)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1474,7 +2249,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 95,
+      "basePointCost": 110,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1492,6 +2267,11 @@
             {
               "kind": "core",
               "name": "Counter"
+            },
+            {
+              "kind": "coreNumeric",
+              "name": "Brace",
+              "numericValue": 1
             }
           ]
         }
@@ -1521,7 +2301,7 @@
       "items": [],
       "sections": [
         {
-          "id": "0bU61ud",
+          "id": "inbQ23gjQz",
           "label": "Replace all Spears",
           "variant": "Replace",
           "affects": "All",
@@ -1554,7 +2334,71 @@
           ]
         },
         {
-          "id": "EXdCv0d",
+          "id": "7qRQGBFSKV",
+          "label": "Replace one Spear",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Spear"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "qFXHnmoHqE",
+              "label": "Great Hammer (A1, AP(1), Blast(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "yoc5Thv5FP",
+              "label": "Giantslayer Hammer (A1, AP(4), Deadly(3))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Giantslayer Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "rgKAGnRP",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1566,7 +2410,7 @@
             {
               "id": "Z1bp-SLa",
               "label": "Oath of Wrath (Grounded Speed)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1587,7 +2431,7 @@
           ]
         },
         {
-          "id": "k890NIc",
+          "id": "s4M7CW8b",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -1599,7 +2443,7 @@
             {
               "id": "ZobW6PTI",
               "label": "Volcanic Banner (Strider Aura)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1629,7 +2473,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 80,
+      "basePointCost": 115,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1638,15 +2482,20 @@
       },
       "weapons": [
         {
-          "name": "Throwing Axes",
+          "name": "Throwing Magma-Axes",
           "quantity": 5,
-          "rangeInches": 12,
+          "rangeInches": 9,
           "attacks": 1,
           "armorPenetration": 1,
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -1675,7 +2524,7 @@
       "items": [],
       "sections": [
         {
-          "id": "316g-L-",
+          "id": "UkxBvgO",
           "label": "Upgrade up to three models with one",
           "variant": "Upgrade",
           "affects": "Any",
@@ -1700,24 +2549,9 @@
               "modelsGained": 0
             },
             {
-              "id": "qy-lqs4",
-              "label": "Banner",
-              "cost": 5,
-              "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [
-                {
-                  "kind": "core",
-                  "name": "Banner"
-                }
-              ],
-              "itemsGained": [],
-              "modelsGained": 0
-            },
-            {
               "id": "qOsANqm",
               "label": "Musician",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -1728,11 +2562,173 @@
               ],
               "itemsGained": [],
               "modelsGained": 0
+            },
+            {
+              "id": "qy-lqs4",
+              "label": "Banner",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [
+                {
+                  "kind": "core",
+                  "name": "Banner"
+                }
+              ],
+              "itemsGained": [],
+              "modelsGained": 0
             }
           ]
         },
         {
-          "id": "CBH0zsI",
+          "id": "OJ_fDKcpGB",
+          "label": "Replace all Throwing Magma-Axes and Strikes",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Throwing Magma-Axes",
+            "Strikes"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_N8bGIWMlI",
+              "label": "Throwing Lava-Axes (12\u0022, A1, Assault, Demolish), Strike (A1)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Throwing Lava-Axes",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Demolish"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "znYq94XzJU",
+              "label": "Dual Throwing Axes (12\u0022, A2, Assault)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Throwing Axes",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Q1J8vjue8Y",
+          "label": "Replace one Throwing Magma-Axes",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Throwing Magma-Axes"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "g2TD239qyQ",
+              "label": "Volcanic Bombs (12\u0022, A1, Blast(3), Assault)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Volcanic Bombs",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "zDAZhKWjLL",
+              "label": "Giantslayer Harpoons (9\u0022, A1, AP(2), Deadly(3), Assault)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Giantslayer Harpoons",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "taqnmDVr",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -1765,7 +2761,7 @@
           ]
         },
         {
-          "id": "o4x6-Rz",
+          "id": "5HXbLxF6",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -1777,7 +2773,7 @@
             {
               "id": "cjs1MBhS",
               "label": "Volcanic Banner (Strider Aura)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1807,7 +2803,7 @@
       "baseModelCount": 5,
       "minModels": 5,
       "maxModels": 5,
-      "basePointCost": 115,
+      "basePointCost": 120,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -1816,20 +2812,15 @@
       },
       "weapons": [
         {
-          "name": "Lava Long-Shooter",
+          "name": "Magma Long-Shooter",
           "quantity": 5,
           "rangeInches": 18,
           "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Destructive"
-            }
-          ]
+          "armorPenetration": 1,
+          "specialRules": []
         },
         {
-          "name": "Hand Weapon",
+          "name": "Strike",
           "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
@@ -1858,12 +2849,12 @@
       "items": [],
       "sections": [
         {
-          "id": "O9UHuET",
-          "label": "Replace all Lava Long-Shooters",
+          "id": "9fpVdqy",
+          "label": "Replace all Magma Long-Shooters",
           "variant": "Replace",
           "affects": "All",
           "targets": [
-            "Lava Long-Shooters"
+            "Magma Long-Shooters"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -1871,7 +2862,31 @@
           "options": [
             {
               "id": "3pGLw",
-              "label": "Lava Shooter (12\u0022, A2, Destructive)",
+              "label": "Lava Long-Shooter (24\u0022, A1, Demolish)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Lava Long-Shooter",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Demolish"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "qB_ZYP_DI5",
+              "label": "Lava Shooter (12\u0022, A2, Demolish)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
@@ -1884,9 +2899,28 @@
                   "specialRules": [
                     {
                       "kind": "core",
-                      "name": "Destructive"
+                      "name": "Demolish"
                     }
                   ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "lT6DRL8XyP",
+              "label": "Magma Shooter (12\u0022, A2, AP(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Magma Shooter",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
                 }
               ],
               "rulesGained": [],
@@ -1896,12 +2930,12 @@
           ]
         },
         {
-          "id": "AL8mv8E",
-          "label": "Replace one Lava Long-Shooter",
+          "id": "s2ww_Nk",
+          "label": "Replace one Magma Long-Shooter",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Lava Long-Shooter"
+            "Magma Long-Shooter"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -1909,20 +2943,25 @@
           "options": [
             {
               "id": "dQICLWx-uV",
-              "label": "Lava Spray-Shooter (12\u0022, A4, Destructive)",
-              "cost": 20,
+              "label": "Magma Sprayer (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Lava Spray-Shooter",
+                  "name": "Magma Sprayer",
                   "quantity": 1,
                   "rangeInches": 12,
-                  "attacks": 4,
-                  "armorPenetration": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
                   "specialRules": [
                     {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
                       "kind": "core",
-                      "name": "Destructive"
+                      "name": "Reliable"
                     }
                   ]
                 }
@@ -1933,12 +2972,12 @@
             },
             {
               "id": "JkLPAh5",
-              "label": "Magma Bolt-Shooter (18\u0022, A1, AP(2), Deadly(3))",
+              "label": "Volcanic Bolt-Shooter (18\u0022, A1, AP(2), Deadly(3))",
               "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Magma Bolt-Shooter",
+                  "name": "Volcanic Bolt-Shooter",
                   "quantity": 1,
                   "rangeInches": 18,
                   "attacks": 1,
@@ -1959,7 +2998,7 @@
           ]
         },
         {
-          "id": "PsF04IM",
+          "id": "G5Yn46IT",
           "label": "Upgrade one model with any",
           "variant": "Upgrade",
           "affects": "One",
@@ -1970,7 +3009,7 @@
           "options": [
             {
               "id": "bCbaHZ5dx8",
-              "label": "Magmatic Protection (Grounded Reinforcement Aura)",
+              "label": "Magmatic Protection (Grounded Defense Aura)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
@@ -1982,7 +3021,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Grounded Reinforcement Aura"
+                      "name": "Grounded Defense Aura"
                     }
                   ]
                 }
@@ -1992,7 +3031,7 @@
             {
               "id": "GpCobOmF",
               "label": "Volcanic Banner (Strider Aura)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2022,7 +3061,7 @@
       "baseModelCount": 3,
       "minModels": 3,
       "maxModels": 3,
-      "basePointCost": 155,
+      "basePointCost": 185,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.5748031,
@@ -2031,17 +3070,30 @@
       },
       "weapons": [
         {
-          "name": "Fire Strikes",
+          "name": "Spit Fire",
           "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 1,
           "specialRules": [
             {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
               "kind": "core",
-              "name": "Rending"
+              "name": "Reliable"
             }
           ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
         }
       ],
       "rules": [
@@ -2064,26 +3116,66 @@
         }
       ],
       "items": [],
-      "sections": []
+      "sections": [
+        {
+          "id": "PJhNd3w1bH",
+          "label": "Replace all Spit Fires and Strikes",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Spit Fires",
+            "Strikes"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XI-M4g2FEi",
+              "label": "Flame Strikes (A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Strikes",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     },
     {
-      "id": "LEkb1SH",
-      "name": "Volcanic Lizard",
+      "id": "1v7Mor3",
+      "name": "Great Fire Elemental",
       "quality": 4,
-      "defense": 3,
+      "defense": 5,
       "baseModelCount": 1,
       "minModels": 1,
       "maxModels": 1,
-      "basePointCost": 145,
+      "basePointCost": 125,
       "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 2.047244,
-        "heightInches": 3.543307
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
       },
       "weapons": [
         {
-          "name": "Spit Lava",
+          "name": "Spit Flames",
           "quantity": 1,
           "rangeInches": 12,
           "attacks": 2,
@@ -2096,7 +3188,178 @@
             },
             {
               "kind": "core",
-              "name": "Destructive"
+              "name": "Reliable"
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Drakesworn"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "OmZOrYu-3t",
+          "label": "Replace Spit Flames and Strike",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Spit Flames",
+            "Strike"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "p6el21Rbrm",
+              "label": "Flame Strikes (A6, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Strikes",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ODOKfbZGDd",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_hzbLw950p",
+              "label": "Doom Call (Fatigue Debuff)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Doom Call",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fatigue Debuff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "8hB06_fgsN",
+              "label": "Flying Embers (9\u0022, A3, Rending, Assault)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flying Embers",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LEkb1SH",
+      "name": "Volcanic Lizard",
+      "quality": 4,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 160,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "weapons": [
+        {
+          "name": "Flame Burst",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
             }
           ]
         },
@@ -2104,7 +3367,7 @@
           "name": "Heavy Claws",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 2,
           "armorPenetration": 1,
           "specialRules": []
         }
@@ -2136,12 +3399,12 @@
       "items": [],
       "sections": [
         {
-          "id": "ldIN2qp",
-          "label": "Replace Spit Lava",
+          "id": "PFttWdrdQT",
+          "label": "Replace Flame Burst",
           "variant": "Replace",
           "affects": "One",
           "targets": [
-            "Spit Lava"
+            "Flame Burst"
           ],
           "maxApplications": 0,
           "minPicks": 0,
@@ -2149,25 +3412,24 @@
           "options": [
             {
               "id": "ypL74Ko8PZ",
-              "label": "Spit Flames (12\u0022, A2, Blast(3), Reliable)",
-              "cost": 10,
+              "label": "Lava Burst (18\u0022, A6, Reliable, Demolish)",
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
-                  "name": "Spit Flames",
+                  "name": "Lava Burst",
                   "quantity": 1,
-                  "rangeInches": 12,
-                  "attacks": 2,
+                  "rangeInches": 18,
+                  "attacks": 6,
                   "armorPenetration": 0,
                   "specialRules": [
                     {
-                      "kind": "coreNumeric",
-                      "name": "Blast",
-                      "numericValue": 3
+                      "kind": "core",
+                      "name": "Reliable"
                     },
                     {
                       "kind": "core",
-                      "name": "Reliable"
+                      "name": "Demolish"
                     }
                   ]
                 }
@@ -2179,19 +3441,19 @@
           ]
         },
         {
-          "id": "5lSG1lF",
-          "label": "Upgrade with",
+          "id": "GXHKYPQI",
+          "label": "Upgrade with any",
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 1,
+          "maxPicks": 2,
           "options": [
             {
-              "id": "_hzbLw950p",
+              "id": "s1KGGgXf",
               "label": "Doom Call (Fatigue Debuff)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2208,96 +3470,38 @@
                 }
               ],
               "modelsGained": 0
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "1v7Mor3",
-      "name": "Great Fire Elemental",
-      "quality": 4,
-      "defense": 5,
-      "baseModelCount": 1,
-      "minModels": 1,
-      "maxModels": 1,
-      "basePointCost": 115,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "weapons": [
-        {
-          "name": "Flame Attacks",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 0,
-          "specialRules": [
+            },
             {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "rules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 1
-        },
-        {
-          "kind": "core",
-          "name": "Furious"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Drakesworn"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration"
-        }
-      ],
-      "items": [],
-      "sections": [
-        {
-          "id": "5lSG1lF",
-          "label": "Upgrade with",
-          "variant": "Upgrade",
-          "affects": "One",
-          "targets": [],
-          "maxApplications": 0,
-          "minPicks": 0,
-          "maxPicks": 1,
-          "options": [
-            {
-              "id": "_hzbLw950p",
-              "label": "Doom Call (Fatigue Debuff)",
+              "id": "SrLSBX3up2",
+              "label": "Fire Blast (6\u0022, A1, Blast(3), Reliable, Assault)",
               "cost": 20,
               "costUnpriced": false,
-              "weaponsGained": [],
-              "rulesGained": [],
-              "itemsGained": [
+              "weaponsGained": [
                 {
-                  "name": "Doom Call",
+                  "name": "Fire Blast",
                   "quantity": 1,
-                  "rules": [
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
                     {
                       "kind": "core",
-                      "name": "Fatigue Debuff"
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
                     }
                   ]
                 }
               ],
+              "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2321,15 +3525,16 @@
       },
       "weapons": [
         {
-          "name": "Magma Claws",
+          "name": "Drake Claws",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Rending"
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
             }
           ]
         },
@@ -2343,10 +3548,6 @@
         }
       ],
       "rules": [
-        {
-          "kind": "core",
-          "name": "Breath Attack"
-        },
         {
           "kind": "coreNumeric",
           "name": "Fear",
@@ -2371,72 +3572,122 @@
         }
       ],
       "items": [],
-      "sections": []
+      "sections": [
+        {
+          "id": "0vWCzhRvbr",
+          "label": "Replace Drake Claws",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Drake Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "eXQPqNnPYN",
+              "label": "Sharp Claws (A8, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sharp Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "JZTWEbUYvr",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Qt2P6MRPkJ",
+              "label": "Flame Breath (6\u0022, A1, Blast(3), Reliable, Assault)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame Breath",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Ld8kQl0_dj",
+              "label": "Flying Embers (9\u0022, A3, Rending, Assault)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flying Embers",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Assault"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
     }
   ],
   "ruleDefinitions": [
-    {
-      "name": "Destructive",
-      "passive": [
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
-          },
-          "effect": {
-            "kind": "perHitSaveModifier",
-            "onRollValue": 6,
-            "delta": -4
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        }
-      ],
-      "activated": [],
-      "scope": "Weapon",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "An unmodified 6 to hit gives the attack AP(\u002B4)."
-    },
-    {
-      "name": "Breath Attack",
-      "passive": [],
-      "activated": [
-        {
-          "triggerHook": "Activation_OnBeforeAttackAction",
-          "cost": {
-            "kind": "oncePerActivation"
-          },
-          "targetSelector": {
-            "rangeInches": 6,
-            "minCount": 1,
-            "maxCount": 1,
-            "targetAffinity": "Foe",
-            "requireLineOfSight": true,
-            "requiredToken": null,
-            "singleModel": false,
-            "requiredRule": null
-          },
-          "effect": {
-            "kind": "dealHits",
-            "count": 1,
-            "withRules": [
-              "Blast(3)"
-            ],
-            "armorPenetration": 1
-          },
-          "availableWhen": {
-            "kind": "always"
-          },
-          "label": ""
-        }
-      ],
-      "scope": "Unit",
-      "engineArgumentCount": 0,
-      "valence": "Positive",
-      "description": "Once per activation, before attacking, one enemy unit within 6\u0022 in line of sight takes 1 hit with Blast(3) and AP(1)."
-    },
     {
       "name": "Melee Slayer",
       "passive": [
@@ -2465,7 +3716,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model charges, its weapons get AP(\u002B2) against units where most models have Tough 3\u002B."
+      "description": "When charging, this model\u0027s weapons get AP(\u002B2) if most models in the target have Tough(3) or higher."
     },
     {
       "name": "Swift",
@@ -2487,7 +3738,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Ignores the movement penalty for Difficult terrain (as Strider)."
+      "description": "This model may ignore the Slow rule."
     },
     {
       "name": "Swift Aura",
@@ -2509,7 +3760,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Swift."
+      "description": "This model and its unit get Swift."
     },
     {
       "name": "Strider Aura",
@@ -2531,7 +3782,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Strider."
+      "description": "This model and its unit get Strider."
     },
     {
       "name": "Banner",
@@ -2539,7 +3790,7 @@
         {
           "hookID": "Morale_OnPreMoraleTest",
           "condition": {
-            "kind": "always"
+            "kind": "moraleTestFromShootingOrMelee"
           },
           "effect": {
             "kind": "rollModifier",
@@ -2554,7 +3805,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit gets \u002B1 to morale test rolls."
+      "description": "This model and its unit get \u002B1 to Morale Test rolls triggered by shooting or melee."
     },
     {
       "name": "Musician",
@@ -2609,7 +3860,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit moves \u002B1 inch on Advance, Rush and Charge actions."
+      "description": "This model and its unit move \u002B1\u0022 when using move actions."
     },
     {
       "name": "Sergeant",
@@ -2617,13 +3868,12 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
+            "kind": "always"
           },
           "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
-            "count": 1
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
           },
           "lifetime": "ThisAttack",
           "seat": "Actor"
@@ -2633,7 +3883,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this model attacks, unmodified results of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
+      "description": "This model gets AP(\u002B1) when attacking."
     },
     {
       "name": "Armor",
@@ -2658,10 +3908,10 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+      "description": "Counts as having Defense X\u002B."
     },
     {
-      "name": "Grounded Reinforcement Aura",
+      "name": "Grounded Defense Aura",
       "passive": [
         {
           "hookID": "Lifecycle_OnUnitCreated",
@@ -2670,7 +3920,7 @@
           },
           "effect": {
             "kind": "aura",
-            "ruleName": "Grounded Reinforcement"
+            "ruleName": "Grounded Defense"
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -2680,7 +3930,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Grounded Reinforcement."
+      "description": "This model and its unit get Grounded Defense."
     },
     {
       "name": "Fatigue Debuff",
@@ -2699,7 +3949,8 @@
             "requireLineOfSight": true,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "moraleTestThen",
@@ -2716,7 +3967,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which must take a morale test. If failed, it becomes fatigued."
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which must take a Morale Test. If failed, it becomes Fatigued."
     },
     {
       "name": "Quick Shot Aura",
@@ -2757,7 +4008,8 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
             "kind": "extraAttack",
@@ -2779,7 +4031,63 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per game, when it\u0027s this model\u0027s turn to attack in melee, it may make one extra attack at Quality 2\u002B with AP(2), Deadly(3), and Takedown."
+      "description": "Once per game, when it\u0027s this model\u0027s turn to strike in melee, it may make X attacks at Quality 2\u002B with AP(2), Deadly(3), and Takedown."
+    },
+    {
+      "name": "Demolish",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "targetMostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Ignores Cover, and when attacking units with most models within 1\u0022 of terrain, this weapon gets AP(\u002B1)."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
     },
     {
       "name": "Drakesworn",
@@ -2798,15 +4106,17 @@
             "requireLineOfSight": false,
             "requiredToken": null,
             "singleModel": false,
-            "requiredRule": null
+            "requiredRule": null,
+            "maxCountFromArgument": false
           },
           "effect": {
-            "kind": "triggeredMove",
+            "kind": "repositionOnDeploy",
             "maxInches": 9,
-            "isOptional": true
+            "enemyClearanceInches": 9,
+            "exemptEnemyRule": "Vanguard"
           },
           "availableWhen": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "mostModelsHaveThisRule"
           },
           "label": ""
         }
@@ -2814,7 +4124,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per game, immediately after deploying, this unit may move up to 9 inches."
+      "description": "After this model is deployed, it may be placed anywhere fully within 9\u0022 of its position, over 9\u0022 away from non-Vanguard enemy units."
     },
     {
       "name": "Grounded Speed",
@@ -2828,14 +4138,8 @@
               "actionType": "Advance"
             },
             "right": {
-              "kind": "and",
-              "left": {
-                "kind": "allModelsHaveThisRule"
-              },
-              "right": {
-                "kind": "mostModelsWithinInchesOfTerrain",
-                "distanceInches": 1
-              }
+              "kind": "mostModelsWithinInchesOfTerrain",
+              "distanceInches": 1
             }
           },
           "effect": {
@@ -2856,14 +4160,8 @@
               "actionType": "Rush"
             },
             "right": {
-              "kind": "and",
-              "left": {
-                "kind": "allModelsHaveThisRule"
-              },
-              "right": {
-                "kind": "mostModelsWithinInchesOfTerrain",
-                "distanceInches": 1
-              }
+              "kind": "mostModelsWithinInchesOfTerrain",
+              "distanceInches": 1
             }
           },
           "effect": {
@@ -2884,14 +4182,8 @@
               "actionType": "Charge"
             },
             "right": {
-              "kind": "and",
-              "left": {
-                "kind": "allModelsHaveThisRule"
-              },
-              "right": {
-                "kind": "mostModelsWithinInchesOfTerrain",
-                "distanceInches": 1
-              }
+              "kind": "mostModelsWithinInchesOfTerrain",
+              "distanceInches": 1
             }
           },
           "effect": {
@@ -2908,7 +4200,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "If most models in this unit are within 1 inch of terrain when it activates, it moves \u002B2 inches on Advance and \u002B4 inches on Rush and Charge this activation."
+      "description": "If most models in this unit are within 1\u0022 of terrain when activated, this model may move \u002B2\u0022 on Advance, and \u002B4\u0022 on Rush/Charge during this activation."
     },
     {
       "name": "Grounded Protection",
@@ -2918,7 +4210,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "mostModelsWithinInchesOfTerrain",
@@ -2937,7 +4229,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "If most models in this unit are within 1 inch of terrain, roll one die for each wound the unit takes. On a 5\u002B the wound is ignored."
+      "description": "If a unit where most models have this rule has most of them within 1\u0022 of terrain, when they take wounds roll one die per wound, and on a 5\u002B it is ignored."
     },
     {
       "name": "Grounded Protection Aura",
@@ -2959,17 +4251,17 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model and its unit gain Grounded Protection."
+      "description": "This model and its unit get Grounded Protection."
     },
     {
-      "name": "Grounded Reinforcement",
+      "name": "Grounded Defense",
       "passive": [
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "mostModelsHaveThisRule"
             },
             "right": {
               "kind": "mostModelsWithinInchesOfTerrain",
@@ -2989,7 +4281,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "If most models in this unit are within 1 inch of terrain, this unit gets \u002B1 to defense rolls."
+      "description": "If a unit where most models have this rule has most of them within 1\u0022 of terrain, they get \u002B1 to Defense rolls."
     },
     {
       "name": "Quick Shot",
@@ -3022,10 +4314,11 @@
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
-        "requireLineOfSight": false,
+        "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "moraleTestThen",
@@ -3045,13 +4338,14 @@
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": true,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
         "count": 2,
         "withRules": [],
-        "armorPenetration": 0
+        "armorPenetration": 1
       }
     },
     {
@@ -3065,7 +4359,8 @@
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
@@ -3077,14 +4372,15 @@
       "name": "Suffocating Ashes",
       "threshold": 2,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 9,
         "minCount": 1,
         "maxCount": 2,
         "targetAffinity": "Foe",
-        "requireLineOfSight": true,
+        "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
@@ -3097,14 +4393,15 @@
       "name": "Seismic Shift",
       "threshold": 3,
       "target": {
-        "rangeInches": 12,
+        "rangeInches": 18,
         "minCount": 1,
         "maxCount": 3,
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "addRule",
@@ -3116,20 +4413,21 @@
       "name": "Fire Storm",
       "threshold": 3,
       "target": {
-        "rangeInches": 6,
+        "rangeInches": 24,
         "minCount": 1,
         "maxCount": 1,
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
         "singleModel": false,
-        "requiredRule": null
+        "requiredRule": null,
+        "maxCountFromArgument": false
       },
       "effect": {
         "kind": "dealHits",
-        "count": 9,
+        "count": 6,
         "withRules": [
-          "Destructive"
+          "Demolish"
         ],
         "armorPenetration": 0
       }
