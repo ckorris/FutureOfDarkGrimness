@@ -392,6 +392,65 @@ beyond the expected legacy skips, the 3.6 share link imports and plays, and `mas
 his sign-off on #441 F1-F9 (and the release-notes placeholder that goes with it), the optional clean-up of the 5 new
 warnings, a pass 2 of the scripted checks on the final branch, and #444 step 8 (merge, `v0.4.0` tag, CI release).
 
+## Pass 2 - 2026-10-31 (evening)
+
+Run by the orchestrator on `feature/opr-3.6` in both repos at super `d4d0c36` / engine `f7a56c53`, which is the FINAL
+branch for the release: it contains everything master gained while the upgrade ran (`origin/master` super `46072fd` /
+engine `971a1f2c` - #448 holographic menu background, the #449-#457 replay plan, #458 rejected-reply fixes), merged
+INTO the branch first so that the result verified here is byte-for-byte what the master merge will produce. Every
+build and test ran with `-p:UseSharedCompilation=false`. Scratch logs: the session scratchpad `pass2/` folder (not
+kept). No production file, data, book or army was touched by the runs; master itself is untouched.
+
+**Verdicts.** **13 green / 0 red / 1 amber**; the one amber is the owed GUI hand-verify list (point 9, now 25
+lines). No new item filed. Releasable on Chris's "merge".
+
+| # | Check | Verdict |
+|---|-------|---------|
+| 1 | Engine + app suites, full build, warnings vs master | GREEN - engine 4488 / 1 skipped, app 4143, 0 errors; 208 warnings both sides; distinct texts 161 vs master 165 (1 new: `BraceRuleIntegrationTests.cs` CS1998; 5 gone with StormStage) |
+| 2 | Headless smoke (EOF army) | GREEN - exit 0, `Game result:` |
+| 3 | Shipped `--rule-coverage` | GREEN - Dead 0 |
+| 4 | `--validate-rules` (GDF + AoF supplements) | GREEN - OK 401, no problems |
+| 5 | 88 books at `OPR v3.6.0` | GREEN - 88 / 88 |
+| 6 | Share-link import gate | GREEN by test (`OprListImporterTests`, unchanged since pass 1) |
+| 7 | 28 scenarios `--make-scenario` + headless `--all-ai` | GREEN - 28/28; all 28 compiled saves carry `"RulesVersion": "OPR v3.6.0"` (#444 D2) |
+| 8 | Legacy 3.5 fixtures + Q5 notice | GREEN by test (`Legacy35ArmyTests` in the app suite) |
+| 9 | Consolidated GUI hand-verify list | AMBER - owed to Chris (25 lines, section 9 of pass 1) |
+| 10 | Docs numbers vs code | GREEN - unchanged since pass 1; README / release notes / plan rule 6 updated for the #444 D2 save notice |
+| A1 | #440: `--retrofit-editable armies FdgLab/armies --dry-run` | GREEN - 0 converted / 40 already editable / 0 left alone |
+| A2 | #440: all 40 catalog lists `--headless --army`, 0 `[rules]` | GREEN - 40/40 |
+| A3 | Scenario probes `425-artillery-hold` (Cumbersome lines) and `446-activate-in-dangerous` (4 Dangerous tests), unstamped save -> legacy line | GREEN |
+| A6 | Repo state: branch == origin in both repos, pointer == engine HEAD, `origin/master` contained in both, local master untouched, no `v0.4.0` tag yet | GREEN |
+| A8 | #441 forks | GREEN - all nine ruled 2026-10-31 (F1/F2/F4/F5/F6/F7 built, F3/F8/F9 status quo) |
+
+### Pass 2 notes
+
+- **Master merge, done on the branch side.** The engine merge had one textual conflict (`DefinePathStage.cs`: #458's
+  `BuildRequest()` local function vs #425's `advanceOnlyRule` / `noShootAfterMoveRule` arguments - both kept) and one
+  semantic one: `CumbersomeRuleIntegrationTests.MoveLongerThanTheAdvance_IsRejectedByTheAuthoritativeCheck` expected a
+  `RequestResponseInvalidException`, which #458 replaced with re-ask-then-hold. Rewritten as
+  `..._ThenTheUnitHolds` (asked `ValidatedRequesting.MaxAttempts` times, model position unchanged, `HasMoved` true),
+  mirroring #458's own test rewrites; `ResolvingMoveRequester` gained a `Calls` counter. Superproject conflicts: the
+  submodule pointer (set to the engine merge `f7a56c53`) and `WorkItems/Reconciliations.md` (master's 448 / 449-457 /
+  458 entries kept, the branch's "448 mirrored here" line dropped); the auto-merged index kept a duplicate "448
+  reserved" line that was removed (448 is archived on master). Engine merge `f7a56c53`, superproject merge `d4d0c36`.
+- **The build hang has a cause.** The #441 F4 agent's one-off test-suite hang and the F6 agent's six-hour `dotnet
+  build` were both a Roslyn `VBCSCompiler` server process spinning at 100% CPU (one was ~2 days old). `dotnet
+  build-server shutdown` cleared it. Long unattended runs should pass `-p:UseSharedCompilation=false`, as every run in
+  this pass did.
+- **One void sweep.** The first catalog / scenario sweep of this pass overlapped a rebuild of the same binary (the
+  master warning comparison) and failed with exit 127 (binary absent) from the 15th list on. Re-run alone: 40/40 and
+  28/28. Recorded so nobody reads the first log as a red.
+- **Warning texts.** Pass 1 counted 5 new texts with line numbers; with line numbers dropped (file + code + message)
+  4 of them collapse into texts master already has, leaving 1 genuinely new text (`BraceRuleIntegrationTests.cs`
+  CS1998) against 5 gone. Net -4 distinct texts.
+
+### Pass 2 releasability
+
+Every scripted exit criterion is green on the final branch. What remains is Chris's: the 25-line GUI hand-verify
+list (section 9) and the word "merge". #444 step 8 then is: engine `git checkout master && git merge --no-ff
+feature/opr-3.6` (fast-forward-shaped: master is already contained), push; superproject the same (the pointer lands on
+the engine merge commit); `git tag v0.4.0 && git push --tags`.
+
 ## Notes
 
 - 2026-10-31: **pass 1 run** (section above). 14 green / 0 red / 4 amber; no item filed, none reopened.
