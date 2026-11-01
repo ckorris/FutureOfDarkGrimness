@@ -200,6 +200,9 @@ if (importArmyIdx >= 0 && importArmyIdx + 2 < args.Length)
                 Console.WriteLine($"  excluded (not in bundled book): {name} ({pts} pts)");
             foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
                 Console.WriteLine($"  base cost drift: {name} - bundled book {ours} pts, Army Forge {theirs} pts");
+            // #438 D3: the picks our compiler could not land (Army Forge bills them; we apply and charge nothing).
+            foreach (UnappliedReplace unapplied in session.UnappliedReplaces)
+                Console.WriteLine($"  not applied: {unapplied.Message}");
             if (session.UnpricedUpgradeCount > 0)
                 Console.WriteLine($"  {session.UnpricedUpgradeCount} selected upgrade(s) have no published " +
                     "Army Forge price - our total counts them as free (#219)");

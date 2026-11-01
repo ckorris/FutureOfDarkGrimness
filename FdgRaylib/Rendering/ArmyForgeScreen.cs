@@ -518,12 +518,13 @@ public class ArmyForgeScreen : IAppScreen
                     UiText.Colored(RedText, $"Excluded (not in bundled book): {name} ({pts} pts)");
                 foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
                     UiText.Colored(YellowText, $"{name}: our Forge {ours} pts, Army Forge {theirs} pts");
-                if (StaleReplaceNote(session) is { } note)
-                {
-                    ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled]);
-                    UiText.Wrapped(note);
-                    ImGui.PopStyleColor();
-                }
+                // #438 D3: the picks our compiler could not land, one grey line each ("Assault Brothers: 'Replace one
+                // Heavy Pistol and Hand Weapon -> Heavy Pistol, Energy Hammer' not applied (needs 1 more Hand
+                // Weapon)"); the generic #262 note below only for an under-priced unit no such line explains.
+                ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled]);
+                foreach (UnappliedReplace unapplied in session.UnappliedReplaces) UiText.Wrapped(unapplied.Message);
+                if (StaleReplaceNote(session) is { } note) UiText.Wrapped(note);
+                ImGui.PopStyleColor();
                 ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
                 foreach (string warning in session.Warnings) UiText.Wrapped(warning);
                 ImGui.PopStyleColor();
@@ -588,6 +589,7 @@ public class ArmyForgeScreen : IAppScreen
         string hint = $"Imported '{session.Selections.Name}' into the Forge";
         if (session.ExcludedUnits.Count > 0) hint += $" - {session.ExcludedUnits.Count} unit(s) excluded";
         if (session.UnitPointsDeltas.Count > 0) hint += $" - {session.UnitPointsDeltas.Count} points delta(s) vs Army Forge";
+        if (session.UnappliedReplaces.Count > 0) hint += $" - {session.UnappliedReplaces.Count} upgrade(s) not applied";
         SetStatus(EForgeStatusKind.Success, hint);
 
         // #307: an import IS a successful adopt - the screen now holds this list, so a later Save is
@@ -621,9 +623,13 @@ public class ArmyForgeScreen : IAppScreen
     /// almost always a stale "Replace X" pick whose X the unit no longer has - Army Forge still bills it, our
     /// compiler applies nothing and charges nothing (#262, ruled an upstream Army Forge quirk) - and without this
     /// it reads as our bug. Null when no unit is under. ASCII.
+    /// <para>#438 D3: yields to the specific lines - an under-priced unit that has its own
+    /// <see cref="OprForgeSessionResult.UnappliedReplaces"/> entry is already explained by name, so the generic note
+    /// stays only for an under-priced unit no line covers.</para>
     /// </summary>
     internal static string? StaleReplaceNote(OprForgeSessionResult session) =>
-        session.UnitPointsDeltas.Any(d => d.OurPoints < d.TheirPoints)
+        session.UnitPointsDeltas.Any(d => d.OurPoints < d.TheirPoints
+                                          && !UnappliedReplace.ForUnit(session.UnappliedReplaces, d.Name).Any())
             ? "A unit below Army Forge's price usually carries a stale \"Replace X\" pick for gear it no longer has " +
               "(common on older lists). Army Forge still charges it; it changes nothing on the table, so our Forge " +
               "charges nothing. Re-pick that unit's upgrades on Army Forge to clear it."
@@ -1472,6 +1478,9 @@ public class ArmyForgeScreen : IAppScreen
             lines.Add($"    Units: {drift.SavedUnitCount} -> {drift.RebuiltUnitCount}");
         if (drift.DroppedUnits.Count > 0)
             lines.Add("    Dropped: " + string.Join(", ", drift.DroppedUnits));
+        // #438 D3: the picks the rebuild could not land - the usual reason the rebuilt price is the lower one.
+        foreach (UnappliedReplace unapplied in drift.UnappliedReplaces)
+            lines.Add("    " + unapplied.Message);
 
         return $"{fileName} came from Army Forge. It PLAYS with Army Forge's own numbers, but the Forge edits "
             + "it by rebuilding it against the bundled book - and the two do not match.\n\n"

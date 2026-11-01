@@ -444,6 +444,144 @@ public class ArmyForge36Tests
         Assert.That(ArmyForgeScreen.StaleReplaceNote(new OprForgeSessionResult { Selections = new BuilderList() }), Is.Null);
     }
 
+    // #438 D3 (owner request 2026-11-01): the reconciliation names each Replace our compiler could not land, and the
+    // generic #262 note yields to it - it stays only for an under-priced unit no specific line explains.
+    [Test]
+    public void TheStaleReplaceNote_YieldsToASpecificUnappliedLine_ForThatUnit()
+    {
+        static OprForgeSessionResult Under(params string[] explainedUnits)
+        {
+            var session = new OprForgeSessionResult { Selections = new BuilderList() };
+            session.UnitPointsDeltas.Add(("Retributors", 105, 125));
+            foreach (string unit in explainedUnits)
+                session.UnappliedReplaces.Add(new UnappliedReplace
+                {
+                    UnitName = unit, SectionLabel = "Replace one Heavy Pistol and Hand Weapon",
+                    Gains = "Heavy Pistol, Energy Hammer", Shortfall = 1, Missing = new[] { "1 more Hand Weapon" },
+                });
+            return session;
+        }
+
+        Assert.That(ArmyForgeScreen.StaleReplaceNote(Under("Retributors")), Is.Null,
+            "the specific line explains the only under-priced unit");
+        Assert.That(ArmyForgeScreen.StaleReplaceNote(Under("Assault Brothers")), Is.Not.Null,
+            "a line for ANOTHER unit does not explain this one");
+        Assert.That(ArmyForgeScreen.StaleReplaceNote(Under()), Is.Not.Null, "no specific line: the generic note stays");
+        Assert.That(Under("Retributors").UnappliedReplaces.Single().Message, Is.EqualTo(
+            "Retributors: 'Replace one Heavy Pistol and Hand Weapon -> Heavy Pistol, Energy Hammer' not applied " +
+            "(needs 1 more Hand Weapon)"));
+    }
+
+    // The same lines reach the reopen drift modal, under the points line, and stay ASCII.
+    [Test]
+    public void TheReopenDriftMessage_ListsTheUnappliedReplaces()
+    {
+        var drift = new EditableSessionDrift
+        {
+            SavedUnitCount = 1, RebuiltUnitCount = 1, SavedPoints = 185, RebuiltPoints = 175,
+            DroppedUnits = Array.Empty<string>(),
+            UnappliedReplaces = new[]
+            {
+                new UnappliedReplace
+                {
+                    UnitName = "Assault Brothers", SectionLabel = "Replace one Heavy Pistol and Hand Weapon",
+                    Gains = "Great Chain-Sword", Shortfall = 1, Missing = new[] { "1 more Heavy Pistol" },
+                },
+            },
+        };
+
+        string message = ArmyForgeScreen.ReopenDriftMessage("Imported.fdgarmy", drift);
+
+        Assert.That(message, Does.Contain("    Points: 185 -> 175\n    Assault Brothers: 'Replace one Heavy Pistol and " +
+            "Hand Weapon -> Great Chain-Sword' not applied (needs 1 more Heavy Pistol)"));
+        Assert.That(message.All(c => c < 0x80), Is.True, "ASCII");
+    }
+
+    // Shipped data, all 88 books: a naked unit never produces a line; a Replace bought ALONE produces exactly one when
+    // (and only when) the base loadout lacks its target, naming the unit and the section; and every #438 D3
+    // pass-through pair (a counted swap above a combo that hands the target back) bought together produces none - the
+    // Energy Hammer lands silently because it lands. The lone-pick count is a census canary like
+    // ForgeCrossSectionReplaceShippedDataTests': those sections are fed by a later section (or an item's weapon), so
+    // a player who takes only the swap sees the line - which is the right outcome, not a defect.
+    [Test]
+    public void ShippedBooks_ProduceALine_ExactlyWhenAReplaceCannotLand()
+    {
+        var wrong = new List<string>();
+        int lonePicks = 0, loneLines = 0, passThroughPairs = 0;
+
+        foreach (BookFile book in AllBooks())
+        foreach (RosterUnit roster in book.Units)
+        {
+            string where = $"{book.Name}/{roster.Name}";
+            var naked = new BuilderUnit { RosterUnitId = roster.Id, ModelCount = roster.BaseModelCount };
+            var nakedLines = new List<UnappliedReplace>();
+            ListCompiler.CompileUnitDetailed(book, naked, nakedLines);
+            if (nakedLines.Count > 0) wrong.Add($"{where}: naked unit reports {nakedLines[0].Message}");
+
+            foreach (UpgradeSection section in roster.Sections)
+            {
+                if (section.Variant != UpgradeVariant.Replace || section.Options.Count == 0) continue;
+                UpgradeOption option = section.Options[0];
+                lonePicks++;
+
+                bool all = section.Affects == UpgradeAffects.All;
+                int pool = section.Targets.Count == 0 ? 0 : all
+                    ? section.Targets.Max(t => ListCompiler.AvailableApplications(roster.Weapons, roster.Items, new[] { t }))
+                    : ListCompiler.AvailableApplications(roster.Weapons, roster.Items, section.Targets);
+
+                var lines = new List<UnappliedReplace>();
+                var bu = new BuilderUnit { RosterUnitId = roster.Id, ModelCount = roster.BaseModelCount };
+                bu.Choices.Add(new UpgradeChoice { SectionId = section.Id, OptionId = option.Id, Count = 1 });
+                ListCompiler.CompileUnitDetailed(book, bu, lines);
+
+                if (pool > 0 && lines.Count > 0) wrong.Add($"{where}: '{section.Label}' lands but reports {lines[0].Message}");
+                if (pool == 0 && lines.Count != 1) wrong.Add($"{where}: '{section.Label}' cannot land but reports {lines.Count} line(s)");
+                if (pool == 0 && lines.Count == 1)
+                {
+                    loneLines++;
+                    UnappliedReplace line = lines[0];
+                    if (line.UnitName != roster.Name || line.SectionLabel != section.Label || line.Missing.Count == 0
+                        || !line.Message.All(c => c < 0x80))
+                        wrong.Add($"{where}: malformed line {line.Message}");
+                }
+
+                // The D3 pairs: this counted swap, at its whole pool, plus each pass-through option below it.
+                if (all || pool == 0) continue;
+                foreach (UpgradeSection claimant in roster.Sections)
+                foreach (UpgradeOption claimantOption in claimant.Options)
+                {
+                    if (!ListCompiler.CountedSwapYieldsTo(roster, section.Id, claimant, claimantOption)) continue;
+                    if (ListCompiler.AvailableApplications(roster.Weapons, roster.Items, claimant.Targets) == 0) continue;
+                    // A claimant that also consumes a shared target it does NOT hand back genuinely competes for it
+                    // (Wood Elves' Treeman Elder: two "Replace Weaving Branch and Strangle-Root" sections on one
+                    // branch) - one of the two cannot land whatever the order, and the line says which. Not a pair.
+                    if (section.Targets.Any(t => claimant.Targets.Any(ct => ListCompiler.TargetMatches(ct, t))
+                            && !claimantOption.WeaponsGained.Any(w => ListCompiler.TargetMatches(w.Name, t))
+                            && !claimantOption.ItemsGained.Any(i => ListCompiler.TargetMatches(i.Name, t))))
+                        continue;
+                    passThroughPairs++;
+
+                    var both = new List<UnappliedReplace>();
+                    var pair = new BuilderUnit { RosterUnitId = roster.Id, ModelCount = roster.BaseModelCount };
+                    pair.Choices.Add(new UpgradeChoice { SectionId = claimant.Id, OptionId = claimantOption.Id, Count = 1 });
+                    pair.Choices.Add(new UpgradeChoice { SectionId = section.Id, OptionId = option.Id,
+                        Count = section.Affects == UpgradeAffects.One ? 1
+                            : section.MaxApplications > 0 ? Math.Min(pool, section.MaxApplications) : pool });
+                    ListCompiler.CompileUnitDetailed(book, pair, both);
+                    if (both.Count > 0)
+                        wrong.Add($"{where}: '{section.Label}' + '{claimant.Label}' ({claimantOption.Label}) reports {both[0].Message}");
+                }
+            }
+        }
+
+        Assert.That(wrong, Is.Empty, string.Join("\n  ", wrong));
+        Assert.That(passThroughPairs, Is.GreaterThan(0), "the Assault Brothers / Havoc Destroyers shape is in the corpus");
+        // Census 2026-11-01 over the 88 shipped 3.6.0 books: 3662 Replace sections, 841 of which cannot land on the
+        // base loadout alone (their target comes from another section - "Replace Sgt. Hand Weapon" below the Sergeant
+        // upgrade that grants it) and so report one line each; 51 D3 pass-through pairs, none reporting.
+        Assert.That((lonePicks, loneLines, passThroughPairs), Is.EqualTo((3662, 841, 51)), "census");
+    }
+
     // After the 3.6 re-bake the import preview's "RULES NOT ENFORCED" list and the launch-time "N special rules ...
     // are not implemented" line (#168) are empty for a clean 3.6 list: every roster unit of every shipped book,
     // imported the way a share link is (units + the bundled book's definitions attached), resolves every rule.
