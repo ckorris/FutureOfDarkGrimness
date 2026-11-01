@@ -21,6 +21,14 @@ lobby-settings confirm fires on blocking problems, the layout logic and wording 
 smoke stays green.
 
 ## Notes
+- 2026-11-01 (later still): Merged `origin/master` at `083b2c2` (the OPR 3.6 upgrade, engine `1096f5e`) into
+  both branches - the owner's 3.6 list failed the 3.5 gate. Conflicts: `LobbyScreen.cs` (master's #440/#441
+  roster notices vs the import popup's Draw - both kept, notices first) and `Reconciliations.md` (both entries
+  kept; the replay branch's 459 now collides with master's 459 and is the one to yield). Owner also asked for
+  the version-mismatch message's semicolon to become a period ("...is at OPR version 3.5.3. This game supports
+  3.6.x. ..."); engine message + 3 tests that pin it. Verified: engine 4526 passed / 1 skipped, app 4157
+  passed, headless smoke exit 0, and a live `--import-army` of a real share list (High Elf Fleets, 9 units,
+  2465 pts) passed the 3.6 gate.
 - 2026-11-01 (owner review): Owner switched the row to **4x1 with short labels, Import first**
   (`Import | Load | Random | Remove`), and asked to take width from Color. Done: the 2x2 grid, the sized
   small-button overload and the vertical centring are gone, row height is back to the pre-#460 +25% padding,

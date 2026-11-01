@@ -422,7 +422,7 @@ public class ArmyForge36Tests
 
         string? text = ArmyForgeScreen.ImportErrorText(failed);
 
-        Assert.That(text, Is.EqualTo($"Army book 'Battle Brothers' is at OPR version {version}; this game supports 3.6.x. {remedy}"));
+        Assert.That(text, Is.EqualTo($"Army book 'Battle Brothers' is at OPR version {version}. This game supports 3.6.x. {remedy}"));
         Assert.That(text!.All(c => c < 0x80), Is.True, "ASCII");
         Assert.That(ArmyForgeScreen.ImportErrorText(System.Threading.Tasks.Task.CompletedTask), Is.Null, "a result is no error");
     }
