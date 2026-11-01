@@ -162,4 +162,23 @@ public class PlacementHistoryTests
         Assert.That(history.TryUndo(placed, out _), Is.True);
         Assert.That(placed, Is.Empty);
     }
+
+    [Test]
+    public void UndoAutoPlace_RestoresWhatWasPlacedBefore_InOneStep()
+    {
+        // #458: Auto-place replaces the whole list; one undo must put back exactly the prior placement.
+        var history = new PlacementHistory<int>();
+        var placed = new List<PlacedObjectEntry<int>> { Entry(1f, 1f, new Float2(1f, 0f)) };
+
+        history.RecordAutoPlace(placed);
+        placed.Clear();
+        placed.AddRange(new[] { Entry(5f, 5f), Entry(6f, 5f), Entry(7f, 5f) });
+
+        Assert.That(history.TryUndo(placed, out float? rotation), Is.True);
+        Assert.That(rotation, Is.Null);
+        Assert.That(placed, Has.Count.EqualTo(1));
+        Assert.That(placed[0].Position.x, Is.EqualTo(1f));
+        Assert.That(placed[0].Facing, Is.EqualTo(new Float2(1f, 0f)));
+        Assert.That(history.CanUndo, Is.False);
+    }
 }

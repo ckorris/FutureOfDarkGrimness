@@ -21,6 +21,13 @@ public static class OptionsPanel
         ImGui.Checkbox("Show all tokens (T, dev)", ref ViewSettings.ShowAllTokens);
         ImGui.Checkbox("Victory fireworks", ref ViewSettings.ShowVictoryFireworks);
 
+        // #448: the main menu's war table. Still draws one frame and then costs nothing.
+        ImGui.TextUnformatted("Menu background");
+        ImGui.SetNextItemWidth(-1f);
+        int menuBackground = (int)ViewSettings.MenuBackground;
+        if (ImGui.Combo("##menubackground", ref menuBackground, "Animated\0Still\0Off\0"))
+            ViewSettings.MenuBackground = (FdgRaylib.Config.EMenuBackground)menuBackground;
+
         // #344: how long a settled dice panel stays up. Shown as a multiplier of the tuned default rather
         // than in seconds - the actual lifetime varies with the roll (a panel carrying modifier chips
         // already lingers longer), so a seconds figure would be a lie for most rolls.
