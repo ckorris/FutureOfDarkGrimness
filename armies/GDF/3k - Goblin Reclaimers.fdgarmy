@@ -5,111 +5,258 @@
     "pointsLimit": 3000,
     "units": [
       {
+        "rosterUnitId": "F8XwFML",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "FrtCkJc",
+            "optionId": "_Z12uyk",
+            "count": 1
+          },
+          {
+            "sectionId": "x2gdIwPf",
+            "optionId": "wzLlfc3UF7",
+            "count": 1
+          }
+        ],
+        "id": "bc1",
+        "joinsUnitId": "sh1",
+        "combinedWithId": null
+      },
+      {
         "rosterUnitId": "u6NKuTu",
         "modelCount": 10,
-        "choices": [],
-        "id": "7dd3789f77cb4eceb202e57ebc7f1e02",
+        "choices": [
+          {
+            "sectionId": "V2mAO",
+            "optionId": "ewFMy",
+            "count": 2
+          },
+          {
+            "sectionId": "J7Q-OgHj8J",
+            "optionId": "KTxABr9zbd",
+            "count": 1
+          },
+          {
+            "sectionId": "UdQZ1",
+            "optionId": "MYqHu",
+            "count": 1
+          }
+        ],
+        "id": "sh1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "u6NKuTu",
         "modelCount": 10,
-        "choices": [],
-        "id": null,
+        "choices": [
+          {
+            "sectionId": "V2mAO",
+            "optionId": "Fjjm0",
+            "count": 2
+          },
+          {
+            "sectionId": "J7Q-OgHj8J",
+            "optionId": "KTxABr9zbd",
+            "count": 1
+          }
+        ],
+        "id": "sh2",
         "joinsUnitId": null,
-        "combinedWithId": "7dd3789f77cb4eceb202e57ebc7f1e02"
+        "combinedWithId": "sh1"
+      },
+      {
+        "rosterUnitId": "F8XwFML",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "FrtCkJc",
+            "optionId": "_Z12uyk",
+            "count": 1
+          },
+          {
+            "sectionId": "x2gdIwPf",
+            "optionId": "wzLlfc3UF7",
+            "count": 1
+          }
+        ],
+        "id": "bc2",
+        "joinsUnitId": "sh3",
+        "combinedWithId": null
       },
       {
         "rosterUnitId": "u6NKuTu",
         "modelCount": 10,
-        "choices": [],
-        "id": "afb4e19dcd96467998b8abf1ed718687",
+        "choices": [
+          {
+            "sectionId": "V2mAO",
+            "optionId": "ewFMy",
+            "count": 2
+          },
+          {
+            "sectionId": "J7Q-OgHj8J",
+            "optionId": "KTxABr9zbd",
+            "count": 1
+          },
+          {
+            "sectionId": "UdQZ1",
+            "optionId": "MYqHu",
+            "count": 1
+          }
+        ],
+        "id": "sh3",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "u6NKuTu",
         "modelCount": 10,
-        "choices": [],
-        "id": null,
+        "choices": [
+          {
+            "sectionId": "V2mAO",
+            "optionId": "Fjjm0",
+            "count": 2
+          },
+          {
+            "sectionId": "J7Q-OgHj8J",
+            "optionId": "KTxABr9zbd",
+            "count": 1
+          }
+        ],
+        "id": "sh4",
         "joinsUnitId": null,
-        "combinedWithId": "afb4e19dcd96467998b8abf1ed718687"
+        "combinedWithId": "sh3"
       },
       {
-        "rosterUnitId": "u6NKuTu",
-        "modelCount": 10,
-        "choices": [],
-        "id": "235cac0a5a1444ec904370cd0a18280c",
-        "joinsUnitId": null,
+        "rosterUnitId": "F8XwFML",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "FrtCkJc",
+            "optionId": "ZP5Xs",
+            "count": 1
+          },
+          {
+            "sectionId": "x2gdIwPf",
+            "optionId": "5M_Dp-Vz",
+            "count": 1
+          }
+        ],
+        "id": "bc3",
+        "joinsUnitId": "st1",
         "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "u6NKuTu",
-        "modelCount": 10,
-        "choices": [],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": "235cac0a5a1444ec904370cd0a18280c"
       },
       {
         "rosterUnitId": "2tFZ--L",
         "modelCount": 10,
-        "choices": [],
-        "id": "20ab5157c701488eaac9515453f1bbd7",
+        "choices": [
+          {
+            "sectionId": "tMYvR",
+            "optionId": "dCkEAL4ECb",
+            "count": 2
+          }
+        ],
+        "id": "st1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "2tFZ--L",
         "modelCount": 10,
-        "choices": [],
-        "id": null,
+        "choices": [
+          {
+            "sectionId": "tMYvR",
+            "optionId": "CeUQSyR7gN",
+            "count": 2
+          }
+        ],
+        "id": "st2",
         "joinsUnitId": null,
-        "combinedWithId": "20ab5157c701488eaac9515453f1bbd7"
+        "combinedWithId": "st1"
       },
       {
-        "rosterUnitId": "2tFZ--L",
-        "modelCount": 10,
-        "choices": [],
-        "id": "291631fc67b5489b8195dbcec507dd57",
-        "joinsUnitId": null,
+        "rosterUnitId": "E8xb3jd",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "Kh9KBU6l",
+            "optionId": "lhtNUdXa",
+            "count": 1
+          }
+        ],
+        "id": "dwc",
+        "joinsUnitId": "dw",
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "2tFZ--L",
-        "modelCount": 10,
-        "choices": [],
-        "id": null,
+        "rosterUnitId": "UUu1IPo",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "J7Q-OgHj8J",
+            "optionId": "KTxABr9zbd",
+            "count": 1
+          }
+        ],
+        "id": "dw",
         "joinsUnitId": null,
-        "combinedWithId": "291631fc67b5489b8195dbcec507dd57"
+        "combinedWithId": null
       },
       {
         "rosterUnitId": "2nLGvXr",
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "F10mBRHV",
-            "optionId": "vWprXQ5i",
+            "sectionId": "h48OD6_T6c",
+            "optionId": "TAIVq1yt9I",
             "count": 1
           },
           {
-            "sectionId": "OV7KVSpK",
-            "optionId": "gS-yYa4y",
+            "sectionId": "F10mBRHV",
+            "optionId": "_aQjJgG-oo",
             "count": 1
-          },
+          }
+        ],
+        "id": "bk1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "2nLGvXr",
+        "modelCount": 5,
+        "choices": [
           {
             "sectionId": "h48OD6_T6c",
             "optionId": "TAIVq1yt9I",
             "count": 1
           },
           {
-            "sectionId": "EiLXz",
-            "optionId": "2o8kY",
+            "sectionId": "F10mBRHV",
+            "optionId": "_aQjJgG-oo",
+            "count": 1
+          },
+          {
+            "sectionId": "s3M5AFos",
+            "optionId": "U0-7YOVPXy",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "bk2",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "uzV2zZS",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "J7Q-OgHj8J",
+            "optionId": "KTxABr9zbd",
+            "count": 1
+          }
+        ],
+        "id": "kt",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -117,15 +264,7 @@
         "rosterUnitId": "6qSZUrQ",
         "modelCount": 1,
         "choices": [],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "6qSZUrQ",
-        "modelCount": 1,
-        "choices": [],
-        "id": null,
+        "id": "mw",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -135,21 +274,16 @@
         "choices": [
           {
             "sectionId": "ZmVkSNtf",
-            "optionId": "z4OlCS193w",
+            "optionId": "q2-PgCAa",
             "count": 1
           },
           {
             "sectionId": "fMayV",
             "optionId": "jlzVI",
             "count": 1
-          },
-          {
-            "sectionId": "uw2Zs",
-            "optionId": "Zp5Pm",
-            "count": 1
           }
         ],
-        "id": null,
+        "id": "tank",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -159,7 +293,7 @@
         "choices": [
           {
             "sectionId": "DnVphE6M",
-            "optionId": "mkCnkGKv",
+            "optionId": "vXPW6WWL",
             "count": 1
           },
           {
@@ -168,45 +302,7 @@
             "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "RJMV2f5",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "K7TTu",
-            "optionId": "6X3ky",
-            "count": 1
-          },
-          {
-            "sectionId": "UdQZ1",
-            "optionId": "8AQiM",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "uzV2zZS",
-        "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "W26WHkEp",
-            "optionId": "BGE-djIj",
-            "count": 3
-          },
-          {
-            "sectionId": "J7Q-OgHj8J",
-            "optionId": "KTxABr9zbd",
-            "count": 1
-          }
-        ],
-        "id": null,
+        "id": "art",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -8344,47 +8440,59 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
-      "name": "Shooter Mob",
-      "id": "7dd3789f77cb4eceb202e57ebc7f1e02",
-      "joinsUnitId": null,
-      "modelCount": 20,
+      "name": "Boss Champ",
+      "id": "bc1",
+      "joinsUnitId": "sh1",
+      "modelCount": 1,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 5,
-      "defense": 6,
+      "quality": 4,
+      "defense": 5,
       "specialRules": [
         {
           "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
           "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
         }
       ],
       "weapons": [
         {
-          "name": "Scrap Gun",
-          "quantity": 20,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 20,
+          "name": "Weirdo Staff",
+          "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
+          "attacks": 2,
           "armorPenetration": 0,
-          "specialRules": []
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
         }
       ],
-      "pointCost": 220
+      "pointCost": 105
     },
     {
       "name": "Shooter Mob",
-      "id": "afb4e19dcd96467998b8abf1ed718687",
+      "id": "sh1",
       "joinsUnitId": null,
       "modelCount": 20,
       "base": {
@@ -8399,12 +8507,20 @@
         {
           "kind": "core",
           "name": "Mischievous"
+        },
+        {
+          "kind": "core",
+          "name": "Bravery Aura"
+        },
+        {
+          "kind": "core",
+          "name": "Good Shot"
         }
       ],
       "weapons": [
         {
           "name": "Scrap Gun",
-          "quantity": 20,
+          "quantity": 16,
           "rangeInches": 24,
           "attacks": 1,
           "armorPenetration": 0,
@@ -8417,13 +8533,85 @@
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Plas-Blob Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": []
+        },
+        {
+          "name": "Chucker Rifle",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 220
+      "pointCost": 340
+    },
+    {
+      "name": "Boss Champ",
+      "id": "bc2",
+      "joinsUnitId": "sh3",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Weirdo Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
+        }
+      ],
+      "pointCost": 105
     },
     {
       "name": "Shooter Mob",
-      "id": "235cac0a5a1444ec904370cd0a18280c",
+      "id": "sh3",
       "joinsUnitId": null,
       "modelCount": 20,
       "base": {
@@ -8438,12 +8626,20 @@
         {
           "kind": "core",
           "name": "Mischievous"
+        },
+        {
+          "kind": "core",
+          "name": "Bravery Aura"
+        },
+        {
+          "kind": "core",
+          "name": "Good Shot"
         }
       ],
       "weapons": [
         {
           "name": "Scrap Gun",
-          "quantity": 20,
+          "quantity": 16,
           "rangeInches": 24,
           "attacks": 1,
           "armorPenetration": 0,
@@ -8456,13 +8652,84 @@
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Plas-Blob Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": []
+        },
+        {
+          "name": "Chucker Rifle",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 220
+      "pointCost": 340
+    },
+    {
+      "name": "Boss Champ",
+      "id": "bc3",
+      "joinsUnitId": "st1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Enhanced Mischievous Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dual Killer Claws",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "claw-rend",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        }
+      ],
+      "pointCost": 85
     },
     {
       "name": "Storm Mob",
-      "id": "20ab5157c701488eaac9515453f1bbd7",
+      "id": "st1",
       "joinsUnitId": null,
       "modelCount": 20,
       "base": {
@@ -8495,62 +8762,164 @@
         },
         {
           "name": "Hand Weapon",
-          "quantity": 20,
+          "quantity": 16,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Killer Fist",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": []
+        },
+        {
+          "name": "Killer Saw",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "chain-blade",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
         }
       ],
-      "pointCost": 250
+      "pointCost": 310
     },
     {
-      "name": "Storm Mob",
-      "id": "291631fc67b5489b8195dbcec507dd57",
-      "joinsUnitId": null,
-      "modelCount": 20,
+      "name": "Death Walker Champ",
+      "id": "dwc",
+      "joinsUnitId": "dw",
+      "modelCount": 1,
       "base": {
         "shape": "Circle",
-        "diameterInches": 0.984252,
+        "diameterInches": 1.968504,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 5,
-      "defense": 6,
+      "quality": 4,
+      "defense": 3,
       "specialRules": [
         {
           "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
           "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
         }
       ],
       "weapons": [
         {
-          "name": "Pistol",
-          "quantity": 20,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
+          "name": "Death Saw",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 4,
+          "effectSet": "chain-blade",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Assault"
+              "name": "Imprecise"
             }
           ]
         },
         {
-          "name": "Hand Weapon",
-          "quantity": 20,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
+          "name": "Atom-Fuser Cannon",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
         }
       ],
-      "pointCost": 250
+      "pointCost": 170
+    },
+    {
+      "name": "Death Walkers",
+      "id": "dw",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "core",
+          "name": "Good Shot"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Rocket Launcher",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "missile-rocket",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Death Saw",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "chain-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Imprecise"
+            }
+          ]
+        }
+      ],
+      "pointCost": 180
     },
     {
       "name": "Scout Bikers",
-      "id": null,
+      "id": "bk1",
       "joinsUnitId": null,
       "modelCount": 5,
       "base": {
@@ -8573,16 +8942,12 @@
         {
           "kind": "core",
           "name": "Vanguard"
-        },
-        {
-          "kind": "core",
-          "name": "Instinctive"
         }
       ],
       "weapons": [
         {
           "name": "Pistol",
-          "quantity": 5,
+          "quantity": 4,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
@@ -8595,119 +8960,165 @@
         },
         {
           "name": "Hand Weapon",
-          "quantity": 4,
+          "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Killer Fist",
+          "name": "Burst Plas-Blob Pistol",
           "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
+          "rangeInches": 12,
+          "attacks": 2,
           "armorPenetration": 2,
-          "effectSet": "crude-melee",
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         }
       ],
-      "pointCost": 100
+      "pointCost": 95
     },
     {
-      "name": "Mega Walker",
-      "id": null,
+      "name": "Scout Bikers",
+      "id": "bk2",
       "joinsUnitId": null,
-      "modelCount": 1,
+      "modelCount": 5,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
-      "quality": 4,
-      "defense": 2,
+      "quality": 5,
+      "defense": 6,
       "specialRules": [
         {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 2
+          "kind": "core",
+          "name": "Mischievous"
         },
         {
           "kind": "core",
-          "name": "Fearless"
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Vanguard"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 4,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Hand Weapon",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Burst Chucker Pistol",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        }
+      ],
+      "pointCost": 105
+    },
+    {
+      "name": "Killer Tanks",
+      "id": "kt",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
         },
         {
           "kind": "core",
           "name": "Mischievous"
         },
         {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
+          "kind": "core",
+          "name": "Good Shot"
         }
       ],
       "weapons": [
         {
-          "name": "Heavy Machinegun",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 6,
-          "armorPenetration": 1,
-          "specialRules": []
-        },
-        {
-          "name": "Plas-Blob Cannon",
-          "quantity": 1,
-          "rangeInches": 30,
+          "name": "Rocket Launcher",
+          "quantity": 3,
+          "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 2,
+          "effectSet": "missile-rocket",
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Blast",
+              "name": "Deadly",
               "numericValue": 3
             }
           ]
         },
         {
-          "name": "Frag-Tosser Mortar",
-          "quantity": 1,
-          "rangeInches": 24,
+          "name": "Overrun",
+          "quantity": 3,
+          "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "mortar-artillery",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Indirect"
-            }
-          ]
-        },
-        {
-          "name": "Death Saw",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 4,
-          "effectSet": "chain-blade",
+          "effectSet": "titan-impact",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Imprecise"
+              "name": "Thrust"
             }
           ]
         }
       ],
-      "pointCost": 410
+      "pointCost": 190
     },
     {
       "name": "Mega Walker",
-      "id": null,
+      "id": "mw",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8799,7 +9210,7 @@
     },
     {
       "name": "Super Tank",
-      "id": null,
+      "id": "tank",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8827,11 +9238,6 @@
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 12
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Transport",
-          "numericValue": 11
         }
       ],
       "weapons": [
@@ -8850,16 +9256,15 @@
           ]
         },
         {
-          "name": "Atom-Smasher Cannon",
+          "name": "Chucker Cannon",
           "quantity": 1,
           "rangeInches": 30,
           "attacks": 9,
           "armorPenetration": 0,
-          "effectSet": "gauss-particle",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Hazardous"
+              "name": "Rending"
             }
           ]
         },
@@ -8872,11 +9277,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 455
+      "pointCost": 435
     },
     {
       "name": "Artillery Gun",
-      "id": null,
+      "id": "art",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8921,11 +9326,11 @@
           "specialRules": []
         },
         {
-          "name": "Chucker Mortar",
+          "name": "Plas-Blob Mortar",
           "quantity": 1,
           "rangeInches": 24,
           "attacks": 2,
-          "armorPenetration": 0,
+          "armorPenetration": 2,
           "effectSet": "mortar-artillery",
           "specialRules": [
             {
@@ -8936,129 +9341,11 @@
             {
               "kind": "core",
               "name": "Indirect"
-            },
-            {
-              "kind": "core",
-              "name": "Rending"
             }
           ]
         }
       ],
-      "pointCost": 125
-    },
-    {
-      "name": "Boss Mob",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 5,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Mischievous"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration Aura"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Boss Pistol",
-          "quantity": 5,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Surge"
-            }
-          ]
-        },
-        {
-          "name": "Hand Weapon",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 125
-    },
-    {
-      "name": "Killer Tanks",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.968504,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Mischievous"
-        },
-        {
-          "kind": "core",
-          "name": "Good Shot"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Overrun",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Heavy Machinegun",
-          "quantity": 3,
-          "rangeInches": 30,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 205
+      "pointCost": 130
     }
   ],
   "defaultRangedEffectSet": "ballistic-slug",

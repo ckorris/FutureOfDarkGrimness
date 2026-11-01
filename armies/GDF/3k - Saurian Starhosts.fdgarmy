@@ -9,13 +9,18 @@
         "modelCount": 1,
         "choices": [
           {
+            "sectionId": "gggsShU",
+            "optionId": "0VNo95VbwP",
+            "count": 1
+          },
+          {
             "sectionId": "0aUG-hDK",
-            "optionId": "hluryzSt",
+            "optionId": "fWElA1me",
             "count": 1
           }
         ],
-        "id": "vrXvp",
-        "joinsUnitId": "DoRoU",
+        "id": "frog",
+        "joinsUnitId": "sw1",
         "combinedWithId": null
       },
       {
@@ -28,7 +33,7 @@
             "count": 1
           }
         ],
-        "id": "DoRoU",
+        "id": "sw1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -42,16 +47,74 @@
             "count": 1
           }
         ],
-        "id": "_1JJD",
+        "id": "sw2",
         "joinsUnitId": null,
-        "combinedWithId": "DoRoU"
+        "combinedWithId": "sw1"
       },
       {
         "rosterUnitId": "d5xE-v0",
         "modelCount": 1,
-        "choices": [],
-        "id": "1mFwm",
-        "joinsUnitId": "pcBdQ",
+        "choices": [
+          {
+            "sectionId": "VWma5ZYweT",
+            "optionId": "St24R4bljV",
+            "count": 1
+          },
+          {
+            "sectionId": "XPqzbAZ_",
+            "optionId": "1GDlchmL",
+            "count": 1
+          }
+        ],
+        "id": "gator",
+        "joinsUnitId": "sw3",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "d3_323-",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "Ssgra6M",
+            "optionId": "6iuwtF4",
+            "count": 1
+          }
+        ],
+        "id": "sw3",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "d3_323-",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "Ssgra6M",
+            "optionId": "6iuwtF4",
+            "count": 1
+          }
+        ],
+        "id": "sw4",
+        "joinsUnitId": null,
+        "combinedWithId": "sw3"
+      },
+      {
+        "rosterUnitId": "RpQgbmd",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "ySVlgUN0",
+            "optionId": "m7YeLbBJ",
+            "count": 1
+          },
+          {
+            "sectionId": "MqEj0RAg",
+            "optionId": "mXws4pKO",
+            "count": 1
+          }
+        ],
+        "id": "vet",
+        "joinsUnitId": "sg1",
         "combinedWithId": null
       },
       {
@@ -67,9 +130,14 @@
             "sectionId": "bbXr-",
             "optionId": "3d8Dx",
             "count": 1
+          },
+          {
+            "sectionId": "-uIqtdB",
+            "optionId": "aSO8wKf",
+            "count": 1
           }
         ],
-        "id": "pcBdQ",
+        "id": "sg1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -81,16 +149,39 @@
             "sectionId": "I5dh_",
             "optionId": "J8SWq",
             "count": 1
-          },
+          }
+        ],
+        "id": "sg2",
+        "joinsUnitId": null,
+        "combinedWithId": "sg1"
+      },
+      {
+        "rosterUnitId": "sd-Y62t",
+        "modelCount": 5,
+        "choices": [
           {
-            "sectionId": "bbXr-",
-            "optionId": "3d8Dx",
+            "sectionId": "I5dh_",
+            "optionId": "J8SWq",
             "count": 1
           }
         ],
-        "id": "pcBdQ-combined",
+        "id": "sg3",
         "joinsUnitId": null,
-        "combinedWithId": "pcBdQ"
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "sd-Y62t",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "I5dh_",
+            "optionId": "J8SWq",
+            "count": 1
+          }
+        ],
+        "id": "sg4",
+        "joinsUnitId": null,
+        "combinedWithId": "sg3"
       },
       {
         "rosterUnitId": "9-8Xg6h",
@@ -107,7 +198,7 @@
             "count": 1
           }
         ],
-        "id": "y3udB",
+        "id": "rr1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -126,9 +217,9 @@
             "count": 1
           }
         ],
-        "id": "y3udB-combined",
+        "id": "rr2",
         "joinsUnitId": null,
-        "combinedWithId": "y3udB"
+        "combinedWithId": "rr1"
       },
       {
         "rosterUnitId": "w3V96GX",
@@ -136,16 +227,11 @@
         "choices": [
           {
             "sectionId": "brZdxynR",
-            "optionId": "ClHI7lK9",
-            "count": 1
-          },
-          {
-            "sectionId": "8fJhNM1YVP",
-            "optionId": "cXvzmaDQoe",
+            "optionId": "U3wpI7Oix-",
             "count": 1
           }
         ],
-        "id": "Q5QdO",
+        "id": "rip",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -154,12 +240,17 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "WI5nTAI6A7",
-            "optionId": "8M4Qsmpww3",
+            "sectionId": "Y41yDFp",
+            "optionId": "tw2RCLctUe",
+            "count": 1
+          },
+          {
+            "sectionId": "F2nt1QIp9F",
+            "optionId": "RkkGMHUBJc",
             "count": 1
           }
         ],
-        "id": "XZMZt",
+        "id": "anky",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -167,79 +258,29 @@
         "rosterUnitId": "_jdnOUr",
         "modelCount": 1,
         "choices": [],
-        "id": "b4Avp",
+        "id": "tric",
         "joinsUnitId": null,
         "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "sd-Y62t",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "I5dh_",
-            "optionId": "J8SWq",
-            "count": 1
-          }
-        ],
-        "id": "SPv27",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "sd-Y62t",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "I5dh_",
-            "optionId": "J8SWq",
-            "count": 1
-          }
-        ],
-        "id": "SPv27-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "SPv27"
       },
       {
         "rosterUnitId": "_XxIYpx",
         "modelCount": 3,
         "choices": [],
-        "id": "LJq3q",
+        "id": "snip",
         "joinsUnitId": null,
         "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "d3_323-",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "BPcXFyf",
-            "optionId": "VKk18cA",
-            "count": 1
-          }
-        ],
-        "id": "EGdOD",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "d3_323-",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "BPcXFyf",
-            "optionId": "VKk18cA",
-            "count": 1
-          }
-        ],
-        "id": "y3Cqx",
-        "joinsUnitId": null,
-        "combinedWithId": "EGdOD"
       },
       {
         "rosterUnitId": "uSPAW_e",
         "modelCount": 3,
-        "choices": [],
-        "id": "JC3SC",
+        "choices": [
+          {
+            "sectionId": "r-0qYBwG",
+            "optionId": "TNp_-i-_",
+            "count": 1
+          }
+        ],
+        "id": "vult",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -7334,8 +7375,8 @@
   "units": [
     {
       "name": "Frog-Mage",
-      "id": "vrXvp",
-      "joinsUnitId": "DoRoU",
+      "id": "frog",
+      "joinsUnitId": "sw1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -7349,7 +7390,7 @@
         {
           "kind": "coreNumeric",
           "name": "Caster",
-          "numericValue": 3
+          "numericValue": 4
         },
         {
           "kind": "coreNumeric",
@@ -7376,32 +7417,29 @@
         {
           "kind": "core",
           "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Enhanced Primal Buff"
         }
       ],
       "weapons": [
         {
-          "name": "Great Magic Pulse",
+          "name": "Frog-Mage Staff",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 8,
+          "attacks": 4,
           "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Unstoppable"
+              "name": "Spell Amplifier"
             }
           ]
         }
       ],
-      "pointCost": 260
+      "pointCost": 255
     },
     {
       "name": "Saurian Warriors",
-      "id": "DoRoU",
+      "id": "sw1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -7444,8 +7482,8 @@
     },
     {
       "name": "Gator Veteran",
-      "id": "1mFwm",
-      "joinsUnitId": "pcBdQ",
+      "id": "gator",
+      "joinsUnitId": "sw3",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -7477,12 +7515,16 @@
         {
           "kind": "core",
           "name": "Primal"
+        },
+        {
+          "kind": "core",
+          "name": "Rapid Charge Aura"
         }
       ],
       "weapons": [
         {
           "name": "Heavy Mace",
-          "quantity": 2,
+          "quantity": 1,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 1,
@@ -7503,13 +7545,154 @@
           "armorPenetration": 1,
           "effectSet": "titan-impact",
           "specialRules": []
+        },
+        {
+          "name": "Power Knuckles",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": []
         }
       ],
-      "pointCost": 140
+      "pointCost": 160
+    },
+    {
+      "name": "Saurian Warriors",
+      "id": "sw3",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 8,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Hand Weapon",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Spike Shooter",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "pointCost": 260
+    },
+    {
+      "name": "Saurian Veteran",
+      "id": "vet",
+      "joinsUnitId": "sg1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "core",
+          "name": "Rapid Charge Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Flamer Pistol",
+          "quantity": 1,
+          "rangeInches": 6,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "flame-jet",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Power Mace",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 105
     },
     {
       "name": "Saurian Guardians",
-      "id": "pcBdQ",
+      "id": "sg1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -7541,6 +7724,61 @@
       "weapons": [
         {
           "name": "Hammer",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": []
+        },
+        {
+          "name": "Power Hammer",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 260
+    },
+    {
+      "name": "Saurian Guardians",
+      "id": "sg3",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "core",
+          "name": "Fortified"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Hammer",
           "quantity": 10,
           "rangeInches": 0,
           "attacks": 1,
@@ -7549,11 +7787,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 260
+      "pointCost": 240
     },
     {
       "name": "Raptor Riders",
-      "id": "y3udB",
+      "id": "rr1",
       "joinsUnitId": null,
       "modelCount": 6,
       "base": {
@@ -7630,7 +7868,7 @@
     },
     {
       "name": "Ripjawdactyl Riders",
-      "id": "Q5QdO",
+      "id": "rip",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -7654,44 +7892,32 @@
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 3
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Armor",
-          "numericValue": 4
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Heavy Impact",
-          "numericValue": 2
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Precision Target",
-          "numericValue": 1
         }
       ],
       "weapons": [
         {
-          "name": "Burst Shock Pistol",
+          "name": "Shock Rifle",
           "quantity": 3,
-          "rangeInches": 12,
-          "attacks": 2,
+          "rangeInches": 18,
+          "attacks": 3,
           "armorPenetration": 2,
           "effectSet": "gauss-particle",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
         }
       ],
-      "pointCost": 220
+      "pointCost": 150
     },
     {
       "name": "Ankylosaurus",
-      "id": "XZMZt",
+      "id": "anky",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -7724,20 +7950,16 @@
         {
           "kind": "core",
           "name": "Primal"
-        },
-        {
-          "kind": "core",
-          "name": "Bane Mark"
         }
       ],
       "weapons": [
         {
-          "name": "Heavy Beam Cannon",
+          "name": "Heavy Fusion-Blaster Cannon",
           "quantity": 1,
           "rangeInches": 24,
           "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "laser-beam",
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -7746,29 +7968,31 @@
             },
             {
               "kind": "core",
-              "name": "Precise"
-            },
-            {
-              "kind": "core",
-              "name": "Puncture"
+              "name": "Anti-Regen"
             }
           ]
         },
         {
-          "name": "Stomp",
+          "name": "Mace Tail",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 1,
-          "effectSet": "titan-impact",
-          "specialRules": []
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "crude-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
         }
       ],
-      "pointCost": 440
+      "pointCost": 450
     },
     {
       "name": "Triceratops",
-      "id": "b4Avp",
+      "id": "tric",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -7831,48 +8055,8 @@
       "pointCost": 275
     },
     {
-      "name": "Saurian Guardians",
-      "id": "SPv27",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Primal"
-        },
-        {
-          "kind": "core",
-          "name": "Fortified"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Hammer",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 2,
-          "effectSet": "crude-melee",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 240
-    },
-    {
       "name": "Gecko Snipers",
-      "id": "LJq3q",
+      "id": "snip",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -7927,51 +8111,8 @@
       "pointCost": 100
     },
     {
-      "name": "Saurian Warriors",
-      "id": "EGdOD",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Primal"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Carbine",
-          "quantity": 10,
-          "rangeInches": 18,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 240
-    },
-    {
       "name": "Vulturedactyls",
-      "id": "JC3SC",
+      "id": "vult",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -7995,6 +8136,10 @@
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Vanguard"
         }
       ],
       "weapons": [
@@ -8013,7 +8158,7 @@
           ]
         }
       ],
-      "pointCost": 95
+      "pointCost": 105
     }
   ],
   "defaultRangedEffectSet": "gauss-particle",

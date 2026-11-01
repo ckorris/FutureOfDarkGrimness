@@ -10,11 +10,16 @@
         "choices": [
           {
             "sectionId": "lZTAfiWnX3",
-            "optionId": "-TjSfYPtrg",
+            "optionId": "_BcpX4qoUl",
             "count": 1
+          },
+          {
+            "sectionId": "IQd7evV",
+            "optionId": "YYeZ_c0",
+            "count": 2
           }
         ],
-        "id": "PeOAS",
+        "id": "lord",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -28,7 +33,7 @@
             "count": 1
           }
         ],
-        "id": "bjbwN",
+        "id": "g1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -42,7 +47,7 @@
             "count": 1
           }
         ],
-        "id": "JXfHh",
+        "id": "g2",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -52,11 +57,11 @@
         "choices": [
           {
             "sectionId": "qqXg-Jtj",
-            "optionId": "wQAPcFDyAR",
+            "optionId": "lvV9VnK4",
             "count": 1
           }
         ],
-        "id": "PFzJv",
+        "id": "rav",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -65,17 +70,12 @@
         "modelCount": 3,
         "choices": [
           {
-            "sectionId": "OJb5Ezb4",
-            "optionId": "DjpT0JCE",
-            "count": 4
-          },
-          {
             "sectionId": "grXuQYuzfP",
             "optionId": "UiCjbp5xSQ",
             "count": 1
           }
         ],
-        "id": "x-juN",
+        "id": "guard",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -12835,7 +12835,7 @@
   "units": [
     {
       "name": "Hive Lord",
-      "id": "PeOAS",
+      "id": "lord",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -12868,29 +12868,39 @@
       ],
       "weapons": [
         {
-          "name": "Claws",
+          "name": "Great Slashing Blade",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "effectSet": "claw-rend",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Slashing Blade",
           "quantity": 2,
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 0,
           "effectSet": "claw-rend",
-          "specialRules": []
-        },
-        {
-          "name": "Great Serrated Blade",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 355
+      "pointCost": 350
     },
     {
       "name": "Assault Grunts",
-      "id": "bjbwN",
+      "id": "g1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -12926,7 +12936,7 @@
     },
     {
       "name": "Assault Grunts",
-      "id": "JXfHh",
+      "id": "g2",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -12962,7 +12972,7 @@
     },
     {
       "name": "Ravenous Beasts",
-      "id": "PFzJv",
+      "id": "rav",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -12994,20 +13004,20 @@
       ],
       "weapons": [
         {
-          "name": "Dual Razor Claws",
+          "name": "Dual Serrated Claws",
           "quantity": 3,
           "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
           "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
-      "pointCost": 155
+      "pointCost": 180
     },
     {
       "name": "Hive Guardians",
-      "id": "x-juN",
+      "id": "guard",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -13039,16 +13049,16 @@
           "specialRules": []
         },
         {
-          "name": "Serrated Blade",
+          "name": "Claws",
           "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 2,
+          "armorPenetration": 0,
           "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
-      "pointCost": 265
+      "pointCost": 250
     }
   ],
   "defaultRangedEffectSet": "bio-organic",

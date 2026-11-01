@@ -5,87 +5,101 @@
     "pointsLimit": 4000,
     "units": [
       {
-        "rosterUnitId": "lmZtl0E",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "lZTAfiWnX3",
-            "optionId": "-TjSfYPtrg",
-            "count": 1
-          },
-          {
-            "sectionId": "IQd7evV",
-            "optionId": "Hew0ygN",
-            "count": 2
-          },
-          {
-            "sectionId": "HawCg",
-            "optionId": "a7-Dy",
-            "count": 1
-          },
-          {
-            "sectionId": "KmpaBEsW",
-            "optionId": "PKMzF8zi",
-            "count": 1
-          }
-        ],
-        "id": "kcC-j",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "lmZtl0E",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "lZTAfiWnX3",
-            "optionId": "-TjSfYPtrg",
-            "count": 1
-          },
-          {
-            "sectionId": "IQd7evV",
-            "optionId": "Hew0ygN",
-            "count": 2
-          },
-          {
-            "sectionId": "HawCg",
-            "optionId": "a7-Dy",
-            "count": 1
-          },
-          {
-            "sectionId": "KmpaBEsW",
-            "optionId": "PKMzF8zi",
-            "count": 1
-          }
-        ],
-        "id": "T0MoK",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
         "rosterUnitId": "GiIM1wN",
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "y1ZM9",
-            "optionId": "ZOQ5w",
-            "count": 1
-          },
-          {
             "sectionId": "RG9JpNYr96",
             "optionId": "6KwYSzo17o",
             "count": 1
+          },
+          {
+            "sectionId": "y1ZM9",
+            "optionId": "mbhtPllriY",
+            "count": 1
           }
         ],
-        "id": "xePo2",
+        "id": "titan",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "18VuWgg",
+        "rosterUnitId": "lmZtl0E",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "lZTAfiWnX3",
+            "optionId": "-TjSfYPtrg",
+            "count": 1
+          },
+          {
+            "sectionId": "IQd7evV",
+            "optionId": "Hew0ygN",
+            "count": 2
+          },
+          {
+            "sectionId": "HawCg",
+            "optionId": "PCzz8N_RdC",
+            "count": 1
+          },
+          {
+            "sectionId": "KmpaBEsW",
+            "optionId": "IUubTEBnm7",
+            "count": 1
+          }
+        ],
+        "id": "lordA",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "lmZtl0E",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "snUmp8Az8p",
+            "optionId": "Yab7NY_V8v",
+            "count": 1
+          },
+          {
+            "sectionId": "9ZOE5",
+            "optionId": "vXiiHoDIM3",
+            "count": 1
+          },
+          {
+            "sectionId": "KmpaBEsW",
+            "optionId": "IUubTEBnm7",
+            "count": 1
+          }
+        ],
+        "id": "lordB",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "YbEEu7h",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "rr7LRjf",
+            "optionId": "iMiVJpFkGo",
+            "count": 1
+          },
+          {
+            "sectionId": "OMH5U",
+            "optionId": "SwOFk",
+            "count": 1
+          }
+        ],
+        "id": "rex",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "go9isSI",
         "modelCount": 1,
         "choices": [],
-        "id": "J1tub",
+        "id": "tyrant",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -99,8 +113,8 @@
             "count": 1
           }
         ],
-        "id": "lL9qJ",
-        "joinsUnitId": "H3lAt",
+        "id": "sl1",
+        "joinsUnitId": "a1",
         "combinedWithId": null
       },
       {
@@ -111,52 +125,9 @@
             "sectionId": "2JoVQwto0n",
             "optionId": "mpaChv6iO6",
             "count": 1
-          },
-          {
-            "sectionId": "hDo7xVhM",
-            "optionId": "ZuWVUZXDn9",
-            "count": 1
           }
         ],
-        "id": "H3lAt",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "_LXFoO9",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "2JoVQwto0n",
-            "optionId": "mpaChv6iO6",
-            "count": 1
-          },
-          {
-            "sectionId": "hDo7xVhM",
-            "optionId": "ZuWVUZXDn9",
-            "count": 1
-          }
-        ],
-        "id": "H3lAt-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "H3lAt"
-      },
-      {
-        "rosterUnitId": "_LXFoO9",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "2JoVQwto0n",
-            "optionId": "mpaChv6iO6",
-            "count": 1
-          },
-          {
-            "sectionId": "hDo7xVhM",
-            "optionId": "ZuWVUZXDn9",
-            "count": 1
-          }
-        ],
-        "id": "eWjpb",
+        "id": "a1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -168,16 +139,11 @@
             "sectionId": "2JoVQwto0n",
             "optionId": "mpaChv6iO6",
             "count": 1
-          },
-          {
-            "sectionId": "hDo7xVhM",
-            "optionId": "ZuWVUZXDn9",
-            "count": 1
           }
         ],
-        "id": "eWjpb-combined",
+        "id": "a2",
         "joinsUnitId": null,
-        "combinedWithId": "eWjpb"
+        "combinedWithId": "a1"
       },
       {
         "rosterUnitId": "qpW1fhD",
@@ -189,111 +155,140 @@
             "count": 1
           }
         ],
-        "id": "tUCJ_",
-        "joinsUnitId": "eWjpb",
+        "id": "sl2",
+        "joinsUnitId": "b1",
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "tLoLwnZ",
-        "modelCount": 3,
+        "rosterUnitId": "_LXFoO9",
+        "modelCount": 10,
         "choices": [
           {
-            "sectionId": "qqXg-Jtj",
-            "optionId": "lvV9VnK4",
+            "sectionId": "2JoVQwto0n",
+            "optionId": "mpaChv6iO6",
             "count": 1
           }
         ],
-        "id": "m5X36",
+        "id": "b1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "tLoLwnZ",
-        "modelCount": 3,
+        "rosterUnitId": "_LXFoO9",
+        "modelCount": 10,
         "choices": [
           {
-            "sectionId": "qqXg-Jtj",
-            "optionId": "lvV9VnK4",
+            "sectionId": "2JoVQwto0n",
+            "optionId": "mpaChv6iO6",
             "count": 1
           }
         ],
-        "id": "5y-La",
+        "id": "b2",
+        "joinsUnitId": null,
+        "combinedWithId": "b1"
+      },
+      {
+        "rosterUnitId": "jJP5jiL",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "YMtyp-NPEw",
+            "optionId": "aDkIqrdqQ6",
+            "count": 1
+          },
+          {
+            "sectionId": "nxseWutH",
+            "optionId": "u8jMuwdY",
+            "count": 1
+          }
+        ],
+        "id": "prime",
+        "joinsUnitId": "s1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "CMADHYi",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "0yYhyhC",
+            "optionId": "c9eYKZ1",
+            "count": 1
+          }
+        ],
+        "id": "s1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "lWrYpK5",
+        "rosterUnitId": "CMADHYi",
         "modelCount": 5,
-        "choices": [],
-        "id": "Btb_J",
+        "choices": [
+          {
+            "sectionId": "0yYhyhC",
+            "optionId": "c9eYKZ1",
+            "count": 1
+          }
+        ],
+        "id": "s2",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "lWrYpK5",
-        "modelCount": 5,
-        "choices": [],
-        "id": "5m9JQ",
-        "joinsUnitId": null,
-        "combinedWithId": null
+        "combinedWithId": "s1"
       },
       {
         "rosterUnitId": "jf0HjF0",
         "modelCount": 3,
         "choices": [
           {
-            "sectionId": "OJb5Ezb4",
-            "optionId": "DjpT0JCE",
-            "count": 6
-          }
-        ],
-        "id": "QMr67",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "CMADHYi",
-        "modelCount": 5,
-        "choices": [],
-        "id": "obVkS",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "CMADHYi",
-        "modelCount": 5,
-        "choices": [],
-        "id": "obVkS-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "obVkS"
-      },
-      {
-        "rosterUnitId": "CMADHYi",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "hDo7xVhM",
-            "optionId": "ZuWVUZXDn9",
+            "sectionId": "grXuQYuzfP",
+            "optionId": "UiCjbp5xSQ",
             "count": 1
           }
         ],
-        "id": "hlnXe",
+        "id": "guard",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "CMADHYi",
-        "modelCount": 5,
+        "rosterUnitId": "tLoLwnZ",
+        "modelCount": 3,
         "choices": [
           {
-            "sectionId": "hDo7xVhM",
-            "optionId": "ZuWVUZXDn9",
+            "sectionId": "qqXg-Jtj",
+            "optionId": "lvV9VnK4",
             "count": 1
           }
         ],
-        "id": "hlnXe-combined",
+        "id": "rav1",
         "joinsUnitId": null,
-        "combinedWithId": "hlnXe"
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "tLoLwnZ",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "qqXg-Jtj",
+            "optionId": "pDs34-VV",
+            "count": 1
+          }
+        ],
+        "id": "rav2",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "19W7XoU",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "An_cSbk",
+            "optionId": "ifL1POY",
+            "count": 1
+          }
+        ],
+        "id": "soul",
+        "joinsUnitId": null,
+        "combinedWithId": null
       }
     ]
   },
@@ -13050,142 +13045,8 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
-      "name": "Hive Lord",
-      "id": "kcC-j",
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "quality": 3,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 2
-        },
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
-          "kind": "core",
-          "name": "Hive Bond"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
-        },
-        {
-          "kind": "core",
-          "name": "Rapid Charge"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Great Serrated Blade",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        },
-        {
-          "name": "Serrated Blade",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 480
-    },
-    {
-      "name": "Hive Lord",
-      "id": "T0MoK",
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "quality": 3,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 2
-        },
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
-          "kind": "core",
-          "name": "Hive Bond"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
-        },
-        {
-          "kind": "core",
-          "name": "Rapid Charge"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Great Serrated Blade",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        },
-        {
-          "name": "Serrated Blade",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 480
-    },
-    {
       "name": "Hive Titan",
-      "id": "xePo2",
+      "id": "titan",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -13209,16 +13070,12 @@
         {
           "kind": "coreNumeric",
           "name": "Tough",
-          "numericValue": 24
+          "numericValue": 18
         },
         {
           "kind": "coreNumeric",
-          "name": "Crossing Attack",
-          "numericValue": 16
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
+          "name": "Caster",
+          "numericValue": 4
         }
       ],
       "weapons": [
@@ -13246,11 +13103,132 @@
           ]
         }
       ],
-      "pointCost": 1040
+      "pointCost": 805
     },
     {
-      "name": "Invasion Carrier Spore",
-      "id": "J1tub",
+      "name": "Hive Lord",
+      "id": "lordA",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "quality": 3,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Hive Bond"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Great Serrated Blade",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 2,
+          "effectSet": "claw-rend",
+          "specialRules": []
+        },
+        {
+          "name": "Serrated Blade",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "claw-rend",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 470
+    },
+    {
+      "name": "Hive Lord",
+      "id": "lordB",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "quality": 3,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Hive Bond"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Ravager Cannon",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 12,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 505
+    },
+    {
+      "name": "Carnivo-Rex",
+      "id": "rex",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -13260,11 +13238,89 @@
         "heightInches": 4.7244096
       },
       "quality": 4,
-      "defense": 3,
+      "defense": 2,
       "specialRules": [
         {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
           "kind": "core",
-          "name": "Slow"
+          "name": "Hive Bond"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        },
+        {
+          "name": "Serrated Claws",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 8,
+          "armorPenetration": 2,
+          "effectSet": "claw-rend",
+          "specialRules": []
+        },
+        {
+          "name": "Head-Burster Shriek",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
+        }
+      ],
+      "pointCost": 335
+    },
+    {
+      "name": "Synapse Tyrant",
+      "id": "tyrant",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Spell Resistance"
         },
         {
           "kind": "coreNumeric",
@@ -13272,26 +13328,18 @@
           "numericValue": 6
         },
         {
-          "kind": "coreNumeric",
-          "name": "Transport",
-          "numericValue": 11
-        },
-        {
           "kind": "core",
           "name": "Hive Bond"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
         }
       ],
       "weapons": [
         {
-          "name": "Bug-Spewer",
+          "name": "Synaptic Psy-Blast",
           "quantity": 1,
           "rangeInches": 24,
-          "attacks": 1,
+          "attacks": 2,
           "armorPenetration": 0,
+          "effectSet": "arcane-psychic",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -13301,21 +13349,26 @@
           ]
         },
         {
-          "name": "Stomp",
+          "name": "Neural Claws",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 2,
-          "armorPenetration": 1,
-          "effectSet": "titan-impact",
-          "specialRules": []
+          "armorPenetration": 0,
+          "effectSet": "claw-rend",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
         }
       ],
-      "pointCost": 130
+      "pointCost": 165
     },
     {
       "name": "Snatcher Lord",
-      "id": "lL9qJ",
-      "joinsUnitId": "H3lAt",
+      "id": "sl1",
+      "joinsUnitId": "a1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -13367,7 +13420,7 @@
     },
     {
       "name": "Assault Grunts",
-      "id": "H3lAt",
+      "id": "a1",
       "joinsUnitId": null,
       "modelCount": 20,
       "base": {
@@ -13386,10 +13439,6 @@
         {
           "kind": "core",
           "name": "Hive Bond"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
         }
       ],
       "weapons": [
@@ -13403,52 +13452,12 @@
           "specialRules": []
         }
       ],
-      "pointCost": 250
-    },
-    {
-      "name": "Assault Grunts",
-      "id": "eWjpb",
-      "joinsUnitId": null,
-      "modelCount": 20,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Hive Bond"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Razor Claws",
-          "quantity": 20,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 250
+      "pointCost": 220
     },
     {
       "name": "Snatcher Lord",
-      "id": "tUCJ_",
-      "joinsUnitId": "eWjpb",
+      "id": "sl2",
+      "joinsUnitId": "b1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -13499,13 +13508,49 @@
       "pointCost": 115
     },
     {
-      "name": "Ravenous Beasts",
-      "id": "m5X36",
+      "name": "Assault Grunts",
+      "id": "b1",
       "joinsUnitId": null,
-      "modelCount": 3,
+      "modelCount": 20,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.5748031,
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Hive Bond"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Razor Claws",
+          "quantity": 20,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "claw-rend",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 220
+    },
+    {
+      "name": "Prime Warrior",
+      "id": "prime",
+      "joinsUnitId": "s1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
@@ -13514,12 +13559,12 @@
       "specialRules": [
         {
           "kind": "core",
-          "name": "Strider"
+          "name": "Hero"
         },
         {
           "kind": "coreNumeric",
           "name": "Tough",
-          "numericValue": 3
+          "numericValue": 6
         },
         {
           "kind": "core",
@@ -13527,150 +13572,83 @@
         },
         {
           "kind": "core",
-          "name": "Ambush"
+          "name": "Increased Shooting Range Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Dual Serrated Claws",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
+          "name": "Dual Spike-Shooters",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 8,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         }
       ],
-      "pointCost": 180
+      "pointCost": 125
     },
     {
-      "name": "Ravenous Beasts",
-      "id": "5y-La",
+      "name": "Shooter Grunts",
+      "id": "s1",
       "joinsUnitId": null,
-      "modelCount": 3,
+      "modelCount": 10,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.5748031,
+        "diameterInches": 0.984252,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 4,
-      "defense": 4,
+      "quality": 5,
+      "defense": 5,
       "specialRules": [
         {
           "kind": "core",
           "name": "Strider"
         },
         {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
           "kind": "core",
           "name": "Hive Bond"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
         }
       ],
       "weapons": [
         {
-          "name": "Dual Serrated Claws",
-          "quantity": 3,
+          "name": "Bio-Ravager",
+          "quantity": 8,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "bio-organic",
+          "specialRules": []
+        },
+        {
+          "name": "Claws",
+          "quantity": 10,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
+          "attacks": 1,
+          "armorPenetration": 0,
           "effectSet": "claw-rend",
           "specialRules": []
-        }
-      ],
-      "pointCost": 180
-    },
-    {
-      "name": "Spores",
-      "id": "Btb_J",
-      "joinsUnitId": null,
-      "modelCount": 5,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 6,
-      "defense": 6,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Self-Destruct",
-          "numericValue": 2
         },
         {
-          "kind": "core",
-          "name": "No Retreat"
-        },
-        {
-          "kind": "core",
-          "name": "Slow"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Strike",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
+          "name": "Bio-Plasma",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
           "specialRules": []
         }
       ],
-      "pointCost": 60
-    },
-    {
-      "name": "Spores",
-      "id": "5m9JQ",
-      "joinsUnitId": null,
-      "modelCount": 5,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 6,
-      "defense": 6,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Self-Destruct",
-          "numericValue": 2
-        },
-        {
-          "kind": "core",
-          "name": "No Retreat"
-        },
-        {
-          "kind": "core",
-          "name": "Slow"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Strike",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 60
+      "pointCost": 170
     },
     {
       "name": "Hive Guardians",
-      "id": "QMr67",
+      "id": "guard",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -13694,81 +13672,134 @@
       ],
       "weapons": [
         {
-          "name": "Dual Smashing Clubs",
+          "name": "Heavy Ravager Gun",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "specialRules": []
+        },
+        {
+          "name": "Claws",
           "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "crude-melee",
+          "armorPenetration": 0,
+          "effectSet": "claw-rend",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 250
+    },
+    {
+      "name": "Ravenous Beasts",
+      "id": "rav1",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Hive Bond"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dual Serrated Claws",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "claw-rend",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 180
+    },
+    {
+      "name": "Ravenous Beasts",
+      "id": "rav2",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Hive Bond"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dual Piercing Claws",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "claw-rend",
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Blast",
+              "name": "Deadly",
               "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 165
+      "pointCost": 190
     },
     {
-      "name": "Shooter Grunts",
-      "id": "obVkS",
+      "name": "Soul-Snatchers",
+      "id": "soul",
       "joinsUnitId": null,
-      "modelCount": 10,
+      "modelCount": 5,
       "base": {
         "shape": "Circle",
-        "diameterInches": 0.984252,
+        "diameterInches": 1.2598425,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Hive Bond"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Bio-Ravager",
-          "quantity": 10,
-          "rangeInches": 18,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "bio-organic",
-          "specialRules": []
-        },
-        {
-          "name": "Claws",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Shooter Grunts",
-      "id": "hlnXe",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
+      "quality": 3,
+      "defense": 4,
       "specialRules": [
         {
           "kind": "core",
@@ -13780,30 +13811,26 @@
         },
         {
           "kind": "core",
-          "name": "Flying"
+          "name": "Scout"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 1
         }
       ],
       "weapons": [
         {
-          "name": "Bio-Ravager",
-          "quantity": 10,
-          "rangeInches": 18,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "bio-organic",
-          "specialRules": []
-        },
-        {
-          "name": "Claws",
-          "quantity": 10,
+          "name": "Serrated Claws",
+          "quantity": 5,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 0,
+          "armorPenetration": 2,
           "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
-      "pointCost": 160
+      "pointCost": 135
     }
   ],
   "defaultRangedEffectSet": "bio-organic",

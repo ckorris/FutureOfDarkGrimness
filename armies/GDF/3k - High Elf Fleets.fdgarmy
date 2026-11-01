@@ -10,89 +10,7 @@
         "choices": [
           {
             "sectionId": "2ZHZleFE",
-            "optionId": "kwdwhrYB",
-            "count": 1
-          },
-          {
-            "sectionId": "HlXfVsRq",
-            "optionId": "sO4YeYs4",
-            "count": 1
-          },
-          {
-            "sectionId": "L_sFgCY",
-            "optionId": "IO6jvVd",
-            "count": 1
-          }
-        ],
-        "id": "L7qiJ",
-        "joinsUnitId": "p-Dt_",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "vQBMFLU",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "x4ji1bz3wk",
-            "optionId": "q1Iqjl0og6",
-            "count": 1
-          },
-          {
-            "sectionId": "jiLxnoG",
-            "optionId": "weReW2l",
-            "count": 1
-          },
-          {
-            "sectionId": "2o00gKsVD-",
-            "optionId": "l0565K8QRT",
-            "count": 1
-          }
-        ],
-        "id": "p-Dt_",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "vQBMFLU",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "x4ji1bz3wk",
-            "optionId": "q1Iqjl0og6",
-            "count": 1
-          },
-          {
-            "sectionId": "jiLxnoG",
-            "optionId": "weReW2l",
-            "count": 1
-          },
-          {
-            "sectionId": "2o00gKsVD-",
-            "optionId": "l0565K8QRT",
-            "count": 1
-          }
-        ],
-        "id": "p-Dt_-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "p-Dt_"
-      },
-      {
-        "rosterUnitId": "9zCsahE",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "2ZHZleFE",
-            "optionId": "kwdwhrYB",
-            "count": 1
-          },
-          {
-            "sectionId": "HlXfVsRq",
-            "optionId": "sO4YeYs4",
-            "count": 1
-          },
-          {
-            "sectionId": "L_sFgCY",
-            "optionId": "IO6jvVd",
+            "optionId": "5dMXfpn5Wn",
             "count": 1
           },
           {
@@ -101,101 +19,150 @@
             "count": 1
           }
         ],
-        "id": "xCZYi",
-        "joinsUnitId": "X4cV4",
+        "id": "noble1",
+        "joinsUnitId": "retm1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "b-mChYC",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "TYCD228kG2",
+            "optionId": "aV43qRJHYJ",
+            "count": 1
+          },
+          {
+            "sectionId": "EpwNwvH",
+            "optionId": "ZFzRPUA",
+            "count": 1
+          }
+        ],
+        "id": "retm1",
+        "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "b-mChYC",
         "modelCount": 5,
         "choices": [],
-        "id": "X4cV4",
+        "id": "retm2",
+        "joinsUnitId": null,
+        "combinedWithId": "retm1"
+      },
+      {
+        "rosterUnitId": "9zCsahE",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "2ZHZleFE",
+            "optionId": "Ccca1WMEkS",
+            "count": 1
+          },
+          {
+            "sectionId": "L_sFgCY",
+            "optionId": "IO6jvVd",
+            "count": 1
+          }
+        ],
+        "id": "noble2",
+        "joinsUnitId": "shift1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "vQBMFLU",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "x4ji1bz3wk",
+            "optionId": "q1Iqjl0og6",
+            "count": 1
+          },
+          {
+            "sectionId": "jiLxnoG",
+            "optionId": "weReW2l",
+            "count": 1
+          },
+          {
+            "sectionId": "2o00gKsVD-",
+            "optionId": "l0565K8QRT",
+            "count": 1
+          }
+        ],
+        "id": "shift1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "vQBMFLU",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "x4ji1bz3wk",
+            "optionId": "q1Iqjl0og6",
+            "count": 1
+          },
+          {
+            "sectionId": "jiLxnoG",
+            "optionId": "weReW2l",
+            "count": 1
+          },
+          {
+            "sectionId": "2o00gKsVD-",
+            "optionId": "l0565K8QRT",
+            "count": 1
+          }
+        ],
+        "id": "shift2",
+        "joinsUnitId": null,
+        "combinedWithId": "shift1"
+      },
+      {
+        "rosterUnitId": "80L-Rbh",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "dVswZbNb0t",
+            "optionId": "6OxhzS9_B4",
+            "count": 1
+          }
+        ],
+        "id": "trasara",
+        "joinsUnitId": "retr1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "b-mChYC",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "0qfO7",
+            "optionId": "kfdtL",
+            "count": 1
+          },
+          {
+            "sectionId": "Y4Gv4ws6",
+            "optionId": "m6HtKFM8",
+            "count": 1
+          }
+        ],
+        "id": "retr1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "b-mChYC",
         "modelCount": 5,
-        "choices": [],
-        "id": "X4cV4-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "X4cV4"
-      },
-      {
-        "rosterUnitId": "b-mChYC",
-        "modelCount": 5,
         "choices": [
           {
             "sectionId": "0qfO7",
             "optionId": "kfdtL",
             "count": 1
-          },
-          {
-            "sectionId": "Y4Gv4ws6",
-            "optionId": "m6HtKFM8",
-            "count": 1
           }
         ],
-        "id": "WvJCI",
+        "id": "retr2",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "b-mChYC",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "0qfO7",
-            "optionId": "kfdtL",
-            "count": 1
-          },
-          {
-            "sectionId": "Y4Gv4ws6",
-            "optionId": "m6HtKFM8",
-            "count": 1
-          }
-        ],
-        "id": "WvJCI-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "WvJCI"
-      },
-      {
-        "rosterUnitId": "b-mChYC",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "0qfO7",
-            "optionId": "kfdtL",
-            "count": 1
-          },
-          {
-            "sectionId": "Y4Gv4ws6",
-            "optionId": "m6HtKFM8",
-            "count": 1
-          }
-        ],
-        "id": "Z12Nn",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "b-mChYC",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "0qfO7",
-            "optionId": "kfdtL",
-            "count": 1
-          },
-          {
-            "sectionId": "Y4Gv4ws6",
-            "optionId": "m6HtKFM8",
-            "count": 1
-          }
-        ],
-        "id": "Z12Nn-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "Z12Nn"
+        "combinedWithId": "retr1"
       },
       {
         "rosterUnitId": "W-X4rJW",
@@ -213,11 +180,11 @@
           },
           {
             "sectionId": "UuUSA4E",
-            "optionId": "tTCixiuxgR",
+            "optionId": "7fN9T",
             "count": 1
           }
         ],
-        "id": "9EXio",
+        "id": "ge",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -231,7 +198,7 @@
             "count": 1
           }
         ],
-        "id": "zb8mD",
+        "id": "es",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -245,31 +212,63 @@
             "count": 1
           }
         ],
-        "id": "BY3fY",
+        "id": "walker",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "W-X4rJW",
-        "modelCount": 1,
+        "rosterUnitId": "25J4jTN",
+        "modelCount": 3,
         "choices": [
           {
-            "sectionId": "Dla5vsy",
-            "optionId": "EmiSbbH9x7",
-            "count": 1
-          },
-          {
-            "sectionId": "2oqDJ-0gOx",
-            "optionId": "eWB5F4mSwH",
-            "count": 1
-          },
-          {
-            "sectionId": "UuUSA4E",
-            "optionId": "tTCixiuxgR",
+            "sectionId": "Lhq9p-6U",
+            "optionId": "0rzxIIq_",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "vanq",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "yVZh2Ch",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "FbsV-6x",
+            "optionId": "Ocn1J",
+            "count": 1
+          }
+        ],
+        "id": "scorch",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "BPcH3j1",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "O4pBdhd",
+            "optionId": "tnL-tJ9pHq",
+            "count": 1
+          }
+        ],
+        "id": "strikers",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "aMQa9nT",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "XOrSL526uR",
+            "optionId": "4Ppv0SJtPU",
+            "count": 1
+          }
+        ],
+        "id": "jbp",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -9216,8 +9215,122 @@
   "units": [
     {
       "name": "Elven Noble",
-      "id": "L7qiJ",
-      "joinsUnitId": "p-Dt_",
+      "id": "noble1",
+      "joinsUnitId": "retm1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Highborn"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Oracle Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
+        }
+      ],
+      "pointCost": 125
+    },
+    {
+      "name": "Retributors",
+      "id": "retm1",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Highborn"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration Aura"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 3
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Ancient Sword",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "blade-standard",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Hand Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 210
+    },
+    {
+      "name": "Elven Noble",
+      "id": "noble2",
+      "joinsUnitId": "shift1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -9252,27 +9365,24 @@
       ],
       "weapons": [
         {
-          "name": "Hand Weapon",
+          "name": "Burst Phaser Shooters",
           "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Burst Phaser Blasters",
-          "quantity": 1,
-          "rangeInches": 9,
+          "rangeInches": 12,
           "attacks": 4,
-          "armorPenetration": 2,
-          "specialRules": []
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         }
       ],
       "pointCost": 100
     },
     {
       "name": "Shifters",
-      "id": "p-Dt_",
+      "id": "shift1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -9326,9 +9436,9 @@
       "pointCost": 440
     },
     {
-      "name": "Elven Noble",
-      "id": "xCZYi",
-      "joinsUnitId": "X4cV4",
+      "name": "Trasara Ioncrinius",
+      "id": "trasara",
+      "joinsUnitId": "retr1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -9340,84 +9450,40 @@
       "defense": 4,
       "specialRules": [
         {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 3
         },
         {
           "kind": "core",
+          "name": "Unique Hero"
+        },
+        {
+          "kind": "core",
           "name": "Highborn"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Teleport"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Caster",
-          "numericValue": 3
         }
       ],
       "weapons": [
         {
-          "name": "Hand Weapon",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Burst Phaser Blasters",
+          "name": "Burst Shred-Blaster Pistol",
           "quantity": 1,
           "rangeInches": 9,
-          "attacks": 4,
-          "armorPenetration": 2,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 155
-    },
-    {
-      "name": "Retributors",
-      "id": "X4cV4",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Highborn"
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         },
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Armor",
-          "numericValue": 3
-        }
-      ],
-      "weapons": [
         {
           "name": "Ancient Sword",
-          "quantity": 10,
+          "quantity": 1,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -9428,13 +9494,36 @@
               "name": "Rending"
             }
           ]
+        },
+        {
+          "name": "Orbital Bombardment",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "mortar-artillery",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            },
+            {
+              "kind": "core",
+              "name": "Limited"
+            }
+          ]
         }
       ],
-      "pointCost": 190
+      "pointCost": 110
     },
     {
       "name": "Retributors",
-      "id": "WvJCI",
+      "id": "retr1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -9482,63 +9571,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 300
-    },
-    {
-      "name": "Retributors",
-      "id": "Z12Nn",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Highborn"
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Piercing Spotter"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Shard Rifle",
-          "quantity": 10,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Fracture"
-            }
-          ]
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 300
+      "pointCost": 280
     },
     {
       "name": "Great Elemental",
-      "id": "9EXio",
+      "id": "ge",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -9610,32 +9647,30 @@
           "specialRules": []
         },
         {
-          "name": "Assault Shard Cannon",
+          "name": "Assault Laser Cannon",
           "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 3,
-          "armorPenetration": 0,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 3,
+          "effectSet": "laser-beam",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Anti-Cover"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             },
             {
               "kind": "core",
               "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Fracture"
             }
           ]
         }
       ],
-      "pointCost": 435
+      "pointCost": 465
     },
     {
       "name": "Elemental Strikers",
-      "id": "zb8mD",
+      "id": "es",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -9685,7 +9720,7 @@
     },
     {
       "name": "Combat Walker",
-      "id": "BY3fY",
+      "id": "walker",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -9739,32 +9774,22 @@
       "pointCost": 240
     },
     {
-      "name": "Great Elemental",
-      "id": null,
+      "name": "Vanquishers",
+      "id": "vanq",
       "joinsUnitId": null,
-      "modelCount": 1,
+      "modelCount": 3,
       "base": {
         "shape": "Circle",
-        "diameterInches": 2.3622048,
+        "diameterInches": 0.984252,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
       "quality": 3,
-      "defense": 2,
+      "defense": 4,
       "specialRules": [
         {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 2
-        },
-        {
           "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
+          "name": "Relentless"
         },
         {
           "kind": "core",
@@ -9772,15 +9797,111 @@
         },
         {
           "kind": "core",
-          "name": "Fortified"
+          "name": "Piercing Spotter"
         }
       ],
       "weapons": [
         {
-          "name": "Dual Arm-Shardguns",
-          "quantity": 1,
-          "rangeInches": 6,
-          "attacks": 2,
+          "name": "Heat-Rocket Launcher",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "missile-rocket",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 195
+    },
+    {
+      "name": "Scorchers",
+      "id": "scorch",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Highborn"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Fusion Rifle",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 165
+    },
+    {
+      "name": "Strikers",
+      "id": "strikers",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Highborn"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Shard Pistol",
+          "quantity": 4,
+          "rangeInches": 12,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
@@ -9794,27 +9915,86 @@
           ]
         },
         {
-          "name": "Stomp",
-          "quantity": 1,
+          "name": "Hand Weapon",
+          "quantity": 4,
           "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 1,
-          "effectSet": "titan-impact",
+          "attacks": 1,
+          "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Elemental Spear",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "spear-pierce",
-          "specialRules": []
-        },
-        {
-          "name": "Assault Shard Cannon",
+          "name": "Sgt. Shard Pistol",
           "quantity": 1,
           "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Fracture"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Hand Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 115
+    },
+    {
+      "name": "Jetbike Protectors",
+      "id": "jbp",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Highborn"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Shard Cannon",
+          "quantity": 3,
+          "rangeInches": 24,
           "attacks": 3,
           "armorPenetration": 0,
           "specialRules": [
@@ -9824,16 +10004,12 @@
             },
             {
               "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
               "name": "Fracture"
             }
           ]
         }
       ],
-      "pointCost": 435
+      "pointCost": 275
     }
   ],
   "defaultRangedEffectSet": "shard-crystal",

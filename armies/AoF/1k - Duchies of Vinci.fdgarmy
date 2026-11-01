@@ -5,32 +5,65 @@
     "pointsLimit": 1000,
     "units": [
       {
-        "rosterUnitId": "gAsJjC8",
-        "modelCount": 5,
+        "rosterUnitId": "4xFAaqz",
+        "modelCount": 1,
         "choices": [
           {
-            "sectionId": "Q8ekmWq",
-            "optionId": "BmjhFBv",
+            "sectionId": "yH9i6H1hGB",
+            "optionId": "t1RmNetCD-",
+            "count": 1
+          },
+          {
+            "sectionId": "SvgUWPAQ",
+            "optionId": "zxYQmtn2",
             "count": 1
           }
         ],
-        "id": "q80VG",
+        "id": "leader",
+        "joinsUnitId": "guard1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "00sI1ix",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "NPjF3S3",
+            "optionId": "QibLhm5",
+            "count": 1
+          }
+        ],
+        "id": "guard1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "gAsJjC8",
+        "rosterUnitId": "00sI1ix",
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "Q8ekmWq",
-            "optionId": "BmjhFBv",
+            "sectionId": "NPjF3S3",
+            "optionId": "QibLhm5",
             "count": 1
           }
         ],
-        "id": "brsCu",
+        "id": "guard2",
         "joinsUnitId": null,
-        "combinedWithId": "q80VG"
+        "combinedWithId": "guard1"
+      },
+      {
+        "rosterUnitId": "tLjz9Ia",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "LiNEcWifms",
+            "optionId": "nEE5phbqxp",
+            "count": 1
+          }
+        ],
+        "id": "boars",
+        "joinsUnitId": null,
+        "combinedWithId": null
       },
       {
         "rosterUnitId": "BVHvAzH",
@@ -40,89 +73,49 @@
             "sectionId": "cjGfk",
             "optionId": "zjSYD",
             "count": 1
-          },
-          {
-            "sectionId": "e0Ohrnw",
-            "optionId": "-tULUh1",
-            "count": 1
           }
         ],
-        "id": "O3kK-",
+        "id": "aerea",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "4xFAaqz",
-        "modelCount": 1,
+        "rosterUnitId": "gh9JJOe",
+        "modelCount": 10,
         "choices": [
           {
-            "sectionId": "B8aIjGz2ct",
-            "optionId": "G1QT7bdOD-",
+            "sectionId": "QmLjsVI",
+            "optionId": "LDr2dv8",
             "count": 1
           },
           {
-            "sectionId": "ErcVNyaCln",
-            "optionId": "yMRP181-27",
+            "sectionId": "QmLjsVI",
+            "optionId": "vrKSbOa",
             "count": 1
           },
           {
-            "sectionId": "SvgUWPAQ",
-            "optionId": "7Jm39IZt",
-            "count": 1
-          },
-          {
-            "sectionId": "evfGrzA",
-            "optionId": "xAUxSILxZx",
+            "sectionId": "2VpkPl1",
+            "optionId": "86RgiGV",
             "count": 1
           }
         ],
-        "id": "80KAG",
-        "joinsUnitId": "4tQPk",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "jVLKMIF",
-        "modelCount": 5,
-        "choices": [],
-        "id": "4tQPk",
+        "id": "militia",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "jVLKMIF",
-        "modelCount": 5,
-        "choices": [],
-        "id": "S5qwu",
-        "joinsUnitId": null,
-        "combinedWithId": "4tQPk"
-      },
-      {
-        "rosterUnitId": "00sI1ix",
+        "rosterUnitId": "Zpo3LF7",
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "NPjF3S3",
-            "optionId": "QibLhm5",
+            "sectionId": "pdTchX6wo1",
+            "optionId": "5DHiKAzPyD",
             "count": 1
           }
         ],
-        "id": "28yjK",
+        "id": "assassins",
         "joinsUnitId": null,
         "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "00sI1ix",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "NPjF3S3",
-            "optionId": "QibLhm5",
-            "count": 1
-          }
-        ],
-        "id": "GmB6G",
-        "joinsUnitId": null,
-        "combinedWithId": "28yjK"
       }
     ]
   },
@@ -6596,126 +6589,9 @@
   "gameSystem": "age-of-fantasy",
   "units": [
     {
-      "name": "Automa Drones",
-      "id": "q80VG",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Vinci Tech"
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Bot-Bows",
-          "quantity": 10,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "arrow-loose",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 230
-    },
-    {
-      "name": "Vita Aerea",
-      "id": "O3kK-",
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Flying"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Vinci Tech"
-        },
-        {
-          "kind": "core",
-          "name": "Scout"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Slayerbolt Crossbow Crew",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 6,
-          "armorPenetration": 0,
-          "effectSet": "crossbow-bolt",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Puncture"
-            }
-          ]
-        }
-      ],
-      "pointCost": 200
-    },
-    {
       "name": "Vinci Leader",
-      "id": "80KAG",
-      "joinsUnitId": "4tQPk",
+      "id": "leader",
+      "joinsUnitId": "guard1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -6741,87 +6617,30 @@
         },
         {
           "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Stealth"
-        },
-        {
-          "kind": "core",
-          "name": "Rapid Advance Aura"
+          "name": "Ranged Slayer Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Strike",
+          "name": "Master Hand Weapon",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Rapid Crossbow",
-          "quantity": 1,
-          "rangeInches": 18,
           "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "crossbow-bolt",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "pointCost": 105
-    },
-    {
-      "name": "Harlequins",
-      "id": "4tQPk",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Unpredictable Fighter"
-        },
-        {
-          "kind": "core",
-          "name": "Vinci Tech"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Jester Club",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
           "armorPenetration": 1,
-          "effectSet": "crude-melee",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Surge"
+              "kind": "coreNumeric",
+              "name": "Parry",
+              "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 140
+      "pointCost": 65
     },
     {
       "name": "Automa Guard",
-      "id": "28yjK",
+      "id": "guard1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -6876,6 +6695,257 @@
         }
       ],
       "pointCost": 280
+    },
+    {
+      "name": "Automa-Boar Riders",
+      "id": "boars",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.8110236,
+        "heightInches": 2.952756
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Heavy Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Vinci Tech"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Lance",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Drilltip Lance",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        }
+      ],
+      "pointCost": 215
+    },
+    {
+      "name": "Vita Aerea",
+      "id": "aerea",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Vinci Tech"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "titan-impact",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Slayerbolt Crossbow Crew",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "effectSet": "crossbow-bolt",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Puncture"
+            }
+          ]
+        }
+      ],
+      "pointCost": 185
+    },
+    {
+      "name": "Militia",
+      "id": "militia",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Vinci Tech"
+        },
+        {
+          "kind": "core",
+          "name": "Banner"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Halberd",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Halberd (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
+        }
+      ],
+      "pointCost": 115
+    },
+    {
+      "name": "Assassins",
+      "id": "assassins",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Vinci Tech"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dual Armblades",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "blade-standard",
+          "specialRules": []
+        },
+        {
+          "name": "Assassin Handbow",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "crossbow-bolt",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Takedown"
+            }
+          ]
+        }
+      ],
+      "pointCost": 135
     }
   ],
   "defaultRangedEffectSet": "crossbow-bolt",

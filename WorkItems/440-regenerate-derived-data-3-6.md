@@ -65,6 +65,17 @@ from 3.6 books (share links or Forge) - keep a few originals as the legacy fixtu
 
 ## Notes
 
+**2026-11-01 (follow-up, Chris's request)** - the 33 shipped `armies/` lists (32 tracked; the three untracked local
+files were left alone) were HAND-CURATED on top of the 2026-10-31 reforge: the nearest-fit loadouts and the greedy
+bracket fit had left lists under bracket, four over the 3.6 force-org caps (1k Alien Hives 35%, 1k HDF copies+units,
+2k Robot Legions Great Monolith 35%, 3k Goblin Reclaimers models/Tough) and padded with duplicate auras/medics, and
+had cut theme units (Ork Combat Walker + Berserkers, 2k High Elf Great Elemental, Ossified Reapers, Vinci Aerea Guard).
+Each list was redesigned against the bundled 3.6.0 book by editing its `selections` and recompiling with `--reforge`
+(the recompiled-from-own-selections path), so every file's embedded book is byte-identical to the bundled one.
+Verified: `--reforge --dry-run` 0 Warning/Error on all 32, every list at 98.5-100% of bracket; naive pick-sum vs
+compiled total equal on all 32 (one dead pick found and removed - see #461); headless game per list 32/32 exit 0 with
+`Game result:` and 0 `[rules]` warnings; `FdgRaylib.Tests` 4157 green. Lab twins left stale on purpose - #462.
+
 **2026-10-31 (orchestrator)** - Chris ruled on D1-D4: ship the rebuilt Random Army catalog as it stands (quote in
 Outcome). The #440 decisions still open for his eyes: D5, D6, D10. GUI hand-verify still owed via #445 section 9.
 

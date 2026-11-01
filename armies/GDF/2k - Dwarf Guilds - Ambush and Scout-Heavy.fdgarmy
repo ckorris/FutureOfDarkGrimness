@@ -5,99 +5,97 @@
     "pointsLimit": 2000,
     "units": [
       {
-        "rosterUnitId": "BMDQBuG",
-        "modelCount": 5,
+        "rosterUnitId": "19jHTYi",
+        "modelCount": 1,
         "choices": [
           {
-            "sectionId": "QQ9ammn",
-            "optionId": "v5um2lkBAt",
-            "count": 1
-          },
-          {
-            "sectionId": "1l-W2ox",
-            "optionId": "zjOhuzt",
-            "count": 1
-          },
-          {
-            "sectionId": "4kLl_4mb",
-            "optionId": "c9lrxtgp",
-            "count": 1
-          },
-          {
-            "sectionId": "VA-gcCnh",
-            "optionId": "3i-QIDIU",
-            "count": 1
-          },
-          {
-            "sectionId": "Lg31pvAa",
-            "optionId": "xb8yP9px",
+            "sectionId": "D3g2iHHb7A",
+            "optionId": "Twm8twgEIc",
             "count": 1
           }
         ],
-        "id": "626765a02ca345eaa82625891c942dee",
+        "id": "had",
+        "joinsUnitId": "iv",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "cDk2wUI",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "iMZg5",
+            "optionId": "1LZ2a",
+            "count": 1
+          },
+          {
+            "sectionId": "yghnc",
+            "optionId": "zPA6C",
+            "count": 1
+          },
+          {
+            "sectionId": "rKb-Qgeg",
+            "optionId": "CzPg-RVV",
+            "count": 1
+          }
+        ],
+        "id": "iv",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "BMDQBuG",
-        "modelCount": 5,
+        "rosterUnitId": "03EDObc",
+        "modelCount": 1,
         "choices": [
           {
-            "sectionId": "QQ9ammn",
-            "optionId": "v5um2lkBAt",
-            "count": 1
-          },
-          {
-            "sectionId": "1l-W2ox",
-            "optionId": "zjOhuzt",
-            "count": 1
-          },
-          {
-            "sectionId": "4kLl_4mb",
-            "optionId": "c9lrxtgp",
-            "count": 1
-          },
-          {
-            "sectionId": "VA-gcCnh",
-            "optionId": "3i-QIDIU",
-            "count": 1
-          },
-          {
-            "sectionId": "Lg31pvAa",
-            "optionId": "xb8yP9px",
+            "sectionId": "5FaKG9xKqA",
+            "optionId": "IUSWLKVUct",
             "count": 1
           }
         ],
-        "id": "626765a02ca345eaa82625891c942dee-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "626765a02ca345eaa82625891c942dee"
-      },
-      {
-        "rosterUnitId": "WbdkmXl",
-        "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "9IrZu",
-            "optionId": "nT2UcfgoX-",
-            "count": 1
-          }
-        ],
-        "id": null,
+        "id": "drill",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "WbdkmXl",
-        "modelCount": 3,
+        "rosterUnitId": "nojZ6_b",
+        "modelCount": 5,
         "choices": [
           {
-            "sectionId": "9IrZu",
-            "optionId": "nT2UcfgoX-",
+            "sectionId": "DB4SL",
+            "optionId": "1k0OH",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "bz1",
         "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "nojZ6_b",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "DB4SL",
+            "optionId": "1k0OH",
+            "count": 1
+          }
+        ],
+        "id": "bz2",
+        "joinsUnitId": null,
+        "combinedWithId": "bz1"
+      },
+      {
+        "rosterUnitId": "NSdGbsg",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "1zfkbL9",
+            "optionId": "LZQJaTsMll",
+            "count": 1
+          }
+        ],
+        "id": "bvet",
+        "joinsUnitId": "bz1",
         "combinedWithId": null
       },
       {
@@ -108,16 +106,7 @@
             "sectionId": "kd_9vTZBRj",
             "optionId": "GpZ322mYAj",
             "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "I4NB_Rk",
-        "modelCount": 5,
-        "choices": [
+          },
           {
             "sectionId": "y-z1B_Z",
             "optionId": "fu0V2",
@@ -127,14 +116,9 @@
             "sectionId": "gEBtl",
             "optionId": "SMUvyg7-XG",
             "count": 1
-          },
-          {
-            "sectionId": "kd_9vTZBRj",
-            "optionId": "GpZ322mYAj",
-            "count": 1
           }
         ],
-        "id": null,
+        "id": "jwA",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -143,89 +127,150 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "S_B7YLe",
-            "optionId": "UJ9zNxwIcG",
+            "sectionId": "Ok_UjYBy",
+            "optionId": "XBlQWIyy70",
+            "count": 1
+          },
+          {
+            "sectionId": "JpHd7QH",
+            "optionId": "-Nu7C",
             "count": 1
           },
           {
             "sectionId": "LKKF3Vxy",
-            "optionId": "B_mMMb9d",
+            "optionId": "Peds60sn",
             "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": "70334558b6314a7f8990100f28efb33a",
+        "id": "champ",
+        "joinsUnitId": "jwA",
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "mEzgxJr",
-        "modelCount": 5,
-        "choices": [],
-        "id": "70334558b6314a7f8990100f28efb33a",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "mEzgxJr",
-        "modelCount": 5,
-        "choices": [],
-        "id": "70334558b6314a7f8990100f28efb33a-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "70334558b6314a7f8990100f28efb33a"
-      },
-      {
-        "rosterUnitId": "6w5-ma7",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "-JW-gNgk",
-            "optionId": "K9EKk97k",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "ITMKkBg",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "yyFkiLQ",
-            "optionId": "m2GGsQo",
-            "count": 2
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "6qkH3Rf",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "HsbxlYQ",
-            "optionId": "Eq071rR",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "cDk2wUI",
+        "rosterUnitId": "I4NB_Rk",
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "iMZg5",
-            "optionId": "TNADo",
+            "sectionId": "kd_9vTZBRj",
+            "optionId": "GpZ322mYAj",
+            "count": 1
+          },
+          {
+            "sectionId": "y-z1B_Z",
+            "optionId": "fu0V2",
+            "count": 1
+          },
+          {
+            "sectionId": "gEBtl",
+            "optionId": "SMUvyg7-XG",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "jwB",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "WbdkmXl",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "9IrZu",
+            "optionId": "nT2UcfgoX-",
+            "count": 1
+          }
+        ],
+        "id": "sn1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "WbdkmXl",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "9IrZu",
+            "optionId": "nT2UcfgoX-",
+            "count": 1
+          }
+        ],
+        "id": "sn2",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "BMDQBuG",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "1l-W2ox",
+            "optionId": "zjOhuzt",
+            "count": 1
+          },
+          {
+            "sectionId": "4kLl_4mb",
+            "optionId": "c9lrxtgp",
+            "count": 1
+          }
+        ],
+        "id": "mn1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "BMDQBuG",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "1l-W2ox",
+            "optionId": "zjOhuzt",
+            "count": 1
+          },
+          {
+            "sectionId": "4kLl_4mb",
+            "optionId": "c9lrxtgp",
+            "count": 1
+          }
+        ],
+        "id": "mn2",
+        "joinsUnitId": null,
+        "combinedWithId": "mn1"
+      },
+      {
+        "rosterUnitId": "L7Cxnmn",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "bVnWU",
+            "optionId": "tJm0o",
+            "count": 1
+          },
+          {
+            "sectionId": "aF8nP2OYrt",
+            "optionId": "y-0MuOl6Q7",
+            "count": 1
+          }
+        ],
+        "id": "bik",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "3m95l5t",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "JBlSs7n0oL",
+            "optionId": "Z9RlG3k9Ce",
+            "count": 1
+          },
+          {
+            "sectionId": "CkLN7yU",
+            "optionId": "PJi2OIr",
+            "count": 1
+          }
+        ],
+        "id": "trk",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -10218,8 +10263,213 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
-      "name": "Miners",
-      "id": "626765a02ca345eaa82625891c942dee",
+      "name": "Hadrund oth Irnwuld",
+      "id": "had",
+      "joinsUnitId": "iv",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Unique Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Sturdy"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Fortified"
+        },
+        {
+          "kind": "core",
+          "name": "Infiltrate Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Boulderbreaker",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Scourge"
+            }
+          ]
+        }
+      ],
+      "pointCost": 140
+    },
+    {
+      "name": "Iron Veterans",
+      "id": "iv",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "core",
+          "name": "Sturdy"
+        },
+        {
+          "kind": "core",
+          "name": "Anti-Cover when Shooting Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Iron-Slug Carbine",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "ballistic-slug",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 4,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Fusion Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Ore-Shredder Pistol",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Hand Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 165
+    },
+    {
+      "name": "Assault Drill",
+      "id": "drill",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Sturdy"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 9
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Heavy Tunneling Drill",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 4,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 265
+    },
+    {
+      "name": "Berserkers",
+      "id": "bz1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -10233,7 +10483,15 @@
       "specialRules": [
         {
           "kind": "core",
-          "name": "Infiltrate"
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Melee Slayer"
         },
         {
           "kind": "core",
@@ -10242,89 +10500,39 @@
         {
           "kind": "core",
           "name": "Sturdy"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
         }
       ],
       "weapons": [
         {
-          "name": "Hand Weapon",
-          "quantity": 8,
+          "name": "Great Heat Axe",
+          "quantity": 10,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Iron-Slug Pistol",
-          "quantity": 6,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "ballistic-slug",
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Assault"
+              "name": "Scourge"
             },
             {
               "kind": "core",
-              "name": "Shred"
-            }
-          ]
-        },
-        {
-          "name": "Fusion Rifle",
-          "quantity": 2,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "fusion-melta",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            }
-          ]
-        },
-        {
-          "name": "Ore-Shredder Pistol",
-          "quantity": 2,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
-        {
-          "name": "Magma Sword",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "energy-blade",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
+              "name": "Unwieldy"
             }
           ]
         }
       ],
-      "pointCost": 270
+      "pointCost": 190
     },
     {
-      "name": "Sniper Team",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 3,
+      "name": "Berserker Veteran",
+      "id": "bvet",
+      "joinsUnitId": "bz1",
+      "modelCount": 1,
       "base": {
         "shape": "Circle",
         "diameterInches": 0.984252,
@@ -10336,15 +10544,28 @@
       "specialRules": [
         {
           "kind": "core",
-          "name": "Scout"
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Melee Slayer"
         },
         {
           "kind": "core",
           "name": "Slow"
         },
         {
-          "kind": "core",
-          "name": "Stealth"
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
         },
         {
           "kind": "core",
@@ -10353,124 +10574,8 @@
       ],
       "weapons": [
         {
-          "name": "Strike",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Sniper Rifle",
-          "quantity": 3,
-          "rangeInches": 30,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Takedown"
-            }
-          ]
-        }
-      ],
-      "pointCost": 100
-    },
-    {
-      "name": "Sniper Team",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Scout"
-        },
-        {
-          "kind": "core",
-          "name": "Slow"
-        },
-        {
-          "kind": "core",
-          "name": "Stealth"
-        },
-        {
-          "kind": "core",
-          "name": "Sturdy"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Strike",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Sniper Rifle",
-          "quantity": 3,
-          "rangeInches": 30,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Takedown"
-            }
-          ]
-        }
-      ],
-      "pointCost": 100
-    },
-    {
-      "name": "Jetpack Warriors",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 5,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Flying"
-        },
-        {
-          "kind": "core",
-          "name": "Sturdy"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Pistol",
-          "quantity": 5,
+          "name": "Throwing Axes",
+          "quantity": 1,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
@@ -10482,19 +10587,29 @@
           ]
         },
         {
-          "name": "Hand Weapon",
-          "quantity": 5,
+          "name": "Great Heat Axe",
+          "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Scourge"
+            },
+            {
+              "kind": "core",
+              "name": "Unwieldy"
+            }
+          ]
         }
       ],
-      "pointCost": 120
+      "pointCost": 70
     },
     {
       "name": "Jetpack Warriors",
-      "id": null,
+      "id": "jwA",
       "joinsUnitId": null,
       "modelCount": 5,
       "base": {
@@ -10567,8 +10682,8 @@
     },
     {
       "name": "Dwarf Champion",
-      "id": null,
-      "joinsUnitId": "70334558b6314a7f8990100f28efb33a",
+      "id": "champ",
+      "joinsUnitId": "jwA",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -10598,32 +10713,240 @@
         },
         {
           "kind": "core",
-          "name": "Increased Shooting Range Aura"
+          "name": "Fortified"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "core",
+          "name": "Swift"
+        },
+        {
+          "kind": "core",
+          "name": "Enhanced Sturdy Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Burst Battle Rifle",
+          "name": "Magma Axe",
           "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": []
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 115
+    },
+    {
+      "name": "Jetpack Warriors",
+      "id": "jwB",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Flying"
         },
         {
-          "name": "Hand Weapon",
+          "kind": "core",
+          "name": "Sturdy"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 5,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Magma Sword",
+          "quantity": 4,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Shock Hammer",
           "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "shock-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 140
+    },
+    {
+      "name": "Sniper Team",
+      "id": "sn1",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Sturdy"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Strike",
+          "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Sniper Rifle",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Takedown"
+            }
+          ]
         }
       ],
-      "pointCost": 80
+      "pointCost": 100
     },
     {
-      "name": "Dwarf Warriors",
-      "id": "70334558b6314a7f8990100f28efb33a",
+      "name": "Sniper Team",
+      "id": "sn2",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Sturdy"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Sniper Rifle",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Takedown"
+            }
+          ]
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "Miners",
+      "id": "mn1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -10633,8 +10956,12 @@
         "heightInches": 1.968504
       },
       "quality": 4,
-      "defense": 4,
+      "defense": 5,
       "specialRules": [
+        {
+          "kind": "core",
+          "name": "Infiltrate"
+        },
         {
           "kind": "core",
           "name": "Slow"
@@ -10646,241 +10973,10 @@
       ],
       "weapons": [
         {
-          "name": "Battle Rifle",
-          "quantity": 10,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Battle Tank",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "quality": 4,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Sturdy"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Sponson Heavy Flamers",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Heavy Machinegun Array",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 9,
-          "armorPenetration": 1,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 380
-    },
-    {
-      "name": "Dwarf Walker",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "quality": 3,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 2
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Sturdy"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Stomp",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 1,
-          "effectSet": "titan-impact",
-          "specialRules": []
-        },
-        {
-          "name": "Walker Shock Fist",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 2,
-          "effectSet": "titan-impact",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 370
-    },
-    {
-      "name": "Artillery Gun",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 2.7559056,
-        "heightInches": 4.133858
-      },
-      "quality": 4,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Artillery"
-        },
-        {
-          "kind": "core",
-          "name": "Sturdy"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Cumbersome"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Crew",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "crude-melee",
-          "specialRules": []
-        },
-        {
-          "name": "Drill-Bomb Launcher",
-          "quantity": 1,
-          "rangeInches": 24,
+          "name": "Iron-Slug Shotgun",
+          "quantity": 6,
+          "rangeInches": 9,
           "attacks": 2,
-          "armorPenetration": 2,
-          "effectSet": "mortar-artillery",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Indirect"
-            }
-          ]
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Iron Veterans",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 5,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Slow"
-        },
-        {
-          "kind": "core",
-          "name": "Sturdy"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Iron-Slug Carbine",
-          "quantity": 4,
-          "rangeInches": 18,
-          "attacks": 1,
           "armorPenetration": 0,
           "effectSet": "ballistic-slug",
           "specialRules": [
@@ -10891,34 +10987,188 @@
           ]
         },
         {
-          "name": "Strike",
-          "quantity": 5,
+          "name": "Hand Weapon",
+          "quantity": 8,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Heavy Flamer",
-          "quantity": 1,
+          "name": "Fusion Rifle",
+          "quantity": 2,
           "rangeInches": 12,
           "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Blast",
+              "name": "Deadly",
               "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Iron-Slug Pistol",
+          "quantity": 2,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "ballistic-slug",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
             },
             {
               "kind": "core",
-              "name": "Reliable"
+              "name": "Shred"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Hand Weapon",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 240
+    },
+    {
+      "name": "Dwarf Bikers",
+      "id": "bik",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Sturdy"
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Bike-Rifle",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Shotgun",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 185
+    },
+    {
+      "name": "Dwarf Trike",
+      "id": "trk",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Sturdy"
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Bike-Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Fusion Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 130
+      "pointCost": 140
     }
   ],
   "defaultRangedEffectSet": "ballistic-slug",

@@ -12,27 +12,44 @@
             "sectionId": "YFufH-jg",
             "optionId": "H9PNM4jf",
             "count": 1
+          },
+          {
+            "sectionId": "0EjGQ_a1",
+            "optionId": "ZreTSK6T",
+            "count": 1
           }
         ],
-        "id": "StO-e",
-        "joinsUnitId": "BNlOY",
+        "id": "lord1",
+        "joinsUnitId": "w1",
         "combinedWithId": null
       },
       {
         "rosterUnitId": "njiIkJi",
         "modelCount": 5,
-        "choices": [],
-        "id": "BNlOY",
+        "choices": [
+          {
+            "sectionId": "869IcMY",
+            "optionId": "4Tdkvna",
+            "count": 1
+          }
+        ],
+        "id": "w1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "njiIkJi",
         "modelCount": 5,
-        "choices": [],
-        "id": "BNlOY-combined",
+        "choices": [
+          {
+            "sectionId": "869IcMY",
+            "optionId": "4Tdkvna",
+            "count": 1
+          }
+        ],
+        "id": "w2",
         "joinsUnitId": null,
-        "combinedWithId": "BNlOY"
+        "combinedWithId": "w1"
       },
       {
         "rosterUnitId": "lcEWPMS",
@@ -42,39 +59,61 @@
             "sectionId": "YFufH-jg",
             "optionId": "H9PNM4jf",
             "count": 1
+          },
+          {
+            "sectionId": "0EjGQ_a1",
+            "optionId": "ZreTSK6T",
+            "count": 1
           }
         ],
-        "id": "GjPkm",
-        "joinsUnitId": "pz3nF",
+        "id": "lord2",
+        "joinsUnitId": "w3",
         "combinedWithId": null
       },
       {
         "rosterUnitId": "njiIkJi",
         "modelCount": 5,
-        "choices": [],
-        "id": "pz3nF",
+        "choices": [
+          {
+            "sectionId": "869IcMY",
+            "optionId": "4Tdkvna",
+            "count": 1
+          }
+        ],
+        "id": "w3",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "njiIkJi",
         "modelCount": 5,
-        "choices": [],
-        "id": "pz3nF-combined",
+        "choices": [
+          {
+            "sectionId": "869IcMY",
+            "optionId": "4Tdkvna",
+            "count": 1
+          }
+        ],
+        "id": "w4",
         "joinsUnitId": null,
-        "combinedWithId": "pz3nF"
+        "combinedWithId": "w3"
       },
       {
         "rosterUnitId": "6q8HvOZ",
         "modelCount": 5,
         "choices": [
           {
+            "sectionId": "FyP6Kq3Qwg",
+            "optionId": "Amqa-MkQM4",
+            "count": 1
+          },
+          {
             "sectionId": "qn054liP0u",
             "optionId": "kDpZSflgHy",
             "count": 1
           }
         ],
-        "id": "paAPD",
+        "id": "fe1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -83,20 +122,20 @@
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "qn054liP0u",
-            "optionId": "kDpZSflgHy",
+            "sectionId": "FyP6Kq3Qwg",
+            "optionId": "Amqa-MkQM4",
             "count": 1
           }
         ],
-        "id": "paAPD-combined",
+        "id": "fe2",
         "joinsUnitId": null,
-        "combinedWithId": "paAPD"
+        "combinedWithId": "fe1"
       },
       {
         "rosterUnitId": "mEX6i0s",
         "modelCount": 3,
         "choices": [],
-        "id": "UABSQ",
+        "id": "snipers",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -105,9 +144,9 @@
         "modelCount": 3,
         "choices": [
           {
-            "sectionId": "kVspGfmG",
-            "optionId": "qScEKgrw",
-            "count": 1
+            "sectionId": "SvQUQOxptB",
+            "optionId": "G0Fv49WXa9",
+            "count": 3
           },
           {
             "sectionId": "vW-0rhAU",
@@ -115,7 +154,29 @@
             "count": 1
           }
         ],
-        "id": "dCFfO",
+        "id": "snakes",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "wvgi7_R",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "NHLW-EMY",
+            "optionId": "tV1rSWSZ4S",
+            "count": 1
+          }
+        ],
+        "id": "et",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "yhG8aeu",
+        "modelCount": 3,
+        "choices": [],
+        "id": "bikes",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -124,36 +185,12 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "VRPmzPwIxR",
-            "optionId": "tkZJFj0w-n",
+            "sectionId": "UeemXXu",
+            "optionId": "deY-gySo35",
             "count": 1
           }
         ],
-        "id": "qZHoM",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "yoeQi4m",
-        "modelCount": 3,
-        "choices": [],
-        "id": "yWc91",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "yoeQi4m",
-        "modelCount": 3,
-        "choices": [],
-        "id": "Us3e8",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "yoeQi4m",
-        "modelCount": 3,
-        "choices": [],
-        "id": "OrJs-",
+        "id": "ha",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -167,7 +204,7 @@
             "count": 1
           }
         ],
-        "id": "qmke9",
+        "id": "dt",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -176,12 +213,22 @@
         "modelCount": 1,
         "choices": [
           {
+            "sectionId": "i7pOl",
+            "optionId": "KBsG2FBwFa",
+            "count": 1
+          },
+          {
             "sectionId": "OUQ4kqcQjK",
             "optionId": "bLqBzbMJUq",
             "count": 1
+          },
+          {
+            "sectionId": "NdxKB",
+            "optionId": "KWVm-",
+            "count": 1
           }
         ],
-        "id": "04jF-",
+        "id": "gm",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -8211,8 +8258,8 @@
   "units": [
     {
       "name": "Robot Lord",
-      "id": "StO-e",
-      "joinsUnitId": "BNlOY",
+      "id": "lord1",
+      "joinsUnitId": "w1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -8242,32 +8289,16 @@
         },
         {
           "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 2
+        },
+        {
+          "kind": "coreNumeric",
           "name": "Caster",
           "numericValue": 2
         }
       ],
       "weapons": [
-        {
-          "name": "Wrist-Spark",
-          "quantity": 1,
-          "rangeInches": 6,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
         {
           "name": "Hand Weapon",
           "quantity": 1,
@@ -8277,11 +8308,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 110
+      "pointCost": 115
     },
     {
       "name": "Warriors",
-      "id": "BNlOY",
+      "id": "w1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -8305,7 +8336,7 @@
       "weapons": [
         {
           "name": "Ion Rifle",
-          "quantity": 10,
+          "quantity": 8,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 0,
@@ -8323,14 +8354,23 @@
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Plasma Caster",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
         }
       ],
-      "pointCost": 170
+      "pointCost": 200
     },
     {
       "name": "Robot Lord",
-      "id": "GjPkm",
-      "joinsUnitId": "pz3nF",
+      "id": "lord2",
+      "joinsUnitId": "w3",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -8360,32 +8400,16 @@
         },
         {
           "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 2
+        },
+        {
+          "kind": "coreNumeric",
           "name": "Caster",
           "numericValue": 2
         }
       ],
       "weapons": [
-        {
-          "name": "Wrist-Spark",
-          "quantity": 1,
-          "rangeInches": 6,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
         {
           "name": "Hand Weapon",
           "quantity": 1,
@@ -8395,11 +8419,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 110
+      "pointCost": 115
     },
     {
       "name": "Warriors",
-      "id": "pz3nF",
+      "id": "w3",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -8423,7 +8447,7 @@
       "weapons": [
         {
           "name": "Ion Rifle",
-          "quantity": 10,
+          "quantity": 8,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 0,
@@ -8441,13 +8465,22 @@
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Plasma Caster",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
         }
       ],
-      "pointCost": 170
+      "pointCost": 200
     },
     {
       "name": "Flesh-Eaters",
-      "id": "paAPD",
+      "id": "fe1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -8479,25 +8512,20 @@
       ],
       "weapons": [
         {
-          "name": "Rusted Claws",
+          "name": "Spiked Claws",
           "quantity": 10,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Bane"
-            }
-          ]
+          "armorPenetration": 2,
+          "effectSet": "spear-pierce",
+          "specialRules": []
         }
       ],
-      "pointCost": 200
+      "pointCost": 230
     },
     {
       "name": "Snipers",
-      "id": "UABSQ",
+      "id": "snipers",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -8550,7 +8578,7 @@
     },
     {
       "name": "Destroyer Snakes",
-      "id": "dCFfO",
+      "id": "snakes",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -8582,39 +8610,143 @@
       ],
       "weapons": [
         {
-          "name": "Dual Ion Blades",
-          "quantity": 2,
+          "name": "Legion Glaive",
+          "quantity": 3,
           "rangeInches": 0,
           "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "spear-pierce",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 250
+    },
+    {
+      "name": "Eternals",
+      "id": "et",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "core",
+          "name": "Self-Repair"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Photon Rifle",
+          "quantity": 4,
+          "rangeInches": 24,
+          "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "blade-standard",
+          "effectSet": "laser-beam",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Shred"
+              "name": "Shatter"
             }
           ]
         },
         {
-          "name": "Heavy Ion Blade",
-          "quantity": 1,
+          "name": "Strike",
+          "quantity": 5,
           "rangeInches": 0,
-          "attacks": 6,
+          "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "blade-standard",
+          "specialRules": []
+        },
+        {
+          "name": "Fusion Ray",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Shred"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 240
+      "pointCost": 170
+    },
+    {
+      "name": "Hover Bikes",
+      "id": "bikes",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Self-Repair"
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Radium Cannon",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "gauss-particle",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 185
     },
     {
       "name": "Heavy Annihilator",
-      "id": "qZHoM",
+      "id": "ha",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8638,28 +8770,9 @@
         {
           "kind": "core",
           "name": "Self-Repair"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
         }
       ],
       "weapons": [
-        {
-          "name": "Plasma Ray Cannon",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 2,
-          "armorPenetration": 2,
-          "effectSet": "plasma-bolt",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        },
         {
           "name": "Strike",
           "quantity": 1,
@@ -8667,151 +8780,28 @@
           "attacks": 2,
           "armorPenetration": 0,
           "specialRules": []
-        }
-      ],
-      "pointCost": 215
-    },
-    {
-      "name": "Bot Swarms",
-      "id": "yWc91",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 6,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Strider"
         },
         {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Self-Repair"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Bot Claws",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
+          "name": "Fusion Ray Cannon",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Rending"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 125
-    },
-    {
-      "name": "Bot Swarms",
-      "id": "Us3e8",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 6,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Self-Repair"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Bot Claws",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "pointCost": 125
-    },
-    {
-      "name": "Bot Swarms",
-      "id": "OrJs-",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 6,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Self-Repair"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Bot Claws",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "pointCost": 125
+      "pointCost": 210
     },
     {
       "name": "Doom Tank",
-      "id": "qmke9",
+      "id": "dt",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8886,7 +8876,7 @@
     },
     {
       "name": "Great Monolith",
-      "id": "04jF-",
+      "id": "gm",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8924,28 +8914,13 @@
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 18
+        },
+        {
+          "kind": "core",
+          "name": "Casting Buff"
         }
       ],
       "weapons": [
-        {
-          "name": "Monolith Blast",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "laser-beam",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
         {
           "name": "Stomp",
           "quantity": 1,
@@ -8954,6 +8929,25 @@
           "armorPenetration": 2,
           "effectSet": "titan-impact",
           "specialRules": []
+        },
+        {
+          "name": "Monolith Beam",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "laser-beam",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         },
         {
           "name": "Crushing Legs",
@@ -8965,7 +8959,7 @@
           "specialRules": []
         }
       ],
-      "pointCost": 765
+      "pointCost": 815
     }
   ],
   "defaultRangedEffectSet": "gauss-particle",

@@ -9,46 +9,27 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "3YbOQI2pJt",
-            "optionId": "cLyv_MuedS",
+            "sectionId": "UP4gFw_bcY",
+            "optionId": "Lz7NYOcbYE",
+            "count": 1
+          },
+          {
+            "sectionId": "BCvkhSe",
+            "optionId": "fwO6jFd",
             "count": 1
           }
         ],
-        "id": "HKgeU",
-        "joinsUnitId": "V2Nrk",
+        "id": "pm",
+        "joinsUnitId": "pb1",
         "combinedWithId": null
       },
       {
         "rosterUnitId": "PoRVpWT",
         "modelCount": 5,
         "choices": [
-          {
-            "sectionId": "vIcBJVF",
-            "optionId": "lCeyzzU",
-            "count": 1
-          },
           {
             "sectionId": "WoWa7c8",
             "optionId": "XzhFzB-",
-            "count": 1
-          }
-        ],
-        "id": "V2Nrk",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "PoRVpWT",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "vIcBJVF",
-            "optionId": "lCeyzzU",
-            "count": 1
-          },
-          {
-            "sectionId": "WoWa7c8",
-            "optionId": "ix6bJ0r",
             "count": 1
           },
           {
@@ -57,53 +38,68 @@
             "count": 1
           },
           {
-            "sectionId": "4N5dt28g",
-            "optionId": "oKgB7_obHE",
+            "sectionId": "L9LKoLZy",
+            "optionId": "07QSAn5yMG",
+            "count": 1
+          }
+        ],
+        "id": "pb1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "PoRVpWT",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "WoWa7c8",
+            "optionId": "t4ZoXOp",
+            "count": 1
+          },
+          {
+            "sectionId": "PE4ChgC2",
+            "optionId": "jui966qI",
             "count": 1
           },
           {
             "sectionId": "L9LKoLZy",
             "optionId": "QsJvBaCu",
             "count": 1
+          },
+          {
+            "sectionId": "NsqEp",
+            "optionId": "4SsWF",
+            "count": 1
           }
         ],
-        "id": "gM2Ut",
+        "id": "pb2",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "JZ5eWkW",
+        "rosterUnitId": "gw_H20J",
         "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "OGgaOexRV8",
-            "optionId": "gHXp87Ug_E",
-            "count": 3
-          }
-        ],
-        "id": "NOBst",
+        "choices": [],
+        "id": "hs",
         "joinsUnitId": null,
         "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "JZ5eWkW",
-        "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "OGgaOexRV8",
-            "optionId": "gHXp87Ug_E",
-            "count": 3
-          }
-        ],
-        "id": "NOBst-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "NOBst"
       },
       {
         "rosterUnitId": "VZ7HCmt",
         "modelCount": 1,
-        "choices": [],
-        "id": "NnOB2",
+        "choices": [
+          {
+            "sectionId": "WCoSz98",
+            "optionId": "VV9C8",
+            "count": 1
+          },
+          {
+            "sectionId": "vHFoFOcM",
+            "optionId": "H5t6nO_p",
+            "count": 1
+          }
+        ],
+        "id": "atv",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -12303,8 +12299,8 @@
   "units": [
     {
       "name": "Prime Master",
-      "id": "HKgeU",
-      "joinsUnitId": "V2Nrk",
+      "id": "pm",
+      "joinsUnitId": "pb1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -12331,93 +12327,35 @@
         {
           "kind": "core",
           "name": "Primeborn"
+        },
+        {
+          "kind": "core",
+          "name": "Bane when Shooting Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Hand Weapon",
+          "name": "Burst Heavy Rifle",
           "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Plasma Pistol",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 2,
-          "effectSet": "plasma-bolt",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        }
-      ],
-      "pointCost": 95
-    },
-    {
-      "name": "Prime Brothers",
-      "id": "V2Nrk",
-      "joinsUnitId": null,
-      "modelCount": 5,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Primeborn"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration Aura"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Heavy Rifle",
-          "quantity": 4,
           "rangeInches": 18,
-          "attacks": 1,
+          "attacks": 3,
           "armorPenetration": 1,
           "specialRules": []
         },
         {
-          "name": "Strike",
-          "quantity": 5,
+          "name": "Hand Weapon",
+          "quantity": 1,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
-        },
-        {
-          "name": "Plasma Rifle",
-          "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 2,
-          "armorPenetration": 2,
-          "effectSet": "plasma-bolt",
-          "specialRules": []
         }
       ],
-      "pointCost": 185
+      "pointCost": 120
     },
     {
       "name": "Prime Brothers",
-      "id": "gM2Ut",
+      "id": "pb1",
       "joinsUnitId": null,
       "modelCount": 5,
       "base": {
@@ -12436,10 +12374,6 @@
         {
           "kind": "core",
           "name": "Primeborn"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration Aura"
         }
       ],
       "weapons": [
@@ -12460,12 +12394,104 @@
           "specialRules": []
         },
         {
-          "name": "Flamer",
+          "name": "Plasma Rifle",
           "quantity": 1,
-          "rangeInches": 12,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        },
+        {
+          "name": "Sgt. Arc-Charger Pistol",
+          "quantity": 1,
+          "rangeInches": 9,
           "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "flame-jet",
+          "effectSet": "gauss-particle",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Energy Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "pointCost": 170
+    },
+    {
+      "name": "Prime Brothers",
+      "id": "pb2",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primeborn"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Heavy Rifle",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 4,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Grenade-Mod",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "mortar-artillery",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -12474,17 +12500,22 @@
             },
             {
               "kind": "core",
-              "name": "Reliable"
+              "name": "Limited"
             }
           ]
         },
         {
-          "name": "Heavy Pistol",
+          "name": "Sgt. Arc-Charger Pistol",
           "quantity": 1,
           "rangeInches": 9,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
+          "effectSet": "gauss-particle",
           "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
             {
               "kind": "core",
               "name": "Assault"
@@ -12504,10 +12535,10 @@
       "pointCost": 185
     },
     {
-      "name": "Support Prime Brothers",
-      "id": "NOBst",
+      "name": "Heavy Support Prime Brothers",
+      "id": "hs",
       "joinsUnitId": null,
-      "modelCount": 6,
+      "modelCount": 3,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -12528,32 +12559,43 @@
         {
           "kind": "core",
           "name": "Primeborn"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
         }
       ],
       "weapons": [
         {
+          "name": "Fusion Rifle",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
           "name": "Strike",
-          "quantity": 6,
+          "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
-        },
-        {
-          "name": "Plasma Rifle",
-          "quantity": 6,
-          "rangeInches": 24,
-          "attacks": 2,
-          "armorPenetration": 2,
-          "effectSet": "plasma-bolt",
-          "specialRules": []
         }
       ],
-      "pointCost": 350
+      "pointCost": 295
     },
     {
       "name": "Prime ATV",
-      "id": "NnOB2",
+      "id": "atv",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -12581,6 +12623,10 @@
         {
           "kind": "core",
           "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Unstoppable Mark"
         }
       ],
       "weapons": [
@@ -12591,25 +12637,6 @@
           "attacks": 3,
           "armorPenetration": 1,
           "specialRules": []
-        },
-        {
-          "name": "Heavy Flamer",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
         },
         {
           "name": "Overrun",
@@ -12624,9 +12651,24 @@
               "name": "Thrust"
             }
           ]
+        },
+        {
+          "name": "Heavy Fusion Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
         }
       ],
-      "pointCost": 185
+      "pointCost": 230
     }
   ],
   "defaultRangedEffectSet": "storm-tracer",

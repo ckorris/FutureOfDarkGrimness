@@ -10,21 +10,43 @@
         "choices": [
           {
             "sectionId": "OjOkvzKP",
-            "optionId": "xKTeXr_e",
+            "optionId": "-wN_jqe9",
+            "count": 1
+          },
+          {
+            "sectionId": "9reVrurTbA",
+            "optionId": "JhTol8H1XR",
+            "count": 1
+          }
+        ],
+        "id": "btA",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "W35Ba5E",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "OjOkvzKP",
+            "optionId": "-WLy3z7o",
             "count": 1
           },
           {
             "sectionId": "9reVrurTbA",
             "optionId": "dhZnA2X4Lr",
             "count": 1
-          },
-          {
-            "sectionId": "iRsHLrcW-Q",
-            "optionId": "nnWvYybAXY",
-            "count": 1
           }
         ],
-        "id": null,
+        "id": "btB",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "2gQYnym",
+        "modelCount": 1,
+        "choices": [],
+        "id": "cw",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -34,72 +56,16 @@
         "choices": [
           {
             "sectionId": "OqvfwDl",
-            "optionId": "1CmZC7NYOR",
+            "optionId": "bB-NpKQ",
             "count": 1
           },
           {
             "sectionId": "dGP9Ux0",
             "optionId": "28OhQSyodm",
             "count": 1
-          },
-          {
-            "sectionId": "Ey-2KTQm",
-            "optionId": "2PDrp_SG",
-            "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "2gQYnym",
-        "modelCount": 1,
-        "choices": [],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "rQIWNXD",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "EJjVx5L",
-            "optionId": "KSKlhMCGG5",
-            "count": 1
-          },
-          {
-            "sectionId": "x9go1",
-            "optionId": "g8Fls",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "_nbz3zj",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "sJKDuFd",
-            "optionId": "t1--rNw",
-            "count": 2
-          },
-          {
-            "sectionId": "znb1L",
-            "optionId": "rEzyL",
-            "count": 1
-          },
-          {
-            "sectionId": "znb1L",
-            "optionId": "0WqP6",
-            "count": 1
-          }
-        ],
-        "id": "685f99c6aae043509b9ee79627600bea",
+        "id": "av",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -111,19 +77,9 @@
             "sectionId": "MKBD4cu",
             "optionId": "pY516",
             "count": 1
-          },
-          {
-            "sectionId": "vnkMy8De",
-            "optionId": "4HVknWKQ",
-            "count": 1
-          },
-          {
-            "sectionId": "vnkMy8De",
-            "optionId": "Uu55opWn",
-            "count": 1
           }
         ],
-        "id": null,
+        "id": "apc",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -142,26 +98,53 @@
             "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": "685f99c6aae043509b9ee79627600bea",
+        "id": "ldr",
+        "joinsUnitId": "is",
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "08ymvzA",
-        "modelCount": 1,
+        "rosterUnitId": "_nbz3zj",
+        "modelCount": 10,
         "choices": [
           {
-            "sectionId": "oEIOKcP4",
-            "optionId": "yYJbgPOb",
+            "sectionId": "sJKDuFd",
+            "optionId": "yiQrzSL",
+            "count": 2
+          },
+          {
+            "sectionId": "rDvmZwud",
+            "optionId": "8YkhD7tb",
             "count": 1
           },
           {
-            "sectionId": "1p0FZlps",
-            "optionId": "GJbx0qzo",
+            "sectionId": "znb1L",
+            "optionId": "rEzyL",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "is",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "44TuRY_",
+        "modelCount": 3,
+        "choices": [],
+        "id": "ogre",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "B2dHJih",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "GMoY0",
+            "optionId": "XteWP3y8w8",
+            "count": 1
+          }
+        ],
+        "id": "fa",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -11798,7 +11781,7 @@
   "units": [
     {
       "name": "Battle Tank",
-      "id": null,
+      "id": "btA",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -11840,49 +11823,40 @@
           ]
         },
         {
-          "name": "Wrecker-Cannon",
+          "name": "Anti-Tank Cannon",
           "quantity": 1,
-          "rangeInches": 36,
-          "attacks": 9,
-          "armorPenetration": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 3,
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Fracture"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             }
           ]
         },
         {
-          "name": "Sponson Heavy Machineguns",
+          "name": "Sponson Heavy Fusion Rifles",
           "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": []
-        },
-        {
-          "name": "Hull Assault Heavy Machinegun",
-          "quantity": 1,
-          "rangeInches": 15,
-          "attacks": 3,
-          "armorPenetration": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Assault"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 450
+      "pointCost": 405
     },
     {
-      "name": "Attack Vehicle",
-      "id": null,
+      "name": "Battle Tank",
+      "id": "btB",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -11892,7 +11866,7 @@
         "heightInches": 4.7244096
       },
       "quality": 4,
-      "defense": 3,
+      "defense": 2,
       "specialRules": [
         {
           "kind": "core",
@@ -11905,7 +11879,7 @@
         {
           "kind": "coreNumeric",
           "name": "Tough",
-          "numericValue": 9
+          "numericValue": 12
         }
       ],
       "weapons": [
@@ -11913,7 +11887,7 @@
           "name": "Overrun",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 4,
           "armorPenetration": 0,
           "effectSet": "titan-impact",
           "specialRules": [
@@ -11924,10 +11898,10 @@
           ]
         },
         {
-          "name": "Gatling Gun",
+          "name": "Gatling Cannon",
           "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 6,
+          "rangeInches": 30,
+          "attacks": 9,
           "armorPenetration": 0,
           "specialRules": [
             {
@@ -11941,49 +11915,19 @@
           ]
         },
         {
-          "name": "Hull Heavy Fusion Rifle",
+          "name": "Sponson Heavy Machineguns",
           "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "fusion-melta",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            }
-          ]
-        },
-        {
-          "name": "Disposable Guided Missile",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 2,
-          "effectSet": "missile-rocket",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Limited"
-            },
-            {
-              "kind": "core",
-              "name": "Unstoppable"
-            }
-          ]
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
         }
       ],
-      "pointCost": 230
+      "pointCost": 380
     },
     {
       "name": "Combat Walker",
-      "id": null,
+      "id": "cw",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -12046,128 +11990,84 @@
       "pointCost": 325
     },
     {
-      "name": "Light Walker",
-      "id": null,
+      "name": "Attack Vehicle",
+      "id": "av",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "quality": 4,
       "defense": 3,
       "specialRules": [
         {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 1
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Hold the Line"
         },
         {
           "kind": "coreNumeric",
           "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Hold the Line"
-        },
-        {
-          "kind": "core",
-          "name": "Scout"
+          "numericValue": 9
         }
       ],
       "weapons": [
         {
-          "name": "Stomp",
+          "name": "Overrun",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
+          "attacks": 3,
+          "armorPenetration": 0,
           "effectSet": "titan-impact",
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
         },
         {
-          "name": "Autocannon",
+          "name": "Fusion Cannon",
           "quantity": 1,
-          "rangeInches": 36,
-          "attacks": 6,
-          "armorPenetration": 2,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 195
-    },
-    {
-      "name": "Infantry Squad",
-      "id": "685f99c6aae043509b9ee79627600bea",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hold the Line"
-        },
-        {
-          "kind": "core",
-          "name": "Enhanced Hold the Line Aura"
-        },
-        {
-          "kind": "core",
-          "name": "Extended Buff Range"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Battle Rifle",
-          "quantity": 8,
           "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Flamer",
-          "quantity": 2,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
+          "attacks": 2,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Blast",
+              "name": "Deadly",
               "numericValue": 3
-            },
+            }
+          ]
+        },
+        {
+          "name": "Hull Heavy Fusion Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
             {
-              "kind": "core",
-              "name": "Reliable"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 140
+      "pointCost": 245
     },
     {
       "name": "Light APC",
-      "id": null,
+      "id": "apc",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -12196,14 +12096,6 @@
           "kind": "coreNumeric",
           "name": "Transport",
           "numericValue": 11
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Stealth"
         }
       ],
       "weapons": [
@@ -12230,12 +12122,12 @@
           "specialRules": []
         }
       ],
-      "pointCost": 190
+      "pointCost": 150
     },
     {
       "name": "Company Leader",
-      "id": null,
-      "joinsUnitId": "685f99c6aae043509b9ee79627600bea",
+      "id": "ldr",
+      "joinsUnitId": "is",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -12285,8 +12177,137 @@
       "pointCost": 75
     },
     {
-      "name": "Support Vehicle",
-      "id": null,
+      "name": "Infantry Squad",
+      "id": "is",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hold the Line"
+        },
+        {
+          "kind": "core",
+          "name": "Enhanced Hold the Line Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Battle Rifle",
+          "quantity": 7,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Plasma Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        },
+        {
+          "name": "Sgt. Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Hand Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 140
+    },
+    {
+      "name": "OGRE Robots",
+      "id": "ogre",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Hold the Line"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 3
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Shock Baton",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "shock-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 165
+    },
+    {
+      "name": "Field Artillery",
+      "id": "fa",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -12300,39 +12321,38 @@
       "specialRules": [
         {
           "kind": "core",
+          "name": "Artillery"
+        },
+        {
+          "kind": "core",
           "name": "Hold the Line"
         },
         {
           "kind": "coreNumeric",
           "name": "Tough",
-          "numericValue": 6
+          "numericValue": 3
         },
         {
           "kind": "core",
-          "name": "Artillery"
+          "name": "Cumbersome"
         }
       ],
       "weapons": [
         {
-          "name": "Overrun",
+          "name": "Crew",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 3,
           "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
+          "effectSet": "crude-melee",
+          "specialRules": []
         },
         {
-          "name": "Artillery Cannon",
+          "name": "Shredder Mortar",
           "quantity": 1,
-          "rangeInches": 36,
-          "attacks": 3,
-          "armorPenetration": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
           "effectSet": "mortar-artillery",
           "specialRules": [
             {
@@ -12343,19 +12363,15 @@
             {
               "kind": "core",
               "name": "Indirect"
+            },
+            {
+              "kind": "core",
+              "name": "Rending"
             }
           ]
-        },
-        {
-          "name": "Hull Heavy Machinegun",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": []
         }
       ],
-      "pointCost": 305
+      "pointCost": 115
     }
   ],
   "defaultRangedEffectSet": "ballistic-slug",

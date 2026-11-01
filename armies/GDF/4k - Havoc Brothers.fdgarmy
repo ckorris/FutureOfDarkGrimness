@@ -5,16 +5,45 @@
     "pointsLimit": 4000,
     "units": [
       {
+        "rosterUnitId": "E3FXCAQ",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "zP6hvmuQ",
+            "optionId": "-XpxVzLH",
+            "count": 1
+          }
+        ],
+        "id": "hdc",
+        "joinsUnitId": "hb1",
+        "combinedWithId": null
+      },
+      {
         "rosterUnitId": "xikokQS",
         "modelCount": 5,
         "choices": [
           {
             "sectionId": "hxSNT2U",
-            "optionId": "J1r_WVZ",
+            "optionId": "sqWFWQQ",
+            "count": 1
+          },
+          {
+            "sectionId": "qgOaoqCf",
+            "optionId": "7G3loWSO",
+            "count": 1
+          },
+          {
+            "sectionId": "joKX5Q3m",
+            "optionId": "o5pQo6Xh",
+            "count": 1
+          },
+          {
+            "sectionId": "6Rv1P",
+            "optionId": "jfNfn",
             "count": 1
           }
         ],
-        "id": "0Ulr_",
+        "id": "hb1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -24,18 +53,42 @@
         "choices": [
           {
             "sectionId": "hxSNT2U",
-            "optionId": "J1r_WVZ",
+            "optionId": "sqWFWQQ",
             "count": 1
           },
           {
-            "sectionId": "6Rv1P",
-            "optionId": "jfNfn",
+            "sectionId": "qgOaoqCf",
+            "optionId": "7G3loWSO",
+            "count": 1
+          },
+          {
+            "sectionId": "joKX5Q3m",
+            "optionId": "o5pQo6Xh",
             "count": 1
           }
         ],
-        "id": "W3mgq",
+        "id": "hb2",
         "joinsUnitId": null,
-        "combinedWithId": "0Ulr_"
+        "combinedWithId": "hb1"
+      },
+      {
+        "rosterUnitId": "eD_a0Ea",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "R3s-sc-",
+            "optionId": "7cZIObC",
+            "count": 1
+          },
+          {
+            "sectionId": "b7k415Wo",
+            "optionId": "hc3NfZYx",
+            "count": 1
+          }
+        ],
+        "id": "hc1",
+        "joinsUnitId": "hb3",
+        "combinedWithId": null
       },
       {
         "rosterUnitId": "xikokQS",
@@ -43,11 +96,26 @@
         "choices": [
           {
             "sectionId": "hxSNT2U",
-            "optionId": "J1r_WVZ",
+            "optionId": "vr-bWni",
+            "count": 1
+          },
+          {
+            "sectionId": "qgOaoqCf",
+            "optionId": "7G3loWSO",
+            "count": 1
+          },
+          {
+            "sectionId": "joKX5Q3m",
+            "optionId": "gTPFXb3qKh",
+            "count": 1
+          },
+          {
+            "sectionId": "6Rv1P",
+            "optionId": "yU3GPA-i6j",
             "count": 1
           }
         ],
-        "id": "UXunx",
+        "id": "hb3",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -57,35 +125,140 @@
         "choices": [
           {
             "sectionId": "hxSNT2U",
-            "optionId": "J1r_WVZ",
+            "optionId": "vr-bWni",
             "count": 1
           },
           {
-            "sectionId": "6Rv1P",
-            "optionId": "jfNfn",
+            "sectionId": "qgOaoqCf",
+            "optionId": "7G3loWSO",
+            "count": 1
+          },
+          {
+            "sectionId": "joKX5Q3m",
+            "optionId": "gTPFXb3qKh",
             "count": 1
           }
         ],
-        "id": "yOgVQ",
+        "id": "hb4",
         "joinsUnitId": null,
-        "combinedWithId": "UXunx"
+        "combinedWithId": "hb3"
       },
       {
-        "rosterUnitId": "M-vEkXC",
+        "rosterUnitId": "eD_a0Ea",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "R3s-sc-",
+            "optionId": "RKAw4Kf",
+            "count": 1
+          },
+          {
+            "sectionId": "b7k415Wo",
+            "optionId": "Wo8cuHce",
+            "count": 1
+          },
+          {
+            "sectionId": "NWgYlKm0",
+            "optionId": "5h1t-DIC",
+            "count": 1
+          }
+        ],
+        "id": "hc2",
+        "joinsUnitId": "cu1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "QpNjo9z",
+        "modelCount": 10,
+        "choices": [
+          {
+            "sectionId": "DwZ_3PT",
+            "optionId": "IVug8l-",
+            "count": 2
+          },
+          {
+            "sectionId": "6Rv1P",
+            "optionId": "yU3GPA-i6j",
+            "count": 1
+          }
+        ],
+        "id": "cu1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "QpNjo9z",
+        "modelCount": 10,
+        "choices": [
+          {
+            "sectionId": "DwZ_3PT",
+            "optionId": "IVug8l-",
+            "count": 2
+          }
+        ],
+        "id": "cu2",
+        "joinsUnitId": null,
+        "combinedWithId": "cu1"
+      },
+      {
+        "rosterUnitId": "QpNjo9z",
+        "modelCount": 10,
+        "choices": [
+          {
+            "sectionId": "DwZ_3PT",
+            "optionId": "kAbDRNQ",
+            "count": 2
+          },
+          {
+            "sectionId": "6Rv1P",
+            "optionId": "yU3GPA-i6j",
+            "count": 1
+          }
+        ],
+        "id": "cu3",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "CBMWeIu",
         "modelCount": 3,
         "choices": [
           {
-            "sectionId": "FzhKY",
-            "optionId": "JizpL",
-            "count": 3
+            "sectionId": "cbj3DdV",
+            "optionId": "339iPAS",
+            "count": 1
           },
           {
-            "sectionId": "6Rv1P",
-            "optionId": "jfNfn",
+            "sectionId": "KDdsi-xa",
+            "optionId": "oxmh2-bP",
+            "count": 1
+          },
+          {
+            "sectionId": "wcu2Zgth",
+            "optionId": "C8jZB8Z5",
             "count": 1
           }
         ],
-        "id": "3m9q5",
+        "id": "bikes",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "O36Y4SN",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "4xCRrhqw1r",
+            "optionId": "NWKGFXlicy",
+            "count": 1
+          },
+          {
+            "sectionId": "uBgeDLK3Up",
+            "optionId": "IqQtZkvh-T",
+            "count": 1
+          }
+        ],
+        "id": "dest",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -95,11 +268,11 @@
         "choices": [
           {
             "sectionId": "Ru_eqWL",
-            "optionId": "tOM2PBIlSo",
+            "optionId": "WYEnC",
             "count": 1
           }
         ],
-        "id": "P4rBR",
+        "id": "tank",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -113,97 +286,7 @@
             "count": 2
           }
         ],
-        "id": "VezHl",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "QpNjo9z",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "DwZ_3PT",
-            "optionId": "kAbDRNQ",
-            "count": 2
-          }
-        ],
-        "id": "0lHhj",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "QpNjo9z",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "DwZ_3PT",
-            "optionId": "kAbDRNQ",
-            "count": 2
-          }
-        ],
-        "id": "TP8cB",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "QpNjo9z",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "DwZ_3PT",
-            "optionId": "kAbDRNQ",
-            "count": 2
-          }
-        ],
-        "id": "sIDm9",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "E3FXCAQ",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "6VjpK",
-            "optionId": "BLLCo2c98E",
-            "count": 1
-          },
-          {
-            "sectionId": "67woP",
-            "optionId": "Ku1A9",
-            "count": 1
-          },
-          {
-            "sectionId": "xpTQqldyCd",
-            "optionId": "FdZaRylXt9",
-            "count": 1
-          },
-          {
-            "sectionId": "zP6hvmuQ",
-            "optionId": "yshbWEXO",
-            "count": 1
-          }
-        ],
-        "id": "oSgn5",
-        "joinsUnitId": "9TmSP",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "O36Y4SN",
-        "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "9o_VxP4",
-            "optionId": "zsSX-q5",
-            "count": 1
-          },
-          {
-            "sectionId": "uBgeDLK3Up",
-            "optionId": "IqQtZkvh-T",
-            "count": 1
-          }
-        ],
-        "id": "9TmSP",
+        "id": "brute",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -213,35 +296,11 @@
         "choices": [
           {
             "sectionId": "TCbBgxK48z",
-            "optionId": "LdXlCx3yyH",
-            "count": 1
-          },
-          {
-            "sectionId": "v_wxmX2n5O",
-            "optionId": "n6ntu9vHVh",
+            "optionId": "3VLnY_5Oe0",
             "count": 1
           }
         ],
-        "id": "OAtCX",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "O36Y4SN",
-        "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "9o_VxP4",
-            "optionId": "zsSX-q5",
-            "count": 1
-          },
-          {
-            "sectionId": "uBgeDLK3Up",
-            "optionId": "IqQtZkvh-T",
-            "count": 1
-          }
-        ],
-        "id": null,
+        "id": "desp",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -11398,8 +11457,59 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
+      "name": "Havoc Destroyer Champion",
+      "id": "hdc",
+      "joinsUnitId": "hb1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Havocbound"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Warlock Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
+        }
+      ],
+      "pointCost": 190
+    },
+    {
       "name": "Havoc Brothers",
-      "id": "0Ulr_",
+      "id": "hb1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -11423,7 +11533,7 @@
       "weapons": [
         {
           "name": "Heavy Rifle",
-          "quantity": 8,
+          "quantity": 6,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 1,
@@ -11431,26 +11541,110 @@
         },
         {
           "name": "Strike",
-          "quantity": 10,
+          "quantity": 8,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Autocannon",
+          "name": "Missile Launcher",
           "quantity": 2,
-          "rangeInches": 36,
-          "attacks": 3,
+          "rangeInches": 30,
+          "attacks": 1,
           "armorPenetration": 2,
+          "effectSet": "missile-rocket",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Heavy Pistol",
+          "quantity": 2,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Energy Fist",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
           "specialRules": []
         }
       ],
-      "pointCost": 415
+      "pointCost": 405
+    },
+    {
+      "name": "Havoc Champion",
+      "id": "hc1",
+      "joinsUnitId": "hb3",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Havocbound"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Warlock Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
+        }
+      ],
+      "pointCost": 125
     },
     {
       "name": "Havoc Brothers",
-      "id": "UXunx",
+      "id": "hb3",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -11468,16 +11662,200 @@
         },
         {
           "kind": "core",
-          "name": "Versatile Defense Aura"
+          "name": "Steadfast Aura"
         }
       ],
       "weapons": [
         {
           "name": "Heavy Rifle",
-          "quantity": 8,
+          "quantity": 6,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 8,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Plasma Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        },
+        {
+          "name": "Sgt. Heavy Pistol",
+          "quantity": 2,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Energy Sword",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "pointCost": 355
+    },
+    {
+      "name": "Havoc Champion",
+      "id": "hc2",
+      "joinsUnitId": "cu1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Havocbound"
+        },
+        {
+          "kind": "core",
+          "name": "Enhanced Havocbound Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Burst Heavy Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Energy Fist",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 125
+    },
+    {
+      "name": "Cultists",
+      "id": "cu1",
+      "joinsUnitId": null,
+      "modelCount": 20,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Havocbound"
+        },
+        {
+          "kind": "core",
+          "name": "Steadfast Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Battle Rifle",
+          "quantity": 16,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 20,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Plasma Rifle",
+          "quantity": 4,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 325
+    },
+    {
+      "name": "Cultists",
+      "id": "cu3",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Havocbound"
+        },
+        {
+          "kind": "core",
+          "name": "Steadfast Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Battle Rifle",
+          "quantity": 8,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
           "specialRules": []
         },
         {
@@ -11489,47 +11867,71 @@
           "specialRules": []
         },
         {
-          "name": "Autocannon",
+          "name": "Grenade Launcher",
           "quantity": 2,
-          "rangeInches": 36,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "specialRules": []
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "mortar-artillery",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
         }
       ],
-      "pointCost": 415
+      "pointCost": 175
     },
     {
-      "name": "Chosen Havoc Brothers",
-      "id": "3m9q5",
+      "name": "Havoc Bikers",
+      "id": "bikes",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "quality": 3,
       "defense": 3,
       "specialRules": [
         {
           "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
           "name": "Havocbound"
-        },
-        {
-          "kind": "core",
-          "name": "Versatile Expert"
-        },
-        {
-          "kind": "core",
-          "name": "Versatile Defense Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Strike",
+          "name": "Heavy Bike-Rifle",
           "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 2,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -11537,7 +11939,7 @@
         },
         {
           "name": "Fusion Rifle",
-          "quantity": 3,
+          "quantity": 1,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 4,
@@ -11549,13 +11951,81 @@
               "numericValue": 3
             }
           ]
+        },
+        {
+          "name": "Sgt. Heavy Pistol",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Energy Fist",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
+          "specialRules": []
         }
       ],
-      "pointCost": 205
+      "pointCost": 290
+    },
+    {
+      "name": "Havoc Destroyers",
+      "id": "dest",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Havocbound"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dual Energy Claws",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        }
+      ],
+      "pointCost": 280
     },
     {
       "name": "Havoc Battle Tank",
-      "id": "P4rBR",
+      "id": "tank",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -11597,15 +12067,16 @@
           ]
         },
         {
-          "name": "Battle Cannon",
+          "name": "Twin Laser Cannon",
           "quantity": 1,
-          "rangeInches": 30,
+          "rangeInches": 36,
           "attacks": 3,
-          "armorPenetration": 1,
+          "armorPenetration": 3,
+          "effectSet": "laser-beam",
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Blast",
+              "name": "Deadly",
               "numericValue": 3
             }
           ]
@@ -11619,11 +12090,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 445
+      "pointCost": 530
     },
     {
       "name": "Infernal Brute",
-      "id": "VezHl",
+      "id": "brute",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -11679,340 +12150,8 @@
       "pointCost": 465
     },
     {
-      "name": "Cultists",
-      "id": "0lHhj",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Havocbound"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Battle Rifle",
-          "quantity": 8,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Grenade Launcher",
-          "quantity": 2,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "mortar-artillery",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Cultists",
-      "id": "TP8cB",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Havocbound"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Battle Rifle",
-          "quantity": 8,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Grenade Launcher",
-          "quantity": 2,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "mortar-artillery",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Cultists",
-      "id": "sIDm9",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Havocbound"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Battle Rifle",
-          "quantity": 8,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Grenade Launcher",
-          "quantity": 2,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "mortar-artillery",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Havoc Destroyer Champion",
-      "id": "oSgn5",
-      "joinsUnitId": "9TmSP",
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Havocbound"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Relentless Aura"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Burst Heavy Rifle",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": []
-        },
-        {
-          "name": "Flamer-Mod",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
-        {
-          "name": "Energy Sword",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 6,
-          "armorPenetration": 0,
-          "effectSet": "energy-blade",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "pointCost": 255
-    },
-    {
-      "name": "Havoc Destroyers",
-      "id": "9TmSP",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Havocbound"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Assault Cyclic Rifle",
-          "quantity": 2,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "storm-tracer",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Surge"
-            }
-          ]
-        },
-        {
-          "name": "Hand Weapon",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Heavy Flamer",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
-        {
-          "name": "Hand Weapon",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 270
-    },
-    {
       "name": "Despoiler Walker",
-      "id": "OAtCX",
+      "id": "desp",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -12054,130 +12193,22 @@
           "specialRules": []
         },
         {
-          "name": "Assault Anti-Tank Cannon",
+          "name": "Heavy Anti-Tank Cannon",
           "quantity": 1,
-          "rangeInches": 15,
-          "attacks": 1,
-          "armorPenetration": 2,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
-        {
-          "name": "Brute Flail",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 0,
-          "effectSet": "crude-melee",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        },
-        {
-          "name": "Despoiler Claws",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        },
-        {
-          "name": "Dual Fusion Beams",
-          "quantity": 1,
-          "rangeInches": 6,
+          "rangeInches": 30,
           "attacks": 1,
           "armorPenetration": 4,
-          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
               "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        }
-      ],
-      "pointCost": 760
-    },
-    {
-      "name": "Havoc Destroyers",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Havocbound"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Assault Cyclic Rifle",
-          "quantity": 2,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "storm-tracer",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Surge"
+              "numericValue": 6
             }
           ]
         },
         {
-          "name": "Hand Weapon",
+          "name": "Twin Heavy Flamer",
           "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Heavy Flamer",
-          "quantity": 1,
           "rangeInches": 12,
           "attacks": 2,
           "armorPenetration": 1,
@@ -12193,17 +12224,9 @@
               "name": "Reliable"
             }
           ]
-        },
-        {
-          "name": "Hand Weapon",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
         }
       ],
-      "pointCost": 270
+      "pointCost": 730
     }
   ],
   "defaultRangedEffectSet": "ballistic-slug",

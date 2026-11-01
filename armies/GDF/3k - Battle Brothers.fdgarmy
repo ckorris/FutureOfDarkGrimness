@@ -9,13 +9,23 @@
         "modelCount": 1,
         "choices": [
           {
+            "sectionId": "wwjZVUq",
+            "optionId": "im7GS_Rn-M",
+            "count": 1
+          },
+          {
+            "sectionId": "CPoQHGT",
+            "optionId": "t3czEkE",
+            "count": 1
+          },
+          {
             "sectionId": "5E4zYzbg",
-            "optionId": "xBNeUxnAHp",
+            "optionId": "2C37BHv-",
             "count": 1
           }
         ],
-        "id": "Ueb4K",
-        "joinsUnitId": "c5B18",
+        "id": "mb1",
+        "joinsUnitId": "bbA1",
         "combinedWithId": null
       },
       {
@@ -26,9 +36,14 @@
             "sectionId": "OwEuxMR",
             "optionId": "XOOcDRr",
             "count": 1
+          },
+          {
+            "sectionId": "QKtqiW3o",
+            "optionId": "ox_dt2ux",
+            "count": 1
           }
         ],
-        "id": "c5B18",
+        "id": "bbA1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -40,57 +55,34 @@
             "sectionId": "OwEuxMR",
             "optionId": "XOOcDRr",
             "count": 1
-          }
-        ],
-        "id": "c5B18-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "c5B18"
-      },
-      {
-        "rosterUnitId": "rsouUXt",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "OwEuxMR",
-            "optionId": "0DHLo06",
-            "count": 1
           },
           {
-            "sectionId": "VSUO3",
-            "optionId": "bgv7l",
+            "sectionId": "QKtqiW3o",
+            "optionId": "ox_dt2ux",
             "count": 1
           }
         ],
-        "id": "njXSD",
+        "id": "bbA2",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "rsouUXt",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "OwEuxMR",
-            "optionId": "0DHLo06",
-            "count": 1
-          },
-          {
-            "sectionId": "VSUO3",
-            "optionId": "bgv7l",
-            "count": 1
-          }
-        ],
-        "id": "njXSD-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "njXSD"
+        "combinedWithId": "bbA1"
       },
       {
         "rosterUnitId": "FJRVn9S",
         "modelCount": 1,
         "choices": [
           {
+            "sectionId": "NearFSC",
+            "optionId": "Cmvj8Zwf2o",
+            "count": 1
+          },
+          {
             "sectionId": "3LJ6Wjx",
             "optionId": "mtqhfeI",
+            "count": 1
+          },
+          {
+            "sectionId": "C3M0Prp",
+            "optionId": "iKz0_Zo",
             "count": 1
           },
           {
@@ -99,8 +91,8 @@
             "count": 1
           }
         ],
-        "id": "NWlV_",
-        "joinsUnitId": "0o8nv",
+        "id": "mb2",
+        "joinsUnitId": "abB1",
         "combinedWithId": null
       },
       {
@@ -108,22 +100,27 @@
         "modelCount": 5,
         "choices": [
           {
+            "sectionId": "oFy97rs",
+            "optionId": "tCCVCvETIW",
+            "count": 1
+          },
+          {
             "sectionId": "zH7MpIKu0o",
-            "optionId": "6MhNtEehSd",
+            "optionId": "90VEG0TY1n",
+            "count": 1
+          },
+          {
+            "sectionId": "lIOr2V5Y",
+            "optionId": "ZEy3nKBj",
             "count": 1
           },
           {
             "sectionId": "xN7OjZnX",
             "optionId": "CEf1aBs2",
             "count": 1
-          },
-          {
-            "sectionId": "VSUO3",
-            "optionId": "aaeYD",
-            "count": 1
           }
         ],
-        "id": "0o8nv",
+        "id": "abB1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -132,24 +129,29 @@
         "modelCount": 5,
         "choices": [
           {
+            "sectionId": "oFy97rs",
+            "optionId": "tCCVCvETIW",
+            "count": 1
+          },
+          {
             "sectionId": "zH7MpIKu0o",
-            "optionId": "6MhNtEehSd",
+            "optionId": "KBe9WZO8N7",
+            "count": 1
+          },
+          {
+            "sectionId": "lIOr2V5Y",
+            "optionId": "ZEy3nKBj",
             "count": 1
           },
           {
             "sectionId": "xN7OjZnX",
-            "optionId": "CEf1aBs2",
-            "count": 1
-          },
-          {
-            "sectionId": "VSUO3",
-            "optionId": "aaeYD",
+            "optionId": "Na6D0FoMKv",
             "count": 1
           }
         ],
-        "id": "0o8nv-combined",
+        "id": "abB2",
         "joinsUnitId": null,
-        "combinedWithId": "0o8nv"
+        "combinedWithId": "abB1"
       },
       {
         "rosterUnitId": "71qQ2Y0",
@@ -161,12 +163,17 @@
             "count": 1
           },
           {
+            "sectionId": "5cbkyo8",
+            "optionId": "k_5UC9Q",
+            "count": 1
+          },
+          {
             "sectionId": "1BI1BcCWQQ",
             "optionId": "3aE2M0jmCB",
             "count": 1
           }
         ],
-        "id": "dDHuo",
+        "id": "dest",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -180,17 +187,12 @@
             "count": 1
           },
           {
-            "sectionId": "Wi3cNTY2",
-            "optionId": "oWC_K05x",
-            "count": 1
-          },
-          {
             "sectionId": "5R-YDoFg",
-            "optionId": "zc0PXu-_",
+            "optionId": "QKYOMeHm",
             "count": 1
           }
         ],
-        "id": "JHdIs",
+        "id": "tank",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -200,19 +202,47 @@
         "choices": [
           {
             "sectionId": "3Xp5xGTcx0",
-            "optionId": "egmEDI2E5a",
-            "count": 2
+            "optionId": "VjOdvoRe5E",
+            "count": 1
           }
         ],
-        "id": "ezDF6",
+        "id": "walker",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "02PM2Nk",
         "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "NhA-xiKAeO",
+            "optionId": "bnXXVIvXKB",
+            "count": 1
+          }
+        ],
+        "id": "bikers",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "y59VWP0",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "9QIyR_F",
+            "optionId": "4E2Rq7p",
+            "count": 3
+          }
+        ],
+        "id": "sup",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "bPIl4cJ",
+        "modelCount": 3,
         "choices": [],
-        "id": "I8jk2",
+        "id": "snip",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -12836,8 +12866,8 @@
   "units": [
     {
       "name": "Master Brother",
-      "id": "Ueb4K",
-      "joinsUnitId": "c5B18",
+      "id": "mb1",
+      "joinsUnitId": "bbA1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -12867,46 +12897,46 @@
         },
         {
           "kind": "core",
-          "name": "Rapid Rush Aura"
+          "name": "Bane when Shooting Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Flamer Pistol",
+          "name": "Burst Heavy Rifle",
           "quantity": 1,
-          "rangeInches": 6,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
         },
         {
           "name": "Hand Weapon",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Plasma-Mod",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Limited"
+            }
+          ]
         }
       ],
-      "pointCost": 100
+      "pointCost": 125
     },
     {
       "name": "Battle Brothers",
-      "id": "c5B18",
+      "id": "bbA1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -12930,7 +12960,7 @@
       "weapons": [
         {
           "name": "Heavy Rifle",
-          "quantity": 8,
+          "quantity": 6,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 1,
@@ -12938,7 +12968,7 @@
         },
         {
           "name": "Strike",
-          "quantity": 10,
+          "quantity": 8,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -12951,76 +12981,40 @@
           "attacks": 3,
           "armorPenetration": 1,
           "specialRules": []
-        }
-      ],
-      "pointCost": 330
-    },
-    {
-      "name": "Battle Brothers",
-      "id": "njXSD",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Battleborn"
         },
         {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Versatile Reach Aura"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Heavy Rifle",
-          "quantity": 8,
-          "rangeInches": 18,
+          "name": "Sgt. Arc-Charger Pistol",
+          "quantity": 2,
+          "rangeInches": 9,
           "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": []
+          "armorPenetration": 0,
+          "effectSet": "gauss-particle",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
         },
         {
-          "name": "Strike",
-          "quantity": 10,
+          "name": "Sgt. Hand Weapon",
+          "quantity": 2,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
-        },
-        {
-          "name": "Heavy Fusion Rifle",
-          "quantity": 2,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "fusion-melta",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            }
-          ]
         }
       ],
-      "pointCost": 360
+      "pointCost": 340
     },
     {
       "name": "Master Brother",
-      "id": "NWlV_",
-      "joinsUnitId": "0o8nv",
+      "id": "mb2",
+      "joinsUnitId": "abB1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -13050,26 +13044,22 @@
         },
         {
           "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "core",
           "name": "Rapid Rush Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Flamer Pistol",
+          "name": "Plasma Pistol",
           "quantity": 1,
-          "rangeInches": 6,
+          "rangeInches": 12,
           "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
           "specialRules": [
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
             {
               "kind": "core",
               "name": "Assault"
@@ -13086,11 +13076,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 115
+      "pointCost": 135
     },
     {
       "name": "Assault Brothers",
-      "id": "0o8nv",
+      "id": "abB1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -13112,13 +13102,13 @@
         },
         {
           "kind": "core",
-          "name": "Regeneration Aura"
+          "name": "Flying"
         }
       ],
       "weapons": [
         {
           "name": "Heavy Pistol",
-          "quantity": 10,
+          "quantity": 8,
           "rangeInches": 9,
           "attacks": 1,
           "armorPenetration": 1,
@@ -13131,33 +13121,82 @@
         },
         {
           "name": "Hand Weapon",
-          "quantity": 8,
+          "quantity": 6,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Energy Hammer",
-          "quantity": 2,
+          "name": "Energy Sword",
+          "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
+          "attacks": 3,
+          "armorPenetration": 0,
           "effectSet": "energy-blade",
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Arc-Charger Pistol",
+          "quantity": 2,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "gauss-particle",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Energy Fist",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
+          "specialRules": []
+        },
+        {
+          "name": "Energy Fist",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
+          "specialRules": []
+        },
+        {
+          "name": "Energy Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
             }
           ]
         }
       ],
-      "pointCost": 370
+      "pointCost": 380
     },
     {
       "name": "Destroyers",
-      "id": "dDHuo",
+      "id": "dest",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -13190,7 +13229,7 @@
       "weapons": [
         {
           "name": "Burst Cyclic Rifle",
-          "quantity": 3,
+          "quantity": 2,
           "rangeInches": 18,
           "attacks": 3,
           "armorPenetration": 0,
@@ -13213,13 +13252,30 @@
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Gatling Cannon",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
         }
       ],
-      "pointCost": 275
+      "pointCost": 325
     },
     {
       "name": "Battle Tank",
-      "id": "JHdIs",
+      "id": "tank",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -13247,10 +13303,6 @@
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
         }
       ],
       "weapons": [
@@ -13292,12 +13344,12 @@
           "specialRules": []
         },
         {
-          "name": "Pintle Heavy Fusion Rifle",
+          "name": "Disposable Guided Missile",
           "quantity": 1,
-          "rangeInches": 9,
+          "rangeInches": 18,
           "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "fusion-melta",
+          "armorPenetration": 2,
+          "effectSet": "missile-rocket",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -13306,16 +13358,20 @@
             },
             {
               "kind": "core",
-              "name": "Assault"
+              "name": "Limited"
+            },
+            {
+              "kind": "core",
+              "name": "Unstoppable"
             }
           ]
         }
       ],
-      "pointCost": 675
+      "pointCost": 560
     },
     {
       "name": "Veteran Combat Walker",
-      "id": "ezDF6",
+      "id": "walker",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -13361,19 +13417,28 @@
           "specialRules": []
         },
         {
-          "name": "Linked Heavy Rifle-Array",
-          "quantity": 2,
-          "rangeInches": 18,
+          "name": "Walker Combat Fist",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 2,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        },
+        {
+          "name": "Twin Autocannon",
+          "quantity": 1,
+          "rangeInches": 36,
           "attacks": 6,
-          "armorPenetration": 1,
+          "armorPenetration": 2,
           "specialRules": []
         }
       ],
-      "pointCost": 490
+      "pointCost": 530
     },
     {
       "name": "Pathfinder Bikers",
-      "id": "I8jk2",
+      "id": "bikers",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -13405,26 +13470,23 @@
       ],
       "weapons": [
         {
-          "name": "Assault Grenade Launcher",
+          "name": "Heavy Bike-Rifle",
           "quantity": 3,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "mortar-artillery",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
         },
         {
-          "name": "Hand Weapon",
+          "name": "Heavy Rifle",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
           "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
@@ -13432,7 +13494,130 @@
           "specialRules": []
         }
       ],
-      "pointCost": 185
+      "pointCost": 200
+    },
+    {
+      "name": "Support Brothers",
+      "id": "sup",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Relentless"
+        },
+        {
+          "kind": "core",
+          "name": "Battleborn"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Laser Cannon",
+          "quantity": 3,
+          "rangeInches": 36,
+          "attacks": 1,
+          "armorPenetration": 3,
+          "effectSet": "laser-beam",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 285
+    },
+    {
+      "name": "Pathfinder Snipers",
+      "id": "snip",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Battleborn"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Anti-Matter-Sniper Carbine",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "gravity-pulse",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Smash"
+            },
+            {
+              "kind": "core",
+              "name": "Takedown"
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 120
     }
   ],
   "defaultRangedEffectSet": "storm-tracer",
