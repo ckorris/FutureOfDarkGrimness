@@ -5,6 +5,106 @@
     "pointsLimit": 2000,
     "units": [
       {
+        "rosterUnitId": "DDyxDBK",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "f3b7N",
+            "optionId": "zI_fAj026V",
+            "count": 1
+          }
+        ],
+        "id": "lordA",
+        "joinsUnitId": "nm1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "wYmbZMH",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "y0dIhAYSFO",
+            "optionId": "XlpTr9Rl7A",
+            "count": 1
+          }
+        ],
+        "id": "nm1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "wYmbZMH",
+        "modelCount": 5,
+        "choices": [],
+        "id": "nm2",
+        "joinsUnitId": null,
+        "combinedWithId": "nm1"
+      },
+      {
+        "rosterUnitId": "DDyxDBK",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "f3b7N",
+            "optionId": "zI_fAj026V",
+            "count": 1
+          }
+        ],
+        "id": "lordB",
+        "joinsUnitId": "w1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "yEJT1lg",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "11TlG",
+            "optionId": "geD2i",
+            "count": 1
+          }
+        ],
+        "id": "w1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "yEJT1lg",
+        "modelCount": 5,
+        "choices": [],
+        "id": "w2",
+        "joinsUnitId": null,
+        "combinedWithId": "w1"
+      },
+      {
+        "rosterUnitId": "BFjYmT3",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "XlpM537",
+            "optionId": "rI7Z0Am",
+            "count": 1
+          }
+        ],
+        "id": "war1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "BFjYmT3",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "XlpM537",
+            "optionId": "rI7Z0Am",
+            "count": 1
+          }
+        ],
+        "id": "war2",
+        "joinsUnitId": null,
+        "combinedWithId": "war1"
+      },
+      {
         "rosterUnitId": "FkqmUWW",
         "modelCount": 1,
         "choices": [
@@ -14,7 +114,21 @@
             "count": 1
           }
         ],
-        "id": null,
+        "id": "sk1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "FkqmUWW",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "pPpiONNz",
+            "optionId": "n0huLIOyu1",
+            "count": 1
+          }
+        ],
+        "id": "sk2",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -26,133 +140,11 @@
             "sectionId": "pPpiONNz",
             "optionId": "hRLE_CoGFX",
             "count": 1
-          },
-          {
-            "sectionId": "0XlyZsZ0",
-            "optionId": "Y09KqfVQ",
-            "count": 1
           }
         ],
-        "id": null,
+        "id": "sk3",
         "joinsUnitId": null,
         "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "FkqmUWW",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "pPpiONNz",
-            "optionId": "n0huLIOyu1",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "DDyxDBK",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "f3b7N",
-            "optionId": "zI_fAj026V",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": "e84137c36df244f8aa3b56eaeb31824c",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "wYmbZMH",
-        "modelCount": 5,
-        "choices": [],
-        "id": "e84137c36df244f8aa3b56eaeb31824c",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "wYmbZMH",
-        "modelCount": 5,
-        "choices": [],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": "e84137c36df244f8aa3b56eaeb31824c"
-      },
-      {
-        "rosterUnitId": "DDyxDBK",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "f3b7N",
-            "optionId": "zI_fAj026V",
-            "count": 1
-          },
-          {
-            "sectionId": "MH8D_JqA",
-            "optionId": "JyMWcf3z",
-            "count": 1
-          },
-          {
-            "sectionId": "khHelkz8",
-            "optionId": "9OuoW1Nn",
-            "count": 1
-          },
-          {
-            "sectionId": "ltNb7a33",
-            "optionId": "9GeUAy5L",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": "0a10f3446541442984af878cd3918549",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "yEJT1lg",
-        "modelCount": 5,
-        "choices": [],
-        "id": "0a10f3446541442984af878cd3918549",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "yEJT1lg",
-        "modelCount": 5,
-        "choices": [],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": "0a10f3446541442984af878cd3918549"
-      },
-      {
-        "rosterUnitId": "BFjYmT3",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "XlpM537",
-            "optionId": "rI7Z0Am",
-            "count": 1
-          }
-        ],
-        "id": "453a600fc7ba445d8dc39324666a8d52",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "BFjYmT3",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "XlpM537",
-            "optionId": "rI7Z0Am",
-            "count": 1
-          }
-        ],
-        "id": "453a600fc7ba445d8dc39324666a8d52-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "453a600fc7ba445d8dc39324666a8d52"
       },
       {
         "rosterUnitId": "fmxy-Cm",
@@ -167,14 +159,9 @@
             "sectionId": "Bja2e6-2zl",
             "optionId": "8cle-xlL4_",
             "count": 1
-          },
-          {
-            "sectionId": "DK9mESof",
-            "optionId": "9dHYKW6T",
-            "count": 1
           }
         ],
-        "id": null,
+        "id": "hs",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -9147,253 +9134,9 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
-      "name": "Light Skimmer",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Harassing"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Transport",
-          "numericValue": 11
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Twin Barb Rifle",
-          "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Lacerate"
-            }
-          ]
-        },
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Dark-Energy Cannon",
-          "quantity": 1,
-          "rangeInches": 36,
-          "attacks": 1,
-          "armorPenetration": 3,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            }
-          ]
-        }
-      ],
-      "pointCost": 260
-    },
-    {
-      "name": "Light Skimmer",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Harassing"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Transport",
-          "numericValue": 11
-        },
-        {
-          "kind": "core",
-          "name": "Agile"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Twin Barb Rifle",
-          "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Lacerate"
-            }
-          ]
-        },
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Plas-Burster Cannon",
-          "quantity": 1,
-          "rangeInches": 36,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 270
-    },
-    {
-      "name": "Light Skimmer",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Harassing"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Transport",
-          "numericValue": 11
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Twin Barb Rifle",
-          "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Lacerate"
-            }
-          ]
-        },
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Dark-Energy Cannon",
-          "quantity": 1,
-          "rangeInches": 36,
-          "attacks": 1,
-          "armorPenetration": 3,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            }
-          ]
-        }
-      ],
-      "pointCost": 260
-    },
-    {
       "name": "Dark Lord",
-      "id": null,
-      "joinsUnitId": "e84137c36df244f8aa3b56eaeb31824c",
+      "id": "lordA",
+      "joinsUnitId": "nm1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -9451,7 +9194,7 @@
     },
     {
       "name": "Nightmares",
-      "id": "e84137c36df244f8aa3b56eaeb31824c",
+      "id": "nm1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -9475,7 +9218,7 @@
       "weapons": [
         {
           "name": "Heavy Jagged Cleaver",
-          "quantity": 10,
+          "quantity": 9,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -9485,14 +9228,27 @@
               "name": "Shred"
             }
           ]
+        },
+        {
+          "name": "Dual Jagged Cleavers",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
         }
       ],
-      "pointCost": 170
+      "pointCost": 190
     },
     {
       "name": "Dark Lord",
-      "id": null,
-      "joinsUnitId": "0a10f3446541442984af878cd3918549",
+      "id": "lordB",
+      "joinsUnitId": "w1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -9523,29 +9279,12 @@
       ],
       "weapons": [
         {
-          "name": "Barb Pistol",
+          "name": "Haze-Launcher",
           "quantity": 1,
-          "rangeInches": 12,
+          "rangeInches": 24,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Lacerate"
-            }
-          ]
-        },
-        {
-          "name": "Charged Flail",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "crude-melee",
+          "effectSet": "mortar-artillery",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -9553,13 +9292,21 @@
               "numericValue": 3
             }
           ]
+        },
+        {
+          "name": "Hand Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
         }
       ],
-      "pointCost": 110
+      "pointCost": 90
     },
     {
       "name": "Witches",
-      "id": "0a10f3446541442984af878cd3918549",
+      "id": "w1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -9583,7 +9330,7 @@
       "weapons": [
         {
           "name": "Barb Pistol",
-          "quantity": 10,
+          "quantity": 9,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
@@ -9600,18 +9347,32 @@
         },
         {
           "name": "Hand Weapon",
-          "quantity": 10,
+          "quantity": 9,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Dual Witch Claws",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "claw-rend",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
         }
       ],
-      "pointCost": 200
+      "pointCost": 220
     },
     {
       "name": "Warriors",
-      "id": "453a600fc7ba445d8dc39324666a8d52",
+      "id": "war1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -9662,8 +9423,248 @@
       "pointCost": 190
     },
     {
+      "name": "Light Skimmer",
+      "id": "sk1",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Harassing"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Twin Barb Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        },
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "titan-impact",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Dark-Energy Cannon",
+          "quantity": 1,
+          "rangeInches": 36,
+          "attacks": 1,
+          "armorPenetration": 3,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 260
+    },
+    {
+      "name": "Light Skimmer",
+      "id": "sk2",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Harassing"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Twin Barb Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        },
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "titan-impact",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Dark-Energy Cannon",
+          "quantity": 1,
+          "rangeInches": 36,
+          "attacks": 1,
+          "armorPenetration": 3,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 260
+    },
+    {
+      "name": "Light Skimmer",
+      "id": "sk3",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Harassing"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Twin Barb Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        },
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "titan-impact",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Plas-Burster Cannon",
+          "quantity": 1,
+          "rangeInches": 36,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 260
+    },
+    {
       "name": "Heavy Skimmer",
-      "id": null,
+      "id": "hs",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -9691,10 +9692,6 @@
           "kind": "coreNumeric",
           "name": "Tough",
           "numericValue": 9
-        },
-        {
-          "kind": "core",
-          "name": "Agile"
         }
       ],
       "weapons": [
@@ -9721,7 +9718,7 @@
           "specialRules": []
         }
       ],
-      "pointCost": 450
+      "pointCost": 440
     }
   ],
   "defaultRangedEffectSet": "bio-organic",

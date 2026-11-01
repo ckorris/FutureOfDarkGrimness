@@ -9,23 +9,18 @@
         "modelCount": 1,
         "choices": [
           {
+            "sectionId": "mIKx-g_2",
+            "optionId": "M0t79fcd",
+            "count": 1
+          },
+          {
             "sectionId": "0eVswn2T",
-            "optionId": "VCnINdpCjf",
-            "count": 1
-          },
-          {
-            "sectionId": "xXH_HE-X",
-            "optionId": "zAVXuhdk",
-            "count": 1
-          },
-          {
-            "sectionId": "5eNwefXA",
-            "optionId": "agncBfr1",
+            "optionId": "0XZxithnlF",
             "count": 1
           }
         ],
-        "id": "Blb2k",
-        "joinsUnitId": "SyyW3",
+        "id": "chsA",
+        "joinsUnitId": "wsA1",
         "combinedWithId": null
       },
       {
@@ -34,16 +29,21 @@
         "choices": [
           {
             "sectionId": "rwrkjbz",
-            "optionId": "hfylDEE",
+            "optionId": "OeJC4E7",
             "count": 1
           },
           {
-            "sectionId": "ta_zE",
-            "optionId": "tAcKy",
+            "sectionId": "dz6vC7ts",
+            "optionId": "3__0scQn",
+            "count": 1
+          },
+          {
+            "sectionId": "rlpKCnsk",
+            "optionId": "3jziAn9KHG",
             "count": 1
           }
         ],
-        "id": "SyyW3",
+        "id": "wsA1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -53,87 +53,13 @@
         "choices": [
           {
             "sectionId": "rwrkjbz",
-            "optionId": "hfylDEE",
+            "optionId": "OeJC4E7",
             "count": 1
           }
         ],
-        "id": "o8a2Z",
+        "id": "wsA2",
         "joinsUnitId": null,
-        "combinedWithId": "SyyW3"
-      },
-      {
-        "rosterUnitId": "8LxKCD7",
-        "modelCount": 3,
-        "choices": [],
-        "id": "N61--",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "R3sC7UX",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "Zl_L3",
-            "optionId": "q4Db3",
-            "count": 1
-          }
-        ],
-        "id": "uSC3R",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "R3sC7UX",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "Zl_L3",
-            "optionId": "q4Db3",
-            "count": 1
-          }
-        ],
-        "id": "AdR7L",
-        "joinsUnitId": null,
-        "combinedWithId": "uSC3R"
-      },
-      {
-        "rosterUnitId": "p9JSkj0",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "HAFGpnpQIU",
-            "optionId": "r5GTN--Plq",
-            "count": 1
-          },
-          {
-            "sectionId": "qsj8n",
-            "optionId": "BrhDEDNbvl",
-            "count": 1
-          }
-        ],
-        "id": "3TMS2",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "_MWEPTm",
-        "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "30Wd-",
-            "optionId": "FqRDE",
-            "count": 3
-          },
-          {
-            "sectionId": "ta_zE",
-            "optionId": "vazXO",
-            "count": 1
-          }
-        ],
-        "id": "dDjmG",
-        "joinsUnitId": null,
-        "combinedWithId": null
+        "combinedWithId": "wsA1"
       },
       {
         "rosterUnitId": "W-crN7f",
@@ -146,22 +72,12 @@
           },
           {
             "sectionId": "0eVswn2T",
-            "optionId": "0XZxithnlF",
-            "count": 1
-          },
-          {
-            "sectionId": "MdFdhjdL",
-            "optionId": "CC3JZIBV",
-            "count": 1
-          },
-          {
-            "sectionId": "xXH_HE-X",
-            "optionId": "zAVXuhdk",
+            "optionId": "F-CnrxD1YP",
             "count": 1
           }
         ],
-        "id": "yFTgm",
-        "joinsUnitId": "kBTnx",
+        "id": "chsB",
+        "joinsUnitId": "wsB1",
         "combinedWithId": null
       },
       {
@@ -170,11 +86,21 @@
         "choices": [
           {
             "sectionId": "rwrkjbz",
-            "optionId": "OeJC4E7",
+            "optionId": "wdo-6o_",
+            "count": 1
+          },
+          {
+            "sectionId": "dz6vC7ts",
+            "optionId": "3__0scQn",
+            "count": 1
+          },
+          {
+            "sectionId": "rlpKCnsk",
+            "optionId": "3jziAn9KHG",
             "count": 1
           }
         ],
-        "id": "kBTnx",
+        "id": "wsB1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -184,18 +110,103 @@
         "choices": [
           {
             "sectionId": "rwrkjbz",
-            "optionId": "OeJC4E7",
-            "count": 1
-          },
-          {
-            "sectionId": "ta_zE",
-            "optionId": "tAcKy",
+            "optionId": "wdo-6o_",
             "count": 1
           }
         ],
-        "id": "k6VIE",
+        "id": "wsB2",
         "joinsUnitId": null,
-        "combinedWithId": "kBTnx"
+        "combinedWithId": "wsB1"
+      },
+      {
+        "rosterUnitId": "BT_-pdh",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "jDPiWW0",
+            "optionId": "hm4r7",
+            "count": 1
+          },
+          {
+            "sectionId": "aTqmX",
+            "optionId": "Fgtr4",
+            "count": 1
+          }
+        ],
+        "id": "sup",
+        "joinsUnitId": "fanA1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "R3sC7UX",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "Zl_L3",
+            "optionId": "q4Db3",
+            "count": 1
+          },
+          {
+            "sectionId": "cEWNlSAVSE",
+            "optionId": "ovjHFjin8H",
+            "count": 1
+          }
+        ],
+        "id": "fanA1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "R3sC7UX",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "Zl_L3",
+            "optionId": "q4Db3",
+            "count": 1
+          },
+          {
+            "sectionId": "cEWNlSAVSE",
+            "optionId": "Tl0AzsdbCU",
+            "count": 1
+          }
+        ],
+        "id": "fanA2",
+        "joinsUnitId": null,
+        "combinedWithId": "fanA1"
+      },
+      {
+        "rosterUnitId": "R3sC7UX",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "Zl_L3",
+            "optionId": "q4Db3",
+            "count": 1
+          },
+          {
+            "sectionId": "cEWNlSAVSE",
+            "optionId": "BdBX7Rk3qd",
+            "count": 1
+          }
+        ],
+        "id": "fanB",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "p9JSkj0",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "qsj8n",
+            "optionId": "uVVzT",
+            "count": 1
+          }
+        ],
+        "id": "altar",
+        "joinsUnitId": null,
+        "combinedWithId": null
       },
       {
         "rosterUnitId": "2K2sl7L",
@@ -212,7 +223,29 @@
             "count": 1
           }
         ],
-        "id": "R5YyI",
+        "id": "walker",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "_MWEPTm",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "30Wd-",
+            "optionId": "FqRDE",
+            "count": 3
+          }
+        ],
+        "id": "cws",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "oN45C-p",
+        "modelCount": 3,
+        "choices": [],
+        "id": "bikes",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -12625,8 +12658,8 @@
   "units": [
     {
       "name": "Celestial High Sister",
-      "id": "Blb2k",
-      "joinsUnitId": "SyyW3",
+      "id": "chsA",
+      "joinsUnitId": "wsA1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -12644,156 +12677,6 @@
         {
           "kind": "coreNumeric",
           "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Devout"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Burst Shotgun",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 4,
-          "armorPenetration": 1,
-          "specialRules": []
-        },
-        {
-          "name": "Energy Fist",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "energy-blade",
-          "specialRules": []
-        },
-        {
-          "name": "Holy Flame Blast",
-          "quantity": 1,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Purge"
-            }
-          ]
-        }
-      ],
-      "pointCost": 205
-    },
-    {
-      "name": "Warrior Sisters",
-      "id": "SyyW3",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Devout"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration Aura"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Battle Rifle",
-          "quantity": 8,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Blessed Flamer",
-          "quantity": 2,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Purge"
-            }
-          ]
-        }
-      ],
-      "pointCost": 265
-    },
-    {
-      "name": "Biker Fanatics",
-      "id": "N61--",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 1.3779528,
-        "heightInches": 2.3622048
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
           "numericValue": 3
         },
         {
@@ -12802,15 +12685,80 @@
         },
         {
           "kind": "core",
-          "name": "Piercing Charge"
+          "name": "Piercing Marksman Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Assault Bike-Rifle",
-          "quantity": 3,
-          "rangeInches": 12,
+          "name": "Plasma Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
           "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        },
+        {
+          "name": "Hand Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 115
+    },
+    {
+      "name": "Warrior Sisters",
+      "id": "wsA1",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Devout"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Battle Rifle",
+          "quantity": 7,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Plasma Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        },
+        {
+          "name": "Sgt. Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
           "armorPenetration": 0,
           "specialRules": [
             {
@@ -12820,208 +12768,26 @@
           ]
         },
         {
-          "name": "Chain-Sword",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "chain-blade",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Fanatic Sisters",
-      "id": "uSC3R",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Devout"
-        },
-        {
-          "kind": "core",
-          "name": "Piercing Charge"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Chain-Sword",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "chain-blade",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Shred"
-            }
-          ]
-        }
-      ],
-      "pointCost": 150
-    },
-    {
-      "name": "Procession Altar",
-      "id": "3TMS2",
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 2.047244,
-        "heightInches": 3.543307
-      },
-      "quality": 4,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Devout"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Transport",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Bravery Buff"
-        },
-        {
-          "kind": "core",
-          "name": "Guarded Buff"
-        },
-        {
-          "kind": "core",
-          "name": "Precision Shooter Buff"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Overrun",
+          "name": "Energy Sword",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Holy Statue\u0027s Flame Blasts",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            },
-            {
-              "kind": "core",
-              "name": "Purge"
-            }
-          ]
-        }
-      ],
-      "pointCost": 245
-    },
-    {
-      "name": "Celestial Warrior Sisters",
-      "id": "dDjmG",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Devout"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Precision Target",
-          "numericValue": 1
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Strike",
-          "quantity": 3,
-          "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Fusion Rifle",
-          "quantity": 3,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "fusion-melta",
+          "effectSet": "energy-blade",
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
+              "kind": "core",
+              "name": "Rending"
             }
           ]
         }
       ],
-      "pointCost": 195
+      "pointCost": 230
     },
     {
       "name": "Celestial High Sister",
-      "id": "yFTgm",
-      "joinsUnitId": "kBTnx",
+      "id": "chsB",
+      "joinsUnitId": "wsB1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -13053,48 +12819,25 @@
       ],
       "weapons": [
         {
-          "name": "Plasma Rifle",
-          "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 2,
-          "armorPenetration": 2,
-          "effectSet": "plasma-bolt",
-          "specialRules": []
-        },
-        {
-          "name": "Fusion-Mod",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "fusion-melta",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Limited"
-            }
-          ]
-        },
-        {
-          "name": "Energy Fist",
+          "name": "Witch Staff",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "energy-blade",
-          "specialRules": []
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
         }
       ],
-      "pointCost": 155
+      "pointCost": 135
     },
     {
       "name": "Warrior Sisters",
-      "id": "kBTnx",
+      "id": "wsB1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -13109,16 +12852,12 @@
         {
           "kind": "core",
           "name": "Devout"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration Aura"
         }
       ],
       "weapons": [
         {
           "name": "Battle Rifle",
-          "quantity": 8,
+          "quantity": 7,
           "rangeInches": 24,
           "attacks": 1,
           "armorPenetration": 0,
@@ -13126,27 +12865,351 @@
         },
         {
           "name": "Strike",
-          "quantity": 10,
+          "quantity": 9,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Plasma Rifle",
+          "name": "Heavy Machinegun",
           "quantity": 2,
-          "rangeInches": 24,
-          "attacks": 2,
-          "armorPenetration": 2,
-          "effectSet": "plasma-bolt",
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
           "specialRules": []
+        },
+        {
+          "name": "Sgt. Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Energy Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 245
+      "pointCost": 250
+    },
+    {
+      "name": "Fanatic Superior",
+      "id": "sup",
+      "joinsUnitId": "fanA1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Devout"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Piercing Charge"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        },
+        {
+          "kind": "core",
+          "name": "Fast Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Whip-Blast",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Dual Shock-Whips",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "shock-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 85
+    },
+    {
+      "name": "Fanatic Sisters",
+      "id": "fanA1",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Devout"
+        },
+        {
+          "kind": "core",
+          "name": "Piercing Charge"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Chain-Sword",
+          "quantity": 8,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "chain-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        },
+        {
+          "name": "Dual Plasma-Whips",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
+          "specialRules": []
+        },
+        {
+          "name": "Great Chain-Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "effectSet": "chain-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        }
+      ],
+      "pointCost": 180
+    },
+    {
+      "name": "Fanatic Sisters",
+      "id": "fanB",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Devout"
+        },
+        {
+          "kind": "core",
+          "name": "Piercing Charge"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Chain-Sword",
+          "quantity": 4,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "chain-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        },
+        {
+          "name": "Dual Shock-Whips",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "shock-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 85
+    },
+    {
+      "name": "Procession Altar",
+      "id": "altar",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Devout"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 9
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Bravery Buff"
+        },
+        {
+          "kind": "core",
+          "name": "Guarded Buff"
+        },
+        {
+          "kind": "core",
+          "name": "Precision Fighter Buff"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Holy Statue\u0027s Flame Strikes",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Purge"
+            }
+          ]
+        },
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "titan-impact",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Holy Spear",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Purge"
+            }
+          ]
+        }
+      ],
+      "pointCost": 280
     },
     {
       "name": "Assault Walker",
-      "id": "R5YyI",
+      "id": "walker",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -13229,6 +13292,106 @@
         }
       ],
       "pointCost": 320
+    },
+    {
+      "name": "Celestial Warrior Sisters",
+      "id": "cws",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Devout"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Fusion Rifle",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 170
+    },
+    {
+      "name": "Biker Sisters",
+      "id": "bikes",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Devout"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Bike-Rifle",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Energy Lance",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        }
+      ],
+      "pointCost": 150
     }
   ],
   "defaultRangedEffectSet": "storm-tracer",

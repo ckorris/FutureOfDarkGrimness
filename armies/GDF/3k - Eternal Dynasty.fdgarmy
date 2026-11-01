@@ -14,8 +14,8 @@
             "count": 1
           }
         ],
-        "id": "CAx1n",
-        "joinsUnitId": "eFkR3",
+        "id": "dl1",
+        "joinsUnitId": "w1",
         "combinedWithId": null
       },
       {
@@ -26,9 +26,14 @@
             "sectionId": "1lkVLBV",
             "optionId": "SG_Ukxc",
             "count": 1
+          },
+          {
+            "sectionId": "DrAvvDnP",
+            "optionId": "iT5Qaaf278",
+            "count": 1
           }
         ],
-        "id": "eFkR3",
+        "id": "w1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -42,9 +47,9 @@
             "count": 1
           }
         ],
-        "id": "eFkR3-combined",
+        "id": "w2",
         "joinsUnitId": null,
-        "combinedWithId": "eFkR3"
+        "combinedWithId": "w1"
       },
       {
         "rosterUnitId": "bEeuIws",
@@ -56,8 +61,27 @@
             "count": 1
           }
         ],
-        "id": "fKfFo",
-        "joinsUnitId": "xraXR",
+        "id": "dl2",
+        "joinsUnitId": "w3",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "tBFpCN2",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "1lkVLBV",
+            "optionId": "D38XYVt",
+            "count": 1
+          },
+          {
+            "sectionId": "DrAvvDnP",
+            "optionId": "iT5Qaaf278",
+            "count": 1
+          }
+        ],
+        "id": "w3",
+        "joinsUnitId": null,
         "combinedWithId": null
       },
       {
@@ -70,67 +94,59 @@
             "count": 1
           }
         ],
-        "id": "xraXR",
+        "id": "w4",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "tBFpCN2",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "1lkVLBV",
-            "optionId": "D38XYVt",
-            "count": 1
-          }
-        ],
-        "id": "xraXR-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "xraXR"
+        "combinedWithId": "w3"
       },
       {
         "rosterUnitId": "bILTbNt",
         "modelCount": 3,
         "choices": [
           {
-            "sectionId": "ic94wqkncn",
-            "optionId": "8_8b0uLdkr",
-            "count": 1
+            "sectionId": "hyaMu1I",
+            "optionId": "eDKjQva7T6",
+            "count": 3
           }
         ],
-        "id": "La_vf",
+        "id": "oni1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "bILTbNt",
         "modelCount": 3,
+        "choices": [],
+        "id": "oni2",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "6LpK3Hi",
+        "modelCount": 5,
         "choices": [
           {
-            "sectionId": "ic94wqkncn",
-            "optionId": "8_8b0uLdkr",
+            "sectionId": "c6uNEzr",
+            "optionId": "8pkC9NI3fY",
             "count": 1
           }
         ],
-        "id": "Z0YfW",
+        "id": "liz1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "CdkWnvx",
+        "rosterUnitId": "6LpK3Hi",
         "modelCount": 5,
-        "choices": [],
-        "id": "KLF9q",
+        "choices": [
+          {
+            "sectionId": "c6uNEzr",
+            "optionId": "8pkC9NI3fY",
+            "count": 1
+          }
+        ],
+        "id": "liz2",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "CdkWnvx",
-        "modelCount": 5,
-        "choices": [],
-        "id": "KLF9q-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "KLF9q"
+        "combinedWithId": "liz1"
       },
       {
         "rosterUnitId": "aGmn975",
@@ -142,7 +158,7 @@
             "count": 1
           }
         ],
-        "id": "shkyf",
+        "id": "ow",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -151,12 +167,12 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "24VNxh4J",
-            "optionId": "LovJW_gM",
+            "sectionId": "p_dHpfA",
+            "optionId": "HsG3fFc",
             "count": 1
           }
         ],
-        "id": "rKX53",
+        "id": "nw",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -175,7 +191,7 @@
             "count": 1
           }
         ],
-        "id": "LQtz2",
+        "id": "tank",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -184,20 +200,25 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "RCY_V-r",
-            "optionId": "eR1qHmr",
+            "sectionId": "g36afpd",
+            "optionId": "DkuyOxBy3V",
+            "count": 1
+          },
+          {
+            "sectionId": "pnQ-a5nm",
+            "optionId": "WAhquGUQ",
             "count": 1
           }
         ],
-        "id": "Pe97c",
-        "joinsUnitId": "FYPFl",
+        "id": "cap",
+        "joinsUnitId": "rg1",
         "combinedWithId": null
       },
       {
         "rosterUnitId": "nT_lDKZ",
         "modelCount": 5,
         "choices": [],
-        "id": "FYPFl",
+        "id": "rg1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -205,9 +226,9 @@
         "rosterUnitId": "nT_lDKZ",
         "modelCount": 5,
         "choices": [],
-        "id": "FYPFl-combined",
+        "id": "rg2",
         "joinsUnitId": null,
-        "combinedWithId": "FYPFl"
+        "combinedWithId": "rg1"
       }
     ]
   },
@@ -7815,8 +7836,8 @@
   "units": [
     {
       "name": "Dynasty Leader",
-      "id": "CAx1n",
-      "joinsUnitId": "eFkR3",
+      "id": "dl1",
+      "joinsUnitId": "w1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -7865,7 +7886,7 @@
     },
     {
       "name": "Warriors",
-      "id": "eFkR3",
+      "id": "w1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -7885,7 +7906,7 @@
       "weapons": [
         {
           "name": "Long Rifle",
-          "quantity": 8,
+          "quantity": 7,
           "rangeInches": 30,
           "attacks": 1,
           "armorPenetration": 1,
@@ -7893,7 +7914,7 @@
         },
         {
           "name": "Strike",
-          "quantity": 10,
+          "quantity": 9,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -7907,14 +7928,41 @@
           "armorPenetration": 2,
           "effectSet": "plasma-bolt",
           "specialRules": []
+        },
+        {
+          "name": "Sgt. Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Dynasty Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "blade-standard",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 250
+      "pointCost": 255
     },
     {
       "name": "Dynasty Leader",
-      "id": "fKfFo",
-      "joinsUnitId": "xraXR",
+      "id": "dl2",
+      "joinsUnitId": "w3",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -7963,7 +8011,7 @@
     },
     {
       "name": "Warriors",
-      "id": "xraXR",
+      "id": "w3",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -7983,7 +8031,7 @@
       "weapons": [
         {
           "name": "Long Rifle",
-          "quantity": 8,
+          "quantity": 7,
           "rangeInches": 30,
           "attacks": 1,
           "armorPenetration": 1,
@@ -7991,7 +8039,7 @@
         },
         {
           "name": "Strike",
-          "quantity": 10,
+          "quantity": 9,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -8011,13 +8059,40 @@
               "numericValue": 3
             }
           ]
+        },
+        {
+          "name": "Sgt. Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Dynasty Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "blade-standard",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 260
+      "pointCost": 265
     },
     {
       "name": "ONIs",
-      "id": "La_vf",
+      "id": "oni1",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -8037,10 +8112,61 @@
         {
           "kind": "core",
           "name": "Clan Warrior"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Dual Missile-Fists",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "missile-rocket",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
+        }
+      ],
+      "pointCost": 230
+    },
+    {
+      "name": "ONIs",
+      "id": "oni2",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
         },
         {
           "kind": "core",
-          "name": "Vengeance"
+          "name": "Clan Warrior"
         }
       ],
       "weapons": [
@@ -8072,80 +8198,21 @@
           "specialRules": []
         }
       ],
-      "pointCost": 185
+      "pointCost": 170
     },
     {
-      "name": "ONIs",
-      "id": "Z0YfW",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Clan Warrior"
-        },
-        {
-          "kind": "core",
-          "name": "Vengeance"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Dual Flame-Fists",
-          "quantity": 3,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
-        {
-          "name": "Strike",
-          "quantity": 3,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 185
-    },
-    {
-      "name": "Attack Drones",
-      "id": "KLF9q",
+      "name": "Cyber Lizards",
+      "id": "liz1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "quality": 4,
-      "defense": 4,
+      "defense": 5,
       "specialRules": [
         {
           "kind": "core",
@@ -8154,37 +8221,33 @@
         {
           "kind": "core",
           "name": "Clan Warrior"
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
         }
       ],
       "weapons": [
         {
-          "name": "Drone Toxin Gun",
+          "name": "Toxin Claws",
           "quantity": 10,
-          "rangeInches": 18,
+          "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "bio-organic",
+          "effectSet": "toxic-rend",
           "specialRules": [
             {
               "kind": "core",
               "name": "Bane"
             }
           ]
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
         }
       ],
-      "pointCost": 200
+      "pointCost": 150
     },
     {
       "name": "ONI Walker",
-      "id": "shkyf",
+      "id": "ow",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8240,7 +8303,7 @@
     },
     {
       "name": "Ninja Walker",
-      "id": "rKX53",
+      "id": "nw",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8276,7 +8339,7 @@
         },
         {
           "kind": "core",
-          "name": "Increased Shooting Range Mark"
+          "name": "Teleport"
         }
       ],
       "weapons": [
@@ -8304,11 +8367,11 @@
           "specialRules": []
         }
       ],
-      "pointCost": 270
+      "pointCost": 275
     },
     {
       "name": "Dynasty Tank",
-      "id": "LQtz2",
+      "id": "tank",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8386,8 +8449,8 @@
     },
     {
       "name": "ONI Captain",
-      "id": "Pe97c",
-      "joinsUnitId": "FYPFl",
+      "id": "cap",
+      "joinsUnitId": "rg1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -8410,32 +8473,38 @@
         {
           "kind": "core",
           "name": "Clan Warrior"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Fearless Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Strike",
+          "name": "ONI Sword",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Dual Plasma-Fists",
-          "quantity": 1,
-          "rangeInches": 18,
           "attacks": 6,
-          "armorPenetration": 2,
-          "effectSet": "plasma-bolt",
-          "specialRules": []
+          "armorPenetration": 0,
+          "effectSet": "blade-standard",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 180
+      "pointCost": 185
     },
     {
       "name": "Royal Guard",
-      "id": "FYPFl",
+      "id": "rg1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {

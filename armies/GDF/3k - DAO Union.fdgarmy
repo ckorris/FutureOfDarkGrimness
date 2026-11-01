@@ -5,74 +5,40 @@
     "pointsLimit": 3000,
     "units": [
       {
-        "rosterUnitId": "ZLsGVby",
+        "rosterUnitId": "37mvtxH",
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "M3wPTp-G",
-            "optionId": "KimDKW1gdM",
+            "sectionId": "6MPP9k8zNW",
+            "optionId": "GH6RGZy8FA",
             "count": 1
           },
           {
-            "sectionId": "I-TiE9L5",
-            "optionId": "ciwiVu13",
-            "count": 1
-          },
-          {
-            "sectionId": "HDokp_ec",
-            "optionId": "_eh8wOMf",
-            "count": 1
-          },
-          {
-            "sectionId": "c3WBDvuN",
-            "optionId": "tE_rHW29",
+            "sectionId": "AOnJSXwW",
+            "optionId": "yfvC7ROe",
             "count": 1
           }
         ],
-        "id": "iup5T",
-        "joinsUnitId": "SAJ8h",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "ky_P-X8",
-        "modelCount": 3,
-        "choices": [
-          {
-            "sectionId": "mzzuwjj",
-            "optionId": "eafWj3Q",
-            "count": 1
-          },
-          {
-            "sectionId": "I1VXs",
-            "optionId": "LTajVp1iTl",
-            "count": 3
-          },
-          {
-            "sectionId": "hr2hx0I",
-            "optionId": "w6Y5DCQX3z",
-            "count": 1
-          },
-          {
-            "sectionId": "vO6ldL7W5V",
-            "optionId": "7cXe2uOeeX",
-            "count": 1
-          }
-        ],
-        "id": "SAJ8h",
+        "id": "htA",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "_Xaptlm",
-        "modelCount": 3,
+        "rosterUnitId": "37mvtxH",
+        "modelCount": 1,
         "choices": [
           {
-            "sectionId": "2QFXz",
-            "optionId": "QAKvC",
+            "sectionId": "6MPP9k8zNW",
+            "optionId": "giy14Zacsf",
+            "count": 1
+          },
+          {
+            "sectionId": "AOnJSXwW",
+            "optionId": "oVPlpdG7",
             "count": 1
           }
         ],
-        "id": "5BdFW",
+        "id": "htB",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -87,7 +53,7 @@
           },
           {
             "sectionId": "ZC5-d3C",
-            "optionId": "mdiLQCl",
+            "optionId": "bZp_D-i",
             "count": 1
           },
           {
@@ -96,7 +62,84 @@
             "count": 1
           }
         ],
-        "id": "wqYPK",
+        "id": "hbs",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "ZLsGVby",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "M3wPTp-G",
+            "optionId": "0ttSARCZ",
+            "count": 1
+          },
+          {
+            "sectionId": "vA-fPHmS",
+            "optionId": "_oHGzDtdms",
+            "count": 1
+          },
+          {
+            "sectionId": "I-TiE9L5",
+            "optionId": "ciwiVu13",
+            "count": 1
+          },
+          {
+            "sectionId": "c3WBDvuN",
+            "optionId": "tE_rHW29",
+            "count": 1
+          }
+        ],
+        "id": "eliteA",
+        "joinsUnitId": "bs",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "ky_P-X8",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "I1VXs",
+            "optionId": "JJaiVgS7Lj",
+            "count": 3
+          },
+          {
+            "sectionId": "vO6ldL7W5V",
+            "optionId": "7cXe2uOeeX",
+            "count": 1
+          },
+          {
+            "sectionId": "mzzuwjj",
+            "optionId": "eafWj3Q",
+            "count": 1
+          }
+        ],
+        "id": "bs",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "_Xaptlm",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "lpDJiG3",
+            "optionId": "1Xte7",
+            "count": 1
+          },
+          {
+            "sectionId": "PhO8OOB",
+            "optionId": "MAZH0P5",
+            "count": 1
+          },
+          {
+            "sectionId": "2QFXz",
+            "optionId": "mf2fT_Yqze",
+            "count": 1
+          }
+        ],
+        "id": "st",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -108,23 +151,14 @@
             "sectionId": "R-JP0jg",
             "optionId": "y9mTYev_s8",
             "count": 1
-          }
-        ],
-        "id": "OTgeD",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "fdAp19o",
-        "modelCount": 5,
-        "choices": [
+          },
           {
-            "sectionId": "R-JP0jg",
-            "optionId": "y9mTYev_s8",
+            "sectionId": "FH9s50n",
+            "optionId": "1F5f2Bi",
             "count": 1
           }
         ],
-        "id": "qki1y",
+        "id": "spot",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -133,22 +167,17 @@
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "AF-khuL",
-            "optionId": "XpXQnmE",
+            "sectionId": "kAs5aui",
+            "optionId": "yNfoKQmoBf",
             "count": 1
           },
           {
-            "sectionId": "I_Gv56hI",
-            "optionId": "nnn77rTIPF",
-            "count": 1
-          },
-          {
-            "sectionId": "awrYu7ZV-T",
-            "optionId": "1CqMBERaER",
+            "sectionId": "mzzuwjj",
+            "optionId": "OTdmXg9",
             "count": 1
           }
         ],
-        "id": "OGQ0Y",
+        "id": "tgA1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -157,42 +186,84 @@
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "AF-khuL",
-            "optionId": "XpXQnmE",
-            "count": 1
-          },
-          {
-            "sectionId": "I_Gv56hI",
-            "optionId": "nnn77rTIPF",
-            "count": 1
-          },
-          {
-            "sectionId": "awrYu7ZV-T",
-            "optionId": "1CqMBERaER",
+            "sectionId": "kAs5aui",
+            "optionId": "yNfoKQmoBf",
             "count": 1
           }
         ],
-        "id": "OGQ0Y-combined",
+        "id": "tgA2",
         "joinsUnitId": null,
-        "combinedWithId": "OGQ0Y"
+        "combinedWithId": "tgA1"
+      },
+      {
+        "rosterUnitId": "ZLsGVby",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "M3wPTp-G",
+            "optionId": "UiD1y8W5",
+            "count": 1
+          },
+          {
+            "sectionId": "c3WBDvuN",
+            "optionId": "Nnvd8tMy",
+            "count": 1
+          }
+        ],
+        "id": "eliteB",
+        "joinsUnitId": "tgA1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "l9y9wn9",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "kAs5aui",
+            "optionId": "zOqyvEn",
+            "count": 1
+          },
+          {
+            "sectionId": "mzzuwjj",
+            "optionId": "oWBWdfp",
+            "count": 1
+          }
+        ],
+        "id": "tgB1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "l9y9wn9",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "kAs5aui",
+            "optionId": "zOqyvEn",
+            "count": 1
+          }
+        ],
+        "id": "tgB2",
+        "joinsUnitId": null,
+        "combinedWithId": "tgB1"
       },
       {
         "rosterUnitId": "wbcHuwv",
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "5Ff9NqI",
-            "optionId": "E8-RdPStFl",
+            "sectionId": "-cU2AA1FnY",
+            "optionId": "MVCFKwlySI",
             "count": 1
           },
           {
             "sectionId": "QUDL_",
-            "optionId": "ie79y",
+            "optionId": "rJaHv",
             "count": 1
           }
         ],
-        "id": "k5uye",
-        "joinsUnitId": "QbWEN",
+        "id": "gl",
+        "joinsUnitId": "tgB1",
         "combinedWithId": null
       },
       {
@@ -200,92 +271,27 @@
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "cCfUH4_e9p",
-            "optionId": "XbadPP6FzA",
+            "sectionId": "6QqGAT1K",
+            "optionId": "_1-eEjrX",
             "count": 1
           },
           {
             "sectionId": "sRNZNMp5",
-            "optionId": "lZG9gjVG",
+            "optionId": "gcMioO3O",
             "count": 1
           }
         ],
-        "id": "QbWEN",
+        "id": "sgA",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "KRznAPH",
         "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "cCfUH4_e9p",
-            "optionId": "XbadPP6FzA",
-            "count": 1
-          },
-          {
-            "sectionId": "sRNZNMp5",
-            "optionId": "lZG9gjVG",
-            "count": 1
-          }
-        ],
-        "id": "QbWEN-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "QbWEN"
-      },
-      {
-        "rosterUnitId": "37mvtxH",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "1UsBkngz",
-            "optionId": "G7Pc5aZX",
-            "count": 1
-          },
-          {
-            "sectionId": "-GK3zM-6",
-            "optionId": "-0CDo1hd",
-            "count": 1
-          }
-        ],
-        "id": "PzUa6",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "l9y9wn9",
-        "modelCount": 5,
         "choices": [],
-        "id": "CfHtX",
+        "id": "sgB",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "l9y9wn9",
-        "modelCount": 5,
-        "choices": [],
-        "id": "CfHtX-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "CfHtX"
-      },
-      {
-        "rosterUnitId": "37mvtxH",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "1UsBkngz",
-            "optionId": "G7Pc5aZX",
-            "count": 1
-          },
-          {
-            "sectionId": "-GK3zM-6",
-            "optionId": "-0CDo1hd",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
+        "combinedWithId": "sgA"
       }
     ]
   },
@@ -8197,233 +8203,183 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
-      "name": "Battle Suit Elite",
-      "id": "iup5T",
-      "joinsUnitId": "SAJ8h",
+      "name": "Hover Tank",
+      "id": "htA",
+      "joinsUnitId": null,
       "modelCount": 1,
       "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "quality": 4,
-      "defense": 3,
+      "defense": 2,
       "specialRules": [
         {
           "kind": "core",
-          "name": "Hero"
+          "name": "Fast"
         },
         {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
+          "kind": "core",
+          "name": "Strider"
         },
         {
           "kind": "core",
           "name": "Targeting Visor"
         },
         {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
-        },
-        {
-          "kind": "core",
-          "name": "Ranged Slayer Aura"
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
         }
       ],
       "weapons": [
         {
-          "name": "Strike",
+          "name": "Overrun",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 4,
           "armorPenetration": 0,
-          "specialRules": []
+          "effectSet": "titan-impact",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
         },
         {
-          "name": "Heavy Suit-Shredder Cannon",
+          "name": "Twin Heavy Gauss Coilgun",
           "quantity": 1,
           "rangeInches": 30,
-          "attacks": 6,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        },
-        {
-          "name": "Drone Guns",
-          "quantity": 1,
-          "rangeInches": 18,
           "attacks": 2,
-          "armorPenetration": 0,
+          "armorPenetration": 4,
+          "effectSet": "gauss-particle",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Limited"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 6
             }
           ]
-        }
-      ],
-      "pointCost": 195
-    },
-    {
-      "name": "Battle Suits",
-      "id": "SAJ8h",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.968504,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
         },
         {
-          "kind": "core",
-          "name": "Targeting Visor"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Strike",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Drone Guns",
+          "name": "Disposable Homing AT-Rockets",
           "quantity": 1,
           "rangeInches": 18,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Limited"
-            }
-          ]
-        },
-        {
-          "name": "Dual Suit-Shredders",
-          "quantity": 3,
-          "rangeInches": 18,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        },
-        {
-          "name": "Assault Suit-Shredder",
-          "quantity": 1,
-          "rangeInches": 9,
           "attacks": 1,
-          "armorPenetration": 0,
+          "armorPenetration": 3,
+          "effectSet": "missile-rocket",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Rending"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             },
             {
               "kind": "core",
-              "name": "Assault"
+              "name": "Indirect"
+            },
+            {
+              "kind": "core",
+              "name": "Limited"
             }
           ]
         }
       ],
-      "pointCost": 240
+      "pointCost": 470
     },
     {
-      "name": "Stealth Suits",
-      "id": "5BdFW",
+      "name": "Hover Tank",
+      "id": "htB",
       "joinsUnitId": null,
-      "modelCount": 3,
+      "modelCount": 1,
       "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "quality": 4,
-      "defense": 4,
+      "defense": 2,
       "specialRules": [
         {
           "kind": "core",
-          "name": "Stealth"
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
         },
         {
           "kind": "core",
           "name": "Targeting Visor"
         },
         {
-          "kind": "core",
-          "name": "Relentless"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Flying"
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
         }
       ],
       "weapons": [
         {
-          "name": "Shredder Rifle",
-          "quantity": 3,
-          "rangeInches": 18,
-          "attacks": 3,
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
           "armorPenetration": 0,
+          "effectSet": "titan-impact",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Rending"
+              "name": "Thrust"
             }
           ]
         },
         {
-          "name": "Strike",
-          "quantity": 3,
-          "rangeInches": 0,
+          "name": "Twin Heavy Helix Cannon",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 6
+            }
+          ]
+        },
+        {
+          "name": "Disposable Homing HE-Rockets",
+          "quantity": 1,
+          "rangeInches": 18,
           "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
+          "armorPenetration": 1,
+          "effectSet": "missile-rocket",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            },
+            {
+              "kind": "core",
+              "name": "Limited"
+            }
+          ]
         }
       ],
-      "pointCost": 175
+      "pointCost": 415
     },
     {
       "name": "Heavy Battle Suit",
-      "id": "wqYPK",
+      "id": "hbs",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8480,17 +8436,13 @@
           ]
         },
         {
-          "name": "Suit-Hull Homing Missiles",
+          "name": "Suit-Hull Plasma Rifles",
           "quantity": 1,
-          "rangeInches": 15,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "missile-rocket",
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
           "specialRules": [
-            {
-              "kind": "core",
-              "name": "Indirect"
-            },
             {
               "kind": "core",
               "name": "Assault"
@@ -8501,69 +8453,227 @@
       "pointCost": 405
     },
     {
-      "name": "Spotters",
-      "id": "OTgeD",
-      "joinsUnitId": null,
-      "modelCount": 5,
+      "name": "Battle Suit Elite",
+      "id": "eliteA",
+      "joinsUnitId": "bs",
+      "modelCount": 1,
       "base": {
         "shape": "Circle",
-        "diameterInches": 0.984252,
+        "diameterInches": 2.3622048,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 5,
-      "defense": 5,
+      "quality": 4,
+      "defense": 3,
       "specialRules": [
         {
           "kind": "core",
-          "name": "Good Shot"
+          "name": "Hero"
         },
         {
-          "kind": "core",
-          "name": "Scout"
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
         },
         {
           "kind": "core",
           "name": "Targeting Visor"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "core",
+          "name": "Ranged Slayer Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Carbine",
-          "quantity": 4,
-          "rangeInches": 18,
+          "name": "Dual Suit-Fusers",
+          "quantity": 1,
+          "rangeInches": 12,
           "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": []
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
         },
         {
+          "name": "Dual Assault Suit-Fusers",
+          "quantity": 1,
+          "rangeInches": 6,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        }
+      ],
+      "pointCost": 215
+    },
+    {
+      "name": "Battle Suits",
+      "id": "bs",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Targeting Visor"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        }
+      ],
+      "weapons": [
+        {
           "name": "Strike",
-          "quantity": 5,
+          "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Helix Tandem-Rifle",
+          "name": "Drone Guns",
           "quantity": 1,
-          "rangeInches": 30,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Limited"
+            }
+          ]
+        },
+        {
+          "name": "Dual Suit-Plasmas",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 260
+    },
+    {
+      "name": "Stealth Suits",
+      "id": "st",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Targeting Visor"
+        },
+        {
+          "kind": "core",
+          "name": "Relentless"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush Beacon"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Shredder Rifle",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Fusion Carbine",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
-              "name": "Blast",
+              "name": "Deadly",
               "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 120
+      "pointCost": 185
     },
     {
       "name": "Spotters",
-      "id": "qki1y",
+      "id": "spot",
       "joinsUnitId": null,
       "modelCount": 5,
       "base": {
@@ -8586,6 +8696,10 @@
         {
           "kind": "core",
           "name": "Targeting Visor"
+        },
+        {
+          "kind": "core",
+          "name": "Precision Spotter"
         }
       ],
       "weapons": [
@@ -8620,11 +8734,11 @@
           ]
         }
       ],
-      "pointCost": 120
+      "pointCost": 135
     },
     {
       "name": "Tactical Grunts",
-      "id": "OGQ0Y",
+      "id": "tgA1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -8643,40 +8757,169 @@
         {
           "kind": "core",
           "name": "Targeting Visor"
+        },
+        {
+          "kind": "core",
+          "name": "Precision Spotter"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Long Rifle",
+          "quantity": 8,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Missile Salvo",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "missile-rocket",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
+        }
+      ],
+      "pointCost": 255
+    },
+    {
+      "name": "Battle Suit Elite",
+      "id": "eliteB",
+      "joinsUnitId": "tgA1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Targeting Visor"
+        },
+        {
+          "kind": "core",
+          "name": "Enhanced Targeting Visor Aura"
         }
       ],
       "weapons": [
         {
           "name": "Strike",
-          "quantity": 8,
+          "quantity": 1,
           "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Carbine",
-          "quantity": 10,
-          "rangeInches": 18,
           "attacks": 2,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Sgt. Hand Weapon",
-          "quantity": 2,
+          "name": "Dual Suit-Helixes",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 145
+    },
+    {
+      "name": "Tactical Grunts",
+      "id": "tgB1",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Good Shot"
+        },
+        {
+          "kind": "core",
+          "name": "Targeting Visor"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Long Rifle",
+          "quantity": 8,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 10,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Plasma Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
         }
       ],
-      "pointCost": 220
+      "pointCost": 255
     },
     {
       "name": "Grunt Leader",
-      "id": "k5uye",
-      "joinsUnitId": "QbWEN",
+      "id": "gl",
+      "joinsUnitId": "tgB1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -8705,13 +8948,79 @@
           "numericValue": 3
         },
         {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Burst Long Rifle",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Hand Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "Security Grunts",
+      "id": "sgA",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 4,
+      "specialRules": [
+        {
           "kind": "core",
-          "name": "Fortified Aura"
+          "name": "Good Shot"
+        },
+        {
+          "kind": "core",
+          "name": "Targeting Visor"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Melee Shrouding Aura"
         }
       ],
       "weapons": [
         {
           "name": "Pistol",
+          "quantity": 9,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Sgt. Pistol",
           "quantity": 1,
           "rangeInches": 12,
           "attacks": 1,
@@ -8724,276 +9033,15 @@
           ]
         },
         {
-          "name": "Plasma Batons",
+          "name": "Sgt. Hand Weapon",
           "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "energy-blade",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        }
-      ],
-      "pointCost": 55
-    },
-    {
-      "name": "Security Grunts",
-      "id": "QbWEN",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Good Shot"
-        },
-        {
-          "kind": "core",
-          "name": "Targeting Visor"
-        },
-        {
-          "kind": "core",
-          "name": "Ambush Beacon"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Shotgun",
-          "quantity": 10,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         }
       ],
-      "pointCost": 250
-    },
-    {
-      "name": "Hover Tank",
-      "id": "PzUa6",
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "quality": 4,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Targeting Visor"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Stealth"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Helix Cannon",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        },
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Hull Homing Missiles",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "missile-rocket",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Indirect"
-            }
-          ]
-        }
-      ],
-      "pointCost": 450
-    },
-    {
-      "name": "Tactical Grunts",
-      "id": "CfHtX",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Good Shot"
-        },
-        {
-          "kind": "core",
-          "name": "Targeting Visor"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Long Rifle",
-          "quantity": 10,
-          "rangeInches": 30,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 200
-    },
-    {
-      "name": "Hover Tank",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 3.6220472,
-        "heightInches": 4.7244096
-      },
-      "quality": 4,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Targeting Visor"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Stealth"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Helix Cannon",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            }
-          ]
-        },
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Hull Homing Missiles",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "missile-rocket",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Indirect"
-            }
-          ]
-        }
-      ],
-      "pointCost": 450
+      "pointCost": 150
     }
   ],
   "defaultRangedEffectSet": "laser-beam",

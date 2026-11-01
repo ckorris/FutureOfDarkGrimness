@@ -9,36 +9,59 @@
         "modelCount": 1,
         "choices": [
           {
+            "sectionId": "DKNsQulEvc",
+            "optionId": "EJWN1hsV4X",
+            "count": 1
+          },
+          {
             "sectionId": "g-tkvSKs",
-            "optionId": "gvaBwOej",
+            "optionId": "PuoEuAO8",
             "count": 1
           }
         ],
-        "id": "wDuJW",
-        "joinsUnitId": "LCzN0",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "bYNsRqK",
-        "modelCount": 3,
-        "choices": [],
-        "id": "LCzN0",
-        "joinsUnitId": null,
+        "id": "tm",
+        "joinsUnitId": "warriors",
         "combinedWithId": null
       },
       {
         "rosterUnitId": "1FBW2AA",
         "modelCount": 3,
-        "choices": [],
-        "id": "icnRg",
+        "choices": [
+          {
+            "sectionId": "-JkQdDI",
+            "optionId": "6AYhq6d",
+            "count": 1
+          }
+        ],
+        "id": "warriors",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "bYNsRqK",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "rmVfSFPR9X",
+            "optionId": "FSOtuAv2GZ",
+            "count": 1
+          }
+        ],
+        "id": "iron",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
         "rosterUnitId": "vgrmCvx",
         "modelCount": 3,
-        "choices": [],
-        "id": "gMHzO",
+        "choices": [
+          {
+            "sectionId": "5iblKHPFrs",
+            "optionId": "PJmomUGGqH",
+            "count": 1
+          }
+        ],
+        "id": "cats",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -47,20 +70,20 @@
         "modelCount": 3,
         "choices": [
           {
-            "sectionId": "NPOnxBLw",
-            "optionId": "QgoLYTgM",
+            "sectionId": "-EHM2sH5GM",
+            "optionId": "51F1xomZJX",
             "count": 1
           }
         ],
-        "id": "yzEs4",
+        "id": "shooters",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "m1sTpwi",
-        "modelCount": 3,
+        "rosterUnitId": "7upclf5",
+        "modelCount": 10,
         "choices": [],
-        "id": "gRRZo",
+        "id": "little",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -6337,8 +6360,8 @@
   "units": [
     {
       "name": "Tribe Master",
-      "id": "wDuJW",
-      "joinsUnitId": "LCzN0",
+      "id": "tm",
+      "joinsUnitId": "warriors",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -6369,24 +6392,74 @@
         },
         {
           "kind": "core",
-          "name": "Fortified Aura"
+          "name": "Enhanced Destroyer Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Master Great Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 4,
+          "effectSet": "great-weapon-smash",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 190
+    },
+    {
+      "name": "Ogre Warriors",
+      "id": "warriors",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Destroyer"
         }
       ],
       "weapons": [
         {
           "name": "Dual Hand Weapons",
-          "quantity": 1,
+          "quantity": 2,
           "rangeInches": 0,
-          "attacks": 8,
+          "attacks": 4,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Dual Hand Weapons (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
         }
       ],
-      "pointCost": 145
+      "pointCost": 135
     },
     {
       "name": "Iron Warriors",
-      "id": "LCzN0",
+      "id": "iron",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -6415,55 +6488,34 @@
       "weapons": [
         {
           "name": "Great Weapon",
-          "quantity": 3,
+          "quantity": 2,
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 2,
           "effectSet": "great-weapon-smash",
           "specialRules": []
-        }
-      ],
-      "pointCost": 190
-    },
-    {
-      "name": "Ogre Warriors",
-      "id": "icnRg",
-      "joinsUnitId": null,
-      "modelCount": 3,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
         },
         {
-          "kind": "core",
-          "name": "Destroyer"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Dual Hand Weapons",
-          "quantity": 3,
+          "name": "Shatter-Glaive",
+          "quantity": 1,
           "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 0,
-          "specialRules": []
+          "attacks": 2,
+          "armorPenetration": 4,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
         }
       ],
-      "pointCost": 125
+      "pointCost": 225
     },
     {
       "name": "Sabre-Tooths",
-      "id": "gMHzO",
+      "id": "cats",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -6495,7 +6547,7 @@
       ],
       "weapons": [
         {
-          "name": "Rough Claws",
+          "name": "Sharp Claws",
           "quantity": 3,
           "rangeInches": 0,
           "attacks": 3,
@@ -6504,16 +6556,16 @@
           "specialRules": [
             {
               "kind": "core",
-              "name": "Fragment"
+              "name": "Rending"
             }
           ]
         }
       ],
-      "pointCost": 160
+      "pointCost": 175
     },
     {
       "name": "Shooters",
-      "id": "yzEs4",
+      "id": "shooters",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -6533,16 +6585,12 @@
         {
           "kind": "core",
           "name": "Destroyer"
-        },
-        {
-          "kind": "core",
-          "name": "Piercing Feat"
         }
       ],
       "weapons": [
         {
           "name": "Cannon Slug-Gun",
-          "quantity": 3,
+          "quantity": 2,
           "rangeInches": 18,
           "attacks": 3,
           "armorPenetration": 1,
@@ -6556,41 +6604,43 @@
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Cannon Bomb-Lobber",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 3,
+          "effectSet": "mortar-artillery",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
         }
       ],
       "pointCost": 175
     },
     {
-      "name": "Hunters",
-      "id": "gRRZo",
+      "name": "Little Ones",
+      "id": "little",
       "joinsUnitId": null,
-      "modelCount": 3,
+      "modelCount": 10,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.5748031,
+        "diameterInches": 0.984252,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 4,
-      "defense": 4,
+      "quality": 5,
+      "defense": 6,
       "specialRules": [
-        {
-          "kind": "core",
-          "name": "Ambush"
-        },
-        {
-          "kind": "core",
-          "name": "Melee Slayer"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
         {
           "kind": "core",
           "name": "Destroyer"
@@ -6598,21 +6648,26 @@
       ],
       "weapons": [
         {
-          "name": "Hunter Spear",
-          "quantity": 3,
+          "name": "Spear",
+          "quantity": 10,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 1,
           "armorPenetration": 0,
           "effectSet": "spear-pierce",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Bane"
+              "name": "Counter"
+            },
+            {
+              "kind": "coreNumeric",
+              "name": "Brace",
+              "numericValue": 1
             }
           ]
         }
       ],
-      "pointCost": 175
+      "pointCost": 95
     }
   ],
   "defaultRangedEffectSet": "sling-stone",

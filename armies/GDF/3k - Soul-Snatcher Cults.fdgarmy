@@ -5,44 +5,40 @@
     "pointsLimit": 3000,
     "units": [
       {
-        "rosterUnitId": "t2ehUmj",
-        "modelCount": 10,
+        "rosterUnitId": "YJDuv06",
+        "modelCount": 1,
         "choices": [
           {
-            "sectionId": "9sQ0YE5",
-            "optionId": "rTg9g-m",
+            "sectionId": "4sZF8B7Qca",
+            "optionId": "Q_hjSPPivg",
+            "count": 1
+          },
+          {
+            "sectionId": "x6iwN-4R",
+            "optionId": "T6PSKxJ9mI",
             "count": 1
           }
         ],
-        "id": "U-MXG",
-        "joinsUnitId": null,
+        "id": "sl",
+        "joinsUnitId": "ss1",
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "t2ehUmj",
-        "modelCount": 10,
+        "rosterUnitId": "8V1jGIF",
+        "modelCount": 5,
         "choices": [
           {
-            "sectionId": "9sQ0YE5",
-            "optionId": "rTg9g-m",
+            "sectionId": "F2tWB6mAF-",
+            "optionId": "1r0tJE8bii",
+            "count": 1
+          },
+          {
+            "sectionId": "8Js-iCM",
+            "optionId": "YJcOaiD",
             "count": 1
           }
         ],
-        "id": "9sKOz",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "t2ehUmj",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "9sQ0YE5",
-            "optionId": "rTg9g-m",
-            "count": 1
-          }
-        ],
-        "id": "m4A2N",
+        "id": "ss1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -52,7 +48,7 @@
         "choices": [
           {
             "sectionId": "F2tWB6mAF-",
-            "optionId": "2c_x7T6MzU",
+            "optionId": "1r0tJE8bii",
             "count": 1
           },
           {
@@ -61,27 +57,121 @@
             "count": 1
           }
         ],
-        "id": "JUitv",
+        "id": "ss2",
+        "joinsUnitId": null,
+        "combinedWithId": "ss1"
+      },
+      {
+        "rosterUnitId": "BMa76or",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "X4x98aW",
+            "optionId": "8W32O4Wcj7",
+            "count": 1
+          },
+          {
+            "sectionId": "GSysU",
+            "optionId": "BuvY_",
+            "count": 1
+          }
+        ],
+        "id": "cl",
+        "joinsUnitId": "minA",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "t2ehUmj",
+        "modelCount": 10,
+        "choices": [
+          {
+            "sectionId": "9sQ0YE5",
+            "optionId": "78Y-2K1",
+            "count": 2
+          }
+        ],
+        "id": "minA",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "8V1jGIF",
-        "modelCount": 5,
+        "rosterUnitId": "t2ehUmj",
+        "modelCount": 10,
         "choices": [
           {
-            "sectionId": "F2tWB6mAF-",
-            "optionId": "2c_x7T6MzU",
+            "sectionId": "9sQ0YE5",
+            "optionId": "78Y-2K1",
+            "count": 2
+          }
+        ],
+        "id": "minB",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "zqbGWjZ",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "54eK_dVyGx",
+            "optionId": "8G1U-vbNNt",
             "count": 1
           },
           {
-            "sectionId": "8Js-iCM",
-            "optionId": "YJcOaiD",
+            "sectionId": "dUpN0gs0U_",
+            "optionId": "vOic-4ZasC",
             "count": 1
           }
         ],
-        "id": "0dtMv",
+        "id": "bc",
+        "joinsUnitId": "br1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "Hos9ia8",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "G5po4_b",
+            "optionId": "6AKQA",
+            "count": 1
+          }
+        ],
+        "id": "br1",
         "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "Hos9ia8",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "G5po4_b",
+            "optionId": "QZvDd",
+            "count": 1
+          }
+        ],
+        "id": "br2",
+        "joinsUnitId": null,
+        "combinedWithId": "br1"
+      },
+      {
+        "rosterUnitId": "QVwQQXN",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "AE8iAT2",
+            "optionId": "OLB347p",
+            "count": 1
+          },
+          {
+            "sectionId": "DJR-GUH75J",
+            "optionId": "kzKKhAaaCk",
+            "count": 1
+          }
+        ],
+        "id": "hit",
+        "joinsUnitId": "ac1",
         "combinedWithId": null
       },
       {
@@ -89,13 +179,13 @@
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "CIJ-Kir",
-            "optionId": "tlqBUoW",
+            "sectionId": "cgDfGHWTnI",
+            "optionId": "TC_zXPb_PO",
             "count": 1
           },
           {
-            "sectionId": "SX6S8wCH",
-            "optionId": "p3X3QzKf",
+            "sectionId": "CIJ-Kir",
+            "optionId": "tlqBUoW",
             "count": 1
           },
           {
@@ -109,7 +199,7 @@
             "count": 1
           }
         ],
-        "id": "Ps4Vv",
+        "id": "ac1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -118,87 +208,19 @@
         "modelCount": 5,
         "choices": [
           {
-            "sectionId": "CIJ-Kir",
-            "optionId": "tlqBUoW",
+            "sectionId": "cgDfGHWTnI",
+            "optionId": "TC_zXPb_PO",
             "count": 1
           },
-          {
-            "sectionId": "SX6S8wCH",
-            "optionId": "p3X3QzKf",
-            "count": 1
-          },
-          {
-            "sectionId": "CFnFx",
-            "optionId": "ljF5Gfnb-3",
-            "count": 1
-          },
-          {
-            "sectionId": "QO9mEQd",
-            "optionId": "v5l7j",
-            "count": 1
-          }
-        ],
-        "id": "Ps4Vv-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "Ps4Vv"
-      },
-      {
-        "rosterUnitId": "USqMvAJ",
-        "modelCount": 5,
-        "choices": [
           {
             "sectionId": "CIJ-Kir",
             "optionId": "tlqBUoW",
             "count": 1
-          },
-          {
-            "sectionId": "SX6S8wCH",
-            "optionId": "p3X3QzKf",
-            "count": 1
-          },
-          {
-            "sectionId": "CFnFx",
-            "optionId": "ljF5Gfnb-3",
-            "count": 1
-          },
-          {
-            "sectionId": "QO9mEQd",
-            "optionId": "v5l7j",
-            "count": 1
           }
         ],
-        "id": "iLmSp",
+        "id": "ac2",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "USqMvAJ",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "CIJ-Kir",
-            "optionId": "tlqBUoW",
-            "count": 1
-          },
-          {
-            "sectionId": "SX6S8wCH",
-            "optionId": "p3X3QzKf",
-            "count": 1
-          },
-          {
-            "sectionId": "CFnFx",
-            "optionId": "ljF5Gfnb-3",
-            "count": 1
-          },
-          {
-            "sectionId": "QO9mEQd",
-            "optionId": "v5l7j",
-            "count": 1
-          }
-        ],
-        "id": "iLmSp-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "iLmSp"
+        "combinedWithId": "ac1"
       },
       {
         "rosterUnitId": "j0Kdw2N",
@@ -206,11 +228,11 @@
         "choices": [
           {
             "sectionId": "AC6KDHfeHb",
-            "optionId": "oHe3p2yfhK",
-            "count": 3
+            "optionId": "n4zqiFbMCm",
+            "count": 1
           }
         ],
-        "id": "0lbYT",
+        "id": "bk1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -220,39 +242,25 @@
         "choices": [
           {
             "sectionId": "AC6KDHfeHb",
-            "optionId": "oHe3p2yfhK",
-            "count": 3
-          }
-        ],
-        "id": "0lbYT-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "0lbYT"
-      },
-      {
-        "rosterUnitId": "2okuxw6",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "0kao5kx",
-            "optionId": "5l1fTmV",
+            "optionId": "n4zqiFbMCm",
             "count": 1
           }
         ],
-        "id": "IUXY0",
+        "id": "bk2",
         "joinsUnitId": null,
-        "combinedWithId": null
+        "combinedWithId": "bk1"
       },
       {
-        "rosterUnitId": "2okuxw6",
+        "rosterUnitId": "I_HQfUg",
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "0kao5kx",
-            "optionId": "5l1fTmV",
+            "sectionId": "ln8ECJY",
+            "optionId": "mMIvycE",
             "count": 1
           }
         ],
-        "id": "fJuam",
+        "id": "apc1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -261,26 +269,12 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "T71ZBwe6",
-            "optionId": "AlwDcWEg",
+            "sectionId": "ln8ECJY",
+            "optionId": "mMIvycE",
             "count": 1
           }
         ],
-        "id": "xaRpw",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "I_HQfUg",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "T71ZBwe6",
-            "optionId": "AlwDcWEg",
-            "count": 1
-          }
-        ],
-        "id": "uMnMC",
+        "id": "apc2",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -304,7 +298,7 @@
             "count": 1
           }
         ],
-        "id": "aGuXi",
+        "id": "bt1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -314,7 +308,7 @@
         "choices": [
           {
             "sectionId": "CXlkbRN",
-            "optionId": "YZl4pcI",
+            "optionId": "uT-2yz0",
             "count": 1
           },
           {
@@ -328,7 +322,21 @@
             "count": 1
           }
         ],
-        "id": null,
+        "id": "bt2",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "2okuxw6",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "0kao5kx",
+            "optionId": "Dm1G248",
+            "count": 1
+          }
+        ],
+        "id": "walker",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -7330,184 +7338,73 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
-      "name": "Minions",
-      "id": "U-MXG",
-      "joinsUnitId": null,
-      "modelCount": 10,
+      "name": "Supreme Leader",
+      "id": "sl",
+      "joinsUnitId": "ss1",
+      "modelCount": 1,
       "base": {
         "shape": "Circle",
-        "diameterInches": 0.984252,
+        "diameterInches": 1.5748031,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 5,
-      "defense": 5,
+      "quality": 3,
+      "defense": 4,
       "specialRules": [
         {
           "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
           "name": "Fanatic"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
         }
       ],
       "weapons": [
         {
-          "name": "Battle Rifle",
-          "quantity": 9,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Flamer",
+          "name": "Channeling Horns",
           "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
+          "rangeInches": 0,
+          "attacks": 2,
           "armorPenetration": 0,
-          "effectSet": "flame-jet",
           "specialRules": [
             {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
               "kind": "core",
-              "name": "Reliable"
+              "name": "Spell Amplifier"
             }
           ]
         }
       ],
-      "pointCost": 130
-    },
-    {
-      "name": "Minions",
-      "id": "9sKOz",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fanatic"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Battle Rifle",
-          "quantity": 9,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Flamer",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        }
-      ],
-      "pointCost": 130
-    },
-    {
-      "name": "Minions",
-      "id": "m4A2N",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fanatic"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Battle Rifle",
-          "quantity": 9,
-          "rangeInches": 24,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Flamer",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        }
-      ],
-      "pointCost": 130
+      "pointCost": 140
     },
     {
       "name": "Soul-Snatchers",
-      "id": "JUitv",
+      "id": "ss1",
       "joinsUnitId": null,
-      "modelCount": 5,
+      "modelCount": 10,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -7537,22 +7434,231 @@
       ],
       "weapons": [
         {
-          "name": "Razor Claws",
-          "quantity": 5,
+          "name": "Serrated Claws",
+          "quantity": 10,
           "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
           "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
-      "pointCost": 135
+      "pointCost": 270
     },
     {
-      "name": "Soul-Snatchers",
-      "id": "0dtMv",
+      "name": "Cult Leader",
+      "id": "cl",
+      "joinsUnitId": "minA",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Fanatic"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Mage Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
+        }
+      ],
+      "pointCost": 80
+    },
+    {
+      "name": "Minions",
+      "id": "minA",
       "joinsUnitId": null,
-      "modelCount": 5,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fanatic"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Battle Rifle",
+          "quantity": 8,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Plasma Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 140
+    },
+    {
+      "name": "Minions",
+      "id": "minB",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fanatic"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Battle Rifle",
+          "quantity": 8,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Strike",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Plasma Rifle",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "plasma-bolt",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 140
+    },
+    {
+      "name": "Brute Champion",
+      "id": "bc",
+      "joinsUnitId": "br1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Fanatic"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Arm-Needler",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            },
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
+        },
+        {
+          "name": "Energy Mace",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "Mutant Brutes",
+      "id": "br1",
+      "joinsUnitId": null,
+      "modelCount": 10,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -7564,38 +7670,109 @@
       "specialRules": [
         {
           "kind": "core",
-          "name": "Strider"
+          "name": "Regeneration"
         },
+        {
+          "kind": "core",
+          "name": "Fanatic"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Brute Blade",
+          "quantity": 8,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "blade-standard",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Energy Mace",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "energy-blade",
+          "specialRules": []
+        },
+        {
+          "name": "Brute Scythe",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 235
+    },
+    {
+      "name": "Cult Hitman",
+      "id": "hit",
+      "joinsUnitId": "ac1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 5,
+      "specialRules": [
         {
           "kind": "core",
           "name": "Fanatic"
         },
         {
           "kind": "core",
-          "name": "Scout"
+          "name": "Hero"
         },
         {
           "kind": "coreNumeric",
-          "name": "Caster",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Takedown Strike",
           "numericValue": 1
         }
       ],
       "weapons": [
         {
-          "name": "Razor Claws",
-          "quantity": 5,
+          "name": "Dual Hitman Swords",
+          "quantity": 1,
           "rangeInches": 0,
-          "attacks": 2,
+          "attacks": 4,
           "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": []
+          "effectSet": "blade-standard",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
         }
       ],
-      "pointCost": 135
+      "pointCost": 85
     },
     {
       "name": "Acolytes",
-      "id": "Ps4Vv",
+      "id": "ac1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -7614,16 +7791,12 @@
         {
           "kind": "core",
           "name": "Fanatic"
-        },
-        {
-          "kind": "core",
-          "name": "Grounded Precision Aura"
         }
       ],
       "weapons": [
         {
           "name": "Pistol",
-          "quantity": 6,
+          "quantity": 7,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
@@ -7635,13 +7808,18 @@
           ]
         },
         {
-          "name": "Razor Claws",
-          "quantity": 6,
+          "name": "Reaping Claws",
+          "quantity": 7,
           "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 0,
+          "armorPenetration": 1,
           "effectSet": "claw-rend",
-          "specialRules": []
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reap"
+            }
+          ]
         },
         {
           "name": "Serrated Blade",
@@ -7654,7 +7832,7 @@
         },
         {
           "name": "Sgt. Pistol",
-          "quantity": 2,
+          "quantity": 1,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
@@ -7667,7 +7845,7 @@
         },
         {
           "name": "Blade Claw",
-          "quantity": 2,
+          "quantity": 1,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -7680,100 +7858,11 @@
           ]
         }
       ],
-      "pointCost": 250
-    },
-    {
-      "name": "Acolytes",
-      "id": "iLmSp",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Fanatic"
-        },
-        {
-          "kind": "core",
-          "name": "Grounded Precision Aura"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Pistol",
-          "quantity": 6,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
-        {
-          "name": "Razor Claws",
-          "quantity": 6,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        },
-        {
-          "name": "Serrated Blade",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        },
-        {
-          "name": "Sgt. Pistol",
-          "quantity": 2,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
-        {
-          "name": "Blade Claw",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "claw-rend",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        }
-      ],
-      "pointCost": 250
+      "pointCost": 245
     },
     {
       "name": "Neophyte Bikers",
-      "id": "0lbYT",
+      "id": "bk1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -7812,17 +7901,21 @@
           "specialRules": []
         },
         {
-          "name": "Grenade Launcher",
+          "name": "Flamer",
           "quantity": 2,
-          "rangeInches": 24,
+          "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "mortar-artillery",
+          "effectSet": "flame-jet",
           "specialRules": [
             {
               "kind": "coreNumeric",
               "name": "Blast",
               "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
             }
           ]
         }
@@ -7830,108 +7923,8 @@
       "pointCost": 200
     },
     {
-      "name": "Light Walker",
-      "id": "IUXY0",
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 1
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Fanatic"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Stomp",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "effectSet": "titan-impact",
-          "specialRules": []
-        },
-        {
-          "name": "Heavy Machinegun",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 6,
-          "armorPenetration": 1,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 155
-    },
-    {
-      "name": "Light Walker",
-      "id": "fJuam",
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 1
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Fanatic"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Stomp",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "effectSet": "titan-impact",
-          "specialRules": []
-        },
-        {
-          "name": "Heavy Machinegun",
-          "quantity": 1,
-          "rangeInches": 30,
-          "attacks": 6,
-          "armorPenetration": 1,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 155
-    },
-    {
       "name": "Light APC",
-      "id": "xaRpw",
+      "id": "apc1",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -7960,32 +7953,9 @@
           "kind": "coreNumeric",
           "name": "Transport",
           "numericValue": 11
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
         }
       ],
       "weapons": [
-        {
-          "name": "Turret Heavy Flamer",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
         {
           "name": "Overrun",
           "quantity": 1,
@@ -7999,13 +7969,21 @@
               "name": "Thrust"
             }
           ]
+        },
+        {
+          "name": "Heavy Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
         }
       ],
-      "pointCost": 175
+      "pointCost": 155
     },
     {
       "name": "Light APC",
-      "id": "uMnMC",
+      "id": "apc2",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8034,32 +8012,9 @@
           "kind": "coreNumeric",
           "name": "Transport",
           "numericValue": 11
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
         }
       ],
       "weapons": [
-        {
-          "name": "Turret Heavy Flamer",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
         {
           "name": "Overrun",
           "quantity": 1,
@@ -8073,13 +8028,21 @@
               "name": "Thrust"
             }
           ]
+        },
+        {
+          "name": "Heavy Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
         }
       ],
-      "pointCost": 175
+      "pointCost": 155
     },
     {
       "name": "Battle Tank",
-      "id": "aGuXi",
+      "id": "bt1",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8171,7 +8134,7 @@
     },
     {
       "name": "Battle Tank",
-      "id": null,
+      "id": "bt2",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -8213,12 +8176,18 @@
           ]
         },
         {
-          "name": "Twin Autocannon",
+          "name": "Anti-Tank Cannon",
           "quantity": 1,
-          "rangeInches": 36,
-          "attacks": 9,
-          "armorPenetration": 2,
-          "specialRules": []
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 3,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
         },
         {
           "name": "Sponson Heavy Fusion Rifles",
@@ -8259,7 +8228,64 @@
           ]
         }
       ],
-      "pointCost": 445
+      "pointCost": 425
+    },
+    {
+      "name": "Light Walker",
+      "id": "walker",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Fanatic"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        },
+        {
+          "name": "Laser Cannon",
+          "quantity": 1,
+          "rangeInches": 36,
+          "attacks": 2,
+          "armorPenetration": 3,
+          "effectSet": "laser-beam",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 185
     }
   ],
   "defaultRangedEffectSet": "ballistic-slug",

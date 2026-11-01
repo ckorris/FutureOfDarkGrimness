@@ -5,6 +5,64 @@
     "pointsLimit": 3000,
     "units": [
       {
+        "rosterUnitId": "Yta_jhYaB",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "1AhPd",
+            "optionId": "PrzNAwR",
+            "count": 1
+          },
+          {
+            "sectionId": "U5iFb",
+            "optionId": "90LRn",
+            "count": 1
+          },
+          {
+            "sectionId": "OzzbsCc8H-",
+            "optionId": "Jid-RbsZ_b",
+            "count": 1
+          },
+          {
+            "sectionId": "HPEjYH-V",
+            "optionId": "piynK1b3",
+            "count": 1
+          }
+        ],
+        "id": "kmd",
+        "joinsUnitId": "kd",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "lpZy6VF",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "-Eu0iQS6Cd",
+            "optionId": "xYa3COMCfh",
+            "count": 1
+          },
+          {
+            "sectionId": "8pvms",
+            "optionId": "g8t8c",
+            "count": 1
+          },
+          {
+            "sectionId": "cqjBI",
+            "optionId": "0oebI",
+            "count": 1
+          },
+          {
+            "sectionId": "o3ZyH",
+            "optionId": "faH2h9kcr-",
+            "count": 1
+          }
+        ],
+        "id": "kd",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
         "rosterUnitId": "IjggYiVCq",
         "modelCount": 1,
         "choices": [
@@ -25,12 +83,12 @@
           },
           {
             "sectionId": "tDkPO",
-            "optionId": "LG9wF",
+            "optionId": "_klZNtz",
             "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": "e244e01c5fe94cc7b31b4a94b70b90ed",
+        "id": "kvmb",
+        "joinsUnitId": "kbbA1",
         "combinedWithId": null
       },
       {
@@ -38,37 +96,61 @@
         "modelCount": 5,
         "choices": [
           {
+            "sectionId": "cqjBI",
+            "optionId": "0oebI",
+            "count": 1
+          },
+          {
+            "sectionId": "KIvpC",
+            "optionId": "8YkPp",
+            "count": 1
+          },
+          {
             "sectionId": "l3w42",
-            "optionId": "vGfWc",
+            "optionId": "EoEbH",
             "count": 1
           }
         ],
-        "id": "e244e01c5fe94cc7b31b4a94b70b90ed",
+        "id": "kbbA1",
         "joinsUnitId": null,
         "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "KIFgzVA",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "cqjBI",
+            "optionId": "0oebI",
+            "count": 1
+          },
+          {
+            "sectionId": "KIvpC",
+            "optionId": "8YkPp",
+            "count": 1
+          },
+          {
+            "sectionId": "l3w42",
+            "optionId": "EoEbH",
+            "count": 1
+          }
+        ],
+        "id": "kbbA2",
+        "joinsUnitId": null,
+        "combinedWithId": "kbbA1"
       },
       {
         "rosterUnitId": "wOdTTeKoD",
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "CPoQHGT",
-            "optionId": "AjQmy1V",
-            "count": 1
-          },
-          {
-            "sectionId": "C3M0Prp",
-            "optionId": "4zWooFV8Ym",
-            "count": 1
-          },
-          {
-            "sectionId": "3LJ6Wjx",
-            "optionId": "mtqhfeI",
+            "sectionId": "wwjZVUq",
+            "optionId": "6kvdqkvgbo",
             "count": 1
           },
           {
             "sectionId": "5E4zYzbg",
-            "optionId": "2C37BHv-",
+            "optionId": "VrsQFk1T",
             "count": 1
           },
           {
@@ -77,41 +159,36 @@
             "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": "bdd86b80cfd341ca9de835ca2b033fee",
+        "id": "kmb",
+        "joinsUnitId": "kbbB",
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "lpZy6VF",
-        "modelCount": 3,
+        "rosterUnitId": "KIFgzVA",
+        "modelCount": 5,
         "choices": [
           {
-            "sectionId": "-Eu0iQS6Cd",
-            "optionId": "xYa3COMCfh",
+            "sectionId": "cqjBI",
+            "optionId": "0oebI",
             "count": 1
           },
           {
-            "sectionId": "a7zkE",
-            "optionId": "X14ro",
+            "sectionId": "KIvpC",
+            "optionId": "i4JIx",
             "count": 1
           },
           {
-            "sectionId": "8pvms",
-            "optionId": "SJyNK",
+            "sectionId": "l3w42",
+            "optionId": "EoEbH",
             "count": 1
           },
           {
-            "sectionId": "o3ZyH",
-            "optionId": "faH2h9kcr-",
-            "count": 1
-          },
-          {
-            "sectionId": "eefdM",
-            "optionId": "hGIiK",
+            "sectionId": "sOsIU",
+            "optionId": "lY2xn",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "kbbB",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -121,51 +198,18 @@
         "choices": [
           {
             "sectionId": "3Xp5xGTcx0",
-            "optionId": "r2SeBMTNhK",
-            "count": 2
-          },
-          {
-            "sectionId": "PizI-J6nnk",
-            "optionId": "MJ6ScUfY2s",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "KIFgzVA",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "eefdM",
-            "optionId": "hGIiK",
+            "optionId": "VjOdvoRe5E",
             "count": 1
           },
           {
-            "sectionId": "l3w42",
-            "optionId": "EoEbH",
+            "sectionId": "3Xp5xGTcx0",
+            "optionId": "VDbXvfpgGG",
             "count": 1
           }
         ],
-        "id": "bdd86b80cfd341ca9de835ca2b033fee",
+        "id": "walker",
         "joinsUnitId": null,
         "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "KIFgzVA",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "l3w42",
-            "optionId": "EoEbH",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": "bdd86b80cfd341ca9de835ca2b033fee"
       },
       {
         "rosterUnitId": "XnRi8qh_E",
@@ -178,11 +222,11 @@
           },
           {
             "sectionId": "TNz9N_Q",
-            "optionId": "saA4U",
+            "optionId": "XwtU2",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "gunship",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -194,57 +238,47 @@
             "sectionId": "hHcZXLK",
             "optionId": "mM-q08o",
             "count": 1
-          },
-          {
-            "sectionId": "fO1Z8",
-            "optionId": "m7V-N",
-            "count": 1
-          },
-          {
-            "sectionId": "VaPoV7uW",
-            "optionId": "XGAxqyqy",
-            "count": 1
           }
         ],
-        "id": null,
+        "id": "av",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "KIFgzVA",
-        "modelCount": 5,
+        "rosterUnitId": "I2thtsd",
+        "modelCount": 3,
         "choices": [
           {
-            "sectionId": "5owGZfCDDn",
-            "optionId": "xB_4aY4CYi",
-            "count": 1
+            "sectionId": "Z-SWf",
+            "optionId": "F_FTisTx4S",
+            "count": 3
           },
           {
-            "sectionId": "eefdM",
-            "optionId": "hGIiK",
+            "sectionId": "cqjBI",
+            "optionId": "0oebI",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "purg",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "ngDaqZ4zv",
-        "modelCount": 1,
+        "rosterUnitId": "er4pfLo",
+        "modelCount": 3,
         "choices": [
           {
-            "sectionId": "3Xp5xGTcx0",
-            "optionId": "r2SeBMTNhK",
-            "count": 2
+            "sectionId": "dnetP",
+            "optionId": "SCxBP",
+            "count": 1
           },
           {
-            "sectionId": "PizI-J6nnk",
-            "optionId": "MJ6ScUfY2s",
+            "sectionId": "cqjBI",
+            "optionId": "0oebI",
             "count": 1
           }
         ],
-        "id": null,
+        "id": "vets",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -8647,9 +8681,161 @@
   "gameSystem": "grimdark-future",
   "units": [
     {
+      "name": "Knight Master Destroyer",
+      "id": "kmd",
+      "joinsUnitId": "kd",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Knightborn"
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Burst Cyclic Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "effectSet": "storm-tracer",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        },
+        {
+          "name": "Energy Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "pointCost": 275
+    },
+    {
+      "name": "Knight Destroyers",
+      "id": "kd",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Knightborn"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Ambush"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Burst Cyclic Rifle",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "effectSet": "storm-tracer",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        },
+        {
+          "name": "Hand Weapon",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Slayer Chain-Cannon",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 6,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 350
+    },
+    {
       "name": "Knight Veteran Master Brother",
-      "id": null,
-      "joinsUnitId": "e244e01c5fe94cc7b31b4a94b70b90ed",
+      "id": "kvmb",
+      "joinsUnitId": "kbbA1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -8687,7 +8873,7 @@
         },
         {
           "kind": "core",
-          "name": "Ambush"
+          "name": "Teleport"
         }
       ],
       "weapons": [
@@ -8727,13 +8913,13 @@
           ]
         }
       ],
-      "pointCost": 160
+      "pointCost": 155
     },
     {
       "name": "Knight Battle Brothers",
-      "id": "e244e01c5fe94cc7b31b4a94b70b90ed",
+      "id": "kbbA1",
       "joinsUnitId": null,
-      "modelCount": 5,
+      "modelCount": 10,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -8752,14 +8938,19 @@
           "name": "Fearless"
         },
         {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 1
+        },
+        {
           "kind": "core",
-          "name": "Ambush"
+          "name": "Teleport"
         }
       ],
       "weapons": [
         {
           "name": "Cyclic Rifle",
-          "quantity": 5,
+          "quantity": 8,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 0,
@@ -8777,19 +8968,27 @@
         },
         {
           "name": "Strike",
-          "quantity": 5,
+          "quantity": 10,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Slayer Chain-Cannon",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "specialRules": []
         }
       ],
-      "pointCost": 160
+      "pointCost": 390
     },
     {
       "name": "Knight Master Brother",
-      "id": null,
-      "joinsUnitId": "bdd86b80cfd341ca9de835ca2b033fee",
+      "id": "kmb",
+      "joinsUnitId": "kbbB",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -8818,8 +9017,9 @@
           "name": "Knightborn"
         },
         {
-          "kind": "core",
-          "name": "Bane when Shooting Aura"
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
         },
         {
           "kind": "core",
@@ -8828,73 +9028,36 @@
       ],
       "weapons": [
         {
-          "name": "Fusion-Mod",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "fusion-melta",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Limited"
-            }
-          ]
-        },
-        {
-          "name": "Assault Cyclic Rifle",
-          "quantity": 1,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "storm-tracer",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Surge"
-            }
-          ]
-        },
-        {
-          "name": "Energy Fist",
+          "name": "Archivist Staff",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "energy-blade",
-          "specialRules": []
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
         }
       ],
-      "pointCost": 145
+      "pointCost": 155
     },
     {
-      "name": "Knight Destroyers",
-      "id": null,
+      "name": "Knight Battle Brothers",
+      "id": "kbbB",
       "joinsUnitId": null,
-      "modelCount": 3,
+      "modelCount": 5,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.5748031,
+        "diameterInches": 1.2598425,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
       "quality": 3,
       "defense": 3,
       "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
         {
           "kind": "core",
           "name": "Knightborn"
@@ -8904,20 +9067,21 @@
           "name": "Fearless"
         },
         {
-          "kind": "core",
-          "name": "Ambush"
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 1
         },
         {
           "kind": "core",
-          "name": "Regeneration Aura"
+          "name": "Teleport"
         }
       ],
       "weapons": [
         {
-          "name": "Burst Cyclic Rifle",
-          "quantity": 2,
+          "name": "Cyclic Rifle",
+          "quantity": 3,
           "rangeInches": 18,
-          "attacks": 3,
+          "attacks": 1,
           "armorPenetration": 0,
           "effectSet": "storm-tracer",
           "specialRules": [
@@ -8932,52 +9096,50 @@
           ]
         },
         {
-          "name": "Hand Weapon",
-          "quantity": 2,
+          "name": "Strike",
+          "quantity": 4,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Energy Sword",
+          "name": "Slayer Volley-Gun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Anti-Cover"
+            },
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        },
+        {
+          "name": "Dual Energy Sabres",
           "quantity": 1,
           "rangeInches": 0,
-          "attacks": 3,
+          "attacks": 4,
           "armorPenetration": 0,
           "effectSet": "energy-blade",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Rending"
-            }
-          ]
-        },
-        {
-          "name": "Slayer Blaze-Flamer",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
+              "name": "Unstoppable"
             }
           ]
         }
       ],
-      "pointCost": 380
+      "pointCost": 205
     },
     {
       "name": "Knight Veteran Combat Walker",
-      "id": null,
+      "id": "walker",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -9023,37 +9185,17 @@
           "specialRules": []
         },
         {
-          "name": "Heavy Flamer",
+          "name": "Twin Autocannon",
           "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
-        {
-          "name": "Light Walker Fist",
-          "quantity": 2,
-          "rangeInches": 0,
-          "attacks": 1,
+          "rangeInches": 36,
+          "attacks": 6,
           "armorPenetration": 2,
-          "effectSet": "titan-impact",
           "specialRules": []
         },
         {
-          "name": "Fusion Rifle",
+          "name": "Twin Heavy Fusion Rifle",
           "quantity": 1,
-          "rangeInches": 12,
+          "rangeInches": 18,
           "attacks": 2,
           "armorPenetration": 4,
           "effectSet": "fusion-melta",
@@ -9066,72 +9208,11 @@
           ]
         }
       ],
-      "pointCost": 505
-    },
-    {
-      "name": "Knight Battle Brothers",
-      "id": "bdd86b80cfd341ca9de835ca2b033fee",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.2598425,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Knightborn"
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Teleport"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration Aura"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Cyclic Rifle",
-          "quantity": 10,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "storm-tracer",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Surge"
-            }
-          ]
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        }
-      ],
-      "pointCost": 325
+      "pointCost": 600
     },
     {
       "name": "Knight Light Gunship",
-      "id": null,
+      "id": "gunship",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -9189,19 +9270,30 @@
           "specialRules": []
         },
         {
-          "name": "Strafing Heavy Machineguns",
+          "name": "Strafing AA-Missiles",
           "quantity": 1,
           "rangeInches": 15,
-          "attacks": 3,
-          "armorPenetration": 1,
-          "specialRules": []
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "missile-rocket",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
         }
       ],
-      "pointCost": 285
+      "pointCost": 290
     },
     {
       "name": "Knight Attack Vehicle",
-      "id": null,
+      "id": "av",
       "joinsUnitId": null,
       "modelCount": 1,
       "base": {
@@ -9229,14 +9321,6 @@
         {
           "kind": "core",
           "name": "Knightborn"
-        },
-        {
-          "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "core",
-          "name": "Unstoppable Mark"
         }
       ],
       "weapons": [
@@ -9279,13 +9363,13 @@
           "specialRules": []
         }
       ],
-      "pointCost": 280
+      "pointCost": 230
     },
     {
-      "name": "Knight Battle Brothers",
-      "id": null,
+      "name": "Knight Purgation Brothers",
+      "id": "purg",
       "joinsUnitId": null,
-      "modelCount": 5,
+      "modelCount": 3,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -9297,6 +9381,10 @@
       "specialRules": [
         {
           "kind": "core",
+          "name": "Relentless"
+        },
+        {
+          "kind": "core",
           "name": "Knightborn"
         },
         {
@@ -9304,124 +9392,25 @@
           "name": "Fearless"
         },
         {
-          "kind": "core",
-          "name": "Regeneration Aura"
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 1
         }
       ],
       "weapons": [
         {
-          "name": "Assault Cyclic Rifle",
-          "quantity": 5,
-          "rangeInches": 9,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "storm-tracer",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Assault"
-            },
-            {
-              "kind": "core",
-              "name": "Surge"
-            }
-          ]
-        },
-        {
-          "name": "Hand Weapon",
-          "quantity": 5,
+          "name": "Strike",
+          "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
-        }
-      ],
-      "pointCost": 175
-    },
-    {
-      "name": "Knight Veteran Combat Walker",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 2.3622048,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 2,
-      "specialRules": [
-        {
-          "kind": "coreNumeric",
-          "name": "Fear",
-          "numericValue": 2
         },
         {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 12
-        },
-        {
-          "kind": "core",
-          "name": "Fearless"
-        },
-        {
-          "kind": "core",
-          "name": "Versatile Expert"
-        },
-        {
-          "kind": "core",
-          "name": "Knightborn"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Stomp",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 4,
-          "armorPenetration": 1,
-          "effectSet": "titan-impact",
-          "specialRules": []
-        },
-        {
-          "name": "Heavy Flamer",
-          "quantity": 1,
+          "name": "Slayer Fusion-Beamer",
+          "quantity": 3,
           "rangeInches": 12,
-          "attacks": 2,
-          "armorPenetration": 1,
-          "effectSet": "flame-jet",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Blast",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Reliable"
-            }
-          ]
-        },
-        {
-          "name": "Light Walker Fist",
-          "quantity": 2,
-          "rangeInches": 0,
           "attacks": 1,
-          "armorPenetration": 2,
-          "effectSet": "titan-impact",
-          "specialRules": []
-        },
-        {
-          "name": "Fusion Rifle",
-          "quantity": 1,
-          "rangeInches": 12,
-          "attacks": 2,
           "armorPenetration": 4,
           "effectSet": "fusion-melta",
           "specialRules": [
@@ -9433,7 +9422,61 @@
           ]
         }
       ],
-      "pointCost": 505
+      "pointCost": 200
+    },
+    {
+      "name": "Knight Veteran Brothers",
+      "id": "vets",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Knightborn"
+        },
+        {
+          "kind": "core",
+          "name": "Versatile Expert"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Teleport"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dual Energy Sabres",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "effectSet": "energy-blade",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
+        }
+      ],
+      "pointCost": 150
     }
   ],
   "defaultRangedEffectSet": "storm-tracer",

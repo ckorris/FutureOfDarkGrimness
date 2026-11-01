@@ -9,13 +9,8 @@
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "9NLDcvme",
-            "optionId": "UcsfvrLg",
-            "count": 1
-          },
-          {
-            "sectionId": "upDAjkrl",
-            "optionId": "ipV_Js2f",
+            "sectionId": "F6QM6eQX",
+            "optionId": "ixK4JuDZ",
             "count": 1
           },
           {
@@ -24,8 +19,8 @@
             "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": "fcf5cac242ee4bbe8c2a45144a12e2c9",
+        "id": "vl1",
+        "joinsUnitId": "boyz1",
         "combinedWithId": null
       },
       {
@@ -34,17 +29,50 @@
         "choices": [
           {
             "sectionId": "s08qc",
-            "optionId": "ed4kY",
+            "optionId": "1q98h",
             "count": 1
           },
           {
             "sectionId": "nGug6GjI",
             "optionId": "IV9LDnYqO_",
+            "count": 2
+          }
+        ],
+        "id": "boyz1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "D69wnil",
+        "modelCount": 10,
+        "choices": [
+          {
+            "sectionId": "nGug6GjI",
+            "optionId": "6lEQQ-rO2B",
+            "count": 2
+          }
+        ],
+        "id": "boyz2",
+        "joinsUnitId": null,
+        "combinedWithId": "boyz1"
+      },
+      {
+        "rosterUnitId": "RdSmE77",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "F6QM6eQX",
+            "optionId": "BvbjDfUw",
+            "count": 1
+          },
+          {
+            "sectionId": "9NLDcvme",
+            "optionId": "OiCvzrlv",
             "count": 1
           }
         ],
-        "id": "fcf5cac242ee4bbe8c2a45144a12e2c9",
-        "joinsUnitId": null,
+        "id": "vl2",
+        "joinsUnitId": "boyz3",
         "combinedWithId": null
       },
       {
@@ -57,31 +85,12 @@
             "count": 1
           },
           {
-            "sectionId": "s08qc",
-            "optionId": "ed4kY",
-            "count": 1
+            "sectionId": "9ta315tW",
+            "optionId": "GxLEeM5-",
+            "count": 2
           }
         ],
-        "id": "8e8f01c3f5a54498911a0385aac2f0b2",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "WgVWJ9Z",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "9dArWIgC",
-            "optionId": "4JefrQQ2",
-            "count": 1
-          },
-          {
-            "sectionId": "XOB1mQ0",
-            "optionId": "QGq9C_O",
-            "count": 1
-          }
-        ],
-        "id": null,
+        "id": "boyz3",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -95,7 +104,7 @@
             "count": 1
           }
         ],
-        "id": "1e116fbc6735460885ca71da2a4be04c",
+        "id": "jump1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -109,71 +118,35 @@
             "count": 1
           }
         ],
-        "id": null,
+        "id": "jump2",
         "joinsUnitId": null,
-        "combinedWithId": "1e116fbc6735460885ca71da2a4be04c"
+        "combinedWithId": "jump1"
       },
       {
-        "rosterUnitId": "DCcm6OJ",
-        "modelCount": 3,
-        "choices": [],
-        "id": "b36c17554fc741d9a8f76fbfae1cc3e1",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "D69wnil",
-        "modelCount": 10,
-        "choices": [
-          {
-            "sectionId": "s08qc",
-            "optionId": "ed4kY",
-            "count": 1
-          },
-          {
-            "sectionId": "nGug6GjI",
-            "optionId": "gim1MFiNdW",
-            "count": 1
-          }
-        ],
-        "id": null,
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "RdSmE77",
+        "rosterUnitId": "A-hnMeC",
         "modelCount": 1,
         "choices": [
           {
-            "sectionId": "F2wLwQw",
-            "optionId": "INwGAxJ",
-            "count": 1
-          },
-          {
-            "sectionId": "9SMT0vtZ",
-            "optionId": "ubi8nF4X",
-            "count": 1
-          },
-          {
-            "sectionId": "ZqRTD_XL",
-            "optionId": "3z-ghVrR",
-            "count": 1
-          },
-          {
-            "sectionId": "F6QM6eQX",
-            "optionId": "BvbjDfUw",
+            "sectionId": "FY0Tz",
+            "optionId": "q2Yd0OInAB",
             "count": 1
           }
         ],
-        "id": null,
-        "joinsUnitId": "f6c31d5b4ab445129deca489077e7a9a",
+        "id": "walker",
+        "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "5hHhPKU",
-        "modelCount": 3,
-        "choices": [],
-        "id": "f6c31d5b4ab445129deca489077e7a9a",
+        "rosterUnitId": "_ImR84h",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "s08qc",
+            "optionId": "1q98h",
+            "count": 1
+          }
+        ],
+        "id": "bz1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
@@ -181,7 +154,40 @@
         "rosterUnitId": "_ImR84h",
         "modelCount": 5,
         "choices": [],
-        "id": null,
+        "id": "bz2",
+        "joinsUnitId": null,
+        "combinedWithId": "bz1"
+      },
+      {
+        "rosterUnitId": "5hHhPKU",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "zqEjA055",
+            "optionId": "QGJ-1Qel",
+            "count": 1
+          },
+          {
+            "sectionId": "x1xm9RG3",
+            "optionId": "xq_sr0SV",
+            "count": 1
+          }
+        ],
+        "id": "bikes",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "WXcv-b5",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "1ZkABV9",
+            "optionId": "19gui0O",
+            "count": 3
+          }
+        ],
+        "id": "spec",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -13508,8 +13514,8 @@
   "units": [
     {
       "name": "Veteran Leader",
-      "id": null,
-      "joinsUnitId": "fcf5cac242ee4bbe8c2a45144a12e2c9",
+      "id": "vl1",
+      "joinsUnitId": "boyz1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -13536,19 +13542,37 @@
         {
           "kind": "core",
           "name": "Ferocious"
+        },
+        {
+          "kind": "core",
+          "name": "Enhanced Ferocious Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Pistol",
+          "name": "Carbine",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Flamer-Mod",
           "quantity": 1,
           "rangeInches": 12,
           "attacks": 1,
-          "armorPenetration": 0,
+          "armorPenetration": 1,
+          "effectSet": "flame-jet",
           "specialRules": [
             {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
               "kind": "core",
-              "name": "Assault"
+              "name": "Limited"
             }
           ]
         },
@@ -13562,13 +13586,13 @@
           "specialRules": []
         }
       ],
-      "pointCost": 100
+      "pointCost": 110
     },
     {
       "name": "Orc Warriors",
-      "id": "fcf5cac242ee4bbe8c2a45144a12e2c9",
+      "id": "boyz1",
       "joinsUnitId": null,
-      "modelCount": 10,
+      "modelCount": 20,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -13588,13 +13612,13 @@
         },
         {
           "kind": "core",
-          "name": "Regeneration Aura"
+          "name": "Speed Feat Aura"
         }
       ],
       "weapons": [
         {
           "name": "Pistol",
-          "quantity": 10,
+          "quantity": 20,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
@@ -13607,7 +13631,7 @@
         },
         {
           "name": "Hand Weapon",
-          "quantity": 9,
+          "quantity": 16,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
@@ -13615,7 +13639,7 @@
         },
         {
           "name": "Marauder Axe",
-          "quantity": 1,
+          "quantity": 2,
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 0,
@@ -13626,13 +13650,77 @@
               "name": "Rending"
             }
           ]
+        },
+        {
+          "name": "Marauder Claw",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "claw-rend",
+          "specialRules": []
         }
       ],
-      "pointCost": 250
+      "pointCost": 475
+    },
+    {
+      "name": "Veteran Leader",
+      "id": "vl2",
+      "joinsUnitId": "boyz3",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Bad Shot"
+        },
+        {
+          "kind": "core",
+          "name": "Ferocious"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Shaman Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
+        }
+      ],
+      "pointCost": 135
     },
     {
       "name": "Orc Warriors",
-      "id": "8e8f01c3f5a54498911a0385aac2f0b2",
+      "id": "boyz3",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -13651,16 +13739,12 @@
         {
           "kind": "core",
           "name": "Ferocious"
-        },
-        {
-          "kind": "core",
-          "name": "Regeneration Aura"
         }
       ],
       "weapons": [
         {
           "name": "Carbine",
-          "quantity": 10,
+          "quantity": 8,
           "rangeInches": 18,
           "attacks": 2,
           "armorPenetration": 0,
@@ -13673,79 +13757,10 @@
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
-        }
-      ],
-      "pointCost": 245
-    },
-    {
-      "name": "Assault Buggy",
-      "id": null,
-      "joinsUnitId": null,
-      "modelCount": 1,
-      "base": {
-        "shape": "Rectangle",
-        "diameterInches": 1.1023622,
-        "widthInches": 2.7559056,
-        "heightInches": 4.133858
-      },
-      "quality": 4,
-      "defense": 3,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Fast"
         },
         {
-          "kind": "core",
-          "name": "Ferocious"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 9
-        },
-        {
-          "kind": "core",
-          "name": "Agile"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Overrun",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "titan-impact",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Thrust"
-            }
-          ]
-        },
-        {
-          "name": "Ruck-Drone Launcher",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 2,
-          "armorPenetration": 3,
-          "effectSet": "mortar-artillery",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Indirect"
-            }
-          ]
-        },
-        {
-          "name": "Truck-Killer RPG",
-          "quantity": 1,
+          "name": "Rocket Launcher",
+          "quantity": 2,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 2,
@@ -13759,11 +13774,11 @@
           ]
         }
       ],
-      "pointCost": 285
+      "pointCost": 230
     },
     {
       "name": "Jump Pack Orcs",
-      "id": "1e116fbc6735460885ca71da2a4be04c",
+      "id": "jump1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -13809,72 +13824,74 @@
       "pointCost": 240
     },
     {
-      "name": "Berserker Beast Riders",
-      "id": "b36c17554fc741d9a8f76fbfae1cc3e1",
+      "name": "Combat Walker",
+      "id": "walker",
       "joinsUnitId": null,
-      "modelCount": 3,
+      "modelCount": 1,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 1.8110236,
-        "heightInches": 2.952756
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
       },
       "quality": 4,
-      "defense": 6,
+      "defense": 2,
       "specialRules": [
         {
-          "kind": "core",
-          "name": "Bounding"
-        },
-        {
-          "kind": "core",
-          "name": "Ferocious"
-        },
-        {
           "kind": "coreNumeric",
-          "name": "Impact",
+          "name": "Fear",
           "numericValue": 2
-        },
-        {
-          "kind": "core",
-          "name": "Protected"
         },
         {
           "kind": "coreNumeric",
           "name": "Tough",
-          "numericValue": 3
+          "numericValue": 12
         },
         {
           "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Armor",
-          "numericValue": 5
+          "name": "Ferocious"
         }
       ],
       "weapons": [
         {
-          "name": "Berserker Lance",
-          "quantity": 3,
+          "name": "Stomp",
+          "quantity": 1,
           "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        },
+        {
+          "name": "Walker Combat Claw",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 2,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Rocket Launcher",
+          "quantity": 1,
+          "rangeInches": 18,
           "attacks": 1,
-          "armorPenetration": 0,
-          "effectSet": "spear-pierce",
+          "armorPenetration": 3,
+          "effectSet": "missile-rocket",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Thrust"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 6
             }
           ]
         }
       ],
-      "pointCost": 165
+      "pointCost": 345
     },
     {
-      "name": "Orc Warriors",
-      "id": null,
+      "name": "Berserkers",
+      "id": "bz1",
       "joinsUnitId": null,
       "modelCount": 10,
       "base": {
@@ -13884,11 +13901,11 @@
         "heightInches": 1.968504
       },
       "quality": 4,
-      "defense": 5,
+      "defense": 6,
       "specialRules": [
         {
           "kind": "core",
-          "name": "Bad Shot"
+          "name": "Protected"
         },
         {
           "kind": "core",
@@ -13896,141 +13913,39 @@
         },
         {
           "kind": "core",
-          "name": "Regeneration Aura"
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Armor",
+          "numericValue": 5
+        },
+        {
+          "kind": "core",
+          "name": "Speed Feat Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Pistol",
+          "name": "Berserker Spear",
           "quantity": 10,
-          "rangeInches": 12,
+          "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "spear-pierce",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Assault"
-            }
-          ]
-        },
-        {
-          "name": "Hand Weapon",
-          "quantity": 9,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Marauder Saw",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 4,
-          "effectSet": "chain-blade",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
+              "name": "Counter"
             }
           ]
         }
       ],
-      "pointCost": 260
-    },
-    {
-      "name": "Veteran Leader",
-      "id": null,
-      "joinsUnitId": "f6c31d5b4ab445129deca489077e7a9a",
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 1.5748031,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 3,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 6
-        },
-        {
-          "kind": "core",
-          "name": "Bad Shot"
-        },
-        {
-          "kind": "core",
-          "name": "Ferocious"
-        },
-        {
-          "kind": "core",
-          "name": "Fast"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Caster",
-          "numericValue": 2
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Carbine",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 2,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Bike-Gun",
-          "quantity": 1,
-          "rangeInches": 24,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Rocket-Mod",
-          "quantity": 1,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 2,
-          "effectSet": "missile-rocket",
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Deadly",
-              "numericValue": 3
-            },
-            {
-              "kind": "core",
-              "name": "Limited"
-            }
-          ]
-        },
-        {
-          "name": "Marauder Claw",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 2,
-          "effectSet": "claw-rend",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 200
+      "pointCost": 170
     },
     {
       "name": "Orc Bikers",
-      "id": "f6c31d5b4ab445129deca489077e7a9a",
+      "id": "bikes",
       "joinsUnitId": null,
       "modelCount": 3,
       "base": {
@@ -14071,7 +13986,7 @@
         },
         {
           "name": "Pistol",
-          "quantity": 3,
+          "quantity": 2,
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
@@ -14084,20 +13999,48 @@
         },
         {
           "name": "Hand Weapon",
-          "quantity": 3,
+          "quantity": 2,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
+        },
+        {
+          "name": "Sgt. Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Assault"
+            }
+          ]
+        },
+        {
+          "name": "Marauder Club",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "crude-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
         }
       ],
-      "pointCost": 150
+      "pointCost": 160
     },
     {
-      "name": "Berserkers",
-      "id": null,
+      "name": "Specialists",
+      "id": "spec",
       "joinsUnitId": null,
-      "modelCount": 5,
+      "modelCount": 3,
       "base": {
         "shape": "Circle",
         "diameterInches": 1.2598425,
@@ -14105,11 +14048,11 @@
         "heightInches": 1.968504
       },
       "quality": 4,
-      "defense": 6,
+      "defense": 5,
       "specialRules": [
         {
           "kind": "core",
-          "name": "Protected"
+          "name": "Bad Shot"
         },
         {
           "kind": "core",
@@ -14117,31 +14060,35 @@
         },
         {
           "kind": "core",
-          "name": "Strider"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Armor",
-          "numericValue": 5
+          "name": "Relentless"
         }
       ],
       "weapons": [
         {
-          "name": "Berserker Spear",
-          "quantity": 5,
+          "name": "Strike",
+          "quantity": 3,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "spear-pierce",
+          "specialRules": []
+        },
+        {
+          "name": "Rocket Launcher",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "missile-rocket",
           "specialRules": [
             {
-              "kind": "core",
-              "name": "Counter"
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
             }
           ]
         }
       ],
-      "pointCost": 80
+      "pointCost": 135
     }
   ],
   "defaultRangedEffectSet": "ballistic-slug",

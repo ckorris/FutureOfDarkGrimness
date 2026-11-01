@@ -5,77 +5,126 @@
     "pointsLimit": 1000,
     "units": [
       {
-        "rosterUnitId": "7xHcSJO",
-        "modelCount": 5,
-        "choices": [],
-        "id": "Xw3tE",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
         "rosterUnitId": "Vj0QX3_",
         "modelCount": 1,
         "choices": [
           {
             "sectionId": "NIVw5wa74A",
-            "optionId": "iHbNteli8p",
+            "optionId": "__IoK5dKyT",
+            "count": 1
+          },
+          {
+            "sectionId": "f2MwRhU",
+            "optionId": "e94njN8",
             "count": 1
           },
           {
             "sectionId": "t_cGNkas",
-            "optionId": "zXmNOV7e",
+            "optionId": "MEDktZQ2",
             "count": 1
           }
         ],
-        "id": "5zr_t",
-        "joinsUnitId": "Mvfwq",
+        "id": "bm",
+        "joinsUnitId": "knights",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "rKfk_hD",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "rYmmZcl",
+            "optionId": "sjLOrlF",
+            "count": 1
+          },
+          {
+            "sectionId": "_dTnM7vJ",
+            "optionId": "xUnut-Fr",
+            "count": 1
+          }
+        ],
+        "id": "knights",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "v7FIEfQ",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "_QE9plL1BX",
+            "optionId": "B7DGJIt4C9",
+            "count": 1
+          }
+        ],
+        "id": "tank",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "7xHcSJO",
+        "modelCount": 5,
+        "choices": [],
+        "id": "council",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "yYreRfL",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "2tv5as1Bo2",
+            "optionId": "QyslKfUJ-u",
+            "count": 1
+          },
+          {
+            "sectionId": "_ujhFkKc",
+            "optionId": "V6OBvy2i",
+            "count": 1
+          }
+        ],
+        "id": "champ",
+        "joinsUnitId": "inf1",
         "combinedWithId": null
       },
       {
         "rosterUnitId": "-ESvMWE",
         "modelCount": 10,
-        "choices": [],
-        "id": "Mvfwq",
+        "choices": [
+          {
+            "sectionId": "rYmmZcl",
+            "optionId": "sjLOrlF",
+            "count": 1
+          },
+          {
+            "sectionId": "qhtlSgM",
+            "optionId": "HuU-bKf",
+            "count": 1
+          }
+        ],
+        "id": "inf1",
         "joinsUnitId": null,
         "combinedWithId": null
       },
       {
-        "rosterUnitId": "kY9pOKT",
-        "modelCount": 5,
+        "rosterUnitId": "-ESvMWE",
+        "modelCount": 10,
         "choices": [
           {
-            "sectionId": "c5uXM85",
-            "optionId": "S7oNEl7",
+            "sectionId": "rYmmZcl",
+            "optionId": "sjLOrlF",
             "count": 1
           },
           {
-            "sectionId": "FZVgLCvkoj",
-            "optionId": "k5m3jl0m8K",
+            "sectionId": "qhtlSgM",
+            "optionId": "HuU-bKf",
             "count": 1
           }
         ],
-        "id": "tx8NN",
+        "id": "inf2",
         "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "kY9pOKT",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "c5uXM85",
-            "optionId": "S7oNEl7",
-            "count": 1
-          },
-          {
-            "sectionId": "FZVgLCvkoj",
-            "optionId": "k5m3jl0m8K",
-            "count": 1
-          }
-        ],
-        "id": "tx8NN-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "tx8NN"
+        "combinedWithId": "inf1"
       },
       {
         "rosterUnitId": "vmcM4E8",
@@ -87,88 +136,12 @@
             "count": 1
           },
           {
-            "sectionId": "FZVgLCvkoj",
-            "optionId": "k5m3jl0m8K",
+            "sectionId": "rYmmZcl",
+            "optionId": "sjLOrlF",
             "count": 1
           }
         ],
-        "id": "PFCnw",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "kY9pOKT",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "c5uXM85",
-            "optionId": "S7oNEl7",
-            "count": 1
-          },
-          {
-            "sectionId": "FZVgLCvkoj",
-            "optionId": "k5m3jl0m8K",
-            "count": 1
-          }
-        ],
-        "id": "oTx7t",
-        "joinsUnitId": null,
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "kY9pOKT",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "c5uXM85",
-            "optionId": "S7oNEl7",
-            "count": 1
-          },
-          {
-            "sectionId": "FZVgLCvkoj",
-            "optionId": "k5m3jl0m8K",
-            "count": 1
-          }
-        ],
-        "id": "oTx7t-combined",
-        "joinsUnitId": null,
-        "combinedWithId": "oTx7t"
-      },
-      {
-        "rosterUnitId": "Vj0QX3_",
-        "modelCount": 1,
-        "choices": [
-          {
-            "sectionId": "NIVw5wa74A",
-            "optionId": "XL79gWC414",
-            "count": 1
-          },
-          {
-            "sectionId": "t_cGNkas",
-            "optionId": "zXmNOV7e",
-            "count": 1
-          }
-        ],
-        "id": "dOAH9",
-        "joinsUnitId": "Yw-Om",
-        "combinedWithId": null
-      },
-      {
-        "rosterUnitId": "0IYBIDW",
-        "modelCount": 5,
-        "choices": [
-          {
-            "sectionId": "FZVgLCvkoj",
-            "optionId": "k5m3jl0m8K",
-            "count": 1
-          },
-          {
-            "sectionId": "L7CVhIhx9z",
-            "optionId": "f3HGA5J_HF",
-            "count": 1
-          }
-        ],
-        "id": "Yw-Om",
+        "id": "horse",
         "joinsUnitId": null,
         "combinedWithId": null
       }
@@ -7285,8 +7258,212 @@
   "gameSystem": "age-of-fantasy",
   "units": [
     {
+      "name": "Battle Master",
+      "id": "bm",
+      "joinsUnitId": "knights",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Hold the Line"
+        },
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Precision Fighting Mark"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Master Halberd",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "pointCost": 90
+    },
+    {
+      "name": "Guard Knights",
+      "id": "knights",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Hold the Line"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Lance",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Imperial Great Mace (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "great-weapon-smash",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
+        },
+        {
+          "name": "Lance (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            },
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
+        }
+      ],
+      "pointCost": 130
+    },
+    {
+      "name": "Steam Tank of Water",
+      "id": "tank",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "quality": 4,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Hold the Line"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 9
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Overrun",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "effectSet": "titan-impact",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        },
+        {
+          "name": "Heavy Tank Cannon",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 3,
+          "effectSet": "ballistic-slug",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 280
+    },
+    {
       "name": "Mage Council",
-      "id": "Xw3tE",
+      "id": "council",
       "joinsUnitId": null,
       "modelCount": 5,
       "base": {
@@ -7330,9 +7507,9 @@
       "pointCost": 130
     },
     {
-      "name": "Battle Master",
-      "id": "5zr_t",
-      "joinsUnitId": "Mvfwq",
+      "name": "Champion",
+      "id": "champ",
+      "joinsUnitId": "inf1",
       "modelCount": 1,
       "base": {
         "shape": "Circle",
@@ -7340,8 +7517,8 @@
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
-      "quality": 4,
-      "defense": 4,
+      "quality": 5,
+      "defense": 5,
       "specialRules": [
         {
           "kind": "core",
@@ -7358,16 +7535,53 @@
         },
         {
           "kind": "core",
-          "name": "Coordinate"
+          "name": "Regeneration Aura"
         }
       ],
       "weapons": [
         {
-          "name": "Master Spear",
+          "name": "Master Hand Weapon",
           "quantity": 1,
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Parry",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 75
+    },
+    {
+      "name": "Infantrymen",
+      "id": "inf1",
+      "joinsUnitId": null,
+      "modelCount": 20,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hold the Line"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Spear",
+          "quantity": 18,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
           "effectSet": "spear-pierce",
           "specialRules": [
             {
@@ -7380,112 +7594,36 @@
               "numericValue": 1
             }
           ]
-        }
-      ],
-      "pointCost": 125
-    },
-    {
-      "name": "Infantrymen",
-      "id": "Mvfwq",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hold the Line"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Hand Weapon",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": [
-            {
-              "kind": "coreNumeric",
-              "name": "Parry",
-              "numericValue": 1
-            }
-          ]
-        }
-      ],
-      "pointCost": 90
-    },
-    {
-      "name": "Marksmen",
-      "id": "tx8NN",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hold the Line"
         },
         {
-          "kind": "core",
-          "name": "Extended Buff Range"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Matchlock Rifle",
-          "quantity": 8,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "ballistic-slug",
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Gatling Rifle",
+          "name": "Spear (Sergeant)",
           "quantity": 2,
-          "rangeInches": 18,
-          "attacks": 3,
+          "rangeInches": 0,
+          "attacks": 1,
           "armorPenetration": 0,
-          "effectSet": "ballistic-slug",
+          "effectSet": "spear-pierce",
           "specialRules": [
             {
               "kind": "core",
-              "name": "Anti-Cover"
+              "name": "Counter"
+            },
+            {
+              "kind": "coreNumeric",
+              "name": "Brace",
+              "numericValue": 1
             },
             {
               "kind": "core",
-              "name": "Surge"
+              "name": "Sergeant"
             }
           ]
         }
       ],
-      "pointCost": 160
+      "pointCost": 200
     },
     {
       "name": "Horse Marksmen",
-      "id": "PFCnw",
+      "id": "horse",
       "joinsUnitId": null,
       "modelCount": 5,
       "base": {
@@ -7508,16 +7646,12 @@
         {
           "kind": "core",
           "name": "Vanguard"
-        },
-        {
-          "kind": "core",
-          "name": "Extended Buff Range"
         }
       ],
       "weapons": [
         {
           "name": "Matchlock Rifle",
-          "quantity": 4,
+          "quantity": 3,
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 1,
@@ -7526,14 +7660,14 @@
         },
         {
           "name": "Strike",
-          "quantity": 5,
+          "quantity": 4,
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
           "specialRules": []
         },
         {
-          "name": "Gatling Rifle",
+          "name": "Gatling Rifle (Sergeant)",
           "quantity": 1,
           "rangeInches": 18,
           "attacks": 3,
@@ -7547,154 +7681,42 @@
             {
               "kind": "core",
               "name": "Surge"
+            },
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
+        },
+        {
+          "name": "Matchlock Rifle (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "ballistic-slug",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
+        },
+        {
+          "name": "Strike (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Sergeant"
             }
           ]
         }
       ],
       "pointCost": 95
-    },
-    {
-      "name": "Marksmen",
-      "id": "oTx7t",
-      "joinsUnitId": null,
-      "modelCount": 10,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 5,
-      "defense": 5,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hold the Line"
-        },
-        {
-          "kind": "core",
-          "name": "Extended Buff Range"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Matchlock Rifle",
-          "quantity": 8,
-          "rangeInches": 18,
-          "attacks": 1,
-          "armorPenetration": 1,
-          "effectSet": "ballistic-slug",
-          "specialRules": []
-        },
-        {
-          "name": "Strike",
-          "quantity": 10,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 0,
-          "specialRules": []
-        },
-        {
-          "name": "Gatling Rifle",
-          "quantity": 2,
-          "rangeInches": 18,
-          "attacks": 3,
-          "armorPenetration": 0,
-          "effectSet": "ballistic-slug",
-          "specialRules": [
-            {
-              "kind": "core",
-              "name": "Anti-Cover"
-            },
-            {
-              "kind": "core",
-              "name": "Surge"
-            }
-          ]
-        }
-      ],
-      "pointCost": 160
-    },
-    {
-      "name": "Battle Master",
-      "id": "dOAH9",
-      "joinsUnitId": "Yw-Om",
-      "modelCount": 1,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hero"
-        },
-        {
-          "kind": "coreNumeric",
-          "name": "Tough",
-          "numericValue": 3
-        },
-        {
-          "kind": "core",
-          "name": "Hold the Line"
-        },
-        {
-          "kind": "core",
-          "name": "Coordinate"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Master Great Weapon",
-          "quantity": 1,
-          "rangeInches": 0,
-          "attacks": 3,
-          "armorPenetration": 4,
-          "effectSet": "great-weapon-smash",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 130
-    },
-    {
-      "name": "Elite Weapon Masters",
-      "id": "Yw-Om",
-      "joinsUnitId": null,
-      "modelCount": 5,
-      "base": {
-        "shape": "Circle",
-        "diameterInches": 0.984252,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
-      },
-      "quality": 4,
-      "defense": 4,
-      "specialRules": [
-        {
-          "kind": "core",
-          "name": "Hold the Line"
-        },
-        {
-          "kind": "core",
-          "name": "Extended Buff Range"
-        }
-      ],
-      "weapons": [
-        {
-          "name": "Great Weapon",
-          "quantity": 5,
-          "rangeInches": 0,
-          "attacks": 1,
-          "armorPenetration": 2,
-          "effectSet": "great-weapon-smash",
-          "specialRules": []
-        }
-      ],
-      "pointCost": 75
     }
   ],
   "defaultRangedEffectSet": "ballistic-slug",
