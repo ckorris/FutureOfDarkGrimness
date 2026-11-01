@@ -48,7 +48,7 @@ UserConfig.EnsureExists();
 // #412: the Options panel's saved display/audio settings.
 FdgRaylib.Rendering.ViewSettings.Load(UserConfig.Current.View);
 
-// --menu-preview <out.png> [WxH] [menu|privacy|options] [seed] [t=SECONDS] (#448): the main menu rendered
+// --menu-preview <out.png> [WxH] [menu|privacy|options|host|join] [seed] [t=SECONDS] (#448): the main menu rendered
 // offscreen from a hidden window (war table + real ImGui menu), written to a PNG, then exit. The seed picks
 // the army pairing (default 1) and t the moment of its battle (default HoloDirector.StillMoment: everyone
 // who advances has arrived, fighting, measuring, camera on the overview), so a preview is reproducible. `bench` also times the live
@@ -58,7 +58,7 @@ if (menuPreviewIdx >= 0)
 {
     if (menuPreviewIdx + 1 >= args.Length)
     {
-        Console.Error.WriteLine("--menu-preview needs an output path: --menu-preview out.png [1920x1080] [menu|privacy|options] [seed] [t=SECONDS]");
+        Console.Error.WriteLine("--menu-preview needs an output path: --menu-preview out.png [1920x1080] [menu|privacy|options|host|join] [seed] [t=SECONDS]");
         Environment.Exit(2);
     }
     int previewW = 1920, previewH = 1080;

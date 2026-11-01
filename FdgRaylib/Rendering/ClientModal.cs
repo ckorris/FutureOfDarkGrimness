@@ -50,6 +50,21 @@ public class ClientModal : IAppScreen
     // one), so the fields are re-read from the config every time it opens, not just at construction.
     public void OnShown() => Reset();
 
+    /// <summary>For the offscreen <c>--menu-preview join</c> render: the browser shows two sample servers
+    /// and never fetches the real list (the preview makes no network calls).</summary>
+    internal void OpenForPreview()
+    {
+        _browseFetched = true;
+        _lastFetchMs = long.MaxValue / 2;
+        _listings = new[]
+        {
+            new ServerListing("a", "The Table", "203.0.113.5", 6389, NetworkProtocol.Version, NetworkProtocol.LocalTypeMapHash,
+                false, 1, 2, "lobby", true, 10),
+            new ServerListing("b", "Friday Night Grimness", "203.0.113.9", 6389, NetworkProtocol.Version, "other",
+                true, 2, 2, "in-game", null, 40),
+        };
+    }
+
     /// <summary>#448: the dialog opens over the main menu, so the war table stays visible behind its
     /// dimmed backdrop.</summary>
     public bool ShowsMenuBackground => true;
@@ -81,14 +96,12 @@ public class ClientModal : IAppScreen
         float scale = Math.Min(screenW / 1920f, screenH / 1080f);
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
-        // Charcoal panel from the app theme (same tone as the lobby's panels) so the dialog reads as the
-        // same surface as the rest of the UI, not a bespoke blue slab.
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGuiTheme.DialogPanelBg);
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
+        // The main menu's command-panel look (HoloUi), since it opens over the menu; the lobby it leads
+        // to keeps the app theme.
+        HoloUi.PushDialogStyle(scale);
         ImGui.BeginChild("##ClientDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.PopStyleColor();
-        ImGui.PopStyleVar();
+        HoloUi.DrawWindowBrackets(scale);
 
         float pad = 32f * scale;
         // #414: set once for the whole dialog. ImGui keeps a window's font scale across frames, and
@@ -96,12 +109,7 @@ public class ClientModal : IAppScreen
         // until Direct Connect had been opened once, while its columns and buttons scaled regardless.
         ImGui.SetWindowFontScale(scale);
 
-        // Title — light-blue header accent, echoing the lobby's section headers.
-        ImGui.PushFont(RaylibRenderer.LargeFont);
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiTheme.HeaderAccent);
-        CenterText(browserAvailable ? "JOIN GAME" : "CONNECT TO SERVER", dw);
-        ImGui.PopStyleColor();
-        ImGui.PopFont();
+        HoloUi.DialogTitle(browserAvailable ? "JOIN GAME" : "CONNECT TO SERVER", dw, 40f * scale, scale);
 
         if (browserAvailable)
         {
@@ -128,6 +136,7 @@ public class ClientModal : IAppScreen
         }
 
         ImGui.EndChild();
+        HoloUi.PopDialogStyle();
         ImGui.End();
     }
 
@@ -168,7 +177,7 @@ public class ClientModal : IAppScreen
         float tableH   = Math.Max(60f * scale, statusY - tableTop - 8f * scale);
         // #414: fixed columns are measured from their header and widest value at the current font scale -
         // the old 70-90px * scale guesses truncated "Players" and clipped "Password"/"Mismatch"/"Blocked?".
-        float joinW = ImGui.CalcTextSize("JOIN").X + ImGui.GetStyle().FramePadding.X * 2f;
+        float joinW = ImGui.CalcTextSize("JOIN").X + RowJoinPadX(scale) * 2f;
         ImGui.SetCursorPosX(pad);   // centre the table: its width already leaves pad on both sides
         if (ImGui.BeginTable("##Servers", 6,
                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.ScrollY,
@@ -220,7 +229,8 @@ public class ClientModal : IAppScreen
 
                 ImGui.TableNextColumn();
                 ImGui.BeginDisabled(!joinable);
-                if (UiButton.Confirm("JOIN", new Vector2(-1f, 0f)))
+                if (HoloUi.Button("JOIN", new Vector2(-1f, 0f), EHoloTier.Secondary, UiButton.EClass.Commit, scale,
+                        centered: true, padX: RowJoinPadX(scale)))
                     JoinListing(listing);
                 ImGui.EndDisabled();
 
@@ -242,7 +252,7 @@ public class ClientModal : IAppScreen
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
         ImGui.SetCursorPos(new Vector2(firstX, buttonsY));
 
-        if (UiButton.Back("CANCEL", new Vector2(btnW, btnH)))
+        if (HoloUi.Button("CANCEL", new Vector2(btnW, btnH), EHoloTier.Tertiary, UiButton.EClass.Back, scale))
         {
             Reset();
             OnCancel?.Invoke();
@@ -250,12 +260,15 @@ public class ClientModal : IAppScreen
 
         ImGui.SameLine(0, gap);
         ImGui.BeginDisabled(_isFetching);
-        if (UiButton.Navigate("REFRESH", new Vector2(btnW, btnH)))
+        if (HoloUi.Button("REFRESH", new Vector2(btnW, btnH), EHoloTier.Secondary, UiButton.EClass.Go, scale, centered: true))
             _ = RefreshServersAsync();
         ImGui.EndDisabled();
 
         DrawPasswordPopup(scale);
     }
+
+    /// <summary>Side padding of a row's JOIN button - tight, the column is only as wide as the word.</summary>
+    private static float RowJoinPadX(float scale) => 8f * scale;
 
     private static float WidestText(params string[] texts) => texts.Max(text => ImGui.CalcTextSize(text).X);
 
@@ -286,8 +299,12 @@ public class ClientModal : IAppScreen
         if (!ImGui.IsPopupOpen("##JoinPassword"))
             ImGui.OpenPopup("##JoinPassword");
 
-        if (ImGui.BeginPopupModal("##JoinPassword", ImGuiWindowFlags.AlwaysAutoResize))
+        HoloUi.PushModalStyle(scale);
+        bool open = ImGui.BeginPopupModal("##JoinPassword", ImGuiWindowFlags.AlwaysAutoResize);
+        HoloUi.PopModalStyle();
+        if (open)
         {
+            HoloUi.DrawWindowBrackets(scale);
             // The popup is its own window, so the dialog's font scale doesn't reach it (#414).
             ImGui.SetWindowFontScale(scale);
             ImGui.Text($"Password for {_pendingPasswordJoin.Name}:");
@@ -295,14 +312,15 @@ public class ClientModal : IAppScreen
             bool submitted = ImGui.InputText("##JoinPasswordInput", ref _password, 64,
                 ImGuiInputTextFlags.Password | ImGuiInputTextFlags.EnterReturnsTrue);
 
-            if (UiButton.Confirm("JOIN", new Vector2(120f * scale, 0f)) || submitted)
+            var buttonSize = new Vector2(120f * scale, MathF.Max(ImGui.GetFrameHeight(), 40f * scale));
+            if (HoloUi.Button("JOIN", buttonSize, EHoloTier.Primary, UiButton.EClass.Commit, scale, centered: true) || submitted)
             {
                 _pendingPasswordJoin = null;
                 ImGui.CloseCurrentPopup();
                 _ = AttemptConnect();
             }
             ImGui.SameLine();
-            if (UiButton.Back("CANCEL", new Vector2(120f * scale, 0f)))
+            if (HoloUi.Button("CANCEL", buttonSize, EHoloTier.Tertiary, UiButton.EClass.Back, scale))
             {
                 _pendingPasswordJoin = null;
                 _password = "";
@@ -369,7 +387,7 @@ public class ClientModal : IAppScreen
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
 
         // CANCEL is always available
-        if (UiButton.Back("CANCEL", new Vector2(btnW, btnH)))
+        if (HoloUi.Button("CANCEL", new Vector2(btnW, btnH), EHoloTier.Tertiary, UiButton.EClass.Back, scale))
         {
             Reset();
             OnCancel?.Invoke();
@@ -377,7 +395,7 @@ public class ClientModal : IAppScreen
 
         ImGui.SameLine(0, gap);
         ImGui.BeginDisabled(_isConnecting);
-        if (UiButton.Confirm("CONNECT", new Vector2(btnW, btnH)))
+        if (HoloUi.Button("CONNECT", new Vector2(btnW, btnH), EHoloTier.Primary, UiButton.EClass.Commit, scale, centered: true))
             _ = AttemptConnect();
         ImGui.EndDisabled();
     }

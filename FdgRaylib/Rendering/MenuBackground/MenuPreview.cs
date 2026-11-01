@@ -6,7 +6,7 @@ using rlImGui_cs;
 namespace FdgRaylib.Rendering.MenuBackground;
 
 /// <summary>
-/// <c>--menu-preview &lt;out.png&gt; [WxH] [menu|privacy|options] [seed] [t=SECONDS]</c> (#448): renders the main menu - the
+/// <c>--menu-preview &lt;out.png&gt; [WxH] [menu|privacy|options|host|join] [seed] [t=SECONDS]</c> (#448): renders the main menu - the
 /// war table plus the real ImGui menu, fonts and theme - into an image from a hidden window, then exits.
 /// For checking the look on a given screen size without opening (or driving) a visible window, the same
 /// way <c>--field-harness</c> checks the tactical overlay. Clicks nothing and saves no settings.
@@ -27,6 +27,15 @@ internal static class MenuPreview
 
         var menu = new MainMenuScreen();
         menu.OpenForPreview(state);
+        // The Host and Join dialogs replace the menu on screen, over the same table.
+        IAppScreen screen = menu;
+        if (state == "host") screen = new HostModal();
+        else if (state == "join")
+        {
+            var join = new ClientModal();
+            join.OpenForPreview();
+            screen = join;
+        }
         var background = new MenuBackgroundRenderer(seed) { FixedTime = time };
         RenderTexture2D target = Raylib.LoadRenderTexture(w, h);
 
@@ -39,7 +48,7 @@ internal static class MenuPreview
             Raylib.ClearBackground(new Color(30, 30, 30, 255));
             background.Present();
             rlImGui.Begin();
-            menu.Draw(w, h);
+            screen.Draw(w, h);
             rlImGui.End();
             Raylib.EndTextureMode();
             Raylib.EndDrawing();
