@@ -96,18 +96,19 @@ public sealed class ReplayBrowserScreen : IAppScreen
             return;
         }
 
-        if (ImGui.BeginTable("##replays", 7,
+        if (ImGui.BeginTable("##replays", 6,
                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.ScrollY | ImGuiTableFlags.SizingStretchProp,
                 size))
         {
             ImGui.TableSetupScrollFreeze(0, 1);
-            ImGui.TableSetupColumn("Started", ImGuiTableColumnFlags.WidthStretch, 0.21f);
-            ImGui.TableSetupColumn("Armies", ImGuiTableColumnFlags.WidthStretch, 0.22f);
+            // Steps is not a column (#457): a count of decisions does not help pick a game; the tooltip's file name and
+            // the viewer's slider say it. Armies get the room.
+            ImGui.TableSetupColumn("Started", ImGuiTableColumnFlags.WidthStretch, 0.19f);
+            ImGui.TableSetupColumn("Armies", ImGuiTableColumnFlags.WidthStretch, 0.31f);
             ImGui.TableSetupColumn("Players", ImGuiTableColumnFlags.WidthStretch, 0.20f);
             ImGui.TableSetupColumn("Rounds", ImGuiTableColumnFlags.WidthStretch, 0.06f);
-            ImGui.TableSetupColumn("Steps", ImGuiTableColumnFlags.WidthStretch, 0.06f);
             ImGui.TableSetupColumn("Outcome", ImGuiTableColumnFlags.WidthStretch, 0.17f);
-            ImGui.TableSetupColumn("Size", ImGuiTableColumnFlags.WidthStretch, 0.08f);
+            ImGui.TableSetupColumn("Size", ImGuiTableColumnFlags.WidthStretch, 0.07f);
             ImGui.TableHeadersRow();
 
             for (int i = 0; i < _rows.Count; i++)
@@ -121,13 +122,13 @@ public sealed class ReplayBrowserScreen : IAppScreen
                     _selected = i;
                     if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left) && row.Error == null) Open(row.Path);
                 }
-                if (ImGui.IsItemHovered()) UiText.Tooltip(ReplayLabels.Ascii(row.FileName));
+                if (ImGui.IsItemHovered())
+                    UiText.Tooltip(ReplayLabels.Ascii(row.Error == null ? $"{row.FileName}  ({ReplayLabels.Plural(row.Steps, "decision")})" : row.FileName));
 
                 ImGui.TableNextColumn();
                 UiText.Wrapped(row.Armies);
                 if (row.Error != null)
                 {
-                    ImGui.TableNextColumn();
                     ImGui.TableNextColumn();
                     ImGui.TableNextColumn();
                     ImGui.TableNextColumn();
@@ -141,8 +142,6 @@ public sealed class ReplayBrowserScreen : IAppScreen
                     UiText.Wrapped(row.Players);
                     ImGui.TableNextColumn();
                     ImGui.TextUnformatted(row.Rounds.ToString());
-                    ImGui.TableNextColumn();
-                    ImGui.TextUnformatted(row.Steps.ToString());
                     ImGui.TableNextColumn();
                     ImGui.TextUnformatted(row.Outcome);
                 }

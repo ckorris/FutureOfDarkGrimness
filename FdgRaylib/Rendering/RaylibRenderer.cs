@@ -186,8 +186,9 @@ public class RaylibRenderer : IReplayCanvas
     // cap wins on a window narrower than two floors (Math.Clamp threw there: a window dragged tiny crashed).
     private const float RightColumnFraction = 0.28f;
     private const int   RightColumnMinPx    = 340;
+    // #457: a replay watched full-board ("theatre") has no column at all.
     private int RightColumnWidth(int screenW) =>
-        _log == null ? 0 : Math.Min(Math.Max((int)(screenW * RightColumnFraction), RightColumnMinPx), screenW / 2);
+        _log == null || _replay is { Theatre: true } ? 0 : Math.Min(Math.Max((int)(screenW * RightColumnFraction), RightColumnMinPx), screenW / 2);
 
     // Table view transform (#8): _zoom is a multiplier over the fit-to-viewport scale (1 = ~100% of the
     // viewport, up to MaxZoom); _pan is a pixel offset from the centered position. Both default to the
@@ -763,7 +764,7 @@ public class RaylibRenderer : IReplayCanvas
                 // Overlay input (F toggle, hover timing, pins) runs after the hit tester so hover state
                 // is fresh; heavy rebuilds happen in the next frame's DrawField.
                 _tacticalOverlay.UpdateInput(Raylib.GetFrameTime(), _hitTester);
-                DrawConsole(rightX, panelH, rightW, screenH - panelH);
+                if (rightW > 0) DrawConsole(rightX, panelH, rightW, screenH - panelH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler,
                     rollStackBounds);
@@ -804,7 +805,7 @@ public class RaylibRenderer : IReplayCanvas
                 // #456: a replay's decision list and step details fill the panel instead.
                 if (!resolverShown)
                 {
-                    if (_replay != null) _replay.DrawPanel();
+                    if (_replay != null) { if (rightW > 0) _replay.DrawPanel(); }
                     else DrawIdleResolverPanel();
                 }
                 DrawGameOverOverlay(screenW, screenH);
@@ -827,7 +828,7 @@ public class RaylibRenderer : IReplayCanvas
                 // #456: in a replay, the Escape nothing else claimed leaves the viewer.
                 if (_replay != null)
                 {
-                    if (EscapeRouter.ShouldOpenMenu()) _replay.RequestExit();
+                    if (EscapeRouter.ShouldOpenMenu()) _replay.Escape();
                 }
                 else
                 {

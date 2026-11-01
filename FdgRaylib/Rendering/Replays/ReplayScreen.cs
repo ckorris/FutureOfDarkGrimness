@@ -18,10 +18,17 @@ namespace FdgRaylib.Rendering.Replays;
 /// <para>#457: every line that is one player's - a decision, a folded request, a round's start (its initiative), the
 /// end (its sole winner) - is drawn in that player's table colour; the position line under the slider likewise.
 /// Sizes are in EM so the bar and list scale with the display (<see cref="UiChrome.Em"/>).</para>
+/// <para><see cref="Theatre"/> (F, or the bar's button): the board alone fills the window - no decision list, no log -
+/// and the transport bar shows only while the mouse moves and for a moment after, fading out like a video player's
+/// controls; the cursor hides with it. Esc leaves theatre first, the viewer second.</para>
 /// </summary>
 public sealed class ReplayScreen
 {
     private const int RawReplyLines = 20;
+
+    /// <summary>Theatre: how long the controls stay after the mouse last moved, and how long they take to fade.</summary>
+    private const float ControlsLingerSeconds = 2.5f;
+    private const float ControlsFadeSeconds = 0.4f;
 
     /// <summary>Share of the screen height the decision panel takes (a game's prompt panel takes 60%); the log keeps
     /// the rest.</summary>
@@ -46,10 +53,15 @@ public sealed class ReplayScreen
     private readonly Action _onExited;
     private readonly string _title;
     private readonly string _players;
-    private readonly string _recorded;
+    private readonly string _recordedBy;
+    private readonly string _started;
 
     private IReadOnlyList<ReplayListRow>? _rows;
+    private float _rowsWidth;
     private bool _showRaw;
+    private float _controlsHideAt;
+    private Vector2 _lastMouse = new(float.NaN, float.NaN);
+    private bool _cursorHidden;
     private int _scrolledTo = -1;
     private int _rawFor = -1;
     private string _rawText = "";
@@ -63,13 +75,24 @@ public sealed class ReplayScreen
 
         ReplayHeader header = session.Header;
         _title = ReplayCatalog.Armies(header);
-        string resumed = header.ResumedUtc.Count > 0 ? $"   resumed {ReplayLabels.Plural(header.ResumedUtc.Count, "time")}" : "";
+        string resumed = header.ResumedUtc.Count > 0 ? $", resumed {ReplayLabels.Plural(header.ResumedUtc.Count, "time")}" : "";
         string recordedBy = header.RecordedBy == EReplayRecordedBy.Client && header.RecordedByPlayerId is FDG.PlayerID by
             ? $"client ({ReplayLabels.PlayerLabel(header, by)})"
             : "host";
         _players = ReplayCatalog.Players(header);
-        _recorded = ReplayLabels.Ascii($"Recorded by the {recordedBy}   "
-            + $"started {header.StartedUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}{resumed}");
+        _recordedBy = ReplayLabels.Ascii($"Recorded by the {recordedBy}");
+        _started = ReplayLabels.Ascii(
+            $"Started {header.StartedUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}{resumed}");
+    }
+
+    /// <summary>Full-board mode: the renderer drops the right column while this is set.</summary>
+    public bool Theatre { get; private set; }
+
+    public void ToggleTheatre()
+    {
+        Theatre = !Theatre;
+        _controlsHideAt = (float)Raylib.GetTime() + ControlsLingerSeconds;
+        if (Theatre == false) ShowCursor();
     }
 
     public ReplaySession Session { get; }
@@ -81,7 +104,18 @@ public sealed class ReplayScreen
     /// <summary>The viewer asked to leave (Esc, or Back); the renderer tears it down at the end of the frame.</summary>
     public bool WantsExit { get; private set; }
 
-    public void RequestExit() => WantsExit = true;
+    public void RequestExit()
+    {
+        WantsExit = true;
+        ShowCursor();
+    }
+
+    /// <summary>Escape: out of theatre first, out of the viewer second.</summary>
+    public void Escape()
+    {
+        if (Theatre) ToggleTheatre();
+        else RequestExit();
+    }
 
     /// <summary>The renderer has torn the view down.</summary>
     internal void Exited() => _onExited();
@@ -94,6 +128,7 @@ public sealed class ReplayScreen
         if (Raylib.IsKeyPressed(KeyboardKey.Space)) Session.TogglePlay();
         if (Raylib.IsKeyPressed(KeyboardKey.Right) || Raylib.IsKeyPressedRepeat(KeyboardKey.Right)) Session.StepForward();
         if (Raylib.IsKeyPressed(KeyboardKey.Left) || Raylib.IsKeyPressedRepeat(KeyboardKey.Left)) Session.StepBack();
+        if (Raylib.IsKeyPressed(KeyboardKey.F)) ToggleTheatre();
         if (Raylib.IsKeyPressed(KeyboardKey.Home)) Session.Seek(0);
         if (Raylib.IsKeyPressed(KeyboardKey.End)) Session.Seek(Session.Transport.StepCount);
     }
@@ -110,13 +145,18 @@ public sealed class ReplayScreen
             ImGui.PopStyleColor();
             ImGui.PushStyleColor(ImGuiCol.Text, DimColor);
             UiText.Wrapped(_players);
-            UiText.Wrapped(_recorded);
+            UiText.Wrapped(_recordedBy);
+            UiText.Wrapped(_started);
             ImGui.PopStyleColor();
             ImGui.Separator();
 
-            float detailsHeight = ImGui.GetTextLineHeightWithSpacing() * (_showRaw ? 6 + RawReplyLines : 6);
+            // The details below take four lines (name, who, summary, the Raw toggle) - plus the raw reply and its type.
+            float detailsHeight = ImGui.GetTextLineHeightWithSpacing() * (_showRaw ? 5.5f + RawReplyLines : 4.5f);
             float listHeight = Math.Max(ImGui.GetTextLineHeightWithSpacing() * 4, ImGui.GetContentRegionAvail().Y - detailsHeight);
-            if (ImGui.BeginChild("##replaylist", new Vector2(0, listHeight), ImGuiChildFlags.Borders))
+            BuildRows();
+            // Wide enough for the longest line, so a long summary scrolls sideways rather than being cut.
+            ImGui.SetNextWindowContentSize(new Vector2(_rowsWidth, 0));
+            if (ImGui.BeginChild("##replaylist", new Vector2(0, listHeight), ImGuiChildFlags.Borders, ImGuiWindowFlags.HorizontalScrollbar))
             {
                 DrawRows();
             }
@@ -127,10 +167,15 @@ public sealed class ReplayScreen
         ImGui.End();
     }
 
+    private void BuildRows()
+    {
+        if (_rows != null) return;
+        _rows = ReplayListRows.Build(Session.Timeline);
+        _rowsWidth = _rows.Max(row => ImGui.CalcTextSize(row.Text).X) + ImGui.GetStyle().FramePadding.X * 2f;
+    }
+
     private void DrawRows()
     {
-        _rows ??= ReplayListRows.Build(Session.Timeline);
-
         ReplayTransport transport = Session.Transport;
         for (int i = 0; i < _rows.Count; i++)
         {
@@ -169,16 +214,14 @@ public sealed class ReplayScreen
         ReplayStep? step = transport.AtEnd ? null : Session.Player.Steps[transport.Position];
         if (step == null)
         {
-            UiText.Wrapped(Session.Notice ?? "End of the recording.");
+            // How it ended is the transport bar's line; here only that there is no step.
+            UiText.Wrapped("End of the recording.");
             return;
         }
 
         UiText.Wrapped(ReplayLabels.Ascii(step.DisplayName));
         ImGui.PushStyleColor(ImGuiCol.Text, PlayerColor(step.PlayerId));
         UiText.Wrapped(ReplayLabels.Ascii($"Answered by {ReplayLabels.Who(Session.Header, step)}"));
-        ImGui.PopStyleColor();
-        ImGui.PushStyleColor(ImGuiCol.Text, DimColor);
-        UiText.Wrapped(ReplayLabels.ShortType(step.RequestType));
         ImGui.PopStyleColor();
         UiText.Wrapped(ReplayLabels.Ascii(string.IsNullOrEmpty(step.Summary) ? "(no summary)" : step.Summary));
 
@@ -192,6 +235,7 @@ public sealed class ReplayScreen
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, DimColor);
+            UiText.Wrapped(ReplayLabels.ShortType(step.RequestType));
             ImGui.TextUnformatted(_rawText);
             ImGui.PopStyleColor();
         }
@@ -227,12 +271,24 @@ public sealed class ReplayScreen
         int count = transport.StepCount;
         float margin = UiChrome.Em(0.5f);
 
+        float alpha = Theatre ? ControlsAlpha() : 1f;
+        if (alpha <= 0f)
+        {
+            HideCursor();
+            return; // nothing drawn, nothing to click; TransportHeight keeps its last value so the dice stay put
+        }
+        ShowCursor();
+
         ImGui.SetNextWindowPos(new Vector2(margin, screenH - margin), ImGuiCond.Always, new Vector2(0f, 1f));
         ImGui.SetNextWindowBgAlpha(0.80f);
+        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, alpha);
         ImGui.Begin("##replaytransport",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
+        // Resting the mouse on the bar keeps it up.
+        if (Theatre && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows | ImGuiHoveredFlags.AllowWhenBlockedByActiveItem))
+            _controlsHideAt = (float)Raylib.GetTime() + ControlsLingerSeconds;
 
         if (Session.Error is string error) UiText.Colored(ErrorColor, error);
         if (Session.Notice is string notice) UiText.Colored(NoticeColor, notice);
@@ -273,6 +329,10 @@ public sealed class ReplayScreen
         }
 
         ImGui.SameLine();
+        string theatreLabel = Theatre ? "Exit Full Board (F)" : "Full Board (F)";
+        if (UiButton.Navigate(theatreLabel, UiChrome.ButtonSize(theatreLabel))) ToggleTheatre();
+        Hover("Watch the board alone; the controls show while the mouse moves");
+        ImGui.SameLine();
         if (UiButton.Navigate("Army Lists (L)", UiChrome.ButtonSize("Army Lists (L)"))) toggleArmyLists();
         ImGui.SameLine();
         if (UiButton.Back("Back (Esc)", UiChrome.ButtonSize("Back (Esc)"))) RequestExit();
@@ -282,6 +342,36 @@ public sealed class ReplayScreen
 
         TransportHeight = (int)ImGui.GetWindowHeight() + (int)margin;
         ImGui.End();
+        ImGui.PopStyleVar();
+    }
+
+    /// <summary>Theatre: 1 while the mouse moves and for <see cref="ControlsLingerSeconds"/> after, then a
+    /// <see cref="ControlsFadeSeconds"/> fade to 0.</summary>
+    private float ControlsAlpha()
+    {
+        float now = (float)Raylib.GetTime();
+        Vector2 mouse = Raylib.GetMousePosition();
+        if (Raylib.IsCursorOnScreen() && mouse != _lastMouse)
+        {
+            if (float.IsNaN(_lastMouse.X) == false) _controlsHideAt = now + ControlsLingerSeconds;
+            _lastMouse = mouse;
+        }
+
+        return Math.Clamp((_controlsHideAt - now) / ControlsFadeSeconds, 0f, 1f);
+    }
+
+    private void HideCursor()
+    {
+        if (_cursorHidden) return;
+        Raylib.HideCursor();
+        _cursorHidden = true;
+    }
+
+    private void ShowCursor()
+    {
+        if (_cursorHidden == false) return;
+        Raylib.ShowCursor();
+        _cursorHidden = false;
     }
 
     /// <summary>A player's table colour as ImGui text; white for nobody.</summary>

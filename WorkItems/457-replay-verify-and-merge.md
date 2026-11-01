@@ -46,6 +46,17 @@ the index lines for 449-457 are ticked and archived.
 - [ ] Delete the remote `feature/replay` branches after the merge (both repos).
 
 ## Notes
+- **2026-11-01 - viewer UX, round two (Chris took every audit proposal, plus a full-board mode).** Full Board (`F`,
+  or the bar's button; `ReplayScreen.Theatre`): the renderer drops the right column (`RightColumnWidth` = 0, no
+  panel, no console) so the table fills the window; the transport bar shows while the mouse moves and for 2.5 s
+  after, then fades over 0.4 s (`ControlsAlpha`; resting on the bar keeps it; the cursor hides with it); Esc leaves
+  theatre first, the viewer second (`ReplayScreen.Escape`, the renderer's Escape path). Audit items: the game-over
+  text is the bar's alone (the details pane just says "End of the recording"); the details reserve 4.5 lines (the
+  request type moved under Raw reply), so the list gets more rows; the list scrolls sideways to its longest line
+  (`SetNextWindowContentSize` + `HorizontalScrollbar`); the header is four short lines (title, players, recorded by,
+  started); the browser lost its Steps column (the count rides the row tooltip) and Armies got the width. Checked in
+  Xephyr 1280x720: theatre on / faded / back on mouse move / Esc out (`~/Projects/fdg-lab-scratch/457/ui/t1-t4.png`).
+  Suites: engine 3487/1 skipped, app 3180; smoke exit 0 with its replay line.
 - **2026-11-01 - viewer UX pass (Chris's list, after a look at the viewer on his desktop).** Browser: the Outcome
   column names the winners ("Player 1 wins", "A and B win") - the GameEnded marker now carries `Winner` (the sole
   winning player, for colours) and `WinnerName` (the prose), relayed to clients, and `ReplaySummary.Winner` rides

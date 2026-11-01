@@ -110,7 +110,7 @@ The best way to try it out is to play a solo game against a bot. Launch the game
 
 ## Watching Replays
 
-Every game you play is recorded. When it ends (or you leave it), a `.fdgreplay` file is written to the `Replays` folder next to the app, on every computer in the game. Open **Replays** from the main menu to see them all, newest first, and pick one to watch it back on the table: play, pause, step a decision at a time, change speed, or jump anywhere with the slider. The list on the right shows every decision made, and the log keeps up with you. A saved game carries its replay with it, so a game you saved and loaded later is still one replay, and **Open File...** can open a `.fdgsave` too.
+Every game you play is recorded. When it ends (or you leave it), a `.fdgreplay` file is written to the `Replays` folder next to the app, on every computer in the game. Open **Replays** from the main menu to see them all, newest first, and pick one to watch it back on the table: play, pause, step a decision at a time, change speed, or jump anywhere with the slider. The list on the right shows every decision made, in each player's colour, and the log keeps up with you. **Full Board** (or `F`) gives the table the whole window, like a battle report video: the controls appear when you move the mouse and fade away when you stop; `Esc` brings the panels back. A saved game carries its replay with it, so a game you saved and loaded later is still one replay, and **Open File...** can open a `.fdgsave` too.
 
 <br>
 
