@@ -46,6 +46,11 @@ the index lines for 449-457 are ticked and archived.
 - [ ] Delete the remote `feature/replay` branches after the merge (both repos).
 
 ## Notes
+- **2026-11-01 - marker colours.** Chris read a round's marker in its initiative's colour as the previous line's colour
+  leaking (the first activator of a round is often the player who just decided). Checked: the data and the draw were
+  right (`ui/m2.png`), the rule just reads wrong; round / saved / resumed markers are now white, only Game over keeps
+  the sole winner's colour, and the position line at the end follows (`ReplaySession.PositionPlayer`). Every row,
+  details line and bar line pushes its own text colour - no line inherits one.
 - **2026-11-01 - viewer UX, round two (Chris took every audit proposal, plus a full-board mode).** Full Board (`F`,
   or the bar's button; `ReplayScreen.Theatre`): the renderer drops the right column (`RightColumnWidth` = 0, no
   panel, no console) so the table fills the window; the transport bar shows while the mouse moves and for 2.5 s

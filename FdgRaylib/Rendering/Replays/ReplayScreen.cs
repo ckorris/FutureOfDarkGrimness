@@ -15,8 +15,8 @@ namespace FdgRaylib.Rendering.Replays;
 /// draws what replaces the game's controls: the transport bar under the table, the decision list and the current
 /// step's details in the right column's top panel. It takes the viewer's keys (Space, Left / Right, Home / End;
 /// Esc leaves, through the renderer's Escape arbiter). <see cref="ReplaySession"/> does the work.
-/// <para>#457: every line that is one player's - a decision, a folded request, a round's start (its initiative), the
-/// end (its sole winner) - is drawn in that player's table colour; the position line under the slider likewise.
+/// <para>#457: every line that is one player's - a decision, a folded request, the end (its sole winner) - is drawn
+/// in that player's table colour, the other markers in white; the position line under the slider likewise.
 /// Sizes are in EM so the bar and list scale with the display (<see cref="UiChrome.Em"/>).</para>
 /// <para><see cref="Theatre"/> (F, or the bar's button): the board alone fills the window - no decision list, no log -
 /// and the transport bar shows only while the mouse moves and for a moment after, fading out like a video player's

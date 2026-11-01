@@ -35,8 +35,8 @@ game, and the acceptance list below is ticked.
 - Decision list (right panel, scrollable): one row per step `P1 (AI)  Warriors: Shoot`
   (`ReplayStep.Summary`; #457's UX pass dropped the step / round / activation numbers and always lists the
   folded requests, dimmed), current row highlighted and kept in view, click = seek. Markers (`Round 3`,
-  `Saved`, `Resumed`, `Game over`) as separator rows. Every line is drawn in its player's table colour (a
-  marker's: the sole winner, else the round's initiative, else white); so is the position line under the slider.
+  `Saved`, `Resumed`, `Game over`) as separator rows. Every line is drawn in its player's table colour (markers
+  white, except Game over in the sole winner's); so is the position line under the slider.
 - Details (below the list, for the current step): request `DisplayName`, who answered (controller), the
   describer summary, and a `Raw` toggle printing the reply JSON trimmed to ~20 lines.
 - Autoplay (F1, decided): after a step's span beats finish (`PresentationPlayer` idle) plus a dwell

@@ -222,17 +222,13 @@ public class ReplayViewerTests
         Assert.That(rows.Count(r => r.Kind == EReplayRowKind.Folded),
             Is.EqualTo(timeline.Steps.Sum(s => s.Folded.Count) + timeline.FoldedBeforeFirstStep.Count).And.GreaterThan(0));
 
-        // #457: a decision is its player's line, a folded request its asker's; a round's start is the initiative's.
+        // #457: a decision is its player's line, a folded request its asker's; a round's start is nobody's, the game's
+        // end the sole winner's.
         Assert.That(rows.Where(r => r.Kind == EReplayRowKind.Step).Select(r => r.Player),
             Is.EqualTo(timeline.Steps.Select(s => (PlayerID?)s.PlayerId)));
         Assert.That(rows.Where(r => r.Kind == EReplayRowKind.Folded).All(r => r.Player != null), Is.True);
-        IReadOnlyDictionary<int, PlayerID> initiative = ReplayListRows.InitiativeByRound(timeline);
-        Assert.That(initiative, Is.Not.Empty);
-        foreach (ReplayListRow roundRow in rows.Where(r => r.Text.StartsWith("-- Round ")))
-        {
-            int round = int.Parse(roundRow.Text.Split(' ')[2]);
-            Assert.That(roundRow.Player, Is.EqualTo(initiative[round]), roundRow.Text);
-        }
+        Assert.That(rows.Where(r => r.Kind == EReplayRowKind.Marker && !r.Text.StartsWith("-- Game over")).All(r => r.Player == null), Is.True);
+        Assert.That(rows[^1].Player, Is.EqualTo(timeline.GameEndedMarker!.Winner));
 
         List<string> markers = rows.Where(r => r.Kind == EReplayRowKind.Marker).Select(r => r.Text).ToList();
         Assert.That(markers, Has.Some.StartsWith("-- Round "));
