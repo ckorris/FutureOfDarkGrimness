@@ -123,7 +123,7 @@ public class ReplayViewerTests
 
         Assert.That(row.Armies, Is.EqualTo("Battle Brothers vs Orks"));
         Assert.That(row.Players, Is.EqualTo("Chris (Human), Bot (AI)"));
-        Assert.That((row.Rounds, row.Steps, row.Outcome), Is.EqualTo((4, 41, "Win")));
+        Assert.That((row.Rounds, row.Steps, row.Outcome), Is.EqualTo((4, 41, "Win")), "a Win recorded before #457 named the winner");
         Assert.That(row.Size, Is.EqualTo("2.0 KB"));
         Assert.That(row.Started, Is.EqualTo(header.StartedUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm",
             System.Globalization.CultureInfo.InvariantCulture) + " (1 resume)"));
@@ -142,6 +142,11 @@ public class ReplayViewerTests
         Assert.That(row.Armies, Is.EqualTo("Elves & Dwarves vs Orks & Goblins"));
         Assert.That(row.Outcome, Is.EqualTo("Unfinished"));
         Assert.That(ReplayCatalog.Outcome(null), Is.EqualTo("?"), "a file with no summary");
+
+        // #457: the Outcome column names the winners.
+        Assert.That(ReplayCatalog.Outcome(header.Summary with { Outcome = "Win", Winner = "A" }), Is.EqualTo("A wins"));
+        Assert.That(ReplayCatalog.Outcome(header.Summary with { Outcome = "Win", Winner = "A and B" }), Is.EqualTo("A and B win"));
+        Assert.That(ReplayCatalog.Outcome(header.Summary with { Outcome = "Tie", Winner = null }), Is.EqualTo("Tie"));
     }
 
     [Test]
@@ -163,7 +168,7 @@ public class ReplayViewerTests
         Assert.That(rows[0].Started, Does.EndWith("(1 resume)"));
         ReplayHeader full = Read(File.ReadAllBytes(_replayPath)).Header;
         Assert.That(rows[2].Steps, Is.EqualTo(full.Summary!.Steps).And.GreaterThan(0));
-        Assert.That(rows[2].Outcome, Is.EqualTo(full.Summary.Outcome).And.Not.EqualTo("Unfinished"));
+        Assert.That(rows[2].Outcome, Is.EqualTo(ReplayCatalog.Outcome(full.Summary)).And.Not.EqualTo("Unfinished"));
     }
 
     // --- Transport --------------------------------------------------------------------------------------------
@@ -205,19 +210,29 @@ public class ReplayViewerTests
     // --- Decision list ------------------------------------------------------------------------------------------
 
     [Test]
-    public void DecisionList_StepsInOrder_MarkersSeparate_FoldedOnRequest()
+    public void DecisionList_StepsInOrder_MarkersSeparate_FoldedAlwaysListed_EachLineItsPlayers()
     {
         var timeline = new ReplayTimeline(Read(File.ReadAllBytes(_resumedPath)));
         new ReplayPlayer(timeline); // describes the steps
 
-        IReadOnlyList<ReplayListRow> rows = ReplayListRows.Build(timeline, includeFolded: false);
-        IReadOnlyList<ReplayListRow> withFolded = ReplayListRows.Build(timeline, includeFolded: true);
+        IReadOnlyList<ReplayListRow> rows = ReplayListRows.Build(timeline);
 
         Assert.That(rows.Select(r => r.Seq), Is.Ordered);
         Assert.That(rows.Where(r => r.Kind == EReplayRowKind.Step).Select(r => r.StepIndex), Is.EqualTo(Enumerable.Range(0, timeline.Steps.Count)));
-        Assert.That(rows.Any(r => r.Kind == EReplayRowKind.Folded), Is.False);
-        Assert.That(withFolded.Count(r => r.Kind == EReplayRowKind.Folded),
+        Assert.That(rows.Count(r => r.Kind == EReplayRowKind.Folded),
             Is.EqualTo(timeline.Steps.Sum(s => s.Folded.Count) + timeline.FoldedBeforeFirstStep.Count).And.GreaterThan(0));
+
+        // #457: a decision is its player's line, a folded request its asker's; a round's start is the initiative's.
+        Assert.That(rows.Where(r => r.Kind == EReplayRowKind.Step).Select(r => r.Player),
+            Is.EqualTo(timeline.Steps.Select(s => (PlayerID?)s.PlayerId)));
+        Assert.That(rows.Where(r => r.Kind == EReplayRowKind.Folded).All(r => r.Player != null), Is.True);
+        IReadOnlyDictionary<int, PlayerID> initiative = ReplayListRows.InitiativeByRound(timeline);
+        Assert.That(initiative, Is.Not.Empty);
+        foreach (ReplayListRow roundRow in rows.Where(r => r.Text.StartsWith("-- Round ")))
+        {
+            int round = int.Parse(roundRow.Text.Split(' ')[2]);
+            Assert.That(roundRow.Player, Is.EqualTo(initiative[round]), roundRow.Text);
+        }
 
         List<string> markers = rows.Where(r => r.Kind == EReplayRowKind.Marker).Select(r => r.Text).ToList();
         Assert.That(markers, Has.Some.StartsWith("-- Round "));
@@ -227,8 +242,8 @@ public class ReplayViewerTests
         Assert.That(rows[^1].StepIndex, Is.EqualTo(timeline.Steps.Count), "the game's end seeks to the end");
 
         string first = rows.First(r => r.Kind == EReplayRowKind.Step).Text;
-        Assert.That(first, Does.StartWith("#000  ").And.Contain(" (AI)  "));
-        Assert.That(rows.Concat(withFolded).All(r => r.Text.All(c => c >= ' ' && c <= '~')), Is.True, "ASCII only");
+        Assert.That(first, Does.StartWith("P").And.Contain(" (AI)  "), "who, then what - no step or round numbers (#457)");
+        Assert.That(rows.All(r => r.Text.All(c => c >= ' ' && c <= '~')), Is.True, "ASCII only");
     }
 
     [Test]
@@ -242,8 +257,6 @@ public class ReplayViewerTests
             Is.EqualTo("-- Game over: Win - Reds win. --"));
         Assert.That(ReplayListRows.MarkerText(new MarkerEvent(EReplayMarker.GameStart)), Is.Null);
         Assert.That(ReplayListRows.MarkerText(new MarkerEvent(EReplayMarker.ActivationStart) { Round = 1, Activation = 2 }), Is.Null);
-        Assert.That(ReplayListRows.RoundText(2, 5), Is.EqualTo("R2 A05"));
-        Assert.That(ReplayListRows.RoundText(2, null), Is.EqualTo("R2 A--"));
     }
 
     // --- Session --------------------------------------------------------------------------------------------------

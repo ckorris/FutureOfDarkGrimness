@@ -46,6 +46,19 @@ the index lines for 449-457 are ticked and archived.
 - [ ] Delete the remote `feature/replay` branches after the merge (both repos).
 
 ## Notes
+- **2026-11-01 - viewer UX pass (Chris's list, after a look at the viewer on his desktop).** Browser: the Outcome
+  column names the winners ("Player 1 wins", "A and B win") - the GameEnded marker now carries `Winner` (the sole
+  winning player, for colours) and `WinnerName` (the prose), relayed to clients, and `ReplaySummary.Winner` rides
+  the header; additive, no format bump - a v3 file recorded before this shows a plain "Win". Viewer: the folded
+  requests are always listed (dimmed; the checkbox is gone); rows read "who, then what" with no step / round /
+  activation numbers (the number stays on the slider and the position line, where `--at STEP` wants it); each
+  line is drawn in its player's table colour, markers in the sole winner's / the round's initiative's (the first
+  ActivationStart of the round), else white; the position line under the slider likewise (`ReplaySession.PositionPlayer`);
+  `|<` / `>|` removed (Home / End keys stay); Play is the widest control, the steps flank it, every size in EM so
+  the bar scales with the display. Also fixed from the same session: dragging the window very small crashed
+  (`RightColumnWidth`'s `Math.Clamp` with min > max below 680 px wide) - the cap now wins, and the window has an
+  800x600 minimum. Checked in Xephyr at 1280x720 and forced to 300x200 (survives). Suites: engine 3487/1 skipped,
+  app 3180 (list rows carry their player, round rows the initiative; Outcome strings); smoke exit 0 with its replay line.
 - **2026-11-01 - performance, Chris's call.** Recording stays on by default; headless runs take **`--no-replay`**
   (`CliApp(record: false)`: no recorder on the new-game or scenario path, the Mode line says so, no file; outside
   `--headless` it exits 2 - the GUI always records). Of the cuts I had suggested, profiling showed non-indented

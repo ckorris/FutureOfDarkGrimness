@@ -15,6 +15,9 @@ namespace FdgRaylib.Rendering.Replays;
 /// draws what replaces the game's controls: the transport bar under the table, the decision list and the current
 /// step's details in the right column's top panel. It takes the viewer's keys (Space, Left / Right, Home / End;
 /// Esc leaves, through the renderer's Escape arbiter). <see cref="ReplaySession"/> does the work.
+/// <para>#457: every line that is one player's - a decision, a folded request, a round's start (its initiative), the
+/// end (its sole winner) - is drawn in that player's table colour; the position line under the slider likewise.
+/// Sizes are in EM so the bar and list scale with the display (<see cref="UiChrome.Em"/>).</para>
 /// </summary>
 public sealed class ReplayScreen
 {
@@ -25,8 +28,9 @@ public sealed class ReplayScreen
     public const float PanelHeightFraction = 0.68f;
 
     private static readonly Vector4 TitleColor = new(0.85f, 0.85f, 0.90f, 1f);
-    private static readonly Vector4 MarkerColor = new(0.55f, 0.75f, 1f, 1f);
-    private static readonly Vector4 FoldedColor = new(0.55f, 0.55f, 0.55f, 1f);
+    private static readonly Vector4 DimColor = new(0.55f, 0.55f, 0.55f, 1f);
+    private static readonly Vector4 NobodyColor = new(1f, 1f, 1f, 1f);
+    private const float FoldedAlpha = 0.55f;
     private static readonly Vector4 NoticeColor = new(1f, 0.85f, 0.4f, 1f);
     private static readonly Vector4 ErrorColor = new(1f, 0.45f, 0.45f, 1f);
 
@@ -45,8 +49,6 @@ public sealed class ReplayScreen
     private readonly string _recorded;
 
     private IReadOnlyList<ReplayListRow>? _rows;
-    private bool _rowsIncludeFolded;
-    private bool _showFolded;
     private bool _showRaw;
     private int _scrolledTo = -1;
     private int _rawFor = -1;
@@ -106,14 +108,10 @@ public sealed class ReplayScreen
             ImGui.PushStyleColor(ImGuiCol.Text, TitleColor);
             UiText.Wrapped(_title);
             ImGui.PopStyleColor();
-            ImGui.PushStyleColor(ImGuiCol.Text, FoldedColor);
+            ImGui.PushStyleColor(ImGuiCol.Text, DimColor);
             UiText.Wrapped(_players);
             UiText.Wrapped(_recorded);
             ImGui.PopStyleColor();
-
-            UiButton.Checkbox("Show folded decisions", ref _showFolded);
-            if (ImGui.IsItemHovered())
-                UiText.Tooltip("Also list the requests with one option (or that failed): they happened, but nobody chose.");
             ImGui.Separator();
 
             float detailsHeight = ImGui.GetTextLineHeightWithSpacing() * (_showRaw ? 6 + RawReplyLines : 6);
@@ -131,12 +129,7 @@ public sealed class ReplayScreen
 
     private void DrawRows()
     {
-        if (_rows == null || _rowsIncludeFolded != _showFolded)
-        {
-            _rows = ReplayListRows.Build(Session.Timeline, _showFolded);
-            _rowsIncludeFolded = _showFolded;
-            _scrolledTo = -1;
-        }
+        _rows ??= ReplayListRows.Build(Session.Timeline);
 
         ReplayTransport transport = Session.Transport;
         for (int i = 0; i < _rows.Count; i++)
@@ -144,12 +137,16 @@ public sealed class ReplayScreen
             ReplayListRow row = _rows[i];
             bool current = row.Kind == EReplayRowKind.Step && row.StepIndex == transport.Position;
 
-            if (row.Kind != EReplayRowKind.Step) ImGui.PushStyleColor(ImGuiCol.Text, row.Kind == EReplayRowKind.Marker ? MarkerColor : FoldedColor);
+            Vector4 color = PlayerColor(row.Player);
+            if (row.Kind == EReplayRowKind.Folded) color.W *= FoldedAlpha;
+            ImGui.PushStyleColor(ImGuiCol.Text, color);
             if (ImGui.Selectable($"{row.Text}##row{i}", current) && (current == false || Session.IsSeeking))
             {
                 Session.Seek(row.StepIndex);
             }
-            if (row.Kind != EReplayRowKind.Step) ImGui.PopStyleColor();
+            ImGui.PopStyleColor();
+            if (row.Kind == EReplayRowKind.Folded && ImGui.IsItemHovered())
+                UiText.Tooltip("A request with one option (or that failed): it happened, but nobody chose.");
 
             // Keep the current step in view as it moves (not every frame - the list stays scrollable by hand).
             if (current && _scrolledTo != transport.Position)
@@ -176,9 +173,12 @@ public sealed class ReplayScreen
             return;
         }
 
-        UiText.Wrapped(ReplayLabels.Ascii($"#{step.Index:000}  {step.DisplayName}"));
-        ImGui.PushStyleColor(ImGuiCol.Text, FoldedColor);
-        UiText.Wrapped(ReplayLabels.Ascii($"Answered by {ReplayLabels.Who(Session.Header, step)}   {ReplayLabels.ShortType(step.RequestType)}"));
+        UiText.Wrapped(ReplayLabels.Ascii(step.DisplayName));
+        ImGui.PushStyleColor(ImGuiCol.Text, PlayerColor(step.PlayerId));
+        UiText.Wrapped(ReplayLabels.Ascii($"Answered by {ReplayLabels.Who(Session.Header, step)}"));
+        ImGui.PopStyleColor();
+        ImGui.PushStyleColor(ImGuiCol.Text, DimColor);
+        UiText.Wrapped(ReplayLabels.ShortType(step.RequestType));
         ImGui.PopStyleColor();
         UiText.Wrapped(ReplayLabels.Ascii(string.IsNullOrEmpty(step.Summary) ? "(no summary)" : step.Summary));
 
@@ -191,7 +191,7 @@ public sealed class ReplayScreen
                 _rawText = RawReply(step);
             }
 
-            ImGui.PushStyleColor(ImGuiCol.Text, FoldedColor);
+            ImGui.PushStyleColor(ImGuiCol.Text, DimColor);
             ImGui.TextUnformatted(_rawText);
             ImGui.PopStyleColor();
         }
@@ -218,13 +218,16 @@ public sealed class ReplayScreen
 
     // --- Bottom: the transport bar -----------------------------------------------------------------------------
 
-    /// <summary>The play / step / seek controls, bottom-left over the table (where a game's Menu button sits).</summary>
+    /// <summary>The play / step / seek controls, bottom-left over the table (where a game's Menu button sits). Play is
+    /// the control a viewer reaches for most, so it is the widest; the steps flank it; all in EM so they grow with
+    /// the display's UI scale.</summary>
     public void DrawTransport(int areaW, int screenH, Action toggleArmyLists)
     {
         ReplayTransport transport = Session.Transport;
         int count = transport.StepCount;
+        float margin = UiChrome.Em(0.5f);
 
-        ImGui.SetNextWindowPos(new Vector2(8, screenH - 8), ImGuiCond.Always, new Vector2(0f, 1f));
+        ImGui.SetNextWindowPos(new Vector2(margin, screenH - margin), ImGuiCond.Always, new Vector2(0f, 1f));
         ImGui.SetNextWindowBgAlpha(0.80f);
         ImGui.Begin("##replaytransport",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
@@ -234,37 +237,34 @@ public sealed class ReplayScreen
         if (Session.Error is string error) UiText.Colored(ErrorColor, error);
         if (Session.Notice is string notice) UiText.Colored(NoticeColor, notice);
 
+        var stepSize = new Vector2(UiChrome.Em(2.4f), ImGui.GetFrameHeight() * 1.35f);
+        var playSize = new Vector2(UiChrome.Em(5f), stepSize.Y);
         bool busy = Session.IsSeeking;
+
         ImGui.BeginDisabled(busy || transport.Position == 0);
-        if (ImGui.Button("|<")) Session.Seek(0);
-        Hover("First step (Home)");
-        ImGui.SameLine();
-        if (ImGui.Button("<")) Session.StepBack();
+        if (ImGui.Button("<", stepSize)) Session.StepBack();
         Hover("Step back (Left)");
         ImGui.EndDisabled();
 
         ImGui.SameLine();
         ImGui.BeginDisabled(busy || (transport.AtEnd && transport.IsPlaying == false));
-        if (ImGui.Button(transport.IsPlaying ? "Pause##play" : "Play##play")) Session.TogglePlay();
+        if (ImGui.Button(transport.IsPlaying ? "Pause##play" : "Play##play", playSize)) Session.TogglePlay();
         Hover("Play / pause (Space)");
         ImGui.EndDisabled();
 
         ImGui.SameLine();
         ImGui.BeginDisabled(busy || transport.AtEnd);
-        if (ImGui.Button(">")) Session.StepForward();
+        if (ImGui.Button(">", stepSize)) Session.StepForward();
         Hover("Step forward, with its animations (Right)");
-        ImGui.SameLine();
-        if (ImGui.Button(">|")) Session.Seek(count);
-        Hover("The end (End)");
         ImGui.EndDisabled();
 
         foreach ((EReplaySpeed speed, string label) in Speeds)
         {
-            ImGui.SameLine();
+            ImGui.SameLine(0f, speed == Speeds[0].Speed ? UiChrome.Em(1f) : -1f);
             if (ImGui.RadioButton(label, transport.Speed == speed)) transport.Speed = speed;
         }
 
-        ImGui.SetNextItemWidth(Math.Max(160f, areaW * 0.45f));
+        ImGui.SetNextItemWidth(Math.Max(UiChrome.Em(12f), areaW * 0.45f));
         int position = transport.Position;
         if (ImGui.SliderInt("##replaypos", ref position, 0, count, position >= count ? "end" : $"#{position:000}")
             && position != transport.Position)
@@ -273,14 +273,23 @@ public sealed class ReplayScreen
         }
 
         ImGui.SameLine();
-        if (ImGui.Button("Army Lists (L)")) toggleArmyLists();
+        if (UiButton.Navigate("Army Lists (L)", UiChrome.ButtonSize("Army Lists (L)"))) toggleArmyLists();
         ImGui.SameLine();
-        if (UiButton.Back("Back (Esc)")) RequestExit();
+        if (UiButton.Back("Back (Esc)", UiChrome.ButtonSize("Back (Esc)"))) RequestExit();
 
-        ImGui.TextUnformatted(ReplayLabels.Ascii(Session.PositionLabel) + (Session.ShowSeeking ? "   seeking..." : ""));
+        UiText.Colored(PlayerColor(Session.PositionPlayer),
+            ReplayLabels.Ascii(Session.PositionLabel) + (Session.ShowSeeking ? "   seeking..." : ""));
 
-        TransportHeight = (int)ImGui.GetWindowHeight() + 8;
+        TransportHeight = (int)ImGui.GetWindowHeight() + (int)margin;
         ImGui.End();
+    }
+
+    /// <summary>A player's table colour as ImGui text; white for nobody.</summary>
+    private Vector4 PlayerColor(FDG.PlayerID? player)
+    {
+        if (player is not FDG.PlayerID id) return NobodyColor;
+        Color c = Session.ColorFor(id);
+        return new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, 1f);
     }
 
     private static void Hover(string text)

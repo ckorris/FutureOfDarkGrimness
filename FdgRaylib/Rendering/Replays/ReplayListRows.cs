@@ -1,3 +1,4 @@
+using FDG;
 using FDG.Replay;
 
 namespace FdgRaylib.Rendering.Replays;
@@ -7,7 +8,7 @@ public enum EReplayRowKind
     /// <summary>A decision (#454's step).</summary>
     Step,
 
-    /// <summary>A request folded into the step before it (one option, or failed) - listed only on request.</summary>
+    /// <summary>A request folded into the step before it (one option, or failed): it happened, nobody chose.</summary>
     Folded,
 
     /// <summary>A separator: a round starting, the game saved, resumed, or over.</summary>
@@ -15,33 +16,32 @@ public enum EReplayRowKind
 }
 
 /// <summary>One line of the viewer's decision list. Clicking it seeks to <see cref="StepIndex"/>: the step itself, the
-/// step a folded request belongs to, or the first step after a marker (the step count, the end, after the last).</summary>
-public sealed record ReplayListRow(EReplayRowKind Kind, string Text, int StepIndex, long Seq);
+/// step a folded request belongs to, or the first step after a marker (the step count, the end, after the last).
+/// <see cref="Player"/> is whose line it is, for its colour (#457): the deciding player; for a marker, the one it
+/// concerns (the sole winner at the game's end), else the player with the initiative in its round, else none.</summary>
+public sealed record ReplayListRow(EReplayRowKind Kind, string Text, int StepIndex, long Seq, PlayerID? Player);
 
-/// <summary>The viewer's decision list (#456): steps in order, separated by the markers a reader steers by.</summary>
+/// <summary>The viewer's decision list (#456): every request in order, separated by the markers a reader steers by.</summary>
 public static class ReplayListRows
 {
-    public static IReadOnlyList<ReplayListRow> Build(ReplayTimeline timeline, bool includeFolded)
+    public static IReadOnlyList<ReplayListRow> Build(ReplayTimeline timeline)
     {
         IReadOnlyList<ReplayStep> steps = timeline.Steps;
+        IReadOnlyDictionary<int, PlayerID> initiative = InitiativeByRound(timeline);
         var rows = new List<ReplayListRow>();
 
         foreach (ReplayStep step in steps)
         {
-            rows.Add(new ReplayListRow(EReplayRowKind.Step, StepText(timeline.Header, step), step.Index, step.RequestSeq));
-            if (includeFolded)
-            {
-                rows.AddRange(step.Folded.Select(folded => FoldedRow(timeline, folded, step.Index)));
-            }
+            rows.Add(new ReplayListRow(EReplayRowKind.Step, StepText(timeline.Header, step), step.Index, step.RequestSeq, step.PlayerId));
+            rows.AddRange(step.Folded.Select(folded => FoldedRow(timeline, folded, step.Index)));
         }
 
-        if (includeFolded)
-        {
-            rows.AddRange(timeline.FoldedBeforeFirstStep.Select(folded => FoldedRow(timeline, folded, 0)));
-        }
+        rows.AddRange(timeline.FoldedBeforeFirstStep.Select(folded => FoldedRow(timeline, folded, 0)));
 
+        int? round = null; // the round in progress at each marker - GameEnded carries none of its own
         foreach (MarkerEvent marker in timeline.Markers)
         {
+            round = marker.Round ?? round;
             string? text = MarkerText(marker);
             if (text == null)
             {
@@ -49,18 +49,35 @@ public static class ReplayListRows
             }
 
             int next = steps.FirstOrDefault(step => step.RequestSeq > marker.Seq)?.Index ?? steps.Count;
-            rows.Add(new ReplayListRow(EReplayRowKind.Marker, text, next, marker.Seq));
+            rows.Add(new ReplayListRow(EReplayRowKind.Marker, text, next, marker.Seq, MarkerPlayer(marker, round, initiative)));
         }
 
         return rows.OrderBy(row => row.Seq).ToList();
     }
 
-    /// <summary>"#012  R2 A05  P1 (AI)  Warriors: Shoot" - the describer's summary (#454) of what was decided.</summary>
-    public static string StepText(ReplayHeader header, ReplayStep step) =>
-        ReplayLabels.Ascii($"#{step.Index:000}  {RoundText(step.Round, step.Activation)}  {ReplayLabels.Who(header, step)}  "
-            + (string.IsNullOrEmpty(step.Summary) ? step.DisplayName : step.Summary));
+    /// <summary>The player who activated first in each round: the initiative (#457 colours fall back to it). From the
+    /// ActivationStart markers; a round whose first activation was not recorded (a resume mid-round) takes its first
+    /// recorded one.</summary>
+    public static IReadOnlyDictionary<int, PlayerID> InitiativeByRound(ReplayTimeline timeline)
+    {
+        var initiative = new Dictionary<int, PlayerID>();
+        foreach (MarkerEvent marker in timeline.Markers)
+        {
+            if (marker.Marker == EReplayMarker.ActivationStart && marker.Round is int round && marker.PlayerId is PlayerID player
+                && (marker.Activation == 1 || initiative.ContainsKey(round) == false))
+            {
+                initiative[round] = player;
+            }
+        }
 
-    /// <summary>"P1  Choosing a Unit to Activate  (1 option)".</summary>
+        return initiative;
+    }
+
+    /// <summary>"P1 (AI)  Warriors: Shoot" - who, then the describer's summary (#454) of what was decided.</summary>
+    public static string StepText(ReplayHeader header, ReplayStep step) =>
+        ReplayLabels.Ascii($"{ReplayLabels.Who(header, step)}  " + (string.IsNullOrEmpty(step.Summary) ? step.DisplayName : step.Summary));
+
+    /// <summary>"    P1  Choosing a Unit to Activate  (1 option)".</summary>
     public static string FoldedText(ReplayTimeline timeline, ReplayRequest request)
     {
         RequestEvent asked = request.Request;
@@ -69,7 +86,7 @@ public static class ReplayListRows
             : request.IsAnswered == false ? "unanswered"
             : options is int n ? ReplayLabels.Plural(n, "option")
             : "folded";
-        return ReplayLabels.Ascii($"      {ReplayLabels.PlayerLabel(timeline.Header, asked.PlayerId)}  {asked.DisplayName}  ({why})");
+        return ReplayLabels.Ascii($"    {ReplayLabels.PlayerLabel(timeline.Header, asked.PlayerId)}  {asked.DisplayName}  ({why})");
     }
 
     /// <summary>A separator's text, or null for the markers the list leaves out (the game's start, each activation).</summary>
@@ -83,12 +100,16 @@ public static class ReplayListRows
         _ => null,
     };
 
-    /// <summary>"R2 A05", "R2 A--" before the unit is known, "setup" before the main phase.</summary>
-    public static string RoundText(int? round, int? activation) =>
-        round is int r ? $"R{r} A{(activation is int a ? a.ToString("00") : "--")}" : "setup ";
+    /// <summary>Whose line a marker is: the sole winner at the game's end, else the initiative of
+    /// <paramref name="round"/> (the marker's own, or the one in progress when it fell), else nobody's.</summary>
+    public static PlayerID? MarkerPlayer(MarkerEvent marker, int? round, IReadOnlyDictionary<int, PlayerID> initiative)
+    {
+        if (marker.Winner is PlayerID winner) return winner;
+        return round is int r && initiative.TryGetValue(r, out PlayerID player) ? player : null;
+    }
 
     private static string InRound(MarkerEvent marker) => marker.Round is int round ? $" in round {round}" : "";
 
     private static ReplayListRow FoldedRow(ReplayTimeline timeline, ReplayRequest folded, int stepIndex) =>
-        new ReplayListRow(EReplayRowKind.Folded, FoldedText(timeline, folded), stepIndex, folded.Request.Seq);
+        new ReplayListRow(EReplayRowKind.Folded, FoldedText(timeline, folded), stepIndex, folded.Request.Seq, folded.Request.PlayerId);
 }

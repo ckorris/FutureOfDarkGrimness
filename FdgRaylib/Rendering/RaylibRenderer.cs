@@ -182,11 +182,12 @@ public class RaylibRenderer : IReplayCanvas
 
     // In-game right column: a fixed-width strip on the right holding the resolver panel (top half) and the
     // log/chat console (bottom half). Everything left of it is the table viewport. Width is a fraction of
-    // the window, floored so the panels stay usable on narrow windows and capped at half the width.
+    // the window, floored so the panels stay usable on narrow windows and capped at half the width - the
+    // cap wins on a window narrower than two floors (Math.Clamp threw there: a window dragged tiny crashed).
     private const float RightColumnFraction = 0.28f;
     private const int   RightColumnMinPx    = 340;
     private int RightColumnWidth(int screenW) =>
-        _log == null ? 0 : Math.Clamp((int)(screenW * RightColumnFraction), RightColumnMinPx, screenW / 2);
+        _log == null ? 0 : Math.Min(Math.Max((int)(screenW * RightColumnFraction), RightColumnMinPx), screenW / 2);
 
     // Table view transform (#8): _zoom is a multiplier over the fit-to-viewport scale (1 = ~100% of the
     // viewport, up to MaxZoom); _pan is a pixel offset from the centered position. Both default to the
@@ -575,6 +576,8 @@ public class RaylibRenderer : IReplayCanvas
         // ToggleBorderlessWindowed must be called after InitWindow; it sizes the window to the monitor.
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
+        // The smallest window the layouts are drawn for; a WM lets the corner be dragged to a few pixels otherwise.
+        Raylib.SetWindowMinSize(800, 600);
         // 60, not 30. Raylib samples the mouse once per frame and rlImGui hands ImGui that sample, so
         // the frame interval is also the input interval: at 30 a click shorter than 33ms could be pressed
         // and released between two samples and vanish entirely, which read as "I have to click twice"

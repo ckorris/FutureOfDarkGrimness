@@ -183,6 +183,23 @@ public sealed class ReplaySession
         }
     }
 
+    /// <summary>Whose line <see cref="PositionLabel"/> is (#457 colours): the deciding player; at the end, the sole
+    /// winner, else the player with the initiative in the last round; null for nobody.</summary>
+    public PlayerID? PositionPlayer
+    {
+        get
+        {
+            if (Transport.AtEnd == false) return Player.Steps[Transport.Position].PlayerId;
+            _initiative ??= ReplayListRows.InitiativeByRound(Timeline);
+            int? lastRound = _initiative.Count > 0 ? _initiative.Keys.Max() : null;
+            return Timeline.GameEndedMarker is MarkerEvent ended
+                ? ReplayListRows.MarkerPlayer(ended, lastRound, _initiative)
+                : lastRound is int round ? _initiative[round] : null;
+        }
+    }
+
+    private IReadOnlyDictionary<int, PlayerID>? _initiative;
+
     /// <summary>A line to show over the table at the current position: a resume just before it, or the game's end.</summary>
     public string? Notice => NoticeAt(Timeline, Transport.Position);
 

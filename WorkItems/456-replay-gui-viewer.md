@@ -26,15 +26,17 @@ game, and the acceptance list below is ticked.
   - `PresentationPlayer` fed the span's beats on each step; `GameLog` fed the span's log lines; the
     tactical overlay / hover tooltips in read-only mode if they come for free, otherwise off.
   - No resolvers, no outstanding-task display, no save button, no chat.
-- Controls (ImGui bar, bottom): `|<`  `<`  `Play/Pause`  `>`  `>|`, speed `0.5x 1x 2x 4x Instant`, a
+- Controls (ImGui bar, bottom): `<`  `Play/Pause`  `>` (the `|<` / `>|` buttons went in #457's UX pass; Home /
+  End keys remain), speed `0.5x 1x 2x 4x Instant`, a
   step slider, and the label `Round 2 - Activation 5 - P1 (AI) - step 12 / 341`. Keys: Space
   play/pause, Left/Right step, Home/End, Esc back to the browser (see `ResolverKeybinds` for how
   advertised keys are centralised; do not collide with its in-game bindings - the replay screen has
   none of them active).
-- Decision list (right panel, scrollable): one row per step `#012 R2 A5 P1 Warriors: Shoot`
-  (`ReplayStep.Summary`), current row highlighted and kept in view, click = seek. A `Show folded`
-  checkbox adds folded requests greyed. Markers (`Round 3`, `Saved`, `Resumed`, `Game over`) as
-  separator rows.
+- Decision list (right panel, scrollable): one row per step `P1 (AI)  Warriors: Shoot`
+  (`ReplayStep.Summary`; #457's UX pass dropped the step / round / activation numbers and always lists the
+  folded requests, dimmed), current row highlighted and kept in view, click = seek. Markers (`Round 3`,
+  `Saved`, `Resumed`, `Game over`) as separator rows. Every line is drawn in its player's table colour (a
+  marker's: the sole winner, else the round's initiative, else white); so is the position line under the slider.
 - Details (below the list, for the current step): request `DisplayName`, who answered (controller), the
   describer summary, and a `Raw` toggle printing the reply JSON trimmed to ~20 lines.
 - Autoplay (F1, decided): after a step's span beats finish (`PresentationPlayer` idle) plus a dwell

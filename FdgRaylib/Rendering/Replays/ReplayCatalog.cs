@@ -78,6 +78,18 @@ public static class ReplayCatalog
             return name.EndsWith(tag, StringComparison.Ordinal) ? name : $"{name} {tag}";
         }));
 
-    /// <summary>The outcome name, "Unfinished" when the game never ended, "?" when the file carries no summary.</summary>
-    public static string Outcome(ReplaySummary? summary) => summary == null ? "?" : summary.Outcome ?? "Unfinished";
+    /// <summary>Who won ("Alpha wins", "Alpha and Bravo win"), else the outcome name ("Tie", "Disconnect"; a Win recorded
+    /// before the winner was, plainly "Win"), "Unfinished" when the game never ended, "?" when the file has no summary.</summary>
+    public static string Outcome(ReplaySummary? summary)
+    {
+        if (summary == null) return "?";
+        if (summary.Outcome == null) return "Unfinished";
+        if (summary.Outcome == "Win" && string.IsNullOrEmpty(summary.Winner) == false)
+        {
+            string winners = ReplayLabels.Ascii(summary.Winner);
+            return winners.Contains(" and ") ? $"{winners} win" : $"{winners} wins";
+        }
+
+        return summary.Outcome;
+    }
 }
