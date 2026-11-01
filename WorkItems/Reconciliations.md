@@ -815,3 +815,9 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-10-31 - number 458 filed clean.** `git fetch origin` before filing, from `origin/master` at
 > `22f0d56`: index + archive max **457** (449-457 reserved for replay), no `458` branch on either remote.
 > **458 = rejected player reply no longer ends the game.** No collision.
+
+> **2026-11-01 - number 460 filed clean.** `git fetch origin` before filing, from `origin/master` at
+> `170ed4c`: index + archive max **458**. Both `origin/feature/opr-3.6` (Tactician assumed-token overlay) and
+> `origin/feature/replay` (client resume draws no model bases) have independently filed **459** - a collision
+> between those two branches, left for them to reconcile. **460 = import an Army Forge link from the lobby**,
+> on branch `460-lobby-army-import`. No collision for 460.

@@ -37,6 +37,11 @@ public sealed class UserConfig
     /// <summary>Host dialog: the "List publicly" tick (#271). The password is deliberately never stored.</summary>
     public bool ListPublicly { get; set; }
 
+    /// <summary>#460: the lobby Import popup's "Save a copy to my armies folder" tick, remembered so a player
+    /// who never wants the copies only has to say so once. On by default: the import is otherwise gone when
+    /// the lobby closes.</summary>
+    public bool ImportSavesCopy { get; set; } = true;
+
     /// <summary>Display: start in borderless-windowed fullscreen. F11 toggles it at runtime and writes the
     /// new choice back here, so it is remembered next launch. On by default on a fresh install.</summary>
     public bool StartFullscreen { get; set; } = true;

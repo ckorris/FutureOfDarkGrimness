@@ -1321,7 +1321,7 @@ public class ArmyForgeScreen : IAppScreen
     /// <summary>Serialize at the army's RUNTIME type. Serializing through a base-typed reference writes only
     /// the base properties, which would silently drop the embedded selections + book (the engine ignores them
     /// on load; the Forge reads them back to re-edit). See BuiltArmyFile.</summary>
-    private static string SerializeArmy(ArmyListFile army) =>
+    internal static string SerializeArmy(ArmyListFile army) =>
         JsonSerializer.Serialize(army, army.GetType(), RuleJson.Options);
 
     private void WriteArmy(string path, BuiltArmyFile compiled)

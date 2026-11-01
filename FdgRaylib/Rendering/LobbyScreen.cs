@@ -68,6 +68,14 @@ public class LobbyScreen : IAppScreen
     // on the next frame - and so a slot whose roll found nothing is asked once, not every frame.
     private readonly HashSet<Guid> _autoArmiedSlots = new();
 
+    // #460: a row's Import button - an Army Forge share link straight into that slot.
+    private LobbyImportPopup? _importPopup;
+    private LobbyImportPopup ImportPopup => _importPopup ??= new LobbyImportPopup(AssignHandPickedArmy);
+
+    // #460: the roster's row content height this frame - two stacked Actions buttons - which every other
+    // cell centres its single line against.
+    private float _rowContentH;
+
     // Host connection info shown so the host knows what address to share (QF9). The port mirrors
     // CommandProtocol.TEMP_PORT (internal to the engine assembly, so it's restated here).
     private const int ListenPort = 6389;
@@ -213,7 +221,7 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(margin, playerListY));
         ImGui.BeginChild("##players", new Vector2(mainW, playerListH), ImGuiChildFlags.Borders);
         ImGui.SetWindowFontScale(panelScale);  // rows + font ~50% bigger than the rest of the lobby
-        DrawPlayerList(mainW, panelScale);
+        DrawPlayerList(mainW, panelScale, ws);
         ImGui.EndChild();
 
         // ── Chat Log ──────────────────────────────────────────────────────────
@@ -275,16 +283,20 @@ public class LobbyScreen : IAppScreen
         ImGui.End();
     }
 
-    private void DrawPlayerList(float panelW, float panelScale)
+    private void DrawPlayerList(float panelW, float panelScale, float uiScale)
     {
         AutoArmyNewSlots();
 
         IReadOnlyList<LobbyPlayerInfoSummary> players = _viewModel!.PlayerInfos;
 
-        // Rows 50% taller: the extra height comes from cell padding (applied top+bottom each row).
+        // #460: rows are as tall as the Actions cell's 2x2 button grid (two small buttons stacked), which
+        // replaces the extra cell padding that used to make them 50% taller. The single-line cells centre
+        // against it (CenterInRow) so they don't ride the top of a taller row.
         Vector2 cellPad = ImGui.GetStyle().CellPadding;
-        float rowH = ImGui.GetTextLineHeight() + cellPad.Y * 2f;
-        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(cellPad.X, cellPad.Y + rowH * 0.25f));
+        float lineH = ImGui.GetTextLineHeight();
+        _rowContentH = lineH * 2f + ImGui.GetStyle().ItemSpacing.Y;
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(cellPad.X, cellPad.Y + lineH * 0.15f));
+        float actionCellW = ActionCellWidth(_viewModel.IsResumeMode ? ResumeActionLabels : ActionLabels);
 
         // #221: effective colour per row this frame, resolved from the SYNCED picks (ColorIndex rides
         // LobbyPlayerInfoSummary through the lobby protocol, so every machine computes the same result) -
@@ -304,11 +316,13 @@ public class LobbyScreen : IAppScreen
             ImGui.TableSetupColumn("Pts",     ImGuiTableColumnFlags.WidthStretch, 0.051f);
             ImGui.TableSetupColumn("Team",    ImGuiTableColumnFlags.WidthStretch, 0.085f);
             ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.12f);
-            // #372: every row now carries Load Army AND Random Army, so Actions takes the width back
-            // from Army/Faction (both of which wrap gracefully; a clipped button does not).
-            // #405: Remove makes it three buttons on most rows, hence the extra width. The weights are
-            // normalized by SizingStretchProp, so raising this one narrows the rest proportionally.
-            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.26f);
+            // #460: Actions is a 2x2 grid (Load Army | Import / Random Army | Remove), so it is a FIXED
+            // column exactly two equal buttons wide, measured from the labels at this frame's font scale -
+            // a stretch weight clipped the buttons on some window sizes, and a clipped button is the one
+            // thing in the row that can't degrade gracefully. The stretch columns share what is left
+            // (their text shrinks to fit, #405).
+            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthFixed,
+                actionCellW * 2f + ImGui.GetStyle().ItemSpacing.X);
             ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
             ImGui.TableHeadersRow();
             ImGui.PopStyleColor();
@@ -318,42 +332,50 @@ public class LobbyScreen : IAppScreen
                 LobbyPlayerInfoSummary info = players[i];
                 ImGui.TableNextRow();
 
+                float textH = ImGui.GetTextLineHeight();
+                float frameH = ImGui.GetFrameHeight();
+
                 ImGui.TableNextColumn();
+                CenterInRow(textH);
                 TextFitted(info.PlayerName, panelScale);
 
                 ImGui.TableNextColumn();
+                CenterInRow(textH);
                 ImGui.TextUnformatted(PlayerTypeLabel(info.PlayerType));
 
                 ImGui.TableNextColumn();
+                CenterInRow(textH);
                 DrawArmyCell(info.ArmyListSummary, _viewModel.IsResumeMode, panelScale);
 
                 ImGui.TableNextColumn();
+                CenterInRow(textH);
                 DrawFactionCell(info.ArmyListSummary, _viewModel.AllowedGameSystems, panelScale);
 
                 ImGui.TableNextColumn();
+                CenterInRow(textH);
                 DrawPointsCell(info.ArmyListSummary, _viewModel.ArmyPoints);
 
                 ImGui.TableNextColumn();
+                CenterInRow(frameH);
                 DrawTeamCell(i, info, players.Count);
 
                 ImGui.TableNextColumn();
+                CenterInRow(frameH);
                 DrawColorCell(i, info, players, effectiveColor);
 
                 ImGui.TableNextColumn();
                 if (_viewModel.IsResumeMode)
                 {
                     // Re-crew a saved slot. Host only; Local/bots today (networked client assignment TBD).
+                    // #460: the same 2x2 grid as a fresh lobby's row, so the column fits either.
                     ImGui.BeginDisabled(!_viewModel.HasHostPrivileges);
-                    if (UiButton.NavigateSmall($"Local##{i}"))
+                    if (ActionButton($"Local##{i}", 0, actionCellW))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.Local);
-                    ImGui.SameLine();
-                    if (UiButton.NavigateSmall($"Tactician##{i}"))
+                    if (ActionButton($"Tactician##{i}", 1, actionCellW))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.Tactician);
-                    ImGui.SameLine();
-                    if (UiButton.NavigateSmall($"Strategist##{i}"))
+                    if (ActionButton($"Strategist##{i}", 2, actionCellW))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.Strategist);
-                    ImGui.SameLine();
-                    if (UiButton.NavigateSmall($"DerpBot##{i}"))
+                    if (ActionButton($"DerpBot##{i}", 3, actionCellW))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.SoloRules);
                     ImGui.EndDisabled();
                 }
@@ -361,9 +383,14 @@ public class LobbyScreen : IAppScreen
                 {
                     bool canModify = _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID);
                     ImGui.BeginDisabled(!canModify);
-                    if (UiButton.NavigateSmall($"Load Army##{i}"))
+                    if (ActionButton($"Load Army##{i}", 0, actionCellW))
                         TryLoadArmyForPlayer(info.PlayerID);
+                    // #460: an Army Forge share link straight into this slot, same gate as Load Army.
+                    if (ActionButton($"Import##{i}", 1, actionCellW))
+                        ImportPopup.Open(info.PlayerID, info.PlayerName);
                     ImGui.EndDisabled();
+                    if (ImGui.IsItemHovered())
+                        UiText.Tooltip(ImportTooltip);
 
                     // #372: roll a random army from the folder. Offered on EVERY row, not just bots -
                     // it is the fastest way for a human to get a legal list too. Who may press it is
@@ -371,9 +398,8 @@ public class LobbyScreen : IAppScreen
                     // host owns its own and the bots' rows but not a connected client's, and a client
                     // owns only its own. So nobody can roll another player's army, and a client cannot
                     // roll for a bot.
-                    ImGui.SameLine();
                     ImGui.BeginDisabled(!canModify || !ArmyCatalogReady);
-                    if (UiButton.NavigateSmall($"Random Army##{i}"))
+                    if (ActionButton($"Random Army##{i}", 2, actionCellW))
                         AssignRandomArmy(info.PlayerID);
                     ImGui.EndDisabled();
                     // AllowWhenDisabled: the greyed-out case is the one that most needs explaining.
@@ -391,8 +417,7 @@ public class LobbyScreen : IAppScreen
                     // frame.
                     if (_viewModel.CheckCanRemovePlayer(info.PlayerID))
                     {
-                        ImGui.SameLine();
-                        if (UiButton.NavigateSmall($"Remove##{i}"))
+                        if (ActionButton($"Remove##{i}", 3, actionCellW))
                             _viewModel.RemovePlayer(info.PlayerID);
                         if (ImGui.IsItemHovered())
                             UiText.Tooltip($"Remove {info.PlayerName} from the lobby.");
@@ -404,6 +429,10 @@ public class LobbyScreen : IAppScreen
         }
 
         ImGui.PopStyleVar(); // CellPadding (taller rows)
+
+        // #460: drawn here, in the scope its Import buttons opened it from (OpenPopup and BeginPopupModal
+        // must share an ID scope).
+        _importPopup?.Draw(_viewModel, uiScale);
 
         // Slots are fixed when resuming a saved game, so no add/remove there.
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
@@ -435,6 +464,42 @@ public class LobbyScreen : IAppScreen
             if (ImGui.IsItemHovered())
                 UiText.Tooltip(DerpBotTooltip);
         }
+    }
+
+    // #460 -----------------------------------------------------------------------------------------
+    // The Actions cell's 2x2 grid. Slots 0/1 are the top line, 2/3 the bottom; a missing slot (Remove on a
+    // row it doesn't apply to) just leaves its corner empty.
+
+    private static readonly string[] ActionLabels = { "Load Army", "Import", "Random Army", "Remove" };
+    private static readonly string[] ResumeActionLabels = { "Local", "Tactician", "Strategist", "DerpBot" };
+
+    internal const string ImportTooltip =
+        "Paste an Army Forge share link to play that list in this slot -\n" +
+        "no need to save it in the Army Forge screen first.";
+
+    /// <summary>One grid button's width: the widest label as a small button, at this frame's font scale
+    /// (CalcTextSize honours SetWindowFontScale, see <see cref="FitFontScale"/>).</summary>
+    private static float ActionCellWidth(IEnumerable<string> labels) =>
+        labels.Max(l => ImGui.CalcTextSize(l).X) + ImGui.GetStyle().FramePadding.X * 2f;
+
+    private static bool ActionButton(string label, int slot, float cellW)
+    {
+        if (slot % 2 == 1) ImGui.SameLine();
+        return UiButton.NavigateSmall(label, new Vector2(cellW, 0f));
+    }
+
+    /// <summary>Moves the cursor down so an item <paramref name="itemH"/> tall sits in the middle of the
+    /// row's two-button height. ImGui tables have no vertical alignment of their own.</summary>
+    private void CenterInRow(float itemH) =>
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + MathF.Max(0f, (_rowContentH - itemH) * 0.5f));
+
+    /// <summary>A slot's army, chosen by hand (Load Army or Import).</summary>
+    private void AssignHandPickedArmy(PlayerID playerID, ArmyListFile army)
+    {
+        // #372: a hand-picked army marks the slot as served, so AutoArmyNewSlots never overwrites it on a
+        // later frame (it would, for a slot whose army was loaded before the folder scan came back).
+        _autoArmiedSlots.Add(playerID.ID);
+        _viewModel!.UpdateArmyListFile(playerID, army);
     }
 
     // #372/#388 ---------------------------------------------------------------------------------------
@@ -1238,10 +1303,7 @@ public class LobbyScreen : IAppScreen
         string path = paths?.FirstOrDefault() ?? "";
         if (LoadArmyFile(path) is not { } loaded) return;
 
-        // #372: a hand-picked army marks the slot as served, so AutoArmyNewSlots never overwrites it on a
-        // later frame (it would, for a slot whose army was loaded before the folder scan came back).
-        _autoArmiedSlots.Add(playerID.ID);
-        _viewModel!.UpdateArmyListFile(playerID, loaded);
+        AssignHandPickedArmy(playerID, loaded);
     }
 
     private void HandleLaunch(IFDGGame game)

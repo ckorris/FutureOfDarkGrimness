@@ -155,6 +155,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Army Forge
 
+- [~] 460 — Import an Army Forge share link straight into a lobby slot: Import beside Load Army (roster Actions now a 2x2 grid), auto-fetching paste popup, optional auto-named copy, confirm when the list breaks the lobby settings. Implemented on branch `460-lobby-army-import`; awaiting GUI hand-verify. ([WorkItems/460](WorkItems/460-lobby-army-import.md))
 - [ ] 410 — Decide which other one-model item rules (Shielded, Caster, Fear, Vengeance...) belong to the model; route those through #407's grants. ([WorkItems/410](WorkItems/410-per-model-item-rules.md))
 - [~] 383 — OPR "Any model may replace/take ..." sections imported as pick-one-per-option checkboxes; they are per-model counted steppers (section total = model count), so e.g. 3 Hive Warriors couldn't take 3x Ravager Gun. Importer classifier + `PerModelBudget` + 22 bundled sections re-stamped; fixed + tested, awaiting GUI hand-verify. ([WorkItems/383](WorkItems/383-per-model-any-upgrade-sections.md))
 - [~] 218 — "Replace All" charged per model instead of flat. Convention confirmed from a real share list and fixed 2026-07-19 (Havoc list reconciles 1120 both ways; 200 priced All options were overcharging). Open: `Affects.Any` pricing unverified (1185 options ride on it) + GUI hand-verify. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))

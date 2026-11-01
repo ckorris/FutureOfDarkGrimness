@@ -92,7 +92,9 @@ If you want to use an army from OnePageRules' Army Forge, then open that army. I
 <img width="1219" height="241" alt="Screenshot from 2026-08-15 15-58-12" src="https://github.com/user-attachments/assets/7190af7c-afeb-4d4b-aee3-2babb320e1ec" />
 
 
-Copy the link, then in Future of Dark Grimness, open the Army Forge. Press Import in the top right, and paste the link in the prompt. Then press Save As and put it in your Armies folder.
+Copy the link, then in Future of Dark Grimness, press **Import** on your row in the game lobby (next to Load Army) and paste the link. The list fetches by itself and shows any problems; press Import to play it. Leave "Save a copy to my armies folder" ticked to keep it for next time.
+
+You can also import from the Army Forge screen: press Import in the top right, paste the link, then press Save As and put it in your Armies folder (or Open in Forge to edit it).
 
 <img width="1090" height="442" alt="Screenshot from 2026-08-15 15-59-35" src="https://github.com/user-attachments/assets/150a5b67-9591-4d37-914f-14734689c659" />
 <img width="925" height="651" alt="Screenshot from 2026-08-15 15-59-46" src="https://github.com/user-attachments/assets/feaaa640-31a6-4e59-8d67-6fce54077578" />
