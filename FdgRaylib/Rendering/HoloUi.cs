@@ -16,7 +16,7 @@ internal enum EHoloTier
 /// The holographic command-panel look shared by the main menu and the dialogs that open over it (#448):
 /// a translucent dark panel with a thin cyan border and bright corner brackets, square buttons in three
 /// tiers, and a matching modal style for the privacy notice and the Options popup. Colours come from the
-/// signed-off mockup (<c>docs/menu-background/mockup-terrain.jpg</c>).
+/// signed-off mockup (since deleted, 2026-11-01).
 /// </summary>
 internal static class HoloUi
 {
