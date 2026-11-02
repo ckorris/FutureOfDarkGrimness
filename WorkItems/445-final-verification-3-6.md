@@ -307,10 +307,15 @@ Army Forge / lobby / calculator screens:
       "Explosive Spear (Beast Rider)" and there is no bare "1x Beast Rider" line under it; Scavenger Beast -> "Stomp"
       untagged, "Fumigator (Beast Gunner)"; AoF Beastmen Waheni Hunt Master + "Light Chariot" -> "Tusks (Light Chariot)"
       AND the "1x Light Chariot (Armor(4), Fast, Impact(4), Tough(6))" line stays.
-- [ ] **#441 F7** (Forge) - Grimdark Future, Watch Brothers, a Watch Battle Brothers unit with the "Enhanced Watchborn"
-      upgrade -> hovering "Enhanced Watchborn" in the config pane shows OPR's "If this model has Versatile Attack ..."
-      text ending with the line "Base rule: Watchborn."; a normal Enhanced rule hover (e.g. "Enhanced Lustbound") has no
-      such line; the same unit in game shows the line in the table hover and the army list overlay.
+- [x] **#441 F7** (test-covered; route corrected 2026-11-01) - no unit or upgrade in any book grants "Enhanced
+      Watchborn" / "Enhanced Vinci Tech" directly: they reach a unit only through a hero item's Aura (Watch Master
+      Brother "Death-Munitions Keeper (Enhanced Watchborn Aura)", Vinci Scholar "Inventor (Enhanced Vinci Tech Aura)")
+      or a spell (Blessed Ammo, Fury Herbs), so the Forge config pane never shows the rule itself and there is nothing
+      to hover there. The "Base rule: Watchborn." line is pinned across all 88 books by
+      `ArmyForge36Tests.EnhancedHovers_NameTheBaseRuleTheyLift_TheVersatileFamilyTextsThroughTheBaseRuleLine`. To see
+      it anyway: a game with a Watch Brothers list whose Watch Master Brother took the Death-Munitions Keeper -> hover
+      the hero's unit on the table or open the army list overlay -> "Enhanced Watchborn" ends with "Base rule:
+      Watchborn."; an ordinary Enhanced rule's hover has no such line.
 - [ ] **#438 D3 message** (Forge, built 2026-11-01) - no shipped fixture triggers it (a Forge-authored list cannot hold a
       pick its own compile cannot land, and the Forge greys such sections out), so it is test-covered and needs no
       glance (`ArmyForgeCompilerTests` exact text, `ArmyForge36Tests` 88-book census). To see it anyway: import a share

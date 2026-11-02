@@ -492,8 +492,10 @@ Forks built 2026-10-31 (F1, F2, F4, F5, F6, F7):
       Beastmen -> Waheni Hunt Master, take "Light Chariot" -> "Tusks (Light Chariot)" in the table AND the line "1x
       Light Chariot (Armor(4), Fast, Impact(4), Tough(6))" stays under it. Combat Calculator with the Charger Beast ->
       the same row text. The list pane's one-line summary and the roster preview are unchanged.
-- [ ] F7, Forge: Grimdark Future -> Watch Brothers -> add Watch Battle Brothers, take the "Enhanced Watchborn" upgrade
-      (or Watch Prime Brothers); in the config pane hover "Enhanced Watchborn" -> the hover is OPR's "If this model
+- [ ] F7 (route corrected 2026-11-01: no squad upgrade grants "Enhanced Watchborn"; it comes only from a hero item's
+      Aura - Watch Master Brother "Death-Munitions Keeper (Enhanced Watchborn Aura)" - or the Blessed Ammo spell, so the
+      Forge pane never shows the rule itself; the Forge half below is therefore test-only, the in-game half stands),
+      Forge: Grimdark Future -> Watch Brothers -> Watch Master Brother with the Death-Munitions Keeper; in GAME hover "Enhanced Watchborn" -> the hover is OPR's "If this model
       has Versatile Attack ..." text and ENDS with the line "Base rule: Watchborn."; hover "Watchborn" on the same unit
       -> no such line; hover any other Enhanced rule (e.g. Daemons of Lust "Enhanced Lustbound") -> its text names
       Lustbound and has no "Base rule" line. Age of Fantasy -> Duchies of Vinci -> "Enhanced Vinci Tech" -> ends "Base
