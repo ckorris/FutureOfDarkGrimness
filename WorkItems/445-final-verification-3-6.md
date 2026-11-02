@@ -291,10 +291,10 @@ Army Forge / lobby / calculator screens:
       Gamharl twice, Shadow Stalkers' 5 spells + amber Combat Possession line, Sky-City Dwarves "Loses 2 spell tokens",
       Army Builder AoF warnings, lobby amber Q5 line for a 3.5 fixture. Forks: F1, F2, F4, F5, F6, F7 built (below);
       F3, F8, F9 status quo.
-- [ ] **#441 F1** (lobby, "Forks built 2026-10-31") - GDF lobby at 1000 pts, an army with 3 Heroes -> amber "Army '<name>'
+- [x] **#441 F1** (verified 2026-11-01, Chris - three-Hero amber line, hover text, gone at 2000, LAUNCH not greyed) (lobby, "Forks built 2026-10-31") - GDF lobby at 1000 pts, an army with 3 Heroes -> amber "Army '<name>'
       is over 1 force-org cap" under the roster, hover "Too many Heroes: 3 (max 2 at 1000 pts; 1 per 500)."; Army Points
       2000 -> gone; LAUNCH never greyed by it; a joined client sees the same line.
-- [ ] **#441 F2** (Forge) - Load `FdgRaylib.Tests/Fixtures/legacy-3.5/1k - Ogres.fdgarmy` -> amber status "Loaded 1k -
+- [x] **#441 F2** (verified 2026-11-01, Chris - 1k Ogres amber status) (Forge) - Load `FdgRaylib.Tests/Fixtures/legacy-3.5/1k - Ogres.fdgarmy` -> amber status "Loaded 1k -
       Ogres.fdgarmy - Army 'Ogres' was built for OPR v3.5.3; it plays with 3.6 rules"; a list saved by this build ->
       green "Loaded <file>".
 - [ ] **#441 F4** (Combat Calculator) - melee vs an AoF Hand Weapon (Parry(1)) unit -> the volley's Save chip line starts
@@ -303,7 +303,7 @@ Army Forge / lobby / calculator screens:
 - [ ] **#441 F5** (Army Builder) - a Daemons of Lust list, "Enhanced Lustbound" on a unit without Lustbound -> amber "!
       <unit>: Enhanced Lustbound does nothing without Lustbound" under the points box; add Lustbound -> gone; nothing
       blocked.
-- [ ] **#441 F6** (Forge) - Grimdark Future, Jackals, add Charger Beast -> the config pane's weapon table reads
+- [x] **#441 F6** (verified 2026-11-01, Chris - Charger Beast 'Explosive Spear (Beast Rider)', no bare line) (Forge) - Grimdark Future, Jackals, add Charger Beast -> the config pane's weapon table reads
       "Explosive Spear (Beast Rider)" and there is no bare "1x Beast Rider" line under it; Scavenger Beast -> "Stomp"
       untagged, "Fumigator (Beast Gunner)"; AoF Beastmen Waheni Hunt Master + "Light Chariot" -> "Tusks (Light Chariot)"
       AND the "1x Light Chariot (Armor(4), Fast, Impact(4), Tough(6))" line stays.
@@ -316,13 +316,13 @@ Army Forge / lobby / calculator screens:
       it anyway: a game with a Watch Brothers list whose Watch Master Brother took the Death-Munitions Keeper -> hover
       the hero's unit on the table or open the army list overlay -> "Enhanced Watchborn" ends with "Base rule:
       Watchborn."; an ordinary Enhanced rule's hover has no such line.
-- [ ] **#438 D3 message** (Forge, built 2026-11-01) - no shipped fixture triggers it (a Forge-authored list cannot hold a
+- [x] **#438 D3 message** (test-covered, no glance needed - closed 2026-11-01) (Forge, built 2026-11-01) - no shipped fixture triggers it (a Forge-authored list cannot hold a
       pick its own compile cannot land, and the Forge greys such sections out), so it is test-covered and needs no
       glance (`ArmyForgeCompilerTests` exact text, `ArmyForge36Tests` 88-book census). To see it anyway: import a share
       list carrying a Replace whose target the unit lacks (e.g. a 3.6 list where Army Forge kept a stale "Replace Sgt.
       Hand Weapon" without the Sergeant) -> a grey "<unit>: '<section> -> <gains>' not applied (needs 1 more <gear>)"
       line under the FORGE RECONCILIATION deltas, and the same line in the "Open for editing?" modal on reopen.
-- [ ] **#430** ("Forge hand-verify (Chris)") - Forge GDF at 1000 with six squads -> amber "Too many units: 6 (max 5 at
+- [x] **#430** (verified 2026-11-01, Chris - 'Too many units: 6 (max 5 at 1000 pts; 1 per 200)') ("Forge hand-verify (Chris)") - Forge GDF at 1000 with six squads -> amber "Too many units: 6 (max 5 at
       1000 pts; 1 per 200)." and the copies line; switch to AoF (1000 -> 750; caps 5 / 2); hover "pts limit" for the
       suggested sizes; a unit over 35% -> "is too large"; a 20+ model unit -> "Too many models/Tough"; lobby (host) Army
       Source AoF at 2000 -> 1500, back to All -> 2000, a typed 1750 survives the switch, hover for suggested sizes.
@@ -331,15 +331,15 @@ Army Forge / lobby / calculator screens:
       list is picked every time and no amber legacy line appears for a catalog list (one does for a 3.5 file loaded by
       hand); reopen one rebuilt catalog list in the Forge (lossless). Use a dist build (`scripts/build-dist.sh linux`,
       run `dist/FdgRaylib-linux-x64/FdgRaylib`): outside a dist build Random Army is the known #395 no-op.
-- [ ] **#442** (Notes "Awaiting GUI hand-verify") - Combat Calculator, melee, charging: the "Charged from (in), 0 = not
+- [x] **#442** (verified 2026-11-01, Chris - Charged-from field only while charging, 'Attacker advanced (untick = Hold)') (Notes "Awaiting GUI hand-verify") - Combat Calculator, melee, charging: the "Charged from (in), 0 = not
       set" field appears (whole inches, default 0) and only while charging; a Ravage / Regenerative Strength attacker
       shows its own "Ravage" row; the shooting checkbox reads "Attacker advanced (untick = Hold)".
-- [ ] **#459 D4** (Combat Calculator, built 2026-11-01) - shooting, defender = a unit with Artillery (GDF Alien Hives
+- [x] **#459 D4** (verified 2026-11-01, Chris - Invasion Artillery Spore defender, tick appears/vanishes, hit column shifts) (Combat Calculator, built 2026-11-01) - shooting, defender = a unit with Artillery (GDF Alien Hives
       "Invasion Artillery Spore", or any AoF "<faction> Artillery" unit, e.g. Dwarf Artillery), 18" -> a third tick "Defender moved
       this round" appears on its own line under "Attacker advanced"; untick = the hit column needs one more (Artillery's
       -1); ticked = plain; hover names the rule; swap the defender to a plain unit -> the tick vanishes (stays visible
       only while ticked, so it can be cleared).
-- [ ] **#444** (D2, built 2026-10-31) - Main menu -> Load Game on a pre-3.6 save (any `.fdgsave` written before this
+- [x] **#444** (verified 2026-11-01, Chris - amber predates-3.6 line on a root save, Resume not blocked) (D2, built 2026-10-31) - Main menu -> Load Game on a pre-3.6 save (any `.fdgsave` written before this
       build, e.g. one from the repo root) -> the resume lobby shows the amber line "This save predates the OPR 3.6
       upgrade; it plays with 3.6 rules" under the roster, beside any #440 army lines; Resume is not blocked; a save
       written by this build shows no line. (Same line in the game log for a GUI `--scenario <old save>` launch.)
