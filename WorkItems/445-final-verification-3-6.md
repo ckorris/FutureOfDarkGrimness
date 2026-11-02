@@ -220,7 +220,7 @@ In game, built-in army (one or two games cover all of these):
       no forced-charge highlight; end inside 1" -> "FORCED CHARGE", Pass greyed; end just past 3" -> Charge greyed
       "No enemies within the 3" melee range."; charge from ~2.5" -> defenders pile in up to 3" and everyone within 3"
       strikes.
-- [ ] **#422** (Notes; pile-in fixed 2026-11-01) - Charge fresh Heavy Gunners with fresh Warriors -> "Impact Hits" beat first, then the
+- [x] **#422** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - Impact beat, Counter banner, pile-in of the charged unit, Brace reduced count) (Notes; pile-in fixed 2026-11-01) - Charge fresh Heavy Gunners with fresh Warriors -> "Impact Hits" beat first, then the
       "counters the charge - strikes first!" banner and the Gunners' swings, then the Warriors'; charge with Warriors
       that already fought this round -> no Impact beat; charge Gunners that already fought -> no counter banner.
       Brace no longer needs a hand-edited file: Chivalrous Kingdoms (and many AoF books) carry Brace - charge such a
@@ -228,21 +228,21 @@ In game, built-in army (one or two games cover all of these):
       Combat Calculator, melee, charging, "attacker fatigued", an Impact unit -> no Impact row. After the Counter
       banner the GUNNERS step toward the Warriors (log "Pile in: N defender model(s)" with N <= living Gunners) and
       the Warriors stay where the charge left them; "Determine In Range Attackers: 1 of 1" for a lone survivor.
-- [ ] **#447** (Notes "GUI hand-verify") - Charge with full-strength Warriors that all end within 3" of the target ->
+- [x] **#447** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - 10 dice at full strength, strung-out '3 of 5 models in melee range x Impact(2)') (Notes "GUI hand-verify") - Charge with full-strength Warriors that all end within 3" of the target ->
       the "Impact Hits" beat throws 10 dice, context "Warriors: 5 models x Impact(2)", Offense colour, panel wide
       enough; at 3 models -> 6 dice; vs a Brace unit -> "... - N Brace", and no beat at all when Brace cancels
       everything. D1 (reversed 2026-11-01): charge with a STRUNG-OUT Impact unit (a long line of Warriors hitting the
       corner of a unit, so only 2-3 models end the charge within 3") -> the beat throws 2 x the in-reach count and its
       context reads "Warriors: 3 of 5 models in melee range x Impact(2)"; the console line says the same; the later
       "Determine In Range Attackers" line (after pile-in) may show a different count - expected.
-- [ ] **#418** (Status) - A fatigued unit in melee (strike back once, then fight again the same round) -> the dice
+- [x] **#418** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - fatigued-sixes lines and panel over three melees) (Status) - A fatigued unit in melee (strike back once, then fight again the same round) -> the dice
       panel's 6s do not ring as special-rule 6s; the token tooltip / log line says fatigued hits do not count as 6s.
 - [ ] **#426** ("GUI hand-verify") - Deployment: the Heavy Gunners' Scout placement shows the blue band 9" past your
       zone and red 9" keep-out blobs around non-Scout enemies (none around an enemy Scout); a click in a blob is refused
       with the "Too close to a non-Scout enemy unit ..." line; with Scouts on both sides placements alternate; after
       deploying the Warriors, "Use Vanguard on X?" -> green 9" rings, red non-Vanguard blobs, Back leaves it where it
       was; with Ambush reserves on both sides (Forge list), round 2+ prompts alternate starting with the first activator.
-- [ ] **#420** (Status) - Movement panel, drag a unit across Dangerous terrain -> the hint reads "the unit rolls N
+- [x] **#420** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - Dangerous test on the charge) (Status) - Movement panel, drag a unit across Dangerous terrain -> the hint reads "the unit rolls N
       dice on commit (wounds to destroy it), each 1 deals 1 wound"; Terrain placement screen -> the Dangerous effect line
       says the same.
 
@@ -257,17 +257,17 @@ Scenarios (each line is one `--scenario` launch, slot 0 = you):
       forecast at the Enemy Battery nets +1 / -1; its move panel "advance up to 6" - no Rush ...", Shoot greyed after
       moving (also a 0" move); Mortar Team on a Hold is offered Hidden Grunts "ignores line of sight (Indirect)" with no
       cover and Wooded Grunts with cover, 5+ vs the Battery; after an Advance neither grunt unit is offered.
-- [ ] **#429** ("GUI hand-verify") - `--scenario Scenarios/377-spell-verify.json` (Coven Magus) or any 3.6 caster:
+- [x] **#429** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - Whispered Doom landed behind the wall, Searing Bolt greyed, Caster Staff '2+ (base 4+, rules +1, self +1)') ("GUI hand-verify") - `--scenario Scenarios/377-spell-verify.json` (Coven Magus) or any 3.6 caster:
       a spell without the LoS clause targets an enemy fully behind a Blocking piece and lands; a damage spell shows
       "(LoS)" and greys "(no target in line of sight)" when its only target is behind a wall; a caster with a Caster
       Staff reads "Roll needed: 3+ (base 4+, rules +1)", with one boost token "2+ (... self +1)", banner the same.
 
 Forge lists in a game (build in the Army Forge, then Host -> lobby -> LAUNCH vs an AI):
-- [ ] **#421** ("GUI hand-verify (Chris)") - A Tough(9)+ Hero alone within 6" of a worse-Quality friendly unit; break
+- [ ] **#421** ("GUI hand-verify (Chris)"; 2026-11-01: the log line "Conscripts tests morale at Quality 3+ (Hero aura: Captain)" seen in Chris's game, the dice-panel chip still to glance; the stage's follow-up line now quotes the same number, see #421 Notes) - A Tough(9)+ Hero alone within 6" of a worse-Quality friendly unit; break
       that unit (shoot it to half / lose a melee) -> morale panel threshold is the Hero's Quality with chip "Quality N+
       (Hero aura: <name>)" and the log line names him; Hero 7"+ away or Shaken -> no chip; a joined hero -> "(joined
       Hero: <name>)"; no-modifier test looks as before; the "Hero" hover shows the 3.6 text.
-- [ ] **#423** (Outcome "GUI hand-verify") - An AoF Hand Weapon unit (Parry(1), e.g. Dwarves / High Elves warriors)
+- [x] **#423** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - Parry vs Impact and vs Rending blades, 'ignored 1 Rending hit, 1 base hit', the 'N of M Parry dice' chip) (Outcome "GUI hand-verify") - An AoF Hand Weapon unit (Parry(1), e.g. Dwarves / High Elves warriors)
       charged by a Rending unit -> hit beat, then "Parry vs <weapon>" beat (6+ highlighted, "ignored K Rending hits, M
       base hits"), then a save beat "(after Parry)" with fewer dice than hits; an Impact charger -> "Parry vs Impact"
       before the Impact saves and a second pool for the swings; chips "5 models x Parry(1)", "8 hits -> 5 dice", "3 of

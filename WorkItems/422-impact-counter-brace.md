@@ -68,6 +68,18 @@ left: the Impact Fatigue gate, deleting Counter's impact facet, adding Brace(X),
 
 ## Notes
 
+- **2026-11-01 (hand-verify game, Brace narration).** Five Spearmen with Master Spears (Brace(1)) took a charge from
+  5 Warriors with Impact(2): the pool line read "10 dice (5 models x Impact(2) - 5 Brace) -> 5 dice" but only one
+  rule line, "Spearmen's Master Spear's Brace(1) cancelled 1 impact die from the charge (1 model x 1)", showed. Not an
+  engine fault: in a resumed game (every `--scenario` launch) each spear is its own rehydrated attachment, so the
+  effect fires once per weapon counting 1 carrier each (as documented on `Effect.CancelImpactDice`), and the GUI
+  console (`GuiLogMessageUI`) drops a line identical to the one before it, collapsing the five lines into one. The
+  pool line is the authoritative count. Headless shows all five. Left as is; a "(x5)" repeat marker on the console
+  filter would be the fix if it bothers anyone.
+  **D2 is now visible and open for Chris's ruling**: the sum-over-carriers reading cost that charge half its Impact
+  pool (-5 of 10). The 3.6 text "-X total Impact rolls" can also be read as -X once per unit (rules do not stack by
+  copy). Until ruled, the engine keeps the D2 sum.
+
 - **2026-11-01 (post-merge fix, found in Chris's hand-verify game).** After a Counter swap the pile-in moved the
   CHARGER: `PileInStage` read `AttackingUnit`/`DefendingUnit`, which `DetermineStrikeOrderStage` had already swapped,
   so the log read "Pile in: 5 defender model(s)" for 5 Warriors charging 3 Gunners and the Warriors walked up to 3"

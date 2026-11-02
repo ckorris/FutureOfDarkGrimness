@@ -53,6 +53,14 @@ always standalone units (the aura is their only morale effect).
 
 ## Notes
 
+- **2026-11-01 (post-merge log fix, found in Chris's hand-verify game).** Right after "Conscripts tests morale at
+  Quality 3+ (Hero aura: Captain)." the shooting stage logged "... passed its morale test (needed 5)": the test ran at
+  the Hero's 3, but `ResolveRangedMoraleStage` (and `ResolveStrafeMoraleStage`) printed the unit's own Quality in the
+  follow-up line. `MoraleUtilities.ResolveWoundDrivenMoraleDetailed` now returns the `MoraleTestOutcome` (the `bool?`
+  overload wraps it) and both stages quote its `RollNeeded`, which also carries rule modifiers. Log only - the roll,
+  the panel threshold and the chip were already right. Pinned by
+  `HeroMoraleAuraRuleIntegrationTests.TheShootingStagesPassLine_QuotesTheQualityTheTestWasTakenAt`.
+
 - 2026-10-30: **Landed.** Engine commits (submodule, `feature/opr-3.6`): `faa13f11` (part 1, Shaken gate),
   `d1dcc838` (part 2, the aura + the one morale-Quality seam), `05be3515` (part 3, Defense-clause pin), `0f48e94f`
   (part 4, log line / roll chip / Hero description). The superproject commit `421: ...` bumps the pointer with
