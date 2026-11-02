@@ -215,7 +215,7 @@ tick here, and the item can then be archived per #444 D6. Build `feature/opr-3.6
 Impact(2)) + 3x Heavy Gunners (Scout, Counter on the Fists), the CLI/lobby default.
 
 In game, built-in army (one or two games cover all of these):
-- [ ] **#417** (Notes "Awaiting GUI hand-verify") - Movement panel: drag a ghost toward an enemy -> the yellow charge
+- [x] **#417** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - charge line and "N can charge" at 3", Charge and Pass both offered; Notes "Awaiting GUI hand-verify") - Movement panel: drag a ghost toward an enemy -> the yellow charge
       line and "N can charge" appear within 3" (not 2"); end a move 2"-3" away -> action menu offers Charge AND Pass,
       no forced-charge highlight; end inside 1" -> "FORCED CHARGE", Pass greyed; end just past 3" -> Charge greyed
       "No enemies within the 3" melee range."; charge from ~2.5" -> defenders pile in up to 3" and everyone within 3"
@@ -263,7 +263,7 @@ Scenarios (each line is one `--scenario` launch, slot 0 = you):
       Staff reads "Roll needed: 3+ (base 4+, rules +1)", with one boost token "2+ (... self +1)", banner the same.
 
 Forge lists in a game (build in the Army Forge, then Host -> lobby -> LAUNCH vs an AI):
-- [ ] **#421** ("GUI hand-verify (Chris)"; 2026-11-01: the log line "Conscripts tests morale at Quality 3+ (Hero aura: Captain)" seen in Chris's game, the dice-panel chip still to glance; the stage's follow-up line now quotes the same number, see #421 Notes) - A Tough(9)+ Hero alone within 6" of a worse-Quality friendly unit; break
+- [x] **#421** (verified 2026-11-01, Chris, `Scenarios/36-hand-verify.json` - morale panel at 3+ with the chip "Quality 3+ (Hero aura: Captain)" and the log line; the stage's follow-up line now quotes the same number, see #421 Notes) - A Tough(9)+ Hero alone within 6" of a worse-Quality friendly unit; break
       that unit (shoot it to half / lose a melee) -> morale panel threshold is the Hero's Quality with chip "Quality N+
       (Hero aura: <name>)" and the log line names him; Hero 7"+ away or Shaken -> no chip; a joined hero -> "(joined
       Hero: <name>)"; no-modifier test looks as before; the "Hero" hover shows the 3.6 text.
