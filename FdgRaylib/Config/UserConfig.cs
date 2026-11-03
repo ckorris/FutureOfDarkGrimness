@@ -42,8 +42,9 @@ public sealed class UserConfig
     /// the lobby closes.</summary>
     public bool ImportSavesCopy { get; set; } = true;
 
-    /// <summary>Display: start in borderless-windowed fullscreen. F11 toggles it at runtime and writes the
-    /// new choice back here, so it is remembered next launch. On by default on a fresh install.</summary>
+    /// <summary>Display: start in borderless-windowed fullscreen. F11 or the Options "Fullscreen" checkbox
+    /// toggles it at runtime (<see cref="Rendering.WindowMode"/>) and writes the new choice back here, so it
+    /// is remembered next launch. On by default on a fresh install.</summary>
     public bool StartFullscreen { get; set; } = true;
 
     /// <summary>#398: the Combat Calculator's per-side game-system choice (Grimdark Future / Age of

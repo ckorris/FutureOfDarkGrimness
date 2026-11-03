@@ -249,5 +249,5 @@ fi
 echo
 echo ">> Done. Artifacts in $DIST_DIR:"
 for f in "$DIST_DIR"/*.zip "$DIST_DIR"/*.tar.gz; do
-  [[ -e "$f" ]] && printf '   %-32s %s\n' "$(basename "$f")" "$(du -h "$f" | cut -f1)"
+  if [[ -e "$f" ]]; then printf '   %-32s %s\n' "$(basename "$f")" "$(du -h "$f" | cut -f1)"; fi
 done

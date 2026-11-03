@@ -16,6 +16,10 @@ public static class OptionsPanel
     public static void Draw(AudioManager? audio, bool inGame)
     {
         SectionHeader("Display");
+        // #310: applied at the top of the next frame and saved immediately, same as pressing F11.
+        bool fullscreen = WindowMode.IsFullscreen;
+        if (ImGui.Checkbox("Fullscreen (F11)", ref fullscreen))
+            WindowMode.RequestToggle();
         ImGui.Checkbox("Unit labels (N)", ref ViewSettings.ShowLabels);
         ImGui.Checkbox("Table grid", ref ViewSettings.ShowGrid);
         ImGui.Checkbox("Show all tokens (T, dev)", ref ViewSettings.ShowAllTokens);

@@ -586,8 +586,7 @@ public class RaylibRenderer : IReplayCanvas
         // and the second click landed on whatever the first one had revealed). Nothing here is expensive
         // to draw; the screens are ImGui panels over a static canvas.
         Raylib.SetTargetFPS(60);
-        if (UserConfig.Current.StartFullscreen)
-            Raylib.ToggleBorderlessWindowed();
+        WindowMode.ApplyAtStartup(UserConfig.Current.StartFullscreen);
 
         // Escape is not a quit key. It reads as "cancel the action I'm in the middle of" - several
         // resolvers already bind it that way - and raylib's default exit key made it tear the window
@@ -612,16 +611,10 @@ public class RaylibRenderer : IReplayCanvas
 
         while (!Raylib.WindowShouldClose() && !_closeRequested)
         {
-            // F11 toggles borderless-windowed fullscreen <-> windowed (so the fullscreen default is
-            // never a trap - Escape does not quit here, see SetExitKey above) and remembers the choice:
-            // the flip keeps StartFullscreen in step with the actual window state, since startup applied
-            // whatever it held. Save is ~0.1ms and only fires on the keypress (#310).
-            if (Raylib.IsKeyPressed(KeyboardKey.F11))
-            {
-                Raylib.ToggleBorderlessWindowed();
-                UserConfig.Current.StartFullscreen = !UserConfig.Current.StartFullscreen;
-                UserConfig.Save();
-            }
+            // F11 (or the Options "Fullscreen" checkbox) toggles borderless-windowed fullscreen <->
+            // windowed - so the fullscreen default is never a trap, Escape does not quit here (see
+            // SetExitKey above) - and remembers the choice. Save is ~0.1ms and only fires on a toggle (#310).
+            WindowMode.Update();
 
             int screenW = Raylib.GetScreenWidth();
             int screenH = Raylib.GetScreenHeight();

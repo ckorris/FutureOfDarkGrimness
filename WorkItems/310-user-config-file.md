@@ -19,6 +19,18 @@ it instead of hardcoding them:
 
 ## Notes
 
+- 2026-11-03: **F11 went into fullscreen but never came back out** (owner report, Cinnamon/X11, 4K
+  multi-monitor). Reproduced with a scratch raylib harness: after `ToggleBorderlessWindowed` back, raylib
+  reports 1280x720 but the framebuffer stays 3840x2160 at the monitor origin - Muffin had promoted the
+  undecorated monitor-sized window to `_NET_WM_STATE_FULLSCREEN` and never drops it, so every resize is
+  ignored (RestoreWindow / SetWindowSize / deferred resize all tried, none work). Fix: new
+  `Rendering/WindowMode.cs` owns the toggle (F11 + a new **Options > Display "Fullscreen (F11)"** checkbox,
+  deferred to the next frame, saved to `StartFullscreen`); leaving fullscreen sends an EWMH remove via
+  `Rendering/X11WindowState.cs` (libX11 P/Invoke, own window found by `_NET_WM_PID` - GLFW's X11 accessors
+  aren't exported and `GetWindowHandle` is the GLFW pointer on Linux), then restores the pre-fullscreen
+  size/position (centred on the monitor when the app started fullscreen). No-op off Linux/X11. Verified via
+  a harness driving the real `WindowMode` (4 toggles each from windowed and fullscreen start); app tests
+  4207/4207. Needs an owner F11 + checkbox hand-check; Windows unaffected in theory, unverified.
 - 2026-08-02 (2): Two hand-verify findings, both fixed. (a) The Join dialog kept showing the name it
   was constructed with, because the modals seed their fields once at construction and only re-read the
   config in `Reset()` (cancel / success). `IAppScreen` gained an `OnShown()` default-no-op hook that
