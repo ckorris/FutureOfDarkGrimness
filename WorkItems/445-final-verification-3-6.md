@@ -1,6 +1,6 @@
 # 445 — Final verification of the OPR 3.6 upgrade
 
-**Status**: pass 1 done; pass 2 after sign-off changes (pass 1 2026-10-31: 14 green / 0 red / 4 amber)
+**Status**: closed 2026-11-02 - pass 1 and 2 green, Chris's GUI hand-verify list worked through 2026-11-01/02
 **Related**: #415, #444 (merge happens only after this passes), #167 (scenario tools), #196 (`--rule-coverage`)
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / medium.
 
@@ -206,11 +206,11 @@ each logged once per seat.
 
 "Loads into a lobby" is GUI: the last line of #441's checklist (point 9) covers it.
 
-### 9. Consolidated GUI hand-verify list (Chris) - AMBER (owed, not yet done)
+### 9. Consolidated GUI hand-verify list (Chris) - GREEN for release (worked through 2026-11-01/02; the unticked lines are faction-specific or test-covered, kept for a later session)
 
 Compiled from the "awaiting hand-verify" notes of every non-archived upgrade item. One line per check: item -> screen
 -> what to click -> what to see. Each item's own file has the long form (numbered sub-steps) under the named section;
-tick here, and the item can then be archived per #444 D6. Build `feature/opr-3.6` and run
+tick here, and the item can then be archived per #444 D6. Build `master` and run
 `./FdgRaylib/bin/Debug/net8.0/FdgRaylib` unless the line says otherwise. "Built-in army" = 5x Warriors (Vanguard,
 Impact(2)) + 3x Heavy Gunners (Scout, Counter on the Fists), the CLI/lobby default.
 
@@ -496,5 +496,12 @@ the engine merge commit); `git tag v0.4.0 && git push --tags`.
 
 ## Outcome
 
-(open) Pass 1 done 2026-10-31: scripted checks green, no reds; releasable pending the point-9 hand-verify
-list, the #441 F1-F9 sign-off, pass 2 and #444 step 8 (see "Releasability").
+Pass 1 and pass 2 (2026-10-31) green on the final branch. Section 9, Chris's GUI hand-verify list, worked through
+2026-11-01/02 with the `Scenarios/36-hand-verify.json` scenario and the menu screens: every in-game 3.6 item (#417,
+#418, #420, #421, #422, #423, #429, #447) and the screen items (#444, #442, #459 D4, #430, #441 F1/F2/F6, #438 D3)
+ticked. The games found and fixed three things on master: the pile-in after a Counter swap moved the charger
+(#422 note), the shooting-morale log line quoted the unit's own Quality instead of the Hero-aura roll needed (#421
+note), and Rending narrated "ignored Regeneration" against defenders without it. Unticked lines (#426 deployment,
+#446/#425 own scenarios - headless pre-run green, #424/#433/#434 faction lists, the #441 15-line section and F4/F5,
+#440 dist Random Army) are faction-specific or test-covered and were judged not release-blocking; they stay listed
+in section 9 for a later session. Releasable.

@@ -1,108 +1,91 @@
-# Future of Dark Grimness v0.4.0 (OPR 3.6.0) - release notes DRAFT
+# Future of Dark Grimness v0.4.0 (OPR 3.6.0)
 
-DRAFT written 2026-10-31 by #444 from the upgrade items' hand-offs, for Chris and the orchestrator to edit before the
-release. Not published anywhere yet. Plain ASCII; GitHub release notes have no heading anchors, so this text avoids
-in-page links. The archives are `FdgRaylib-<rid>-v0.4.0-OPR_3_6_0.{zip,tar.gz}`; builds stay unsigned.
+DRAFT for the GitHub release page (rewritten 2026-11-02; the 2026-10-31 itemised draft is in git history). Plain
+ASCII, no in-page links. Paste into the release body by hand; the `v0.4.0` tag triggers the CI build that attaches
+the four platform archives `FdgRaylib-<rid>-v0.4.0-OPR_3_6_0.{zip,tar.gz}` and `SHA256SUMS.txt`. Builds are unsigned.
 
-## Rules version
+## OnePageRules 3.6
 
-This release moves the whole game from the OnePageRules **v3.5** rules to **v3.6.0** (published 2026-10-29), for both
-Grimdark Future and Age of Fantasy. 3.6 replaces 3.5: there is no 3.5 mode.
+This release moves the game from the OnePageRules v3.5 rules to **v3.6.0** for both Grimdark Future and Age of
+Fantasy, with no 3.5 mode. Everything the new edition changed is in: the 3" melee range and the "took the most wounds
+loses" melee result, Impact rolled per model before anyone strikes, Counter trimmed to strike-first with the new
+Brace(X) taking its anti-Impact half, the new core rules Parry(X), Assault, Cumbersome and Spell Amplifier, the
+reworked Fatigue, Indirect, Artillery, Hero morale aura, Dangerous terrain, Transport, Aircraft and Unstoppable rules,
+"most models" instead of "all models" for unit-wide rules, per-spell line of sight and the 3.6 casting modifiers, the
+3.6 deployment distances, the new force-organisation caps, and every reworded or new faction rule including the 112
+"Enhanced X" rules. The rulebook is the reference; where a 3.6 sentence allows two readings the game documents the one
+it took in `docs/opr-3.6-upgrade-plan.md`.
 
-## Army books
+## Replays
 
-- The Army Forge screen ships all **48 Grimdark Future and 40 Age of Fantasy** official books, re-imported from Army
-  Forge's 3.6.0 data (every unit, weapon, upgrade and price; every book now says "OPR v3.6.0").
-- New: **Voidspace Stalkers** (Grimdark Future).
-- Renamed: Wormhole Daemons of Change / Lust / Plague / War -> **Daemons of Change / Lust / Plague / War** (Grimdark
-  Future); Rift Daemons of X -> **Daemons of X** (Age of Fantasy); Saurian Starhost -> **Saurian Starhosts**.
-- Every book's spells were re-imported for 3.6 (527 of 528; see Known gaps).
-- The bundled Random Army lists were rebuilt on the 3.6 books. 3.6 removed or reshaped some units, so a few lists
-  had units swapped or cut to stay inside their 1k / 2k / 3k / 4k bracket.
+- Every game is recorded as it is played, on the host and on remote clients, and saved to `Replays/` beside the
+  executable however the game ends. A saved game carries its replay, so a save that is resumed keeps one continuous
+  record.
+- Main menu -> **Replays** opens the viewer: the table with the real animations, play / pause / step by decision /
+  seek / speed, a decision list with details, and a full-board mode.
+- Headless tools for bug reports: `--replay game.fdgreplay --dump | --events | --stats | --verify | --export`, and
+  `--at N --make-save` cuts a resumable save at any step.
 
-## What 3.6 changed for players
+## Army books and lists
 
-- **Melee:** models within **3"** (was 2") strike. The side that **took** the most wounds during the activation loses
-  the melee (was: caused the fewest); Fear(X) now counts as X extra wounds taken by the enemy.
-- **Impact, Counter, Brace:** Impact is rolled **per model, before either unit attacks**, and not at all by a Fatigued
-  charger; only the charging models that end the charge within melee range (3") of the target roll, and the log says
-  "3 of 5 models in melee range" when some do not. Counter now only strikes first; its "enemy gets fewer Impact dice" half is the new core rule **Brace(X)**.
-- **Fatigue:** a Fatigued unit's 6s to hit in melee no longer trigger "on a 6" special rules.
-- **New core rules:** **Parry(X)** (Age of Fantasy hand weapons; 6+ ignores a melee hit, the worst hits go first),
-  **Assault** (one weapon counts as both ranged and melee), **Cumbersome** (Hold or Advance only, no shooting after
-  moving; artillery carries it), **Spell Amplifier** (+1 to cast).
-- **Indirect** ignores line of sight and Sight-Blocker cover only when holding, and no longer has -1 to hit after
-  moving. **Artillery's** defensive -1 needs most models unmoved this round.
-- **"Most models":** unit-wide rules (Fearless, Regeneration, Stealth, Artillery and ~85 faction rules) apply when most
-  models in the unit have them, instead of all.
-- **Heroes:** a Hero's unit, and units within 6" of a friendly Tough(9)+ Hero, may use that Hero's Quality for morale
-  tests while the Hero isn't Shaken.
-- **Deployment:** Scout deploys fully within 9" of its zone and over 9" from non-Scout enemies; Vanguard and Fanatic
-  stay over 9" from non-Vanguard enemies; Reinforcement arrives fully within 9" of a table edge, over 9" from enemies.
-- **Terrain:** Dangerous terrain rolls as many dice as the wounds it would take to destroy the unit, and a unit that
-  activates in Dangerous terrain also tests. Flying ignores Difficult and Dangerous terrain.
-- **Transports** are entered by moving into contact. **Aircraft** give -1 to hit as well as -12" range.
-  **Unstoppable** ignores only negative modifiers that are not its own model's.
-- **Casting:** each spell says whether it needs line of sight; boosting casters need only be within 18"; one casting
-  window per activation, before attacking. Spell Drain is in.
-- **Army building:** max. 1 unit per 200pts and max. 1 model or Tough per 20pts (warnings, as before); Age of
-  Fantasy uses its own levels (1 Hero per 375pts, copies per 750pts). **Unique Hero** may be taken once per army.
-- **Faction rules:** every reworded and new 3.6 faction rule is in, including the new weapon rules (Anti-Cover,
-  Smash, Pierce, Fracture, Scourge, Crossing Strike and the rest), the "over 9" / 6" away" family, and the 112
-  "Enhanced X" rules. Very Fast is gone (3.6 dropped it).
+- The Army Forge ships all **48 Grimdark Future and 40 Age of Fantasy** official books from Army Forge's 3.6.0 data.
+  New: **Voidspace Stalkers**. Renamed: the Wormhole / Rift Daemons books are **Daemons of Change / Lust / Plague /
+  War**; Saurian Starhost is **Saurian Starhosts**.
+- An Army Forge share link can be imported straight into a lobby slot (roster **Import**), as well as in the Forge.
+- The bundled Random Army lists were hand-rebuilt for 3.6: legal force organisation, full point brackets, redesigned
+  loadouts.
 
-## Older armies, links and saves
+## Older armies and saves
 
-- **3.5 army files keep working.** A `.fdgarmy` built for 3.5 loads and plays, with 3.6 rules. The lobby (and the
-  headless CLI) shows an amber notice: "Army '...' was built for OPR v3.5.x; it plays with 3.6 rules". It does not
-  block the launch.
-- **Army Forge share links** import as 3.6 lists (Army Forge now serves every list with its 3.6 books). The import
-  summary explains a unit priced below Army Forge's figure (a stale "Replace X" pick from an old list), names each
-  upgrade our Forge could not apply and the gear it lacked ("Assault Brothers: 'Replace one Heavy Pistol and Hand
-  Weapon -> Heavy Pistol, Energy Hammer' not applied (needs 1 more Hand Weapon)"), and says why Age of Fantasy Shadow
-  Stalkers has five spells.
-- **Saved games from v0.3.x and earlier load and play with 3.6 rules**, keeping the 3.5 armies they were saved with.
-  The resume lobby (and the headless `--scenario` console) shows an amber notice: "This save predates the OPR 3.6
-  upgrade; it plays with 3.6 rules". It does not block the resume. Saves written by 0.4.0 carry their rules version,
-  so a save from another ruleset is named the same way ("This save was written for OPR v3.x.y; ..."). A fresh game is
-  still the cleaner option.
+- A `.fdgarmy` built for 3.5 still loads and plays, with 3.6 rules; the lobby and the Forge say so in amber. It never
+  blocks a launch.
+- Saved games from v0.3.x load and play with 3.6 rules; the resume lobby shows the same kind of notice. A fresh game is
+  the cleaner option.
 
 ## Interface
 
-- The Army Forge lists the books under their 3.6 names.
-- The Forge no longer greys out a combined upgrade (e.g. Assault Brothers' "Heavy Pistol, Energy Hammer") after every
-  pistol was swapped.
-- Rule hovers wrap the long 3.6 rule texts everywhere; Spawn and Split show their description instead of "not
-  enforced"; an Enhanced rule whose official text does not name the rule it enhances (Enhanced Watchborn, Enhanced
-  Vinci Tech) ends its hover with "Base rule: Watchborn." / "Base rule: Vinci Tech." on every screen that explains
-  rules.
-- New force-org warnings in the Forge for the 3.6 caps.
+- New main menu: an animated holographic war table behind a command-panel menu (Animated / Still / Off in Options).
+- Options moved to the main menu and persist between runs; the in-game Options panel is larger.
+- Lobby: amber force-organisation advice per army (never blocking); the Army Source setting adjusts the points limit.
+- Army Forge: lists books under their 3.6 names, flags older lists, names the mount or crew a weapon belongs to, warns
+  about Enhanced rules without their base rule, and no longer greys out combined upgrades after a weapon swap.
+- Combat Calculator: a charge distance for melee, a "Defender moved this round" tick when the defender's rules care
+  (Artillery), Parry shown as a chip on the save line, Ravage shown as its own row.
+- Rule hovers wrap long texts everywhere; an Enhanced rule whose official text does not name its base ends with
+  "Base rule: X.".
+- Dice panels and the log explain the new rules as they fire: "Impact Hits" before the fight, the Counter banner,
+  Parry beats, "fatigued - 6s do not count", a morale test's "Quality 3+ (Hero aura: Captain)" chip.
 
 ## AI
 
-- The Tactician reads the 3.6 rules: 3" melee reach, Assault threat, Parry and Brace, Cumbersome, Indirect on a Hold,
-  the range / charge-distance rules, Ravage, Hazardous, Scourge and Tag tokens. It uses Spell Drain and prices its
-  Versatile picks and the 3.6 activation-start moves.
-- The Combat Calculator takes a charge distance and shows Ravage; a defender's Parry is a "Parry" chip on the volley's
-  save line, with the dice and hits ignored in its hover. Against a defender whose rules care whether it moved
-  (Artillery), a "Defender moved this round" tick appears.
-- The lobby flags an army over the optional force-org caps for the game's points limit with one amber line per army
-  ("Army 'X' is over 2 force-org caps"; the caps in its hover). Advice only, it never blocks the launch.
-- The Army Forge says so, in amber, when it opens a list built for an older ruleset ("... was built for OPR v3.5.3; it
-  plays with 3.6 rules"), and its unit card names the mount or crew a weapon comes from ("Explosive Spear (Beast
-  Rider)") instead of listing the bare item.
-- The Army Builder warns when a unit carries an Enhanced rule without the rule it enhances ("Enhanced Lustbound does
-  nothing without Lustbound").
-- The Strategist's learned leaf was trained on 3.5 armies and has not been re-trained yet (planned after the release).
+- The Tactician plays the 3.6 rules (3" reach, Assault, Parry and Brace, Cumbersome, Indirect on a Hold, Spell Drain)
+  and prices its own moves against rules that care whether it moved.
+- The Strategist's learned leaf was trained on 3.5 armies; re-training is planned after this release.
+
+## Fixes
+
+- A rejected move or placement no longer ends the game ("Breaks cohesion" Game Over in v0.3.0): the game re-asks, and
+  placement gained an Auto-place for spots with no legal position.
+- After a Counter, the charged unit piles in, not the charger.
+- Group moves keep the formation rigid by default; "Optimize formation for distance" is the opt-in re-form.
+- A one-model item's Tough (weapon teams) applies to that model only; a joined hero's aura fires on combined units;
+  units held in Ambush read "In Reserve", not "Activated"; activation-start picks can be backed out of; units can
+  deploy inside a transport that is still in reserve.
+- Log lines name the roll a morale test really needed, use "Warriors'" not "Warriors's", and no longer claim Rending
+  ignored a Regeneration the defender did not have.
+
+## Privacy
+
+- Optional, anonymous usage analytics (launches, features opened, games started and ended). A notice explains it on
+  first launch; it can be turned off in Options at any time. Details in the README's privacy section.
 
 ## Known gaps
 
-- **3.6 terrain types** (Dense, Unstable, Steep, Climbable) are not in this release; terrain keeps the existing types.
-- **Combat Possession** (Age of Fantasy Shadow Stalkers) is not imported: OPR's own 3.6.0 data for it is cut off
-  mid-sentence. The other 527 spells are in.
-- Some 3.6 rule descriptions read differently from what the engine does, found during the upgrade and queued as
-  follow-ups: Teleport's 3" / 6" by action (the game uses a flat 6"), Swift, the Predator family's "+1 attack", Extended
-  Buff Range, Protection Feat, Versatile Defense, Mend, Re-Deployment, and a few Mark lifetimes.
-- Spell edge cases: Hazardous on spell hits does not wound the caster on 1s (Ratmen Power Surge, Goblin Pow!, AoF
-  Ratmen Lightning Blast); a one-shot "when shooting" grant can be spent by its holder's damage spell; a claimed mark
-  can linger to the claimer's next damage spell; the Tactician may drain an enemy caster holding no tokens.
+- The 3.6 terrain types (Dense, Unstable, Steep, Climbable) are not in this release.
+- Combat Possession (Age of Fantasy Shadow Stalkers) is not imported; OPR's own 3.6.0 data for it is cut off. The
+  other 527 spells are in.
+- A few rule descriptions read differently from what the engine does (Teleport's 3"/6", Swift, the Predator family's
+  "+1 attack", Extended Buff Range, Protection Feat, Versatile Defense, Mend, Re-Deployment, some Mark lifetimes), and
+  some spell edge cases (Hazardous on spell hits, one-shot shooting grants spent by a damage spell). All are filed as
+  follow-ups.
+- A networked client that joins a resumed scenario save may draw unit labels without model bases (#463).

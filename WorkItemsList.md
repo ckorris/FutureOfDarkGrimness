@@ -19,10 +19,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## OPR 3.6 upgrade (branch `feature/opr-3.6`, plan: `docs/opr-3.6-upgrade-plan.md`)
 
-Numbers 415-447 are reserved for the upgrade; their detail files live on the feature branch. Nothing here
-merges to master before #444. Phase order and dependencies: plan section 4.
+Numbers 415-447 are reserved for the upgrade. Merged to `master` 2026-11-01; the `v0.4.0` tag is pending. The
+[x] lines below stay until their remaining GUI glances (#445 section 9) are done or waived. Phase order: plan section 4.
 
-- [~] 415 — OPR 3.6 upgrade umbrella: the plan, ground rules, master merges into the branch, release gate. ([WorkItems/415](WorkItems/415-opr-3-6-upgrade-umbrella.md))
+- [~] 415 — OPR 3.6 upgrade umbrella: the plan, ground rules, master merges into the branch, release gate. Merged to master 2026-11-01; closes with the v0.4.0 tag. ([WorkItems/415](WorkItems/415-opr-3-6-upgrade-umbrella.md))
 - [x] 417 — Melee ranges 3.6: 3" strike range (4" vertical kept, Q4); pile-in/consolidate already 3"/1". Done 2026-10-29; GUI hand-verify pending (charge line/count, 1"-3" optional-charge band). ([WorkItems/417](WorkItems/417-melee-range-3-inches.md))
 - [x] 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" special rules. Done 2026-10-29; dice-panel GUI hand-verify pending. ([WorkItems/418](WorkItems/418-fatigue-no-special-sixes.md))
 - [x] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. Done 2026-10-29; "or that activate in it" built by #446 (D5 resolved). ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))
@@ -45,8 +45,6 @@ merges to master before #444. Phase order and dependencies: plan section 4.
 - [x] 442 — Tactician AI + Combat Calculator parity with 3.6 (3" melee, Assault threat, Parry/Brace, Cumbersome, Indirect). ([WorkItems/442](WorkItems/442-ai-and-calculator-parity-3-6.md))
   Done 2026-10-30; Assault / Parry / Enhanced halves -> #424 / #423 / #433; owner review asked on D7, D9.
 - [ ] 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed). Design fork; blocked on Q3. ([WorkItems/443](WorkItems/443-terrain-3-6.md))
-- [~] 444 — Version, docs, release: 0.4.0 / OPR_3_6_0, README/CLAUDE.md/docs, archive, release-notes draft done on the branch 2026-10-31; merge + tag wait for hand-verify, fork sign-off and #445. ([WorkItems/444](WorkItems/444-version-docs-release-3-6.md))
-- [~] 445 — Final verification: pass 1 and pass 2 done 2026-10-31 (pass 2 on the final branch with master merged in: 13 green / 0 red / 1 amber); the amber is Chris's 25-line GUI hand-verify list. ([WorkItems/445](WorkItems/445-final-verification-3-6.md))
 - [x] 446 — Dangerous terrain: a unit that activates in Dangerous terrain takes the test first thing in its activation; one test per activation on either trigger. Done 2026-10-30; owner review asked on D1, D2, D3, D4. ([WorkItems/446](WorkItems/446-activate-in-dangerous-terrain.md))
 - [x] 447 — Impact(X) is per model: X dice per living model carrying it that is in melee reach of the target (a joined hero's own Impact adds when in reach), Brace subtracts from the total. Done 2026-10-30; D1 ruled by Chris and rebuilt 2026-11-01; owner review open on D3. ([WorkItems/447](WorkItems/447-impact-per-model.md))
 
@@ -324,7 +322,6 @@ Implemented, merged, suite green — held open only until confirmed by hand in t
 Tick and move to the archive once verified. The detail files carry the full ledgers.
 
 - [~] 458 — A rejected player reply no longer ends the game: move/consolidation Done gates call the engine validator, the engine re-asks then holds instead of throwing, and placement gains an engine-placer Auto-place so a no-legal-spot placement can't hang (Discord "Breaks cohesion" Game Over, v0.3.0). Verify: the GUI checks in the detail file. ([WorkItems/458](WorkItems/458-invalid-reply-game-over.md))
-- [~] 459 — Tactician prices its own post-move state: read-only assumed-token overlay for hypothetical rule queries, so a move candidate's incoming-fire estimate drops Artillery's unmoved -1 (#442 D9 option (a)). Built 2026-11-01 on `feature/opr-3.6`; awaiting verification. ([WorkItems/459](WorkItems/459-tactician-assumed-tokens.md))
 - [~] 326 — Single-model moves show a roster of the unit's models with each one's distance travelled: pick by row click, Up/Down, Tab/Shift+Tab, or the table click #295 left as the only way in (which a playtester never found). Space stays Confirm. Consolidation gets the same roster as slice 2. Verify: the six GUI checks in the detail file. ([WorkItems/326](WorkItems/326-single-model-move-roster.md))
 - [~] 324 — A single-target "Replace all X" now leaves the copies that specialist swaps below it were bought for (5 pistols, trade 1, then replace-all -> 4 rifles + the 1), and "-es" plural targets match ("Bashes" -> the "Bash" weapon, which was silently free). Multi-target all-swaps (88 corpus pairs) deferred pending the aggregate weapon-model question. Verify: DAO Union Tactical Grunts - take "Replace all Pulse Rifles" then "Replace one Pulse Rifle -> Plasma Rifle"; expect 4 carbines + 1 plasma at 150 pts. ([WorkItems/324](WorkItems/324-all-swap-yields-and-plurals.md))
 - [~] 323 — Replace upgrades starved by a later section: a Replace whose targets another section grants (Titan Lords "Replace any Heavy Hammer" above the shield swap that buys the second hammer) now banks the shortfall and settles it after every section applies, so both hammers swap and an OPR import keeps both. Verify: in the Forge, trade a War Errant Mini-Titan's Titan Shield for a Heavy Hammer, then swap BOTH hammers (385 pts, no hammer left). ([WorkItems/323](WorkItems/323-starved-replace-upgrade.md))

@@ -1,6 +1,6 @@
 # 459 — Tactician prices its own post-move state: assumed-token overlay for hypothetical rule queries (Artillery's unmoved -1)
 
-**Status**: in-progress (built 2026-11-01, awaiting the orchestrator's verification and Chris's GUI glance)
+**Status**: closed 2026-11-02 - built 2026-11-01, verified headless and D4 hand-verified by Chris
 **Related**: engine commit `88e5cabb`; #442 (D9, the source decision), #425 (Artillery 3.6, its D4 MovedThisRound stamp), #447 (D1 - `RuleInvocation.ParticipantModels`, the precedent this seam follows), #191 (Tactician umbrella), #333 (a 0" move is not a move)
 **Branch**: `feature/opr-3.6` in both repos. Priority HIGH (Chris, 2026-11-01: "that should indeed be improved, but it can be an open, high-priority work item").
 
@@ -101,6 +101,8 @@ with a negative control. No bench (a pricing correction on a narrow case).
 
 ## Outcome
 
-Open: built 2026-11-01, awaiting the orchestrator's verification and Chris's GUI glance (nothing visible changes;
-the glance is that an AI Artillery unit still plays - it moves when the objective asks and holds to shoot
-otherwise). Not archived.
+Built 2026-11-01 (engine `88e5cabb`): the Tactician prices a move candidate's incoming fire against the moved state
+it will have, through a read-only assumed-token overlay (#442 D9 option (a)). D4 (Chris, 2026-11-01): the Combat
+Calculator offers a "Defender moved this round" tick only while a defender rule reads its moved state (Artillery) or
+while already ticked - hand-verified by Chris 2026-11-02 with the Invasion Artillery Spore. The AI half was verified
+headless (an all-AI Artillery scenario ran to a result with no exceptions). Closed.

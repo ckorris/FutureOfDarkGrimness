@@ -1,6 +1,6 @@
 # OPR v3.6.0 upgrade plan (Grimdark Future + Age of Fantasy)
 
-**Status:** release-ready on `feature/opr-3.6` as of 2026-10-31 evening: all scripted checks green on the final branch (#445 pass 2), master merged into the branch, all #441 forks and the #440/#444 owner decisions ruled; waiting on Chris's GUI hand-verify list (#445 section 9) and his "merge" for #444 step 8 (merge to master, tag v0.4.0).
+**Status:** SHIPPED to `master` 2026-11-01 (engine 1096f5ea / superproject 083b2c2, followed by the replay merge #449-#457 and curated armies #461/#462); Chris's GUI hand-verify list (#445 section 9) worked through 2026-11-01/02 (every in-game 3.6 item and the screen items ticked; the unticked lines are faction-specific or test-covered and not release-blocking); #422 D2 Brace ruling confirmed 2026-11-02; release notes condensed in `docs/release-notes-v0.4.0.md`; the `v0.4.0` tag is Chris's to push.
 the open forks (#441 F1-F9) and the per-item D decisions, the #445 verification run, and the merge to `master` + the
 `v0.4.0` tag (#444 step 8). Planning completed 2026-10-29. Umbrella work item: **#415**.
 **Branch:** `feature/opr-3.6` in BOTH repos (superproject `fdg-raylib` and the engine submodule
@@ -238,7 +238,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 
 | # | Title | Phase | Depends on | Model | Effort | Status |
 |---|-------|-------|------------|-------|--------|--------|
-| 415 | OPR 3.6 upgrade umbrella: plan, branch policy, master merges, release | all | - | F | medium | in-progress |
+| 415 | OPR 3.6 upgrade umbrella: plan, branch policy, master merges, release | all | - | F | medium | merged to master 2026-11-01; tag pending |
 | 416 | 3.6 reference snapshot + census/coverage tooling | 1 | - | S | low | done 2026-10-29 |
 | 417 | Melee ranges: 3" strike, 3" pile-in/consolidate, vertical convention | 2 | - | O | medium | done 2026-10-29 (awaiting GUI hand-verify; owner: D5-D7) |
 | 418 | Fatigue: fatigued 6s do not trigger "unmodified 6" rules | 2 | - | O | high | done 2026-10-29 (awaiting GUI hand-verify) |
@@ -267,8 +267,8 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 | 441 | Army Forge + glossary UI for 3.6 (Assault display, roster, Unique Hero, import summary) | 5 | #437 #438 | O | medium | built 2026-10-31; forks all ruled: F1/F2/F4/F5/F6/F7 built, F3/F8/F9 status quo; GUI hand-verify pending (owner review: D3, D4, D5, D13) |
 | 442 | Tactician AI + Combat Calculator parity with 3.6 | 5 | phase 2 | O | high | done 2026-10-30 (Assault / Parry / Enhanced halves deferred to #424 / #423 / #433; bench 85.9% vs 85.6%; awaiting GUI hand-verify; owner review: D7, D9) |
 | 443 | Terrain 3.6: Dense, Unstable, Steep, Climbable (design fork; Q3) | 5 | - | O | high | deferred past the 3.6 release (Q3 answered 2026-10-29) |
-| 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium | steps 1-7 done 2026-10-31; master merged into the branch 2026-10-31 evening; D2 ruled B, legacy-save amber notice built 2026-10-31 (D13-D20); merge + tag pending |
-| 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium | pass 1 done 2026-10-31 (14 green / 0 red / 4 amber); pass 2 done 2026-10-31 evening on the final branch (13 green / 0 red / 1 amber = the owed GUI hand-verify list) |
+| 444 | Version, docs, release: RULES_VERSION, app version, README, CLAUDE.md, merge to master, tag | 6 | all | S | medium |  steps 1-8 done: merged to master 2026-11-01, tag v0.4.0 pending Chris; release notes condensed 2026-11-02 |
+| 445 | Final verification: coverage Dead 0, smokes per book, hand-verify checklist | 6 | #444 | O | medium |  pass 1 and 2 done 2026-10-31; GUI hand-verify by Chris 2026-11-01/02 - closed |
 | 446 | Units that activate in Dangerous terrain take the test (pre-existing gap found by #420) | 2 | #420 | O | medium | done 2026-10-30 (owner review: D1, D2, D3, D4) |
 | 447 | Impact(X) rolled per model, not once per unit (pre-existing bug found by #422) | 2 | #422 | O | medium | done 2026-10-30; D1 reversed by Chris and rebuilt 2026-11-01 (melee-reach carriers only, "N of M models in melee range" log); owner review: D3 |
 

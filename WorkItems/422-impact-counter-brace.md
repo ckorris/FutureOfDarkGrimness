@@ -76,7 +76,7 @@ left: the Impact Fatigue gate, deleting Counter's impact facet, adding Brace(X),
   console (`GuiLogMessageUI`) drops a line identical to the one before it, collapsing the five lines into one. The
   pool line is the authoritative count. Headless shows all five. Left as is; a "(x5)" repeat marker on the console
   filter would be the fix if it bothers anyone.
-  **D2 is now visible and open for Chris's ruling**: the sum-over-carriers reading cost that charge half its Impact
+  **D2 confirmed by Chris 2026-11-02 (per carrying model stays)**; the paragraph below records the alternative that was weighed: the sum-over-carriers reading cost that charge half its Impact
   pool (-5 of 10). The 3.6 text "-X total Impact rolls" can also be read as -X once per unit (rules do not stack by
   copy). Until ruled, the engine keeps the D2 sum.
 
@@ -209,7 +209,7 @@ left: the Impact Fatigue gate, deleting Counter's impact facet, adding Brace(X),
   strikes first). Alternative: gate inside the mechanics instead (`ChargeImpactHits`, `StrikeFirst`,
   `CancelImpactDice` emit nothing for a Fatigued bearer), which also reaches those embedded copies; the cost is a
   hidden gate (traces would read "condition passed but X produced no operations"). Easy to switch if preferred.
-- **D2 - "total" in Brace(X) (2026-10-29).** Read as the SUM over the defender's living models carrying it, X
+- **D2 - "total" in Brace(X) (2026-10-29; CONFIRMED by Chris 2026-11-02 after the hand-verify game showed four spears cancel a two-model charge's Impact entirely: per carrying model stays; once-per-unit was weighed and rejected because it makes Brace(1) near-meaningless and breaks 3.5 continuity).** Read as the SUM over the defender's living models carrying it, X
   each: Brace(2) on 3 models cancels 6 (Impact(6) -> 0 dice), Brace(1) on 2 models cancels 2 (Impact(6) -> 4).
   The 3.6 data settles it: Brace(1) is a weapon rule (AoF Spear: "Counter, Brace(1)"; "Brace in Melee" puts
   Brace(1) on a model's weapons), rules apply per model, and "total" refers to the charger's whole Impact pool.

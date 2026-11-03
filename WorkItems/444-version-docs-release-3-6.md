@@ -1,6 +1,6 @@
 # 444 — Version, docs, release for OPR 3.6
 
-**Status**: in progress (merge pending) - steps 1-7 done on `feature/opr-3.6` 2026-10-31; step 8 (merge + tag) waits for
+**Status**: done - merged to master 2026-11-01 (step 8 without the tag; the tag is Chris's), release notes condensed 2026-11-02; closed
 Chris's GUI hand-verifies, his sign-off on the open forks (#441 F1-F9) and D decisions, and the #445 run.
 **Related**: #415 (umbrella), #445 (verification, runs after this item's doc/version changes and before the merge)
 **Branch**: `feature/opr-3.6` in both repos until the very last step of this item. Model/effort: Sonnet 5.5 / medium.
@@ -247,4 +247,11 @@ shows `v0.4.0`; CI release job green with the title containing "(OPR 3.6.0)".
 
 ## Outcome
 
-(open) Steps 1-7 done on the branch 2026-10-31; step 8 (merge + tag) waits for hand-verify, fork sign-off and #445.
+Steps 1-7 done on the branch 2026-10-31. Step 8: merged to `master` in both repos 2026-11-01 on Chris's "merge"
+(engine 1096f5ea, superproject 083b2c2; master had moved since the branch's last master merge - #460 and the
+replay branch - so the engine was rebased and the superproject fast-forwarded before the push). The tag was
+deliberately NOT pushed: Chris cuts the release himself with `git tag v0.4.0 && git push --tags` and pastes
+`docs/release-notes-v0.4.0.md` (condensed 2026-11-02 to one paragraph for the 3.6 rules changes, plus the replay
+system and the other work since v0.3.0) into the release body. Pre-release check 2026-11-02: `Directory.Build.props`
+`<Version>` 0.4.0, `RULES_VERSION` OPR_3_6_0 in `scripts/build-dist.sh` and `.github/workflows/release.yml`,
+`OprRulesVersion.CurrentStamp` "OPR v3.6.0" - all consistent; release.yml guards the tag against the prop.
