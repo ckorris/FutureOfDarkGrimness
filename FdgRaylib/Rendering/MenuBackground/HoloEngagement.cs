@@ -10,6 +10,17 @@ internal sealed record HoloShot(HoloUnit Shooter, HoloUnit Target, Vector2 From,
     public float StartsAt => MathF.Max(HoloDirector.FightsFrom, MathF.Max(Shooter.ArriveAt, Target.ArriveAt));
 }
 
+/// <summary>
+/// Two units fighting in base contact (#464): one a side, both of them <see cref="EHoloRole.Charges"/>
+/// units of the same <see cref="HoloUnit.MeleeGroup"/>. <see cref="Contacts"/> are the points where their
+/// front ranks meet - where the clash sparks.
+/// </summary>
+internal sealed record HoloMelee(HoloUnit A, HoloUnit B, IReadOnlyList<Vector2> Contacts)
+{
+    /// <summary>Battle time the two meet (they arrive together) and the sparks start.</summary>
+    public float StartsAt => MathF.Max(A.ArriveAt, B.ArriveAt);
+}
+
 /// <summary>A base-to-base measuring line and the distance it reads, in inches.</summary>
 internal sealed record HoloMeasure(HoloUnit A, HoloUnit B, Vector2 From, Vector2 To, float Inches)
 {
@@ -18,8 +29,9 @@ internal sealed record HoloMeasure(HoloUnit A, HoloUnit B, Vector2 From, Vector2
 }
 
 /// <summary>
-/// What is happening on the menu's war table (#448 slice 3): who is shooting whom, which two units are
-/// being measured between, and where the camera's close-up goes. Pure geometry over a
+/// What is happening on the menu's war table (#448 slice 3): who is shooting whom, which units are locked
+/// in melee and where they touch (#464), which two units are being measured between, and where the
+/// camera's close-up goes. Pure geometry over a
 /// <see cref="HoloSkirmish"/> and the terrain footprints; the renderer animates it. (The flames on the
 /// stricken unit were taken out at the owner's request, 2026-10-30.)
 ///
@@ -42,18 +54,25 @@ internal sealed class HoloEngagement
     /// <summary>Each fight once: a shooting unit and the unit it fires at.</summary>
     public IReadOnlyList<(HoloUnit Shooter, HoloUnit Target)> Fights { get; }
 
-    /// <summary>Each pair of units trading fire, once however many ways they shoot - the close-ups.</summary>
+    /// <summary>Each melee, then each pair of units trading fire, once however many ways they shoot - the
+    /// close-ups.</summary>
     public IReadOnlyList<(HoloUnit A, HoloUnit B)> Clashes { get; }
 
     public HoloMeasure? Measure { get; }
 
-    private HoloEngagement(IReadOnlyList<HoloShot> shots, HoloMeasure? measure)
+    /// <summary>The melees (#464), each pair of units once.</summary>
+    public IReadOnlyList<HoloMelee> Melees { get; }
+
+    private HoloEngagement(IReadOnlyList<HoloShot> shots, HoloMeasure? measure, IReadOnlyList<HoloMelee> melees)
     {
         Shots = shots;
         Fights = shots.Select(s => (s.Shooter, s.Target)).Distinct().ToList();
-        Clashes = Fights.Where(f => !Fights.Any(g => g.Shooter == f.Target && g.Target == f.Shooter)
-                                    || string.CompareOrdinal(f.Shooter.Label, f.Target.Label) < 0).ToList();
+        // A melee is the busiest thing on the table, so it heads the camera's list of close-ups.
+        Clashes = melees.Select(m => (m.A, m.B))
+            .Concat(Fights.Where(f => !Fights.Any(g => g.Shooter == f.Target && g.Target == f.Shooter)
+                                      || string.CompareOrdinal(f.Shooter.Label, f.Target.Label) < 0)).ToList();
         Measure = measure;
+        Melees = melees;
     }
 
     /// <summary>Margin round a fight's models in the camera's close-up, and the smallest close-up, inches.</summary>
@@ -82,9 +101,10 @@ internal sealed class HoloEngagement
     /// <summary>Plans over any set of units (tests build their own; the menu passes a skirmish's).</summary>
     public static HoloEngagement Plan(IReadOnlyList<HoloUnit> units, IReadOnlyList<HoloFootprint> footprints)
     {
-        // Patrollers never stop moving, so they never fight. Everyone else does - from where they end up;
-        // an advancer's shots wait until it (and its target) have arrived (HoloShot.StartsAt).
-        var squads = units.Where(u => u.Role != EHoloRole.Patrols).ToList();
+        // Patrollers never stop moving, so they never shoot, and units in melee are busy. Everyone else
+        // does - from where they end up; an advancer's shots wait until it (and its target) have arrived
+        // (HoloShot.StartsAt).
+        var squads = units.Where(u => u.Role is EHoloRole.Holds or EHoloRole.Advances).ToList();
 
         // Every enemy pairing in range where at least one model can see the target, nearest first; then
         // the closest fights with a different shooter each (a unit fires at one target).
@@ -108,15 +128,65 @@ internal sealed class HoloEngagement
         }
 
         var engaged = shots.SelectMany(s => new[] { s.Shooter, s.Target }).Distinct().ToList();
-        return new HoloEngagement(shots, PlanMeasure(units, footprints, engaged));
+        return new HoloEngagement(shots, PlanMeasure(units, footprints, engaged), PlanMelees(units));
     }
 
-    /// <summary>A measuring line between two units that end up standing still (never a patroller):
+    /// <summary>Every melee: the two units of each <see cref="HoloUnit.MeleeGroup"/>, near side first, with
+    /// the points where their living front ranks touch. A group with no touching bases has no melee.</summary>
+    private static List<HoloMelee> PlanMelees(IReadOnlyList<HoloUnit> units)
+    {
+        var melees = new List<HoloMelee>();
+        foreach (var group in units.Where(u => u.Role == EHoloRole.Charges && u.MeleeGroup > 0).GroupBy(u => u.MeleeGroup).OrderBy(g => g.Key))
+        {
+            HoloUnit? a = group.FirstOrDefault(u => u.Side == 0), b = group.FirstOrDefault(u => u.Side == 1);
+            if (a is null || b is null) continue;
+            var contacts = ContactPoints(a.Alive, a.BaseRadius, b.Alive, b.BaseRadius);
+            if (contacts.Count > 0) melees.Add(new HoloMelee(a, b, contacts));
+        }
+        return melees;
+    }
+
+    /// <summary>Most spark points one melee shows: the closest pairs of bases.</summary>
+    public const int MaxContacts = 6;
+
+    /// <summary>How close two bases' edges must be to count as touching, inches (the generator stands
+    /// them <see cref="HoloSkirmish.ContactGap"/> apart; a staggered rank sits a little further).</summary>
+    private const float TouchReach = 0.6f;
+
+    /// <summary>
+    /// Where two units' bases touch: for every pair of bases, one from each, whose edges are within
+    /// <see cref="TouchReach"/>, the point midway across the gap between them - closest pairs first, at
+    /// most <see cref="MaxContacts"/>. Each base of the unit with more bases is used once; a base of the
+    /// other may meet several (a vehicle's big base meets a whole front rank), never one base twice.
+    /// </summary>
+    public static List<Vector2> ContactPoints(IEnumerable<Vector2> a, float ra, IEnumerable<Vector2> b, float rb)
+    {
+        var pairs = (
+            from p in a from q in b
+            let gap = Vector2.Distance(p, q) - ra - rb
+            where gap < TouchReach
+            orderby gap
+            select (p, q, gap)).ToList();
+        bool aIsMany = a.Count() >= b.Count();
+        var used = new HashSet<Vector2>();
+        var points = new List<Vector2>();
+        foreach (var (p, q, gap) in pairs)
+        {
+            if (points.Count == MaxContacts) break;
+            if (!used.Add(aIsMany ? p : q)) continue;
+            Vector2 u = Vector2.Normalize(q - p);
+            points.Add(p + u * (ra + MathF.Max(gap, 0f) / 2f));
+        }
+        return points;
+    }
+
+    /// <summary>A measuring line between two units that end up standing still (never a patroller, nor a
+    /// unit in melee):
     /// preferably two not already fighting, else any; nearest clear pair first; base edge to base edge,
     /// the way the rules measure.</summary>
     private static HoloMeasure? PlanMeasure(IReadOnlyList<HoloUnit> units, IReadOnlyList<HoloFootprint> footprints, IReadOnlyList<HoloUnit> engaged)
     {
-        var still = units.Where(u => u.Role != EHoloRole.Patrols).ToList();
+        var still = units.Where(u => u.Role is EHoloRole.Holds or EHoloRole.Advances).ToList();
         var pairs = (
             from a in still from b in still
             where a.Side == 0 && b.Side == 1

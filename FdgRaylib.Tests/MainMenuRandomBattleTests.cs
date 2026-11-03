@@ -128,15 +128,75 @@ public class MainMenuRandomBattleTests
     }
 
     [Test]
-    public void EverySide_HoldsAdvancesAndPatrols()
+    public void EverySide_HoldsAndAdvances_AndPatrolsUnlessTwoOfItsUnitsAreInMelee()
     {
+        // #464: a melee takes one unit a side; a second melee takes each side's patroller (four units a side).
         foreach (var (seed, b) in Battles().Where(x => !x.Battle.IsFallback))
         foreach (int side in new[] { 0, 1 })
         {
             var roles = b.Skirmish.Units.Where(u => u.Side == side).Select(u => u.Role).ToList();
-            Assert.That(roles, Does.Contain(EHoloRole.Holds).And.Contain(EHoloRole.Advances).And.Contain(EHoloRole.Patrols),
-                $"seed {seed} side {side}");
+            Assert.That(roles, Does.Contain(EHoloRole.Holds).And.Contain(EHoloRole.Advances), $"seed {seed} side {side}");
+            int charging = roles.Count(r => r == EHoloRole.Charges);
+            Assert.That(charging, Is.InRange(0, HoloSkirmish.MaxMelees), $"seed {seed} side {side}");
+            Assert.That(roles.Contains(EHoloRole.Patrols), Is.EqualTo(charging < 2), $"seed {seed} side {side}: patroller");
         }
+    }
+
+    [Test]
+    public void ZeroOneOrTwoMelees_EachTurnUp()
+    {
+        // Owner, 2026-11-02: "0-2 in every battle".
+        var counts = Battles().Where(x => !x.Battle.IsFallback).GroupBy(x => x.Battle.Engagement.Melees.Count)
+            .ToDictionary(g => g.Key, g => g.Count());
+        Assert.That(counts.Keys, Is.SubsetOf(new[] { 0, 1, 2 }));
+        foreach (int n in new[] { 0, 1, 2 })
+            Assert.That(counts.GetValueOrDefault(n), Is.GreaterThan(Seeds / 10), $"battles with {n} melees");
+    }
+
+    [Test]
+    public void EveryCharger_IsInAMelee_FrontRankToFrontRank_OnTheCentreLine()
+    {
+        foreach (var (seed, b) in Battles())
+        {
+            var chargers = b.Skirmish.Units.Where(u => u.Role == EHoloRole.Charges).ToList();
+            var melees = b.Engagement.Melees;
+            Assert.That(melees.SelectMany(m => new[] { m.A, m.B }), Is.EquivalentTo(chargers), $"seed {seed}: a charger with no melee");
+            foreach (HoloMelee m in melees)
+            {
+                string who = $"seed {seed}: {m.A.Label} vs {m.B.Label}";
+                Assert.That((m.A.Side, m.B.Side), Is.EqualTo((0, 1)), who);
+                Assert.That(m.A.ArriveAt, Is.EqualTo(m.B.ArriveAt), $"{who}: they meet as they arrive");
+                Assert.That(m.A.Trail, Has.Count.GreaterThanOrEqualTo(2), $"{who}: the near unit walks in");
+                Assert.That(m.B.Trail, Has.Count.GreaterThanOrEqualTo(2), $"{who}: and so does the far one");
+                Assert.That(m.Contacts, Is.Not.Empty, $"{who}: nothing touches");
+                foreach (Vector2 c in m.Contacts)
+                    Assert.That(MathF.Abs(c.Y), Is.LessThan(0.5f), $"{who}: they meet away from the centre line");
+                // Each front rank's leading edge sits right at the line: in contact, but in its own half.
+                Assert.That(m.A.Models.Max(p => p.Y) + m.A.BaseRadius, Is.InRange(-HoloSkirmish.ContactGap, 0f), who);
+                Assert.That(m.B.Models.Min(p => p.Y) - m.B.BaseRadius, Is.InRange(0f, HoloSkirmish.ContactGap), who);
+                // The near side writes its tag rightward and the far side leftward: near flag on the right.
+                Assert.That(m.A.Leader.X, Is.GreaterThan(m.B.Leader.X + 1f), $"{who}: the tags would run into each other");
+            }
+        }
+    }
+
+    [Test]
+    public void UnitsInMelee_NeitherShootNorAreShot_NorMeasured_ButTheCameraVisitsThem()
+    {
+        int framed = 0;
+        foreach (var (seed, b) in Battles())
+        {
+            var e = b.Engagement;
+            foreach (HoloShot shot in e.Shots)
+                Assert.That(shot.Shooter.Role != EHoloRole.Charges && shot.Target.Role != EHoloRole.Charges, Is.True,
+                    $"seed {seed}: {shot.Shooter.Label} -> {shot.Target.Label} involves a melee");
+            if (e.Measure is { } m)
+                Assert.That(m.A.Role != EHoloRole.Charges && m.B.Role != EHoloRole.Charges, Is.True, $"seed {seed}: measures a melee");
+            foreach (HoloMelee melee in e.Melees)
+                Assert.That(e.Clashes, Does.Contain((melee.A, melee.B)), $"seed {seed}: melee missing from the close-ups");
+            framed += e.Melees.Count;
+        }
+        Assert.That(framed, Is.GreaterThan(0));
     }
 
     [Test]

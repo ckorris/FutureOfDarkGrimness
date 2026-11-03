@@ -34,6 +34,11 @@ internal sealed class MenuBackgroundRenderer : IDisposable
     private const float TracerCycle = 0.9f;
     private const float MeasureCycle = 7f, MeasureDraw = 1.2f, MeasureHold = 5.5f, MeasureFade = 6.3f;
 
+    // Melee sparks (#464): each contact point pops about once per SparkCycle (each on its own beat) and
+    // fades over SparkLife of it; the moment two units meet, every point flares for ImpactFlare.
+    private const float SparkCycle = 0.85f, SparkLife = 0.3f, ImpactFlare = 0.45f;
+    private const float SparkInchPx = 16f;   // about an inch's length on the overview, in 1080p pixels
+
     // Separable 9-tap Gaussian folded into 5 bilinear fetches (offsets/weights from the standard
     // linear-sampling derivation). texelStep carries both the direction and the spread. threshold is a
     // bright-pass applied to every tap: only light above it blooms, so the dense faint grid and the
@@ -450,7 +455,8 @@ void main()
 
     private static float Frac(float x) => x - MathF.Floor(x);
 
-    /// <summary>Blaster fire along every line of fire whose shooting has started, and the measuring line.</summary>
+    /// <summary>Blaster fire along every line of fire whose shooting has started, sparks where melees
+    /// touch, and the measuring line.</summary>
     private void DrawEngagement(HoloCamera cam, float ws, float time, float battle, float presence)
     {
         Vector2 P(Vector2 p, float z = 0f) => cam.Project(new Vector3(p, z)) * _ss;
@@ -470,8 +476,59 @@ void main()
             if (phase < 0.12f) Raylib.DrawCircleV(a, 3.5f * ws, Glow(TracerRgb, 0.9f * presence));
         }
 
+        // Melee (#464): a white spark pops where the front ranks touch and fades in a fraction of a
+        // second, each point on its own beat; as the two units meet, every point flares at once.
+        foreach (HoloMelee melee in e.Melees)
+        {
+            if (battle < melee.StartsAt) continue;
+            float since = battle - melee.StartsAt;
+            float impact = since < ImpactFlare ? 1f - since / ImpactFlare : 0f;
+            for (int i = 0; i < melee.Contacts.Count; i++)
+            {
+                int key = melee.A.MeleeGroup * 31 + i;
+                float beat = SparkCycle * (0.8f + 0.4f * Hash01(key, 0));
+                float t = time / beat + Hash01(key, 1);
+                int pop = (int)MathF.Floor(t);
+                float phase = t - pop;
+                float k = MathF.Max(phase < SparkLife ? 1f - phase / SparkLife : 0f, impact);
+                if (k <= 0f) continue;
+                // Each pop lands a little to one side of the last and turns its rays, so it never stamps.
+                Vector2 along = new(Hash01(key, pop) - 0.5f, (Hash01(key, pop + 7) - 0.5f) * 0.4f);
+                Vector2 at = melee.Contacts[i] + along * 0.5f, here = P(at, 0.5f);
+                // Line widths stay put as the camera zooms; a spark grows a little, or the close-up loses it.
+                float zoom = Math.Clamp(MathF.Sqrt(Vector2.Distance(here, P(at + Vector2.UnitX, 0.5f)) / (SparkInchPx * ws)), 1f, 2f);
+                DrawSpark(here, k, zoom * (impact > 0f ? 1.6f : 1f), Hash01(key, pop + 13) * MathF.PI, ws, presence);
+            }
+        }
+
         if (e.Measure is { } m && battle >= m.StartsAt)
             DrawMeasure(m, cam, ws, battle - m.StartsAt, presence);
+    }
+
+    /// <summary>One spark: a hot dot and four rays that fly outward as it fades. <paramref name="k"/> is
+    /// how fresh it is, 1 the instant it pops, 0 gone.</summary>
+    private static void DrawSpark(Vector2 at, float k, float size, float angle, float ws, float presence)
+    {
+        Color col = Glow(TracerRgb, k * presence);
+        Raylib.DrawCircleV(at, (2f + 3f * k) * size * ws, col);
+        float outer = (7f + 9f * (1f - k)) * size * ws, inner = outer * 0.4f;
+        for (int r = 0; r < 4; r++)
+        {
+            float a = angle + r * MathF.PI / 2f;
+            // Flattened vertically: the table is seen at a slant, so the burst lies on it.
+            var dir = new Vector2(MathF.Cos(a), MathF.Sin(a) * 0.7f);
+            Raylib.DrawLineEx(at + dir * inner, at + dir * outer, 2.5f * ws, col);
+        }
+    }
+
+    /// <summary>A repeatable pseudo-random number in [0, 1) for a pair of integers.</summary>
+    private static float Hash01(int a, int b)
+    {
+        uint h = (uint)a * 0x9E3779B1u ^ (uint)b * 0x85EBCA77u;
+        h ^= h >> 15;
+        h *= 0x2C1B3C6Du;
+        h ^= h >> 12;
+        return (h & 0xFFFFFF) / (float)0x1000000;
     }
 
     /// <summary>The measuring line draws itself out base to base, shows its distance, holds, then fades;

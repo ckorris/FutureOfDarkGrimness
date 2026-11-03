@@ -199,6 +199,7 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
+- [~] 464 — Main menu war table: 0-2 melees per battle, two units charging each other into base contact with white sparks where they touch. Implemented + tested; **awaiting GUI hand-verify**. ([WorkItems/464](WorkItems/464-menu-melee-clash.md))
 - [ ] 463 — A networked client of a resumed game drew unit labels but no model bases (seen with a scenario-compiled save; a game-written save drew fine). Pre-existing on master; found by #457's two-process runs. ([WorkItems/463](WorkItems/463-client-resume-models-not-drawn.md))
 - [~] 405 - Lobby could add local players and bots but never drop one, and the four add buttons
   said nothing about what each gets you. Per-row Remove (engine owns the policy; host's own row,

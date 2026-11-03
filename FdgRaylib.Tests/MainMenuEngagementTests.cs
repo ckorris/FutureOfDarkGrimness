@@ -30,6 +30,38 @@ public class MainMenuEngagementTests
     }
 
     [Test]
+    public void ContactPoints_SitBetweenTouchingBases_OnePerBase_AndNoneForBasesApart()
+    {
+        // #464: sparks go where front ranks touch - midway across the gap, each base sparking once.
+        var near = new[] { new Vector2(0f, -0.6f), new Vector2(1.2f, -0.6f), new Vector2(10f, -0.6f) };
+        var far = new[] { new Vector2(0f, 0.6f), new Vector2(1.2f, 0.6f) };
+        var points = HoloEngagement.ContactPoints(near, 0.5f, far, 0.5f);
+        Assert.That(points, Has.Count.EqualTo(2), "the lone base 10\" away touches nothing");
+        foreach (Vector2 p in points) Assert.That(p.Y, Is.EqualTo(0f).Within(1e-4f));
+        Assert.That(points.Select(p => p.X).OrderBy(x => x), Is.EqualTo(new[] { 0f, 1.2f }).Within(1e-4f));
+        Assert.That(HoloEngagement.ContactPoints(near, 0.5f, new[] { new Vector2(0f, 5f) }, 0.5f), Is.Empty);
+    }
+
+    [Test]
+    public void TwoChargingUnits_FormAMelee_AndTheCameraCanFrameIt()
+    {
+        MenuArmy near = MenuArmies.All[0], far = MenuArmies.All[1];
+        HoloUnit Squad(string label, int side, MenuArmy army, Vector2 c, EHoloRole role, int group) =>
+            new(label, side, army, c, 0.5f, 0, new[] { c + new Vector2(-1.2f, 0f), c, c + new Vector2(1.2f, 0f) },
+                Array.Empty<Vector2>()) { Role = role, ArriveAt = role == EHoloRole.Charges ? 6f : 0f, MeleeGroup = group };
+
+        var a = Squad("A", 0, near, new Vector2(0f, -0.6f), EHoloRole.Charges, 1);
+        var b = Squad("B", 1, far, new Vector2(0f, 0.6f), EHoloRole.Charges, 1);
+        var plan = HoloEngagement.Plan(new[] { a, b }, Array.Empty<HoloFootprint>());
+        Assert.That(plan.Shots, Is.Empty, "units in melee do not shoot each other");
+        Assert.That(plan.Measure, Is.Null);
+        Assert.That(plan.Melees, Has.Count.EqualTo(1));
+        Assert.That(plan.Melees[0].Contacts, Has.Count.EqualTo(3));
+        Assert.That(plan.Melees[0].StartsAt, Is.EqualTo(6f));
+        Assert.That(plan.FocusBox(0), Is.Not.Null, "the close-up has the melee to look at");
+    }
+
+    [Test]
     public void EveryShotAndMeasure_IsClearOfTerrain_ForEveryPairing()
     {
         foreach (HoloSkirmish skirmish in EveryPairing())

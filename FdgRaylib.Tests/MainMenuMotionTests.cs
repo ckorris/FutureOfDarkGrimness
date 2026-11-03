@@ -154,6 +154,19 @@ public class MainMenuMotionTests
         }
     }
 
+    [Test]
+    public void AChargingUnit_GathersSpeed_AndHitsAtFullTilt()
+    {
+        // #464: a charge sets off slowly and is fastest at the moment of contact (an advancer, by contrast,
+        // eases to a stop), then stays in contact.
+        HoloUnit charges = Mover(EHoloRole.Charges, 8f);
+        Assert.That(charges.ProgressAt(0f), Is.EqualTo(0f));
+        Assert.That(charges.ProgressAt(8f), Is.EqualTo(1f));
+        Assert.That(charges.ProgressAt(25f), Is.EqualTo(1f), "and holds on contact");
+        float early = charges.ProgressAt(1f) - charges.ProgressAt(0f), late = charges.ProgressAt(8f) - charges.ProgressAt(7f);
+        Assert.That(late, Is.GreaterThan(3f * early), "fastest at the end");
+    }
+
     /// <summary>A three-model unit with a trail and the given role (no position needed for timing).</summary>
     private static HoloUnit Mover(EHoloRole role, float arriveAt) =>
         new("M", 0, MenuArmies.All[0], new Vector2(0f, -10f), 0.5f, 0, new[] { new Vector2(0f, -10f) },
