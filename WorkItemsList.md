@@ -19,10 +19,9 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## OPR 3.6 upgrade (branch `feature/opr-3.6`, plan: `docs/opr-3.6-upgrade-plan.md`)
 
-Numbers 415-447 are reserved for the upgrade. Merged to `master` 2026-11-01; the `v0.4.0` tag is pending. The
+Numbers 415-447 are reserved for the upgrade. Released as v0.4.0 on 2026-11-02 (tag pushed, CI release live). The
 [x] lines below stay until their remaining GUI glances (#445 section 9) are done or waived. Phase order: plan section 4.
 
-- [~] 415 — OPR 3.6 upgrade umbrella: the plan, ground rules, master merges into the branch, release gate. Merged to master 2026-11-01; closes with the v0.4.0 tag. ([WorkItems/415](WorkItems/415-opr-3-6-upgrade-umbrella.md))
 - [x] 417 — Melee ranges 3.6: 3" strike range (4" vertical kept, Q4); pile-in/consolidate already 3"/1". Done 2026-10-29; GUI hand-verify pending (charge line/count, 1"-3" optional-charge band). ([WorkItems/417](WorkItems/417-melee-range-3-inches.md))
 - [x] 418 — Fatigue 3.6: fatigued hits on unmodified 6 do not trigger "on a 6" special rules. Done 2026-10-29; dice-panel GUI hand-verify pending. ([WorkItems/418](WorkItems/418-fatigue-no-special-sixes.md))
 - [x] 420 — Dangerous terrain 3.6: roll as many dice as wounds needed to destroy the unit. Done 2026-10-29; "or that activate in it" built by #446 (D5 resolved). ([WorkItems/420](WorkItems/420-dangerous-terrain-dice.md))

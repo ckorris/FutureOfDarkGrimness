@@ -1,6 +1,6 @@
 # 415 — OPR 3.6 upgrade umbrella
 
-**Status**: in-progress (planning done 2026-10-29; implementation not started)
+**Status**: closed 2026-11-02 - released as v0.4.0
 **Related**: #416-#445 (the upgrade's items), `docs/opr-3.6-upgrade-plan.md` (the plan), #378 (AoF books), #153 (book importer), #042 (rules architecture)
 **Branch**: `feature/opr-3.6` in both repos. Recommended model/effort for the owner sessions: Fable 5.1 / medium.
 
@@ -55,4 +55,5 @@ passes and the feature branch is merged to master in both repos.
 
 ## Outcome
 
-(open)
+Released as v0.4.0 (OPR 3.6.0) on 2026-11-02: tag pushed from master 91d6ee6 (engine c787c076), CI release
+workflow green, four platform archives + SHA256SUMS attached, release body from `docs/release-notes-v0.4.0.md`.

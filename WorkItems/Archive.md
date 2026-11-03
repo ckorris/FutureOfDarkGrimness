@@ -4,6 +4,7 @@ Completed and closed work items, moved verbatim out of `WorkItemsList.md` (2026-
 always-read index lean. Numbers are permanent and never reused — the per-clone pre-push hook checks
 this file as well as the index when blocking duplicate numbers.
 
+- [x] 415 — OPR 3.6 upgrade umbrella: plan, ground rules, master merges, release gate. **Closed 2026-11-02: released as v0.4.0 (OPR 3.6.0).** ([WorkItems/415](415-opr-3-6-upgrade-umbrella.md))
 - [x] 464 — Main menu war table: 0-2 melees per battle (two units charge into base contact, irregular sparks as busy as a firefight), about two thirds of the units in combat, no casualty bases, units placed before terrain so a battle generates in ~5 ms. **Closed 2026-11-02, hand-verified by the owner.** ([WorkItems/464](464-menu-melee-clash.md))
 - [x] 444 — Version, docs, release for OPR 3.6: 0.4.0 / OPR_3_6_0, README/CLAUDE.md/docs, release-notes draft; merged to master 2026-11-01, notes condensed 2026-11-02; the v0.4.0 tag is Chris's. **Closed 2026-11-02.** ([WorkItems/444](444-version-docs-release-3-6.md))
 - [x] 445 — Final verification of the OPR 3.6 upgrade: pass 1 and 2 green 2026-10-31; Chris's GUI hand-verify list worked through 2026-11-01/02 (three log/pile-in fixes landed from it). **Closed 2026-11-02.** ([WorkItems/445](445-final-verification-3-6.md))

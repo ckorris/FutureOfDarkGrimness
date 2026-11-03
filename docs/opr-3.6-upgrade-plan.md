@@ -1,6 +1,6 @@
 # OPR v3.6.0 upgrade plan (Grimdark Future + Age of Fantasy)
 
-**Status:** SHIPPED to `master` 2026-11-01 (engine 1096f5ea / superproject 083b2c2, followed by the replay merge #449-#457 and curated armies #461/#462); Chris's GUI hand-verify list (#445 section 9) worked through 2026-11-01/02 (every in-game 3.6 item and the screen items ticked; the unticked lines are faction-specific or test-covered and not release-blocking); #422 D2 Brace ruling confirmed 2026-11-02; release notes condensed in `docs/release-notes-v0.4.0.md`; the `v0.4.0` tag is Chris's to push.
+**Status:** SHIPPED to `master` 2026-11-01 (engine 1096f5ea / superproject 083b2c2, followed by the replay merge #449-#457 and curated armies #461/#462); Chris's GUI hand-verify list (#445 section 9) worked through 2026-11-01/02 (every in-game 3.6 item and the screen items ticked; the unticked lines are faction-specific or test-covered and not release-blocking); #422 D2 Brace ruling confirmed 2026-11-02; release notes condensed in `docs/release-notes-v0.4.0.md`; RELEASED as v0.4.0 on 2026-11-02 (https://github.com/ckorris/FutureOfDarkGrimness/releases/tag/v0.4.0).
 the open forks (#441 F1-F9) and the per-item D decisions, the #445 verification run, and the merge to `master` + the
 `v0.4.0` tag (#444 step 8). Planning completed 2026-10-29. Umbrella work item: **#415**.
 **Branch:** `feature/opr-3.6` in BOTH repos (superproject `fdg-raylib` and the engine submodule
@@ -238,7 +238,7 @@ Model: F = Fable 5.1 (hard design / pervasive change), O = Opus 5.5 (engine rule
 
 | # | Title | Phase | Depends on | Model | Effort | Status |
 |---|-------|-------|------------|-------|--------|--------|
-| 415 | OPR 3.6 upgrade umbrella: plan, branch policy, master merges, release | all | - | F | medium | merged to master 2026-11-01; tag pending |
+| 415 | OPR 3.6 upgrade umbrella: plan, branch policy, master merges, release | all | - | F | medium | released v0.4.0 2026-11-02 |
 | 416 | 3.6 reference snapshot + census/coverage tooling | 1 | - | S | low | done 2026-10-29 |
 | 417 | Melee ranges: 3" strike, 3" pile-in/consolidate, vertical convention | 2 | - | O | medium | done 2026-10-29 (awaiting GUI hand-verify; owner: D5-D7) |
 | 418 | Fatigue: fatigued 6s do not trigger "unmodified 6" rules | 2 | - | O | high | done 2026-10-29 (awaiting GUI hand-verify) |
