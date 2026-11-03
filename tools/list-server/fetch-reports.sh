@@ -3,10 +3,20 @@
 #
 #   ./fetch-reports.sh <base-url> [--delete]
 #
-# The admin token comes from the ADMIN_TOKEN environment variable (falls back to the
-# .dev.vars dev value, which only works against `wrangler dev`):
+# The admin token comes from the ADMIN_TOKEN environment variable, else the desktop keyring
+# (see "Rotating the admin token" below), else the .dev.vars dev value, which only works
+# against `wrangler dev`.
 #
-#   ADMIN_TOKEN=<secret> ./fetch-reports.sh https://fdg-list-server.<account>.workers.dev
+#   ./fetch-reports.sh https://fdg-list-server.<account>.workers.dev
+#
+# Rotating the admin token (also how to recover from a lost one). Run from tools/list-server
+# after `npm install && npx wrangler login`. It never prints the token: it stores it in the
+# keyring, where this script finds it, and pushes the same value to Cloudflare.
+#
+#   t=$(openssl rand -hex 24) \
+#     && printf '%s' "$t" | secret-tool store --label="FDG bug-report admin token" \
+#          service fdg-list-server key admin-token \
+#     && printf '%s' "$t" | npx wrangler secret put ADMIN_TOKEN
 #
 # Each report lands in ./reports/ as <receivedAt>-<id>.json (already decompressed by the
 # server). --delete removes each report from the server AFTER its download succeeded, so
@@ -21,7 +31,13 @@ fi
 BASE="${1%/}"
 DELETE=0
 [ "${2:-}" = "--delete" ] && DELETE=1
-TOKEN="${ADMIN_TOKEN:-dev-admin-token}"
+# Token lookup order: ADMIN_TOKEN env var, then the desktop keyring (GNOME Keyring via
+# secret-tool, entry service=fdg-list-server key=admin-token), then the dev value.
+TOKEN="${ADMIN_TOKEN:-}"
+if [ -z "$TOKEN" ] && command -v secret-tool >/dev/null 2>&1; then
+  TOKEN=$(secret-tool lookup service fdg-list-server key admin-token 2>/dev/null || true)
+fi
+TOKEN="${TOKEN:-dev-admin-token}"
 OUT_DIR="reports"
 
 LISTING=$(curl -sf -H "X-Admin-Token: $TOKEN" "$BASE/reports") || {
