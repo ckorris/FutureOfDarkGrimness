@@ -47,12 +47,13 @@ internal sealed class HoloEngagement
     /// <summary>Longest fight the planner will pick, centre to centre (a typical rifle reach).</summary>
     public const float MaxShotRange = 30f;
 
-    private const int MaxFights = 3;
-
     public IReadOnlyList<HoloShot> Shots { get; }
 
     /// <summary>Each fight once: a shooting unit and the unit it fires at.</summary>
     public IReadOnlyList<(HoloUnit Shooter, HoloUnit Target)> Fights { get; }
+
+    /// <summary>Every unit in the thick of it - shooting, shot at, or in melee (#464).</summary>
+    public IReadOnlyList<HoloUnit> InCombat { get; }
 
     /// <summary>Each melee, then each pair of units trading fire, once however many ways they shoot - the
     /// close-ups.</summary>
@@ -73,6 +74,8 @@ internal sealed class HoloEngagement
                                       || string.CompareOrdinal(f.Shooter.Label, f.Target.Label) < 0)).ToList();
         Measure = measure;
         Melees = melees;
+        InCombat = shots.SelectMany(s => new[] { s.Shooter, s.Target })
+            .Concat(melees.SelectMany(m => new[] { m.A, m.B })).Distinct().ToList();
     }
 
     /// <summary>Margin round a fight's models in the camera's close-up, and the smallest close-up, inches.</summary>
@@ -107,7 +110,8 @@ internal sealed class HoloEngagement
         var squads = units.Where(u => u.Role is EHoloRole.Holds or EHoloRole.Advances).ToList();
 
         // Every enemy pairing in range where at least one model can see the target, nearest first; then
-        // the closest fights with a different shooter each (a unit fires at one target).
+        // every unit that can shoot does, at its nearest such target (a unit fires at one target). No cap:
+        // the owner wants most of the table fighting (2026-11-02, #464).
         var candidates = new List<(HoloUnit S, HoloUnit T, List<HoloShot> Lines, float Dist)>();
         foreach (HoloUnit s in squads)
         foreach (HoloUnit t in squads.Where(t => t.Side != s.Side))
@@ -122,7 +126,6 @@ internal sealed class HoloEngagement
         var shooters = new HashSet<HoloUnit>();
         foreach (var c in candidates.OrderBy(c => c.Dist).ThenBy(c => c.S.Label, StringComparer.Ordinal))
         {
-            if (shooters.Count == MaxFights) break;
             if (!shooters.Add(c.S)) continue;
             shots.AddRange(c.Lines);
         }

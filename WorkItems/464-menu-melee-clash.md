@@ -10,6 +10,33 @@ battle generator deals 0-2 melees per battle, the existing #448 placement invari
 owner has seen it in the running menu.
 
 ## Notes
+- 2026-11-02 (evening): Three owner asks in a row.
+  1. Casualties: a screenshot of a HOLDING unit with its two dashed bases - the owner reads them as a glitch
+     wherever they are. The menu now deals no casualties at all (the one mockup slot with `Dead = 2` is 0);
+     `HoloUnit.Dead` and its drawing stay for hand-built units. `NoUnitShowsCasualties` replaces the
+     holders-only test; the tag test keeps an explicit `with { Dead = 2 }` case for the living count.
+  2. "Roughly 2/3 of units end up in combat, whether shooting or melee, and 1/3 are not ... a lot of units
+     just kind of wander around." Measured first over 300 seeds: mean 4.74 of 8 in combat, spread 2..8 (59
+     battles with only 2-3). Changes: exactly one patroller a side (the idle unit), the rest hold, advance or
+     charge; the three-shooter cap (`MaxFights`) removed, so every holder/advancer with a target in range it
+     can see fires; `HoloEngagement.InCombat` (shooter, target or in melee) and `IsWorthWatching` now also
+     requires 5..6 of 8 in combat. Result: every battle 5 or 6, mean 5.59 (70%), no fallbacks.
+  3. That band doubled generation time (median 21 -> 40 ms, worst 183 -> 475 ms, on the render thread at each
+     new battle), and the owner asked for it to be made cheaper - "maybe make movement paths ... and place
+     terrain around it". Profiled: unit placement was ~82% of the time and 60% of that was tables where some
+     unit exhausted its 300 tries (melee pairs 229 of 524 failures - a melee needs a ~20" clear run across
+     the centre line; big patrolling vehicles most of the rest). Fewer tries per unit made it WORSE (more
+     whole-table rebuilds: 80 -> 9.8 tries a battle, 20 -> 44). What worked:
+     - Bounding circles on `HoloFootprint` + `HoloGeometry.IsFarFrom`/`BoundsApart` fast paths, and the fit
+       checks reordered cheapest first. Identical decisions (same try counts), half the time.
+     - The owner's idea: units first on a bare table, then `HoloTableScene.BuildRandom(rng, keepOut)` fits
+       each piece round them. `HoloSkirmish.KeepOut` turns the old clearances round (base edge 0.6" from any
+       outline, each model's walk 0.3"); `HoloKeepOut.Allows` checks an outline against it. Zero placement
+       failures, tables still get all 12 pieces (min 11 over 300 seeds), 2.3 tries a battle.
+     - The next battle is also generated on a background task while the current one plays.
+     Now: median 4.8 ms, p90 12.3, worst 40 (from 21 / 69 / 183 before today). The menu tests went from
+     28 s to 4 s. Every unit-side terrain test (bases off terrain, walks clear) still guards the rule.
+     App 4207 green, engine 4624 green; four tables eyeballed with `--menu-preview`.
 - 2026-11-02 (later still): Owner saw "two models that are faded outlines, that move with the unit". Those are
   the #448 mockup's casualties (the far side's eight-model squad has two dead, drawn dashed and faint). The
   random generator kept them whatever role the squad was dealt, so on an advancer, patroller or charger the

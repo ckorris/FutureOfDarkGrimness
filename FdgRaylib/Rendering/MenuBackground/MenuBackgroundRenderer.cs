@@ -69,7 +69,12 @@ void main()
     /// and only terrain, rim and labels bloom.</summary>
     private const float BloomThreshold = 0.16f;
 
-    private readonly Random _rng;
+    private readonly Random _rng;       // only ever used by one generation at a time (see _next)
+
+    /// <summary>The next battle, dealt in the background while this one plays: generating one takes tens
+    /// of milliseconds and occasionally a few hundred (it retries until a layout is worth watching), too
+    /// long to spend on the render thread at the moment one battle hands over to the next.</summary>
+    private Task<HoloBattle> _next;
     private HoloTableScene _scene;
     private HoloSkirmish _skirmish;
     private HoloEngagement _engagement;
@@ -100,6 +105,7 @@ void main()
     {
         _rng = seed is { } s ? new Random(s) : new Random();
         (_scene, _skirmish, _engagement, _) = HoloBattle.Generate(_rng);
+        _next = Task.Run(() => HoloBattle.Generate(_rng));
     }
 
     /// <summary>Freezes the animation clock at this many seconds (the offscreen preview); null = live.</summary>
@@ -124,7 +130,9 @@ void main()
     /// <summary>A whole new battle: fresh terrain, pairing, positions, routes and shooting.</summary>
     private void DealNewPairing()
     {
-        (_scene, _skirmish, _engagement, _) = HoloBattle.Generate(_rng);
+        // Normally long finished; if the menu reshuffles straight away, this waits for it once.
+        (_scene, _skirmish, _engagement, _) = _next.Result;
+        _next = Task.Run(() => HoloBattle.Generate(_rng));
         _battleIndex++;
         _stale = true;
     }

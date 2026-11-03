@@ -142,7 +142,7 @@ public class MainMenuEngagementTests
         var plan = HoloEngagement.Plan(new HoloSkirmish(MenuArmies.All[0], MenuArmies.All[1]), Scene.Footprints);
 
         Assert.That(plan.Shots, Is.Not.Empty, "there is shooting");
-        Assert.That(plan.Shots.Select(s => s.Shooter).Distinct().Count(), Is.InRange(1, 3), "at most three fights");
+        Assert.That(plan.Shots.Select(s => s.Shooter).Distinct().Count(), Is.GreaterThanOrEqualTo(2), "several fights (no cap since #464)");
         Assert.That(plan.Shots.All(s => s.Shooter.Side != s.Target.Side), Is.True, "no friendly fire");
         Assert.That(plan.Shots.Select(s => s.Shooter.Side).Distinct().Count(), Is.EqualTo(2), "both sides shoot");
         Assert.That(plan.Shots.All(s => s.Shooter.Role != EHoloRole.Patrols && s.Target.Role != EHoloRole.Patrols), Is.True,

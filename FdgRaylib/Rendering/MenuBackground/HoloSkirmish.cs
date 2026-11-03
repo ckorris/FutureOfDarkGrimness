@@ -23,7 +23,8 @@ internal enum EHoloRole
 /// <summary>
 /// One unit on the menu's war table: a group of round bases sharing one flag. <see cref="Models"/> lists
 /// every base at the unit's FINAL spot; the first <see cref="Dead"/> of them are casualties (drawn faded
-/// and dashed; only a unit that holds has any, since they lie where they fell). A single large base is a vehicle. <see cref="Trail"/> is its route, ending at its centre.
+/// and dashed). The menu deals none any more - the owner read them as a glitch (2026-11-02, #464) - but
+/// a hand-built unit may still have some. A single large base is a vehicle. <see cref="Trail"/> is its route, ending at its centre.
 /// </summary>
 internal sealed record HoloUnit(
     string Label,
@@ -118,7 +119,7 @@ internal sealed class HoloSkirmish
         new(0, new(-9, -9), 10, 0.5f, 0, Array.Empty<Vector2>()),
         new(0, new(4, -13), 5, 0.5f, 0, Array.Empty<Vector2>()),
         new(0, new(31, -14), 1, 2.0f, 0, new Vector2[] { new(26, -22), new(29, -18) }),
-        new(1, new(-3, 10), 8, 0.5f, 2, Array.Empty<Vector2>()),
+        new(1, new(-3, 10), 8, 0.5f, 0, Array.Empty<Vector2>()),
         new(1, new(13, 5), 5, 0.5f, 0, Array.Empty<Vector2>()),
         new(1, new(-28, 16), 3, 0.8f, 0, new Vector2[] { new(-34, 21), new(-31, 18) }),
         new(1, new(30, 17), 1, 1.7f, 0, new Vector2[] { new(34, 22), new(32, 20) }),
@@ -152,6 +153,28 @@ internal sealed class HoloSkirmish
         Units = units.Select(u => u with { Label = $"{(u.Side == 0 ? near : far).Abbr} {++numberBySide[u.Side]}" }).ToList();
     }
 
+    /// <summary>
+    /// Where terrain may not go, for laying the table out round these units (#464): every base needs
+    /// <see cref="TerrainClearance"/> from any outline (and not to be inside one), and every model's walk
+    /// a little over its base's width - the clearances <see cref="Generate"/> keeps when terrain is
+    /// placed first.
+    /// </summary>
+    public HoloKeepOut KeepOut
+    {
+        get
+        {
+            var points = Units.SelectMany(u => u.Models.Select(m => (m, u.BaseRadius + TerrainClearance))).ToList();
+            var segments = new List<(Vector2, Vector2, float)>();
+            foreach (HoloUnit u in Units.Where(u => u.Trail.Count >= 2))
+            foreach (Vector2 m in u.Models)
+            {
+                Vector2 o = m - u.Centre;
+                for (int i = 0; i + 1 < u.Trail.Count; i++) segments.Add((u.Trail[i] + o, u.Trail[i + 1] + o, u.BaseRadius + PathTerrainClearance));
+            }
+            return new HoloKeepOut(points, segments);
+        }
+    }
+
     /// <summary>The mockup's slots, with a Titan Lords side swapped for four big single models at the
     /// same spots.</summary>
     private static IEnumerable<Slot> RosterFor(MenuArmy near, MenuArmy far)
@@ -176,6 +199,7 @@ internal sealed class HoloSkirmish
 
     // Random placement rules, inches.
     private const float TerrainClearance = 0.6f;   // base edge to terrain
+    private const float PathTerrainClearance = 0.3f;   // a moving base's edge to terrain, all along its walk
     private const float UnitGap = 4f;              // a standing base's edge to another's: room for both labels
     private const float PathGap = 1.5f;            // a moving base's edge to any other base or path
     private const float EdgeMargin = 0.5f;         // base edge to the table edge
@@ -195,10 +219,12 @@ internal sealed class HoloSkirmish
     private const float MinFlagSplit = 1.5f, MaxFlagSplit = 2.5f;
 
     /// <summary>
-    /// The roster placed at random on <paramref name="scene"/>, or null if some unit found no room (the
-    /// caller tries another table). Each side gets at least one unit that holds and one that advances; up
-    /// to <see cref="MaxMelees"/> pairs of units charge each other (#464), and each side has a patroller
-    /// unless two of its units are in melee. Holders and advancers end up in the middle band so they are
+    /// The roster placed at random among <paramref name="obstacles"/>, or null if some unit found no room
+    /// (the caller tries again). The menu passes none (#464, owner 2026-11-02: generation was too costly):
+    /// it places the units on a bare table and then fits the terrain round them with <see cref="KeepOut"/>,
+    /// which turns the same clearances the other way round. Each side gets exactly one patroller; up to <see cref="MaxMelees"/>
+    /// pairs of units charge each other (#464); the rest hold or advance - at least one of each, unless two
+    /// of the side's units are in melee. Holders and advancers end up in the middle band so they are
     /// within shooting range; advancers walk in from behind (toward their own edge); patrollers wander a
     /// three-leg route through their own half for the whole battle; a melee pair is placed together, both
     /// walking in from behind to meet front rank to front rank on the centre line. Every base keeps off all
@@ -206,15 +232,16 @@ internal sealed class HoloSkirmish
     /// clear of every other unit's bases and paths, so nothing walks through anything; standing units keep
     /// room for their labels. The two units of a melee are exempt from those gaps with each other only.
     /// </summary>
-    public static HoloSkirmish? Generate(MenuArmy near, MenuArmy far, HoloTableScene scene, Random rng)
+    public static HoloSkirmish? Generate(MenuArmy near, MenuArmy far, IReadOnlyList<HoloFootprint> obstacles, Random rng)
     {
-        var obstacles = scene.Obstacles.ToList();
         var standing = new List<(Vector2 At, float Radius)>();
         var paths = new List<(Vector2 A, Vector2 B, float Radius)>();
         float U(float lo, float hi) => lo + rng.NextSingle() * (hi - lo);
 
-        // Roles: each side is dealt holds, advances, patrols and one more holds-or-advances; a melee takes
-        // the last of those from each side, and a second melee the patroller.
+        // Roles (#464, owner 2026-11-02: about two thirds of the table fighting, a third not): each side is
+        // dealt exactly one patroller - the unit out of the fight - plus holds, advances and one more
+        // holds-or-advances; a melee takes that last one from each side, and a second melee one of the
+        // holder and advancer.
         var roster = RosterFor(near, far).ToList();
         var roles = new EHoloRole[roster.Count];
         int melees = rng.Next(MaxMelees + 1);
@@ -222,8 +249,9 @@ internal sealed class HoloSkirmish
         foreach (int side in new[] { 0, 1 })
         {
             var mine = Enumerable.Range(0, roster.Count).Where(i => roster[i].Side == side).OrderBy(_ => rng.Next()).ToList();
-            var deal = new[] { EHoloRole.Holds, EHoloRole.Advances, EHoloRole.Patrols, rng.Next(2) == 0 ? EHoloRole.Holds : EHoloRole.Advances };
-            for (int k = 0; k < melees; k++) deal[deal.Length - 1 - k] = EHoloRole.Charges;
+            var deal = new[] { EHoloRole.Patrols, EHoloRole.Holds, EHoloRole.Advances, rng.Next(2) == 0 ? EHoloRole.Holds : EHoloRole.Advances };
+            if (melees >= 1) deal[3] = EHoloRole.Charges;
+            if (melees >= 2) deal[1 + rng.Next(2)] = EHoloRole.Charges;
             for (int k = 0; k < mine.Count; k++)
             {
                 roles[mine[k]] = deal[k % deal.Length];
@@ -231,23 +259,20 @@ internal sealed class HoloSkirmish
             }
         }
 
-        // Casualties lie where they fell, so only a unit that holds its ground all battle shows them; on a
-        // unit that moves they would walk along with it (owner, 2026-11-02).
-        for (int i = 0; i < roster.Count; i++)
-            if (roles[i] != EHoloRole.Holds) roster[i] = roster[i] with { Dead = 0 };
-
         // Would these bases and their paths fit among everything placed so far? A unit that stops (stands)
         // also keeps label room from every standing base and stays off every path.
+        // Cheapest checks first (on the table, then other units, then terrain outlines), so a bad spot is
+        // thrown out before the expensive part.
         bool Fits(IReadOnlyList<Vector2> models, List<(Vector2 A, Vector2 B)> myPaths, float r, float face, bool stands, float centreClear)
         {
-            if (!models.All(m => OnTable(m, r, face, centreClear) && obstacles.All(o => HoloGeometry.PointPolygon(m, o.Polygon) > r + TerrainClearance)))
-                return false;
-            if (!myPaths.All(p => OnTable(p.A, r, face, centreClear) && HoloGeometry.IsClear(p.A, p.B, obstacles, r + 0.3f))) return false;
+            if (!models.All(m => OnTable(m, r, face, centreClear)) || !myPaths.All(p => OnTable(p.A, r, face, centreClear))) return false;
             if (stands && !models.All(m => standing.All(s => Vector2.Distance(m, s.At) > r + s.Radius + UnitGap))) return false;
+            if (stands && !models.All(m => paths.All(q => HoloGeometry.PointSegment(m, q.A, q.B) > r + q.Radius + PathGap))) return false;
             if (!myPaths.All(p => standing.All(s => HoloGeometry.PointSegment(s.At, p.A, p.B) > r + s.Radius + PathGap)
                                   && paths.All(q => HoloGeometry.SegmentDistance(p.A, p.B, q.A, q.B) > r + q.Radius + PathGap)))
                 return false;
-            return !stands || models.All(m => paths.All(q => HoloGeometry.PointSegment(m, q.A, q.B) > r + q.Radius + PathGap));
+            return models.All(m => obstacles.All(o => HoloGeometry.IsFarFrom(m, o, r + TerrainClearance)))
+                   && myPaths.All(p => HoloGeometry.IsClear(p.A, p.B, obstacles, r + PathTerrainClearance));
         }
 
         void Commit(IReadOnlyList<Vector2> models, List<(Vector2 A, Vector2 B)> myPaths, float r, bool stands)

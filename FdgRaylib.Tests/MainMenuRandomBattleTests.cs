@@ -128,36 +128,66 @@ public class MainMenuRandomBattleTests
     }
 
     [Test]
-    public void EverySide_HoldsAndAdvances_AndPatrolsUnlessTwoOfItsUnitsAreInMelee()
+    public void EverySide_PatrolsWithOneUnit_AndHoldsAndAdvancesUnlessTwoOfItsUnitsAreInMelee()
     {
-        // #464: a melee takes one unit a side; a second melee takes each side's patroller (four units a side).
+        // #464: exactly one patroller a side (the unit out of the fight); a melee takes one unit a side, a
+        // second melee one of the holder and advancer (four units a side).
         foreach (var (seed, b) in Battles().Where(x => !x.Battle.IsFallback))
         foreach (int side in new[] { 0, 1 })
         {
             var roles = b.Skirmish.Units.Where(u => u.Side == side).Select(u => u.Role).ToList();
-            Assert.That(roles, Does.Contain(EHoloRole.Holds).And.Contain(EHoloRole.Advances), $"seed {seed} side {side}");
+            Assert.That(roles.Count(r => r == EHoloRole.Patrols), Is.EqualTo(1), $"seed {seed} side {side}: patrollers");
             int charging = roles.Count(r => r == EHoloRole.Charges);
             Assert.That(charging, Is.InRange(0, HoloSkirmish.MaxMelees), $"seed {seed} side {side}");
-            Assert.That(roles.Contains(EHoloRole.Patrols), Is.EqualTo(charging < 2), $"seed {seed} side {side}: patroller");
+            if (charging < 2)
+                Assert.That(roles, Does.Contain(EHoloRole.Holds).And.Contain(EHoloRole.Advances), $"seed {seed} side {side}");
+            else
+                Assert.That(roles.Any(r => r is EHoloRole.Holds or EHoloRole.Advances), Is.True, $"seed {seed} side {side}");
         }
     }
 
     [Test]
-    public void OnlyUnitsThatHoldTheirGround_ShowCasualties()
+    public void AboutTwoThirdsOfTheTable_IsInCombat()
     {
-        // Owner, 2026-11-02: faded casualty bases were walking along with a moving unit. Casualties lie where
-        // they fell, so only a unit that never moves has any.
-        int shown = 0;
+        // Owner, 2026-11-02: "roughly, 2/3 of units end up in combat, whether shooting or melee, and 1/3 are
+        // not ... a lot of units just kind of wander around right now". Every battle lands in the band, and
+        // across the sweep the share sits near two thirds.
+        var shares = new List<double>();
+        foreach (var (seed, b) in Battles().Where(x => !x.Battle.IsFallback))
+        {
+            int inCombat = b.Engagement.InCombat.Count;
+            Assert.That(inCombat, Is.InRange(HoloBattle.MinInCombat, HoloBattle.MaxInCombat), $"seed {seed}");
+            shares.Add(inCombat / (double)b.Skirmish.Units.Count);
+        }
+        Assert.That(shares.Average(), Is.InRange(0.6, 0.75));
+    }
+
+    [Test]
+    public void EveryUnitThatCanShoot_Does()
+    {
+        // No cap on fights (#464): a unit that holds or advances and has a target in range it can see fires.
+        foreach (var (seed, b) in Battles().Where(x => !x.Battle.IsFallback))
+        {
+            var units = b.Skirmish.Units;
+            bool Shoots(HoloUnit u) => u.Role is EHoloRole.Holds or EHoloRole.Advances;
+            foreach (HoloUnit s in units.Where(Shoots))
+            {
+                bool canShoot = units.Any(t => t.Side != s.Side && Shoots(t)
+                    && Vector2.Distance(s.Centre, t.Centre) <= HoloEngagement.MaxShotRange
+                    && s.Alive.Any(m => t.Alive.Any(x => HoloEngagement.IsClear(m, x, b.Scene.Footprints))));
+                Assert.That(b.Engagement.Fights.Any(f => f.Shooter == s), Is.EqualTo(canShoot), $"seed {seed}: {s.Label}");
+            }
+        }
+    }
+
+    [Test]
+    public void NoUnitShowsCasualties()
+    {
+        // Owner, 2026-11-02: faded casualty bases read as a glitch - first walking along with a moving unit,
+        // then standing beside a holding one. The menu deals none.
         foreach (var (seed, b) in Battles())
         foreach (HoloUnit u in b.Skirmish.Units)
-        {
-            if (u.Role != EHoloRole.Holds)
-                Assert.That(u.Dead, Is.Zero, $"seed {seed}: {u.Label} ({u.Role}) carries casualties");
-            else if (u.Trail.Count > 0)
-                Assert.Fail($"seed {seed}: {u.Label} holds but has a trail");
-            shown += u.Dead;
-        }
-        Assert.That(shown, Is.GreaterThan(0), "a holding squad still shows its casualties");
+            Assert.That(u.Dead, Is.Zero, $"seed {seed}: {u.Label} ({u.Role}) shows casualties");
     }
 
     [Test]
