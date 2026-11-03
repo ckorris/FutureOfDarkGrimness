@@ -1,0 +1,746 @@
+using System.Collections.Generic;
+using System.IO;
+using FDG.ArmyBuilding;
+using FDG.Presentation;
+using FDG.Presentation.Beats;
+using FdgRaylib.Audio;
+
+namespace FdgRaylib.Rendering.Presentation;
+
+/// <summary>
+/// Maps presentation beats to sound-cue keys and registers those cues with an <see cref="AudioManager"/>.
+/// This is the only sound code that knows about beats — it parallels the visual overlays: the engine
+/// owns the beats and their pacing, the app decides what each one sounds like. Pure mapping (<see
+/// cref="CueFor"/>/<see cref="VolleyCue"/>/<see cref="ImpactCue"/>) so it can be unit-tested without
+/// an audio device; actual playback is GUI-only.
+///
+/// <para>
+/// #239: attacks are voiced per weapon effect SET. Each ranged set has a firing cue and an impact
+/// cue, each melee set a swing cue and a connect cue — cue keys double as the drop-in asset
+/// filenames (<c>Assets/Sounds/fire-plasma-bolt.wav</c>, <c>impact-plasma-bolt.wav</c>,
+/// <c>melee-energy-blade.wav</c>, <c>meleehit-energy-blade.wav</c>); anything without a .wav gets a
+/// synthesized placeholder voice.
+/// </para>
+/// </summary>
+public static class PresentationSoundCues
+{
+    // Cue keys double as the expected asset filenames under Assets/Sounds/{key}.wav.
+    public const string Dice    = "dice";
+    public const string Save    = "save";
+    public const string Wound   = "wound";
+    public const string Death   = "death";
+
+    // #294: movement is voiced as a run of FOOTFALLS during the glide, not one blip at its start, so
+    // one cue is played many times per beat with a per-step pitch/volume (see StepVoice). This
+    // replaces the single "move" cue, which no longer exists.
+    public const string Step    = "step";
+
+    // #275: one voice per banner tier. Volume and weight fall off with the tier, so a Toast can fire
+    // five times in a row without grating and a Headline still means something when it does land.
+    // These replace the single "banner" cue, which no longer exists.
+    public const string BannerHeadline = "banner-headline";
+    public const string BannerNotice   = "banner-notice";
+    public const string BannerToast    = "banner-toast";
+
+    // #274 spell voices — one per SpellEffectBeat variant.
+    public const string SpellCast   = "spell-cast";
+    public const string SpellFail   = "spell-fail";
+    public const string SpellBoon   = "spell-boon";
+    public const string SpellBane   = "spell-bane";
+    public const string SpellBoost  = "spell-boost";
+    public const string SpellHinder = "spell-hinder";
+
+    private static readonly string[] BaseCues =
+    {
+        Dice, Save, Wound, Death, Step,
+        BannerHeadline, BannerNotice, BannerToast,
+        SpellCast, SpellFail, SpellBoon, SpellBane, SpellBoost, SpellHinder,
+    };
+
+    /// <summary>The firing cue key for a RESOLVED ranged set key (see <see cref="WeaponEffectCatalog"/>).</summary>
+    public static string FireCue(string rangedKey) => "fire-" + rangedKey;
+
+    /// <summary>The impact cue key for a resolved ranged set key — a shot connecting (#239).</summary>
+    public static string RangedImpactCue(string rangedKey) => "impact-" + rangedKey;
+
+    /// <summary>The swing cue key for a resolved melee set key.</summary>
+    public static string SwingCue(string meleeKey) => "melee-" + meleeKey;
+
+    /// <summary>The connect cue key for a resolved melee set key — a swing that lands (#239).</summary>
+    public static string MeleeImpactCue(string meleeKey) => "meleehit-" + meleeKey;
+
+    /// <summary>Every cue key this app registers — base beats plus the per-set attack voices.</summary>
+    public static IEnumerable<string> AllCueKeys()
+    {
+        foreach (string cue in BaseCues) yield return cue;
+        foreach (string key in WeaponEffectCatalog.RangedKeys)
+        {
+            yield return FireCue(key);
+            yield return RangedImpactCue(key);
+        }
+        foreach (string key in WeaponEffectCatalog.MeleeKeys)
+        {
+            yield return SwingCue(key);
+            yield return MeleeImpactCue(key);
+        }
+    }
+
+    /// <summary>The sound-cue key for a beat, or null if the beat has no audio.</summary>
+    public static string? CueFor(PresentationBeat beat) => beat switch
+    {
+        // #238: attacks cue PER VOLLEY via VolleyCue/AttackVolleyStarted (and per landing volley via
+        // ImpactCue/AttackVolleyImpact, #239), not once at beat start — three swings sound three times.
+        AttackBeat         => null,
+        DiceRolledBeat     => Dice,
+        RollOffBeat        => Dice,
+        SaveBeat           => Save,
+        ModelWoundedBeat   => Wound,
+        ModelDiedBeat      => Death,
+        UnitRoutedBeat     => Death,
+        // #275: the banner's tier picks its voice.
+        BannerBeat banner  => banner.Tier switch
+        {
+            EBannerTier.Notice => BannerNotice,
+            EBannerTier.Toast  => BannerToast,
+            _                  => BannerHeadline,
+        },
+        // #294: movement cues PER FOOTFALL via StepVoice/UnitStepped, not once at beat start — a
+        // start-of-beat cue would just be the old single blip stacked on top of the first step.
+        UnitMovedBeat      => null,
+        // #274: one voice per spell moment — the visual and the sound are picked from the same enum.
+        SpellEffectBeat s  => SpellCue(s.Visual),
+        _                  => null,
+    };
+
+    /// <summary>The sound-cue key for one spell-effect variant (#274).</summary>
+    public static string SpellCue(ESpellVisual visual) => visual switch
+    {
+        ESpellVisual.CastSuccess  => SpellCast,
+        ESpellVisual.CastFailure  => SpellFail,
+        ESpellVisual.TargetBoon   => SpellBoon,
+        ESpellVisual.TargetBane   => SpellBane,
+        ESpellVisual.AssistBoost  => SpellBoost,
+        _                         => SpellHinder,
+    };
+
+    /// <summary>The firing/swing cue for one volley of an attack (#238), voiced by its weapon
+    /// effect set (#239) — fired once per volley via <c>PresentationPlayer.AttackVolleyStarted</c>.</summary>
+    public static string VolleyCue(AttackBeat beat) => beat.IsMelee
+        ? SwingCue(WeaponEffectCatalog.ResolveMeleeKey(beat.WeaponEffect))
+        : FireCue(WeaponEffectCatalog.ResolveRangedKey(beat.WeaponEffect));
+
+    /// <summary>The impact cue for a volley that LANDED something (#239) — fired via
+    /// <c>PresentationPlayer.AttackVolleyImpact</c> when the volley's shots arrive; whiffed
+    /// volleys never sound an impact.</summary>
+    public static string ImpactCue(AttackBeat beat) => beat.IsMelee
+        ? MeleeImpactCue(WeaponEffectCatalog.ResolveMeleeKey(beat.WeaponEffect))
+        : RangedImpactCue(WeaponEffectCatalog.ResolveRangedKey(beat.WeaponEffect));
+
+    // #294 footfall voicing. One cue, many playbacks — a single real step.wav can drop in and still
+    // tier itself, because the weight lives in the pitch rather than in separate recipes.
+
+    /// <summary>Softest footfall level (an ordinary infantry model), before the master volume.</summary>
+    private const float StepBaseVolume = 0.85f;
+    /// <summary>How far a Tough(X) model's footfall may pitch down. 0.55 is a heavy tread, not a groan.</summary>
+    internal const float StepMinPitch = 0.55f;
+
+    /// <summary>
+    /// How one footfall of <paramref name="beat"/> should sound: the cue key plus its playback pitch
+    /// and volume (#294).
+    ///
+    /// <para>
+    /// Pitch falls with the beat's <see cref="UnitMovedBeat.Toughness"/> weight proxy — Tough(1) plays
+    /// the clip as recorded, Tough(6) around 0.73, anything Tough(12)+ bottoming out at
+    /// <see cref="StepMinPitch"/> — so a monolith treads noticeably lower than a trooper without ever
+    /// dropping into a groan. Volume creeps up over the same range, since weight should read as heavier
+    /// as well as lower, capped at the clip's own level.
+    /// </para>
+    ///
+    /// <para>
+    /// <paramref name="stepIndex"/> alternates the feet: every other footfall is a touch lower and
+    /// softer. Without it, an evenly-spaced identical clip reads as a metronome rather than as walking.
+    /// </para>
+    /// </summary>
+    public static (string Cue, float Pitch, float Volume) StepVoice(UnitMovedBeat beat, int stepIndex)
+    {
+        int tough = Math.Max(1, beat.Toughness);
+
+        float pitch  = 1f / (1f + 0.075f * (tough - 1));
+        float volume = StepBaseVolume + 0.02f * (tough - 1);
+
+        // The off foot (odd steps) lands slightly lower and lighter than the lead foot.
+        if ((stepIndex & 1) == 1)
+        {
+            pitch  *= 0.94f;
+            volume *= 0.88f;
+        }
+
+        // Clamped LAST, so the floor is a real floor: applying the off-foot drop afterwards would push
+        // an already-bottomed-out heavy tread below it. The cost is that the very heaviest models walk
+        // both feet at StepMinPitch, which is the right trade - the alternation is a garnish, the floor
+        // is what keeps a titan from sounding like a dying engine.
+        return (Step, Math.Clamp(pitch, StepMinPitch, 1f), Math.Clamp(volume, 0.5f, 1f));
+    }
+
+    /// <summary>
+    /// Registers every cue with <paramref name="audio"/>: loads Assets/Sounds/{key}.wav if present,
+    /// otherwise a per-cue synthesized placeholder so each beat/effect-set sounds distinct before
+    /// real assets exist. Call once after the audio device is up.
+    /// </summary>
+    public static void LoadInto(AudioManager audio)
+    {
+        string dir = Path.Combine(System.AppContext.BaseDirectory, "Assets", "Sounds");
+        foreach (string cue in AllCueKeys())
+        {
+            if (!audio.Load(cue, Path.Combine(dir, cue + ".wav")))
+                audio.LoadSynthesized(cue, PlaceholderSamples(cue), ToneSynth.SampleRate);
+        }
+    }
+
+    // Shorthand for the recipe table below.
+    private const string R_Plasma  = "fire-" + WeaponEffectAssigner.Sets.PlasmaBolt;
+    private const string R_Fusion  = "fire-" + WeaponEffectAssigner.Sets.FusionMelta;
+    private const string R_Flame   = "fire-" + WeaponEffectAssigner.Sets.FlameJet;
+    private const string R_Grav    = "fire-" + WeaponEffectAssigner.Sets.GravityPulse;
+    private const string R_Gauss   = "fire-" + WeaponEffectAssigner.Sets.GaussParticle;
+    private const string R_Laser   = "fire-" + WeaponEffectAssigner.Sets.LaserBeam;
+    private const string R_Missile = "fire-" + WeaponEffectAssigner.Sets.MissileRocket;
+    private const string R_Mortar  = "fire-" + WeaponEffectAssigner.Sets.MortarArtillery;
+    private const string R_Bio     = "fire-" + WeaponEffectAssigner.Sets.BioOrganic;
+    private const string R_Storm   = "fire-" + WeaponEffectAssigner.Sets.StormTracer;
+    private const string R_Slug    = "fire-" + WeaponEffectAssigner.Sets.BallisticSlug;
+    private const string R_Arcane  = "fire-" + WeaponEffectAssigner.Sets.ArcanePsychic;
+    private const string R_Shard   = "fire-" + WeaponEffectAssigner.Sets.ShardCrystal;
+
+    // #379 Age of Fantasy ranged keys.
+    private const string R_Arrow   = "fire-" + WeaponEffectAssigner.Sets.ArrowLoose;
+    private const string R_Xbow    = "fire-" + WeaponEffectAssigner.Sets.CrossbowBolt;
+    private const string R_Sling   = "fire-" + WeaponEffectAssigner.Sets.SlingStone;
+    private const string R_Javelin = "fire-" + WeaponEffectAssigner.Sets.ThrownSpear;
+    private const string R_Balli   = "fire-" + WeaponEffectAssigner.Sets.BallistaBolt;
+    private const string R_Breath  = "fire-" + WeaponEffectAssigner.Sets.BreathFlame;
+    private const string R_ArcaneB = "fire-" + WeaponEffectAssigner.Sets.ArcaneBolt;
+
+    private const string I_Plasma  = "impact-" + WeaponEffectAssigner.Sets.PlasmaBolt;
+    private const string I_Fusion  = "impact-" + WeaponEffectAssigner.Sets.FusionMelta;
+    private const string I_Flame   = "impact-" + WeaponEffectAssigner.Sets.FlameJet;
+    private const string I_Grav    = "impact-" + WeaponEffectAssigner.Sets.GravityPulse;
+    private const string I_Gauss   = "impact-" + WeaponEffectAssigner.Sets.GaussParticle;
+    private const string I_Laser   = "impact-" + WeaponEffectAssigner.Sets.LaserBeam;
+    private const string I_Missile = "impact-" + WeaponEffectAssigner.Sets.MissileRocket;
+    private const string I_Mortar  = "impact-" + WeaponEffectAssigner.Sets.MortarArtillery;
+    private const string I_Bio     = "impact-" + WeaponEffectAssigner.Sets.BioOrganic;
+    private const string I_Storm   = "impact-" + WeaponEffectAssigner.Sets.StormTracer;
+    private const string I_Slug    = "impact-" + WeaponEffectAssigner.Sets.BallisticSlug;
+    private const string I_Arcane  = "impact-" + WeaponEffectAssigner.Sets.ArcanePsychic;
+    private const string I_Shard   = "impact-" + WeaponEffectAssigner.Sets.ShardCrystal;
+
+    private const string I_Arrow   = "impact-" + WeaponEffectAssigner.Sets.ArrowLoose;
+    private const string I_Xbow    = "impact-" + WeaponEffectAssigner.Sets.CrossbowBolt;
+    private const string I_Sling   = "impact-" + WeaponEffectAssigner.Sets.SlingStone;
+    private const string I_Javelin = "impact-" + WeaponEffectAssigner.Sets.ThrownSpear;
+    private const string I_Balli   = "impact-" + WeaponEffectAssigner.Sets.BallistaBolt;
+    private const string I_Breath  = "impact-" + WeaponEffectAssigner.Sets.BreathFlame;
+    private const string I_ArcaneB = "impact-" + WeaponEffectAssigner.Sets.ArcaneBolt;
+
+    private const string M_Energy = "melee-" + WeaponEffectAssigner.Sets.EnergyBlade;
+    private const string M_Titan  = "melee-" + WeaponEffectAssigner.Sets.TitanImpact;
+    private const string M_Shock  = "melee-" + WeaponEffectAssigner.Sets.ShockMelee;
+    private const string M_Chain  = "melee-" + WeaponEffectAssigner.Sets.ChainBlade;
+    private const string M_Toxic  = "melee-" + WeaponEffectAssigner.Sets.ToxicMelee;
+    private const string M_Daemon = "melee-" + WeaponEffectAssigner.Sets.DaemonArcaneMelee;
+    private const string M_Spear  = "melee-" + WeaponEffectAssigner.Sets.SpearPierce;
+    private const string M_Claw   = "melee-" + WeaponEffectAssigner.Sets.ClawRend;
+    private const string M_Crude  = "melee-" + WeaponEffectAssigner.Sets.CrudeMelee;
+    private const string M_Blade  = "melee-" + WeaponEffectAssigner.Sets.BladeStandard;
+
+    // #379 Age of Fantasy + cross-system melee keys.
+    private const string M_Great = "melee-" + WeaponEffectAssigner.Sets.GreatWeaponSmash;
+    private const string M_Spect = "melee-" + WeaponEffectAssigner.Sets.SpectralTouch;
+    private const string M_Maw   = "melee-" + WeaponEffectAssigner.Sets.BeastMaw;
+    private const string M_ToxR  = "melee-" + WeaponEffectAssigner.Sets.ToxicRend;
+    private const string M_Bomb  = "melee-" + WeaponEffectAssigner.Sets.BombingRun;
+
+    private const string H_Energy = "meleehit-" + WeaponEffectAssigner.Sets.EnergyBlade;
+    private const string H_Titan  = "meleehit-" + WeaponEffectAssigner.Sets.TitanImpact;
+    private const string H_Shock  = "meleehit-" + WeaponEffectAssigner.Sets.ShockMelee;
+    private const string H_Chain  = "meleehit-" + WeaponEffectAssigner.Sets.ChainBlade;
+    private const string H_Toxic  = "meleehit-" + WeaponEffectAssigner.Sets.ToxicMelee;
+    private const string H_Daemon = "meleehit-" + WeaponEffectAssigner.Sets.DaemonArcaneMelee;
+    private const string H_Spear  = "meleehit-" + WeaponEffectAssigner.Sets.SpearPierce;
+    private const string H_Claw   = "meleehit-" + WeaponEffectAssigner.Sets.ClawRend;
+    private const string H_Crude  = "meleehit-" + WeaponEffectAssigner.Sets.CrudeMelee;
+    private const string H_Blade  = "meleehit-" + WeaponEffectAssigner.Sets.BladeStandard;
+
+    private const string H_Great = "meleehit-" + WeaponEffectAssigner.Sets.GreatWeaponSmash;
+    private const string H_Spect = "meleehit-" + WeaponEffectAssigner.Sets.SpectralTouch;
+    private const string H_Maw   = "meleehit-" + WeaponEffectAssigner.Sets.BeastMaw;
+    private const string H_ToxR  = "meleehit-" + WeaponEffectAssigner.Sets.ToxicRend;
+    private const string H_Bomb  = "meleehit-" + WeaponEffectAssigner.Sets.BombingRun;
+
+    /// <summary>
+    /// The synthesized placeholder clip for a cue — a distinct "voice" per beat and per weapon
+    /// effect set until real assets land. Deterministic (ToneSynth), so byte-identical every run.
+    /// Internal so it can be unit-tested.
+    /// </summary>
+    internal static short[] PlaceholderSamples(string cue) => cue switch
+    {
+        // ---------------- base beats (unchanged voices) ----------------
+
+        // Clatter: four short noise ticks with gaps.
+        Dice => ToneSynth.Concat(
+            ToneSynth.Noise(0.018f, 90f, 0.40f, seed: 31), ToneSynth.Silence(0.030f),
+            ToneSynth.Noise(0.018f, 90f, 0.35f, seed: 32), ToneSynth.Silence(0.025f),
+            ToneSynth.Noise(0.022f, 80f, 0.40f, seed: 33), ToneSynth.Silence(0.020f),
+            ToneSynth.Noise(0.018f, 90f, 0.30f, seed: 34)),
+
+        // Soft mid ping.
+        Save => ToneSynth.Tone(720f, 720f, 0.12f, 13f, ToneSynth.Waveform.Sine, 0.34f),
+
+        // Low, quick thud.
+        Wound => ToneSynth.Tone(190f, 140f, 0.16f, 11f, ToneSynth.Waveform.Sine, 0.45f),
+
+        // Longer, slow descending tone.
+        Death => ToneSynth.Tone(420f, 120f, 0.42f, 4.5f, ToneSynth.Waveform.Triangle, 0.40f),
+
+        // #275 Headline: the pre-tier banner voice - a rising two-note chime (C5 -> G5). This is the
+        // sound the game has always made when it announces something, so it belongs on the handful of
+        // moments that are actually worth announcing rather than on the ones that merely happen often.
+        BannerHeadline => ToneSynth.Concat(
+            ToneSynth.Tone(523f, 523f, 0.11f, 7f, ToneSynth.Waveform.Sine, 0.32f),
+            ToneSynth.Tone(784f, 784f, 0.24f, 4.5f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // #275 Notice: a single subtle mid beep - one short G4 note, a fifth below the Headline chime's
+        // C5 root so the two never clash when adjacent. (Originally a struck low thud; owner asked for
+        // a beep matching the other two tiers, 2026-07-25.) Single and unmelodic where Headline is a
+        // two-note chime: this is the busiest tier, so it has to register without asking for the room.
+        //
+        // Levels are deliberate and were measured, not eyeballed (an early thud cut ran LOUDER than the
+        // Headline it sits beneath - an inverted hierarchy that fires ~18 times a game). This note runs
+        // peak 27% / RMS 11%, under the chime's 33% / 15% and over the toast's 13% / 5%, so the three
+        // tiers still descend monotonically. If real .wav assets ever replace these, mix them to the
+        // same descending order.
+        BannerNotice => ToneSynth.Tone(392f, 392f, 0.16f, 9f, ToneSynth.Waveform.Sine, 0.28f),
+
+        // #275 Toast: a single soft high blip, quiet and quick. Deliberately the least interesting
+        // sound in the game - five of them in a row should read as texture, not as an alarm.
+        BannerToast => ToneSynth.Tone(1046f, 1046f, 0.07f, 26f, ToneSynth.Waveform.Sine, 0.14f),
+
+        // #294 One footfall: a whisper of grit under a short, soft blip that falls rather than rises.
+        // Deliberately smaller and quieter than the single "move" blip it replaces (which ran 100ms at
+        // amp 0.20, rising 300 -> 360Hz) - this one plays three to nine times per move, so it has to
+        // sit UNDER the action the way real footsteps do. Peak amp 0.13, ~63ms, and the falling
+        // contour reads as weight settling instead of as a notification. Pitch and level are then
+        // varied per step by StepVoice, which is where the unit's weight and the left/right
+        // alternation come from - keep this recipe neutral so that scaling stays meaningful.
+        Step => ToneSynth.Concat(
+            ToneSynth.Noise(0.008f, 120f, 0.06f, seed: 71),
+            ToneSynth.Tone(240f, 190f, 0.055f, 30f, ToneSynth.Waveform.Sine, 0.13f)),
+
+        // ---------------- spell moments (#274) ----------------
+
+        // Cast lands: a swelling chime that climbs and opens out into a bright shimmer.
+        SpellCast => ToneSynth.Concat(
+            ToneSynth.Tone(330f, 660f, 0.16f, 4f, ToneSynth.Waveform.Triangle, 0.26f),
+            ToneSynth.Tone(880f, 1320f, 0.14f, 7f, ToneSynth.Waveform.Sine, 0.24f),
+            ToneSynth.Tone(1760f, 1760f, 0.10f, 13f, ToneSynth.Waveform.Sine, 0.14f)),
+
+        // Cast fails: the same energy sliding DOWN and dying in a dull puff — the inverse of the above.
+        SpellFail => ToneSynth.Concat(
+            ToneSynth.Tone(620f, 150f, 0.20f, 6f, ToneSynth.Waveform.Triangle, 0.26f),
+            ToneSynth.Noise(0.10f, 26f, 0.20f, seed: 161),
+            ToneSynth.Tone(105f, 78f, 0.10f, 14f, ToneSynth.Waveform.Sine, 0.22f)),
+
+        // Boon lands: a warm, open two-note bell (fifth up), soft attack.
+        SpellBoon => ToneSynth.Concat(
+            ToneSynth.Tone(587f, 587f, 0.13f, 6f, ToneSynth.Waveform.Sine, 0.26f),
+            ToneSynth.Tone(880f, 880f, 0.22f, 5f, ToneSynth.Waveform.Sine, 0.24f)),
+
+        // Bane lands: a downward smear into a low buzzing bite.
+        SpellBane => ToneSynth.Concat(
+            ToneSynth.Tone(520f, 165f, 0.12f, 9f, ToneSynth.Waveform.Triangle, 0.28f),
+            ToneSynth.Tone(112f, 92f, 0.18f, 8f, ToneSynth.Waveform.Square, 0.22f),
+            ToneSynth.Noise(0.05f, 34f, 0.18f, seed: 162)),
+
+        // Odds pushed up: a quick, clean rising double blip.
+        SpellBoost => ToneSynth.Concat(
+            ToneSynth.Tone(440f, 560f, 0.06f, 18f, ToneSynth.Waveform.Sine, 0.24f),
+            ToneSynth.Silence(0.02f),
+            ToneSynth.Tone(660f, 840f, 0.09f, 14f, ToneSynth.Waveform.Sine, 0.26f)),
+
+        // Odds pushed down: the mirror — falling, and sour (square wave, minor-ish drop).
+        SpellHinder => ToneSynth.Concat(
+            ToneSynth.Tone(560f, 430f, 0.06f, 18f, ToneSynth.Waveform.Square, 0.20f),
+            ToneSynth.Silence(0.02f),
+            ToneSynth.Tone(400f, 260f, 0.11f, 12f, ToneSynth.Waveform.Square, 0.22f)),
+
+        // ---------------- ranged firing (#239) ----------------
+
+        // Rising electric whine into a heavy release.
+        R_Plasma => ToneSynth.Concat(
+            ToneSynth.Tone(280f, 900f, 0.10f, 6f, ToneSynth.Waveform.Sine, 0.28f),
+            ToneSynth.Tone(220f, 90f, 0.09f, 18f, ToneSynth.Waveform.Square, 0.30f)),
+
+        // Blowtorch ignition roar.
+        R_Fusion => ToneSynth.Concat(
+            ToneSynth.Noise(0.05f, 25f, 0.35f, seed: 101),
+            ToneSynth.Tone(130f, 75f, 0.16f, 9f, ToneSynth.Waveform.Square, 0.26f)),
+
+        // Sustained gas whoosh.
+        R_Flame => ToneSynth.Noise(0.28f, 8f, 0.30f, seed: 102),
+
+        // Deep bass charge-whump.
+        R_Grav => ToneSynth.Concat(
+            ToneSynth.Tone(45f, 90f, 0.08f, 8f, ToneSynth.Waveform.Sine, 0.40f),
+            ToneSynth.Tone(90f, 38f, 0.14f, 12f, ToneSynth.Waveform.Sine, 0.45f)),
+
+        // Rising electric buzz.
+        R_Gauss => ToneSynth.Tone(240f, 560f, 0.13f, 9f, ToneSynth.Waveform.Triangle, 0.30f),
+
+        // Sharp zap "pew".
+        R_Laser => ToneSynth.Tone(1500f, 380f, 0.08f, 26f, ToneSynth.Waveform.Square, 0.26f),
+
+        // Launch whoosh + motor roar.
+        R_Missile => ToneSynth.Concat(
+            ToneSynth.Noise(0.07f, 18f, 0.32f, seed: 103),
+            ToneSynth.Tone(210f, 120f, 0.16f, 8f, ToneSynth.Waveform.Square, 0.22f)),
+
+        // Heavy thump, then the falling whistle.
+        R_Mortar => ToneSynth.Concat(
+            ToneSynth.Tone(95f, 55f, 0.10f, 16f, ToneSynth.Waveform.Square, 0.40f),
+            ToneSynth.Silence(0.05f),
+            ToneSynth.Tone(1250f, 620f, 0.20f, 7f, ToneSynth.Waveform.Sine, 0.14f)),
+
+        // Wet gurgling launch.
+        R_Bio => ToneSynth.Concat(
+            ToneSynth.Tone(150f, 95f, 0.06f, 14f, ToneSynth.Waveform.Sine, 0.32f),
+            ToneSynth.Tone(120f, 160f, 0.06f, 14f, ToneSynth.Waveform.Sine, 0.30f),
+            ToneSynth.Noise(0.05f, 35f, 0.28f, seed: 104)),
+
+        // Mechanical double crack — a bolt cycling.
+        R_Storm => ToneSynth.Concat(
+            ToneSynth.Tone(1350f, 320f, 0.012f, 60f, ToneSynth.Waveform.Square, 0.34f),
+            ToneSynth.Noise(0.025f, 55f, 0.40f, seed: 105), ToneSynth.Silence(0.020f),
+            ToneSynth.Tone(1250f, 300f, 0.012f, 60f, ToneSynth.Waveform.Square, 0.30f),
+            ToneSynth.Noise(0.030f, 50f, 0.35f, seed: 106)),
+
+        // The classic sharp crack (the pre-#239 gunshot).
+        R_Slug => ToneSynth.Concat(
+            ToneSynth.Tone(1400f, 300f, 0.012f, 60f, ToneSynth.Waveform.Square, 0.35f),
+            ToneSynth.Noise(0.05f, 45f, 0.5f, seed: 11)),
+
+        // Eerie chant-like rise with a shimmer.
+        R_Arcane => ToneSynth.Concat(
+            ToneSynth.Tone(210f, 690f, 0.18f, 5f, ToneSynth.Waveform.Triangle, 0.26f),
+            ToneSynth.Tone(920f, 880f, 0.10f, 9f, ToneSynth.Waveform.Sine, 0.18f)),
+
+        // Crystal chime release.
+        R_Shard => ToneSynth.Concat(
+            ToneSynth.Tone(1750f, 1400f, 0.10f, 10f, ToneSynth.Waveform.Sine, 0.24f),
+            ToneSynth.Tone(2350f, 2350f, 0.06f, 16f, ToneSynth.Waveform.Sine, 0.18f)),
+
+        // ---------------- ranged firing, Age of Fantasy (#379) ----------------
+
+        // Bowstring pluck, then the arrow's soft flight whish.
+        R_Arrow => ToneSynth.Concat(
+            ToneSynth.Tone(620f, 240f, 0.05f, 30f, ToneSynth.Waveform.Triangle, 0.30f),
+            ToneSynth.Noise(0.09f, 20f, 0.12f, seed: 171)),
+
+        // Mechanical latch snap into a heavier, lower twang.
+        R_Xbow => ToneSynth.Concat(
+            ToneSynth.Noise(0.010f, 90f, 0.30f, seed: 172),
+            ToneSynth.Tone(400f, 170f, 0.05f, 26f, ToneSynth.Waveform.Square, 0.24f),
+            ToneSynth.Noise(0.06f, 26f, 0.10f, seed: 173)),
+
+        // Two whirling swish pulses, then the release.
+        R_Sling => ToneSynth.Concat(
+            ToneSynth.Noise(0.06f, 10f, 0.12f, seed: 174),
+            ToneSynth.Noise(0.05f, 12f, 0.18f, seed: 175),
+            ToneSynth.Tone(240f, 420f, 0.05f, 16f, ToneSynth.Waveform.Sine, 0.14f)),
+
+        // A heave: breathy whoosh rising with the throw.
+        R_Javelin => ToneSynth.Concat(
+            ToneSynth.Noise(0.10f, 12f, 0.20f, seed: 176),
+            ToneSynth.Tone(300f, 520f, 0.06f, 16f, ToneSynth.Waveform.Sine, 0.16f)),
+
+        // The war machine's frame slams forward, rope snap after.
+        R_Balli => ToneSynth.Concat(
+            ToneSynth.Tone(110f, 60f, 0.07f, 18f, ToneSynth.Waveform.Square, 0.36f),
+            ToneSynth.Noise(0.04f, 40f, 0.30f, seed: 177)),
+
+        // Deep roar: a low growl leads the gout (flame-jet is the pure hiss; this one has lungs).
+        R_Breath => ToneSynth.Concat(
+            ToneSynth.Tone(70f, 110f, 0.10f, 6f, ToneSynth.Waveform.Square, 0.16f),
+            ToneSynth.Noise(0.24f, 6f, 0.28f, seed: 178)),
+
+        // Quick sparkling chirp up, with a high glint on top.
+        R_ArcaneB => ToneSynth.Concat(
+            ToneSynth.Tone(500f, 1100f, 0.09f, 9f, ToneSynth.Waveform.Sine, 0.22f),
+            ToneSynth.Tone(1500f, 1900f, 0.07f, 14f, ToneSynth.Waveform.Sine, 0.14f)),
+
+        // ---------------- ranged impacts (#239) ----------------
+
+        // Bright flash + electric sizzle.
+        I_Plasma => ToneSynth.Concat(
+            ToneSynth.Tone(1050f, 480f, 0.05f, 22f, ToneSynth.Waveform.Sine, 0.30f),
+            ToneSynth.Noise(0.09f, 30f, 0.26f, seed: 111)),
+
+        // Molten splash, sizzling metal.
+        I_Fusion => ToneSynth.Concat(
+            ToneSynth.Tone(150f, 78f, 0.07f, 15f, ToneSynth.Waveform.Sine, 0.34f),
+            ToneSynth.Noise(0.16f, 14f, 0.24f, seed: 112)),
+
+        // Crackling burn: staggered ticks.
+        I_Flame => ToneSynth.Concat(
+            ToneSynth.Noise(0.03f, 40f, 0.30f, seed: 113), ToneSynth.Silence(0.025f),
+            ToneSynth.Noise(0.025f, 45f, 0.24f, seed: 114), ToneSynth.Silence(0.02f),
+            ToneSynth.Noise(0.03f, 40f, 0.20f, seed: 115)),
+
+        // Implosive inward crumple: pitch pulled UP into a thud.
+        I_Grav => ToneSynth.Concat(
+            ToneSynth.Tone(60f, 190f, 0.08f, 9f, ToneSynth.Waveform.Sine, 0.34f),
+            ToneSynth.Tone(105f, 60f, 0.08f, 18f, ToneSynth.Waveform.Sine, 0.40f)),
+
+        // Green spark crackle + fizzle-out.
+        I_Gauss => ToneSynth.Concat(
+            ToneSynth.Noise(0.04f, 45f, 0.30f, seed: 116),
+            ToneSynth.Tone(700f, 190f, 0.10f, 12f, ToneSynth.Waveform.Triangle, 0.24f)),
+
+        // Small spark snap.
+        I_Laser => ToneSynth.Concat(
+            ToneSynth.Noise(0.025f, 60f, 0.30f, seed: 117),
+            ToneSynth.Tone(900f, 900f, 0.04f, 30f, ToneSynth.Waveform.Sine, 0.22f)),
+
+        // Hard boom.
+        I_Missile => ToneSynth.Concat(
+            ToneSynth.Noise(0.16f, 16f, 0.45f, seed: 118),
+            ToneSynth.Tone(72f, 40f, 0.20f, 8f, ToneSynth.Waveform.Sine, 0.40f)),
+
+        // Bigger, longer boom with rumble.
+        I_Mortar => ToneSynth.Concat(
+            ToneSynth.Noise(0.22f, 12f, 0.48f, seed: 119),
+            ToneSynth.Tone(58f, 34f, 0.28f, 6f, ToneSynth.Waveform.Sine, 0.42f)),
+
+        // Wet splatter + acid hiss.
+        I_Bio => ToneSynth.Concat(
+            ToneSynth.Tone(130f, 85f, 0.05f, 20f, ToneSynth.Waveform.Sine, 0.32f),
+            ToneSynth.Noise(0.12f, 18f, 0.18f, seed: 120)),
+
+        // Sharp metallic ping.
+        I_Storm => ToneSynth.Concat(
+            ToneSynth.Noise(0.015f, 70f, 0.30f, seed: 121),
+            ToneSynth.Tone(1150f, 760f, 0.07f, 18f, ToneSynth.Waveform.Triangle, 0.26f)),
+
+        // Dull thud + small spark tick.
+        I_Slug => ToneSynth.Concat(
+            ToneSynth.Tone(200f, 135f, 0.08f, 16f, ToneSynth.Waveform.Sine, 0.36f),
+            ToneSynth.Noise(0.02f, 60f, 0.22f, seed: 122)),
+
+        // Reality-tear: descending warble + shimmer.
+        I_Arcane => ToneSynth.Concat(
+            ToneSynth.Tone(820f, 190f, 0.13f, 9f, ToneSynth.Waveform.Triangle, 0.28f),
+            ToneSynth.Tone(1300f, 1150f, 0.08f, 12f, ToneSynth.Waveform.Sine, 0.16f)),
+
+        // Glass-shatter tinkle: three quick high pings.
+        I_Shard => ToneSynth.Concat(
+            ToneSynth.Tone(2250f, 2250f, 0.04f, 25f, ToneSynth.Waveform.Sine, 0.22f), ToneSynth.Silence(0.015f),
+            ToneSynth.Tone(1850f, 1850f, 0.04f, 25f, ToneSynth.Waveform.Sine, 0.20f), ToneSynth.Silence(0.012f),
+            ToneSynth.Tone(2600f, 2600f, 0.05f, 22f, ToneSynth.Waveform.Sine, 0.18f)),
+
+        // ---------------- ranged impacts, Age of Fantasy (#379) ----------------
+
+        // Wood-on-flesh thunk.
+        I_Arrow => ToneSynth.Concat(
+            ToneSynth.Noise(0.012f, 80f, 0.22f, seed: 179),
+            ToneSynth.Tone(210f, 150f, 0.07f, 22f, ToneSynth.Waveform.Sine, 0.30f)),
+
+        // A harder punch — the bolt drives in.
+        I_Xbow => ToneSynth.Concat(
+            ToneSynth.Tone(260f, 140f, 0.05f, 24f, ToneSynth.Waveform.Sine, 0.34f),
+            ToneSynth.Noise(0.03f, 50f, 0.24f, seed: 180)),
+
+        // Stone crack into a dull thud.
+        I_Sling => ToneSynth.Concat(
+            ToneSynth.Noise(0.018f, 70f, 0.30f, seed: 181),
+            ToneSynth.Tone(150f, 95f, 0.09f, 18f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // Deep puncture: the spear buries itself.
+        I_Javelin => ToneSynth.Concat(
+            ToneSynth.Noise(0.025f, 55f, 0.26f, seed: 182),
+            ToneSynth.Tone(190f, 90f, 0.09f, 15f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // Splintering crash with real weight behind it.
+        I_Balli => ToneSynth.Concat(
+            ToneSynth.Noise(0.10f, 18f, 0.40f, seed: 183),
+            ToneSynth.Tone(90f, 50f, 0.16f, 10f, ToneSynth.Waveform.Sine, 0.36f)),
+
+        // Crackle, a beat, then the searing hiss settles in.
+        I_Breath => ToneSynth.Concat(
+            ToneSynth.Noise(0.04f, 35f, 0.26f, seed: 184),
+            ToneSynth.Silence(0.02f),
+            ToneSynth.Noise(0.10f, 16f, 0.18f, seed: 185)),
+
+        // Chime pop with a fizzling tail.
+        I_ArcaneB => ToneSynth.Concat(
+            ToneSynth.Tone(1300f, 900f, 0.06f, 16f, ToneSynth.Waveform.Triangle, 0.24f),
+            ToneSynth.Noise(0.07f, 24f, 0.14f, seed: 186)),
+
+        // ---------------- melee swings (#239) ----------------
+
+        // Electric hum into the sweep.
+        M_Energy => ToneSynth.Concat(
+            ToneSynth.Tone(215f, 235f, 0.10f, 5f, ToneSynth.Waveform.Sine, 0.24f),
+            ToneSynth.Tone(360f, 520f, 0.08f, 9f, ToneSynth.Waveform.Triangle, 0.22f)),
+
+        // Massive whoosh with bass weight.
+        M_Titan => ToneSynth.Concat(
+            ToneSynth.Noise(0.14f, 12f, 0.28f, seed: 131),
+            ToneSynth.Tone(82f, 48f, 0.12f, 9f, ToneSynth.Waveform.Sine, 0.36f)),
+
+        // Buzzing charge.
+        M_Shock => ToneSynth.Tone(290f, 640f, 0.12f, 7f, ToneSynth.Waveform.Square, 0.18f),
+
+        // Revving chainsaw snarl.
+        M_Chain => ToneSynth.Concat(
+            ToneSynth.Tone(85f, 190f, 0.14f, 4f, ToneSynth.Waveform.Square, 0.22f),
+            ToneSynth.Noise(0.07f, 20f, 0.22f, seed: 132)),
+
+        // Wet squelching swing.
+        M_Toxic => ToneSynth.Concat(
+            ToneSynth.Tone(145f, 88f, 0.07f, 12f, ToneSynth.Waveform.Sine, 0.28f),
+            ToneSynth.Noise(0.06f, 28f, 0.18f, seed: 133)),
+
+        // Warped, wrong-sounding whoosh.
+        M_Daemon => ToneSynth.Tone(520f, 140f, 0.17f, 6f, ToneSynth.Waveform.Triangle, 0.26f),
+
+        // Whoosh-thrust rising to the point.
+        M_Spear => ToneSynth.Concat(
+            ToneSynth.Noise(0.05f, 26f, 0.24f, seed: 134),
+            ToneSynth.Tone(390f, 720f, 0.06f, 14f, ToneSynth.Waveform.Sine, 0.22f)),
+
+        // Slashing screech.
+        M_Claw => ToneSynth.Concat(
+            ToneSynth.Noise(0.08f, 22f, 0.26f, seed: 135),
+            ToneSynth.Tone(880f, 470f, 0.08f, 12f, ToneSynth.Waveform.Triangle, 0.20f)),
+
+        // Slow heavy whoosh.
+        M_Crude => ToneSynth.Concat(
+            ToneSynth.Noise(0.11f, 14f, 0.22f, seed: 136),
+            ToneSynth.Tone(115f, 68f, 0.09f, 11f, ToneSynth.Waveform.Sine, 0.30f)),
+
+        // The classic metallic ring (the pre-#239 melee voice).
+        M_Blade => ToneSynth.Concat(
+            ToneSynth.Noise(0.012f, 60f, 0.4f, seed: 21),
+            ToneSynth.Tone(950f, 760f, 0.13f, 16f, ToneSynth.Waveform.Triangle, 0.32f)),
+
+        // ---------------- melee swings, Age of Fantasy (#379) ----------------
+
+        // Wind-up breath, then the long two-handed heave.
+        M_Great => ToneSynth.Concat(
+            ToneSynth.Noise(0.07f, 8f, 0.14f, seed: 187),
+            ToneSynth.Noise(0.12f, 10f, 0.26f, seed: 188),
+            ToneSynth.Tone(105f, 62f, 0.09f, 12f, ToneSynth.Waveform.Sine, 0.30f)),
+
+        // An airy, wrong-feeling wail with a cold shimmer over it.
+        M_Spect => ToneSynth.Concat(
+            ToneSynth.Tone(660f, 440f, 0.22f, 4f, ToneSynth.Waveform.Sine, 0.14f),
+            ToneSynth.Tone(1320f, 1180f, 0.12f, 7f, ToneSynth.Waveform.Sine, 0.08f)),
+
+        // Rising snarl into the lunge.
+        M_Maw => ToneSynth.Concat(
+            ToneSynth.Tone(120f, 180f, 0.10f, 7f, ToneSynth.Waveform.Square, 0.20f),
+            ToneSynth.Noise(0.05f, 26f, 0.20f, seed: 189)),
+
+        // Wet hissing swipe — sharper than toxic-melee's squelch.
+        M_ToxR => ToneSynth.Concat(
+            ToneSynth.Noise(0.07f, 18f, 0.20f, seed: 190),
+            ToneSynth.Tone(420f, 230f, 0.06f, 14f, ToneSynth.Waveform.Triangle, 0.14f),
+            ToneSynth.Noise(0.05f, 22f, 0.14f, seed: 191)),
+
+        // The falling bomb whistle.
+        M_Bomb => ToneSynth.Tone(1400f, 500f, 0.22f, 5f, ToneSynth.Waveform.Sine, 0.16f),
+
+        // ---------------- melee connects (#239) ----------------
+
+        // Crackling "zzt-chak".
+        H_Energy => ToneSynth.Concat(
+            ToneSynth.Noise(0.02f, 55f, 0.30f, seed: 141),
+            ToneSynth.Tone(720f, 240f, 0.06f, 20f, ToneSynth.Waveform.Square, 0.26f)),
+
+        // Metal-on-metal crunch, deep.
+        H_Titan => ToneSynth.Concat(
+            ToneSynth.Noise(0.09f, 22f, 0.38f, seed: 142),
+            ToneSynth.Tone(64f, 42f, 0.18f, 9f, ToneSynth.Waveform.Sine, 0.42f)),
+
+        // Snap-zap discharge.
+        H_Shock => ToneSynth.Concat(
+            ToneSynth.Tone(1020f, 290f, 0.05f, 26f, ToneSynth.Waveform.Square, 0.26f),
+            ToneSynth.Noise(0.025f, 55f, 0.24f, seed: 143)),
+
+        // Grinding chunk-tear.
+        H_Chain => ToneSynth.Concat(
+            ToneSynth.Noise(0.05f, 24f, 0.32f, seed: 144), ToneSynth.Silence(0.015f),
+            ToneSynth.Noise(0.06f, 20f, 0.28f, seed: 145),
+            ToneSynth.Tone(140f, 95f, 0.07f, 14f, ToneSynth.Waveform.Square, 0.20f)),
+
+        // Corrosive hiss.
+        H_Toxic => ToneSynth.Noise(0.14f, 13f, 0.20f, seed: 146),
+
+        // Burst of torn reality.
+        H_Daemon => ToneSynth.Concat(
+            ToneSynth.Tone(640f, 105f, 0.11f, 10f, ToneSynth.Waveform.Triangle, 0.28f),
+            ToneSynth.Noise(0.05f, 30f, 0.22f, seed: 147)),
+
+        // Sharp puncture crunch.
+        H_Spear => ToneSynth.Concat(
+            ToneSynth.Noise(0.03f, 50f, 0.28f, seed: 148),
+            ToneSynth.Tone(245f, 115f, 0.07f, 17f, ToneSynth.Waveform.Sine, 0.30f)),
+
+        // Wet tearing rip.
+        H_Claw => ToneSynth.Concat(
+            ToneSynth.Noise(0.08f, 20f, 0.28f, seed: 149),
+            ToneSynth.Tone(490f, 240f, 0.07f, 13f, ToneSynth.Waveform.Triangle, 0.22f)),
+
+        // Heavy blunt thud-crunch.
+        H_Crude => ToneSynth.Concat(
+            ToneSynth.Tone(118f, 66f, 0.11f, 12f, ToneSynth.Waveform.Sine, 0.38f),
+            ToneSynth.Noise(0.045f, 35f, 0.24f, seed: 150)),
+
+        // Clean clang-cut.
+        H_Blade => ToneSynth.Concat(
+            ToneSynth.Tone(1010f, 820f, 0.09f, 15f, ToneSynth.Waveform.Triangle, 0.28f),
+            ToneSynth.Noise(0.02f, 60f, 0.20f, seed: 151)),
+
+        // ---------------- melee connects, Age of Fantasy (#379) ----------------
+
+        // Ringing WHAM: metal, then the ground under it.
+        H_Great => ToneSynth.Concat(
+            ToneSynth.Noise(0.03f, 45f, 0.34f, seed: 192),
+            ToneSynth.Tone(320f, 120f, 0.12f, 10f, ToneSynth.Waveform.Triangle, 0.30f),
+            ToneSynth.Tone(80f, 52f, 0.10f, 12f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // A cold hollow moan, falling away.
+        H_Spect => ToneSynth.Concat(
+            ToneSynth.Tone(520f, 260f, 0.16f, 6f, ToneSynth.Waveform.Triangle, 0.16f),
+            ToneSynth.Tone(180f, 140f, 0.10f, 9f, ToneSynth.Waveform.Sine, 0.18f)),
+
+        // Crunching bite: two chomps and a low tear.
+        H_Maw => ToneSynth.Concat(
+            ToneSynth.Noise(0.035f, 50f, 0.30f, seed: 193),
+            ToneSynth.Silence(0.015f),
+            ToneSynth.Noise(0.05f, 30f, 0.26f, seed: 194),
+            ToneSynth.Tone(140f, 90f, 0.06f, 16f, ToneSynth.Waveform.Sine, 0.28f)),
+
+        // Squelch into an acid sizzle.
+        H_ToxR => ToneSynth.Concat(
+            ToneSynth.Tone(160f, 95f, 0.05f, 18f, ToneSynth.Waveform.Sine, 0.26f),
+            ToneSynth.Noise(0.11f, 15f, 0.16f, seed: 195)),
+
+        // The boom the whistle promised.
+        H_Bomb => ToneSynth.Concat(
+            ToneSynth.Noise(0.14f, 15f, 0.42f, seed: 196),
+            ToneSynth.Tone(66f, 38f, 0.18f, 8f, ToneSynth.Waveform.Sine, 0.38f)),
+
+        _ => ToneSynth.Tone(600f, 600f, 0.10f, 22f, ToneSynth.Waveform.Sine, 0.35f),
+    };
+}

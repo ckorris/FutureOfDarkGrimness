@@ -1,0 +1,29 @@
+{
+  "name": "Regenerating Grunts (#401 signal army - no Tough)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Grunt Squad",
+      "modelCount": 5,
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [
+        { "kind": "core", "name": "Regeneration" }
+      ],
+      "weapons": [
+        {
+          "name": "Club",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

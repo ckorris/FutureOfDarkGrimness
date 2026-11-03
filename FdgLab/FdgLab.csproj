@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- #194: training/benchmark lab for the Tactician AI effort (#191). Deliberately references the
+       engine ONLY - no Raylib, no FdgRaylib - so nothing lab-side can leak into the shipping app and
+       the lab always builds against the exact engine commit the app uses (plan decision D3). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FdgLab</RootNamespace>
+    <!-- The engine assembly carries NUnit/test-platform packages (#068), which transitively generate a
+         testing-platform entry point here and warn about the real one. FdgLab is not a test project. -->
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+    <!-- #392: the bench runs up to "dop" concurrent games in one process; the default workstation
+         GC serialized their allocations (a 32-core machine sat ~80% idle at dop 16). Server GC
+         measured 2.2x games/s, and with the #392 isolation fix GC mode provably cannot change
+         outcomes (all configs hash identically), only how fast they arrive. -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FutureOfDarkGrimness\FutureOfDarkGrimness.csproj" />
+  </ItemGroup>
+
+</Project>

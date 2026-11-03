@@ -1,0 +1,951 @@
+{
+  "Version": 2,
+  "TypeMap": [
+    {
+      "TypeId": "__placeholder",
+      "Capacity": 0
+    },
+    {
+      "TypeId": "int",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "float",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "string",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "position",
+      "Capacity": 128
+    },
+    {
+      "TypeId": "model",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "playerSlot",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "team",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "unit",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "army",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "terrain",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "rectangularZone",
+      "Capacity": 16
+    },
+    {
+      "TypeId": "objective",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "playerId",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "gameProgress",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "float2",
+      "Capacity": 128
+    }
+  ],
+  "Entries": [
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":14.0}},\"Position2D\":{\"X\":34.0,\"Y\":14.0},\"x\":34.0,\"y\":0.0,\"z\":14.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":36.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":36.0,\"Y\":0.0},\"XZ\":{\"X\":36.0,\"Y\":14.0}},\"Position2D\":{\"X\":36.0,\"Y\":14.0},\"x\":36.0,\"y\":0.0,\"z\":14.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":38.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":38.0,\"Y\":0.0},\"XZ\":{\"X\":38.0,\"Y\":14.0}},\"Position2D\":{\"X\":38.0,\"Y\":14.0},\"x\":38.0,\"y\":0.0,\"z\":14.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":46.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":46.0,\"Y\":0.0},\"XZ\":{\"X\":46.0,\"Y\":14.0}},\"Position2D\":{\"X\":46.0,\"Y\":14.0},\"x\":46.0,\"y\":0.0,\"z\":14.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":48.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":48.0,\"Y\":0.0},\"XZ\":{\"X\":48.0,\"Y\":14.0}},\"Position2D\":{\"X\":48.0,\"Y\":14.0},\"x\":48.0,\"y\":0.0,\"z\":14.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":50.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":50.0,\"Y\":0.0},\"XZ\":{\"X\":50.0,\"Y\":14.0}},\"Position2D\":{\"X\":50.0,\"Y\":14.0},\"x\":50.0,\"y\":0.0,\"z\":14.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":16.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":16.0,\"Y\":0.0},\"XZ\":{\"X\":16.0,\"Y\":28.0}},\"Position2D\":{\"X\":16.0,\"Y\":28.0},\"x\":16.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":18.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":18.0,\"Y\":0.0},\"XZ\":{\"X\":18.0,\"Y\":28.0}},\"Position2D\":{\"X\":18.0,\"Y\":28.0},\"x\":18.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":20.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":20.0,\"Y\":0.0},\"XZ\":{\"X\":20.0,\"Y\":28.0}},\"Position2D\":{\"X\":20.0,\"Y\":28.0},\"x\":20.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":28.0}},\"Position2D\":{\"X\":22.0,\"Y\":28.0},\"x\":22.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":28.0}},\"Position2D\":{\"X\":34.0,\"Y\":28.0},\"x\":34.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":36.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":36.0,\"Y\":0.0},\"XZ\":{\"X\":36.0,\"Y\":28.0}},\"Position2D\":{\"X\":36.0,\"Y\":28.0},\"x\":36.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":38.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":38.0,\"Y\":0.0},\"XZ\":{\"X\":38.0,\"Y\":28.0}},\"Position2D\":{\"X\":38.0,\"Y\":28.0},\"x\":38.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":40.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":40.0,\"Y\":0.0},\"XZ\":{\"X\":40.0,\"Y\":28.0}},\"Position2D\":{\"X\":40.0,\"Y\":28.0},\"x\":40.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":52.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":52.0,\"Y\":0.0},\"XZ\":{\"X\":52.0,\"Y\":28.0}},\"Position2D\":{\"X\":52.0,\"Y\":28.0},\"x\":52.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":54.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":54.0,\"Y\":0.0},\"XZ\":{\"X\":54.0,\"Y\":28.0}},\"Position2D\":{\"X\":54.0,\"Y\":28.0},\"x\":54.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":56.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":56.0,\"Y\":0.0},\"XZ\":{\"X\":56.0,\"Y\":28.0}},\"Position2D\":{\"X\":56.0,\"Y\":28.0},\"x\":56.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":58.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":58.0,\"Y\":0.0},\"XZ\":{\"X\":58.0,\"Y\":28.0}},\"Position2D\":{\"X\":58.0,\"Y\":28.0},\"x\":58.0,\"y\":0.0,\"z\":28.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":0,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":0,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":0,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Takedown\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Takedown\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnShootTargetsSelected\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"targetIndividualModel\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"This model may pick any model in the target unit as its individual target for this weapon\\\\u0027s attacks, which is resolved as if it was a unit of [1]. Takedown attacks must be resolved before other weapons.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Sniper Rifle\",\"RangeInches\":30.0,\"Attacks\":1,\"ArmorPenetration\":1,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"},{\"_ruleDefinitionsJson\":null,\"Name\":\"Sidearm\",\"RangeInches\":18.0,\"Attacks\":2,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"9e606623-6eab-4d3d-9a53-1a8c128bbff3\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":14.0}},\"Position2D\":{\"X\":34.0,\"Y\":14.0},\"x\":34.0,\"y\":0.0,\"z\":14.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":1,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":1,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":1,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Takedown\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Takedown\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnShootTargetsSelected\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"targetIndividualModel\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"This model may pick any model in the target unit as its individual target for this weapon\\\\u0027s attacks, which is resolved as if it was a unit of [1]. Takedown attacks must be resolved before other weapons.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Sniper Rifle\",\"RangeInches\":30.0,\"Attacks\":1,\"ArmorPenetration\":1,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"},{\"_ruleDefinitionsJson\":null,\"Name\":\"Sidearm\",\"RangeInches\":18.0,\"Attacks\":2,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"0297eced-8e17-44ed-8569-1d6ddbaf83a3\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":36.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":36.0,\"Y\":0.0},\"XZ\":{\"X\":36.0,\"Y\":14.0}},\"Position2D\":{\"X\":36.0,\"Y\":14.0},\"x\":36.0,\"y\":0.0,\"z\":14.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":2,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":2,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":2,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Takedown\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Takedown\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnShootTargetsSelected\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"targetIndividualModel\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"This model may pick any model in the target unit as its individual target for this weapon\\\\u0027s attacks, which is resolved as if it was a unit of [1]. Takedown attacks must be resolved before other weapons.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Sniper Rifle\",\"RangeInches\":30.0,\"Attacks\":1,\"ArmorPenetration\":1,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"},{\"_ruleDefinitionsJson\":null,\"Name\":\"Sidearm\",\"RangeInches\":18.0,\"Attacks\":2,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"a0e1aa47-2521-4ce4-9102-dd5c5ffe3ee8\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":38.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":38.0,\"Y\":0.0},\"XZ\":{\"X\":38.0,\"Y\":14.0}},\"Position2D\":{\"X\":38.0,\"Y\":14.0},\"x\":38.0,\"y\":0.0,\"z\":14.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":3,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":3,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":3,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Takedown\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Takedown\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnShootTargetsSelected\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"targetIndividualModel\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"This model may pick any model in the target unit as its individual target for this weapon\\\\u0027s attacks, which is resolved as if it was a unit of [1]. Takedown attacks must be resolved before other weapons.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"May only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Crossbow-Mod\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":1,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"ac4b3c2c-df29-4f9c-bbeb-c93965cac004\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":46.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":46.0,\"Y\":0.0},\"XZ\":{\"X\":46.0,\"Y\":14.0}},\"Position2D\":{\"X\":46.0,\"Y\":14.0},\"x\":46.0,\"y\":0.0,\"z\":14.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":4,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":4,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":4,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Takedown\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Takedown\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnShootTargetsSelected\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"targetIndividualModel\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"This model may pick any model in the target unit as its individual target for this weapon\\\\u0027s attacks, which is resolved as if it was a unit of [1]. Takedown attacks must be resolved before other weapons.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"May only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Crossbow-Mod\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":1,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"76a2fabc-7cf7-4232-ad84-81b3c0bcf566\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":48.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":48.0,\"Y\":0.0},\"XZ\":{\"X\":48.0,\"Y\":14.0}},\"Position2D\":{\"X\":48.0,\"Y\":14.0},\"x\":48.0,\"y\":0.0,\"z\":14.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":5,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":5,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":5,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Takedown\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Takedown\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnShootTargetsSelected\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"targetIndividualModel\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"This model may pick any model in the target unit as its individual target for this weapon\\\\u0027s attacks, which is resolved as if it was a unit of [1]. Takedown attacks must be resolved before other weapons.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"May only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Crossbow-Mod\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":1,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"32f59994-7a94-4c56-b632-f71d97f5abf7\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":50.0,\"Y\":0.0,\"Z\":14.0,\"XY\":{\"X\":50.0,\"Y\":0.0},\"XZ\":{\"X\":50.0,\"Y\":14.0}},\"Position2D\":{\"X\":50.0,\"Y\":14.0},\"x\":50.0,\"y\":0.0,\"z\":14.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":6,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":6,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":6,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"e1376ec9-da25-449f-82e9-31a7b9194e5e\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":16.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":16.0,\"Y\":0.0},\"XZ\":{\"X\":16.0,\"Y\":28.0}},\"Position2D\":{\"X\":16.0,\"Y\":28.0},\"x\":16.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":7,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":7,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":7,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"63ccb0ec-2077-4bc8-a521-97b83b7ca591\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":18.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":18.0,\"Y\":0.0},\"XZ\":{\"X\":18.0,\"Y\":28.0}},\"Position2D\":{\"X\":18.0,\"Y\":28.0},\"x\":18.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":8,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":8,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":8,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"3604ce1f-6b66-471e-92dd-e20dd119b655\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":20.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":20.0,\"Y\":0.0},\"XZ\":{\"X\":20.0,\"Y\":28.0}},\"Position2D\":{\"X\":20.0,\"Y\":28.0},\"x\":20.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":9,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":9,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":9,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"e290be67-54e0-49ce-aa5b-5d07e45a2d3c\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":28.0}},\"Position2D\":{\"X\":22.0,\"Y\":28.0},\"x\":22.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":10,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":10,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":10,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"1781ff6b-b187-49cb-8510-1fc9c0f865fa\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":28.0}},\"Position2D\":{\"X\":34.0,\"Y\":28.0},\"x\":34.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":11,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":11,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":11,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"a112a7fc-a29a-4532-bb48-1fd339add576\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":36.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":36.0,\"Y\":0.0},\"XZ\":{\"X\":36.0,\"Y\":28.0}},\"Position2D\":{\"X\":36.0,\"Y\":28.0},\"x\":36.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":12,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":12,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":12,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"407cdfee-c896-4fc0-94f6-564e9bcb78a9\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":38.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":38.0,\"Y\":0.0},\"XZ\":{\"X\":38.0,\"Y\":28.0}},\"Position2D\":{\"X\":38.0,\"Y\":28.0},\"x\":38.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":13,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":13,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":13,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"ee430f08-7944-483e-ab59-837ee4901b8a\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":40.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":40.0,\"Y\":0.0},\"XZ\":{\"X\":40.0,\"Y\":28.0}},\"Position2D\":{\"X\":40.0,\"Y\":28.0},\"x\":40.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":14,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":14,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":14,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"eb3b1ca2-a3af-479a-aefc-97c7252ea055\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":52.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":52.0,\"Y\":0.0},\"XZ\":{\"X\":52.0,\"Y\":28.0}},\"Position2D\":{\"X\":52.0,\"Y\":28.0},\"x\":52.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":15,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":15,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":15,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"7d0fbb3a-2bef-4a7d-8137-2cd24c5bf0af\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":54.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":54.0,\"Y\":0.0},\"XZ\":{\"X\":54.0,\"Y\":28.0}},\"Position2D\":{\"X\":54.0,\"Y\":28.0},\"x\":54.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":16,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":16,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":16,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"9066d1fc-514b-4171-a381-2a20063e11f4\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":56.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":56.0,\"Y\":0.0},\"XZ\":{\"X\":56.0,\"Y\":28.0}},\"Position2D\":{\"X\":56.0,\"Y\":28.0},\"x\":56.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":17,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":17,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":17,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Popgun\",\"RangeInches\":12.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"f2e6ce64-79d1-43b0-9832-a094e1f39d98\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":58.0,\"Y\":0.0,\"Z\":28.0,\"XY\":{\"X\":58.0,\"Y\":0.0},\"XZ\":{\"X\":58.0,\"Y\":28.0}},\"Position2D\":{\"X\":58.0,\"Y\":28.0},\"x\":58.0,\"y\":0.0,\"z\":28.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"7b1a7c85-cb0b-4848-ada7-ca950374c9eb\"},\"SlotID\":0,\"TeamNumber\":0,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"5128c26b-3540-417c-ba3f-f370ba0e89eb\"},\"SlotID\":1,\"TeamNumber\":1,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":0,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"7b1a7c85-cb0b-4848-ada7-ca950374c9eb\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":1,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"5128c26b-3540-417c-ba3f-f370ba0e89eb\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to leave the transport this unit is embarked in, staying fully within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to board a friendly transport that has room, getting in contact with it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":2,\"Generation\":1}],\"ID\":{\"ID\":\"c2086cbe-dbdc-4a0c-9cb6-fa0559a4c32e\"},\"PlayerID\":{\"ID\":\"7b1a7c85-cb0b-4848-ada7-ca950374c9eb\"},\"Name\":\"Snipers\",\"Quality\":3,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to leave the transport this unit is embarked in, staying fully within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to board a friendly transport that has room, getting in contact with it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":3,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":4,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":5,\"Generation\":1}],\"ID\":{\"ID\":\"7f9d9e21-58ef-4609-b0d8-5bc228b54fe0\"},\"PlayerID\":{\"ID\":\"7b1a7c85-cb0b-4848-ada7-ca950374c9eb\"},\"Name\":\"Crossbow Squad\",\"Quality\":3,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to leave the transport this unit is embarked in, staying fully within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to board a friendly transport that has room, getting in contact with it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":6,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":7,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":8,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":9,\"Generation\":1}],\"ID\":{\"ID\":\"ba22a962-430b-48f5-a461-f2585a346aa1\"},\"PlayerID\":{\"ID\":\"5128c26b-3540-417c-ba3f-f370ba0e89eb\"},\"Name\":\"Left Guards\",\"Quality\":5,\"Defense\":5,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to leave the transport this unit is embarked in, staying fully within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to board a friendly transport that has room, getting in contact with it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":10,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":11,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":12,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":13,\"Generation\":1}],\"ID\":{\"ID\":\"33b36566-261c-4a02-b6be-8c42585a1bac\"},\"PlayerID\":{\"ID\":\"5128c26b-3540-417c-ba3f-f370ba0e89eb\"},\"Name\":\"Center Guards\",\"Quality\":5,\"Defense\":5,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to leave the transport this unit is embarked in, staying fully within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to board a friendly transport that has room, getting in contact with it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":14,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":15,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":16,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":17,\"Generation\":1}],\"ID\":{\"ID\":\"6a1d1d3f-b219-4552-9037-16ed4ab13d89\"},\"PlayerID\":{\"ID\":\"5128c26b-3540-417c-ba3f-f370ba0e89eb\"},\"Name\":\"Right Guards\",\"Quality\":5,\"Defense\":5,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"7b1a7c85-cb0b-4848-ada7-ca950374c9eb\"},\"ArmyName\":\"Snipers (#340 probe)\",\"Faction\":\"\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":2,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":3,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":4,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"5128c26b-3540-417c-ba3f-f370ba0e89eb\"},\"ArmyName\":\"Sniper Targets (#340 enemies)\",\"Faction\":\"\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":0,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":18.0,\"Y\":0.0,\"Z\":24.0,\"XY\":{\"X\":18.0,\"Y\":0.0},\"XZ\":{\"X\":18.0,\"Y\":24.0}},\"Position2D\":{\"X\":18.0,\"Y\":24.0},\"x\":18.0,\"y\":0.0,\"z\":24.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":1,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":54.0,\"Y\":0.0,\"Z\":24.0,\"XY\":{\"X\":54.0,\"Y\":0.0},\"XZ\":{\"X\":54.0,\"Y\":24.0}},\"Position2D\":{\"X\":54.0,\"Y\":24.0},\"x\":54.0,\"y\":0.0,\"z\":24.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 14
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Stage\":\"MainPhase\",\"TeamActivateOrder\":[0,1],\"CurrentRoundTeamFinishOrder\":[],\"CurrentTeamIndex\":1,\"CurrentPlayerIndexPerTeam\":{\"0\":0,\"1\":0},\"UnactivatedUnits\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":2,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":3,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":4,\"Generation\":1}],\"Settings\":{\"ArmyPoints\":2000,\"AllowedGameSystems\":\"All\",\"CoverProximityExceptions\":true,\"SeeThroughFriendlyUnits\":false,\"UnlimitedSplitFire\":false,\"TerrainPieceCount\":20,\"TerrainPointsTotal\":30,\"TerrainPointsPerTurn\":3,\"RandomnessType\":\"Realistic\",\"DiceSeed\":337,\"TurnStyle\":\"Standard\",\"ShootingMode\":\"OneAtATime\",\"ObjectivePlacementMode\":\"AutoPlaced\",\"TerrainPlacementMode\":\"AutoFromLayout\",\"TerrainLayoutPath\":null,\"TableBackground\":\"Barren\"},\"RoundCount\":1,\"ActivatingUnit\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    }
+  ]
+}

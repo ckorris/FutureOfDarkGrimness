@@ -1,0 +1,76 @@
+{
+  "name": "Band Targets (#334 enemies)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Round Sentinel",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.0
+      },
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Stick",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Slab Walker",
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "widthInches": 1.5,
+        "heightInches": 3.0
+      },
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Stick",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Distant Watchers",
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622
+      },
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Stick",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

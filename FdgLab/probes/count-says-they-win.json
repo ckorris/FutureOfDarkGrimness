@@ -1,0 +1,23 @@
+{
+  "name": "B-gate probe: count says they win - round 4, 1-1 on markers, but the enemy's unactivated paper squad can walk onto ours; only killing it keeps the tie",
+  "round": 4,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "objectives": [[12, 24], [62, 24]],
+  "players": [
+    {
+      "army": "armies/probe-gunner-and-holder.fdgarmy",
+      "units": [
+        { "unit": "Marker Holder", "models": [[11, 24], [12, 24], [13, 24]], "activated": true },
+        { "unit": "Gunner Squad", "models": [[30, 32], [30, 34], [30, 36]] }
+      ]
+    },
+    {
+      "army": "armies/probe-two-targets.fdgarmy",
+      "units": [
+        { "unit": "Paper Runner", "models": [[12, 32], [12, 34], [12, 36]] },
+        { "unit": "Fat Holder", "models": [[60, 22], [62, 22], [64, 22], [60, 24], [62, 24], [64, 24], [60, 26], [62, 26], [64, 26], [62, 28]], "activated": true }
+      ]
+    }
+  ]
+}

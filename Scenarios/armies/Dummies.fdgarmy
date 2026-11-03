@@ -1,0 +1,51 @@
+{
+  "name": "Target Dummies (signal army)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Dummies",
+      "modelCount": 5,
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Stick",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Tough Dummy",
+      "modelCount": 1,
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Stick",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

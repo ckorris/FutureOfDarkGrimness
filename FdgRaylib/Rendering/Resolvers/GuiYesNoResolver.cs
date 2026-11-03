@@ -39,10 +39,10 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
             ImGuiWindowFlags.NoBackground);
 
-        float dw = MathF.Min(screenW * 0.40f, 520f);
-        float dh = screenH * 0.22f;
-        float dx = (screenW - dw) * 0.5f;
-        float dy = (screenH - dh) * 0.5f;
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        float dh = ResolverPanelLayout.H;
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
@@ -60,23 +60,30 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
         ImGui.TextUnformatted(question);
         ImGui.PopTextWrapPos();
 
-        // Buttons anchored to bottom of dialog
-        float btnW = dw * 0.35f;
-        float btnH = 36f;
-        float gap  = dw * 0.06f;
+        // Buttons anchored to bottom of dialog. Yes is the primary affirmative (accent + Enter); No recedes.
+        float btnW = dw * 0.42f;
+        float btnH = ResolverPanelLayout.OptionRowHeight();   // #298: font-relative, was a flat 36px
+        float gap  = dw * 0.04f;
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
         float btnY = dh - pad - btnH;
 
+        // #248: Y/N letter keys answer too, and Backspace = No (Esc is reserved for the in-game menu).
+        // Results applied once after drawing so same-frame opposite inputs can't double-resolve the
+        // TCS (Yes wins the tie, matching button order).
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
-        if (ImGui.Button("Yes", new Vector2(btnW, btnH)))
-            Complete(tcs, true);
+        bool yesPressed = ResolverButtons.Primary("Yes [Y]", new Vector2(btnW, btnH))
+                          || ResolverHotkeys.IsLetterPressed('Y');
 
         ImGui.SameLine(0, gap);
-        if (ImGui.Button("No", new Vector2(btnW, btnH)))
-            Complete(tcs, false);
+        bool noPressed  = ResolverButtons.Deemphasized("No [N] (Backspace)", new Vector2(btnW, btnH))
+                          || ResolverHotkeys.IsLetterPressed('N')
+                          || ResolverHotkeys.IsBackPressed();
 
         ImGui.EndChild();
         ImGui.End();
+
+        if (yesPressed) Complete(tcs, true);
+        else if (noPressed) Complete(tcs, false);
     }
 
     private void Complete(TaskCompletionSource<bool> tcs, bool answer)

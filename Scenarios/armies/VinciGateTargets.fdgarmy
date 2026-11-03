@@ -1,0 +1,45 @@
+{
+  "name": "Vinci gate demo targets",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Target A - INSIDE 9in",
+      "modelCount": 5,
+      "quality": 5,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Stick",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Target B - OUTSIDE 9in",
+      "modelCount": 5,
+      "quality": 5,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Stick",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

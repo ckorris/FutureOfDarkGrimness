@@ -1,0 +1,33 @@
+{
+  "name": "Deadly Gunners (#401 signal army)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Melta Team",
+      "modelCount": 4,
+      "quality": 2,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Melta Gun",
+          "quantity": 4,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

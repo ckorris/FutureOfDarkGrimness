@@ -1,0 +1,15 @@
+{
+  "_comment": "Default self-play generation mix (docs/tactician-bc-campaign.md step 4). profileMix picks A-vs-B AI pairing (weights normalized, need not sum to 1); levels picks which pool.json panel to draw armies from (points-1k/2k/3k/4k for 1v1, shape-2v2 for 2v2) - both sampled per game, deterministically from the game's own seed so a fixed seed reproduces the same sample (schema sec 7 check 5). Held-out pairings from pool.json are always excluded regardless of these weights. Data, not code - edit and relaunch without a rebuild.",
+  "profileMix": [
+    { "name": "mirror", "weight": 0.7, "profileA": "Tactician", "profileB": "Tactician" },
+    { "name": "vs_solo", "weight": 0.2, "profileA": "Tactician", "profileB": "SoloRules" },
+    { "name": "vs_gunline", "weight": 0.1, "profileA": "Tactician", "profileB": "Gunline" }
+  ],
+  "levels": [
+    { "panel": "points-1k", "weight": 0.2 },
+    { "panel": "points-2k", "weight": 0.2 },
+    { "panel": "points-3k", "weight": 0.2 },
+    { "panel": "points-4k", "weight": 0.15 },
+    { "panel": "shape-2v2", "weight": 0.25 }
+  ]
+}

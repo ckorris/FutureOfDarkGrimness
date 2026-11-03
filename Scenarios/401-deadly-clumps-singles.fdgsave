@@ -1,0 +1,541 @@
+{
+  "Version": 2,
+  "TypeMap": [
+    {
+      "TypeId": "__placeholder",
+      "Capacity": 0
+    },
+    {
+      "TypeId": "int",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "float",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "string",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "position",
+      "Capacity": 128
+    },
+    {
+      "TypeId": "model",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "playerSlot",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "team",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "unit",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "army",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "terrain",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "rectangularZone",
+      "Capacity": 16
+    },
+    {
+      "TypeId": "objective",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "playerId",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "gameProgress",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "float2",
+      "Capacity": 128
+    }
+  ],
+  "Entries": [
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":20.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":20.0,\"Y\":0.0},\"XZ\":{\"X\":20.0,\"Y\":30.0}},\"Position2D\":{\"X\":20.0,\"Y\":30.0},\"x\":20.0,\"y\":0.0,\"z\":30.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":30.0}},\"Position2D\":{\"X\":22.0,\"Y\":30.0},\"x\":22.0,\"y\":0.0,\"z\":30.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":24.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":24.0,\"Y\":0.0},\"XZ\":{\"X\":24.0,\"Y\":30.0}},\"Position2D\":{\"X\":24.0,\"Y\":30.0},\"x\":24.0,\"y\":0.0,\"z\":30.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":26.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":26.0,\"Y\":0.0},\"XZ\":{\"X\":26.0,\"Y\":30.0}},\"Position2D\":{\"X\":26.0,\"Y\":30.0},\"x\":26.0,\"y\":0.0,\"z\":30.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":28.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":28.0,\"Y\":0.0},\"XZ\":{\"X\":28.0,\"Y\":30.0}},\"Position2D\":{\"X\":28.0,\"Y\":30.0},\"x\":28.0,\"y\":0.0,\"z\":30.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":21.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":21.0,\"Y\":0.0},\"XZ\":{\"X\":21.0,\"Y\":18.0}},\"Position2D\":{\"X\":21.0,\"Y\":18.0},\"x\":21.0,\"y\":0.0,\"z\":18.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":23.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":23.0,\"Y\":0.0},\"XZ\":{\"X\":23.0,\"Y\":18.0}},\"Position2D\":{\"X\":23.0,\"Y\":18.0},\"x\":23.0,\"y\":0.0,\"z\":18.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":25.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":25.0,\"Y\":0.0},\"XZ\":{\"X\":25.0,\"Y\":18.0}},\"Position2D\":{\"X\":25.0,\"Y\":18.0},\"x\":25.0,\"y\":0.0,\"z\":18.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":27.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":27.0,\"Y\":0.0},\"XZ\":{\"X\":27.0,\"Y\":18.0}},\"Position2D\":{\"X\":27.0,\"Y\":18.0},\"x\":27.0,\"y\":0.0,\"z\":18.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":0,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":0,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":0,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Club\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"eb9a2374-e318-429b-9f69-a77f78ce2c3a\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":20.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":20.0,\"Y\":0.0},\"XZ\":{\"X\":20.0,\"Y\":30.0}},\"Position2D\":{\"X\":20.0,\"Y\":30.0},\"x\":20.0,\"y\":0.0,\"z\":30.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":1,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":1,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":1,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Club\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"90de9c94-4794-4c26-b374-9f904264000b\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":30.0}},\"Position2D\":{\"X\":22.0,\"Y\":30.0},\"x\":22.0,\"y\":0.0,\"z\":30.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":2,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":2,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":2,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Club\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"1d9d031c-56b5-4db5-b086-0eaa79009af6\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":24.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":24.0,\"Y\":0.0},\"XZ\":{\"X\":24.0,\"Y\":30.0}},\"Position2D\":{\"X\":24.0,\"Y\":30.0},\"x\":24.0,\"y\":0.0,\"z\":30.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":3,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":3,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":3,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Club\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"e1b1640f-7852-45c0-9ba6-df311d31c136\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":26.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":26.0,\"Y\":0.0},\"XZ\":{\"X\":26.0,\"Y\":30.0}},\"Position2D\":{\"X\":26.0,\"Y\":30.0},\"x\":26.0,\"y\":0.0,\"z\":30.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":4,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":4,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":4,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Club\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"147d1b31-8175-4779-9230-1e0994317251\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":28.0,\"Y\":0.0,\"Z\":30.0,\"XY\":{\"X\":28.0,\"Y\":0.0},\"XZ\":{\"X\":28.0,\"Y\":30.0}},\"Position2D\":{\"X\":28.0,\"Y\":30.0},\"x\":28.0,\"y\":0.0,\"z\":30.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":5,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":5,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":5,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Assign each wound to one model, and multiply it by X. Hits from Deadly must be resolved first, and these wounds don\\\\u0027t carry over to other models if the original target is killed.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Melta Gun\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"14e1a3c1-b7c0-4fd2-acd3-a4221114f4de\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":21.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":21.0,\"Y\":0.0},\"XZ\":{\"X\":21.0,\"Y\":18.0}},\"Position2D\":{\"X\":21.0,\"Y\":18.0},\"x\":21.0,\"y\":0.0,\"z\":18.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":6,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":6,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":6,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Assign each wound to one model, and multiply it by X. Hits from Deadly must be resolved first, and these wounds don\\\\u0027t carry over to other models if the original target is killed.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Melta Gun\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"94a27723-4cf8-4bdb-8441-d767df9f4b46\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":23.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":23.0,\"Y\":0.0},\"XZ\":{\"X\":23.0,\"Y\":18.0}},\"Position2D\":{\"X\":23.0,\"Y\":18.0},\"x\":23.0,\"y\":0.0,\"z\":18.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":7,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":7,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":7,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Assign each wound to one model, and multiply it by X. Hits from Deadly must be resolved first, and these wounds don\\\\u0027t carry over to other models if the original target is killed.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Melta Gun\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"2ca8644c-f78c-49f6-88bd-11f3d3e5b653\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":25.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":25.0,\"Y\":0.0},\"XZ\":{\"X\":25.0,\"Y\":18.0}},\"Position2D\":{\"X\":25.0,\"Y\":18.0},\"x\":25.0,\"y\":0.0,\"z\":18.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":8,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":8,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":8,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Assign each wound to one model, and multiply it by X. Hits from Deadly must be resolved first, and these wounds don\\\\u0027t carry over to other models if the original target is killed.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Melta Gun\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null,\"MeleeEffectKey\":null,\"GrantedRoles\":\"None\"}],\"ID\":{\"ID\":\"1cc468ba-abea-42f3-8465-192eaf70d3b2\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":27.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":27.0,\"Y\":0.0},\"XZ\":{\"X\":27.0,\"Y\":18.0}},\"Position2D\":{\"X\":27.0,\"Y\":18.0},\"x\":27.0,\"y\":0.0,\"z\":18.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"99c4f754-ff13-4700-aab3-acacbbd23368\"},\"SlotID\":0,\"TeamNumber\":0,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"4ad40f49-09c6-4cef-85ea-2c390c22b8e7\"},\"SlotID\":1,\"TeamNumber\":1,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":0,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"99c4f754-ff13-4700-aab3-acacbbd23368\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":1,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"4ad40f49-09c6-4cef-85ea-2c390c22b8e7\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Regeneration\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Regeneration\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"mostModelsHaveThisRule\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreWoundOnRoll\\\",\\n            \\\"minRoll\\\": 5\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Subject\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"When a unit where most models have this rule takes wounds, roll one die for each. On a 5\\\\u002B it is ignored.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to leave the transport this unit is embarked in, staying fully within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to board a friendly transport that has room, getting in contact with it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":2,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":3,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":4,\"Generation\":1}],\"ID\":{\"ID\":\"871b5cd4-c24b-4eb4-acad-f8d9b7c6039c\"},\"PlayerID\":{\"ID\":\"99c4f754-ff13-4700-aab3-acacbbd23368\"},\"Name\":\"Grunt Squad\",\"Quality\":6,\"Defense\":5,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to leave the transport this unit is embarked in, staying fully within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null,\\n            \\\"maxCountFromArgument\\\": false\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Use a move action to board a friendly transport that has room, getting in contact with it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":5,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":6,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":7,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":8,\"Generation\":1}],\"ID\":{\"ID\":\"4c78427d-842d-485d-ae3c-424d2c6b0058\"},\"PlayerID\":{\"ID\":\"4ad40f49-09c6-4cef-85ea-2c390c22b8e7\"},\"Name\":\"Melta Team\",\"Quality\":2,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"99c4f754-ff13-4700-aab3-acacbbd23368\"},\"ArmyName\":\"Regenerating Grunts (#401 signal army - no Tough)\",\"Faction\":\"\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"4ad40f49-09c6-4cef-85ea-2c390c22b8e7\"},\"ArmyName\":\"Deadly Gunners (#401 signal army)\",\"Faction\":\"\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":0,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":24.0,\"Y\":0.0,\"Z\":18.0,\"XY\":{\"X\":24.0,\"Y\":0.0},\"XZ\":{\"X\":24.0,\"Y\":18.0}},\"Position2D\":{\"X\":24.0,\"Y\":18.0},\"x\":24.0,\"y\":0.0,\"z\":18.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 14
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Stage\":\"MainPhase\",\"TeamActivateOrder\":[1,0],\"CurrentRoundTeamFinishOrder\":[],\"CurrentTeamIndex\":1,\"CurrentPlayerIndexPerTeam\":{\"1\":0,\"0\":0},\"UnactivatedUnits\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1}],\"Settings\":{\"ArmyPoints\":2000,\"AllowedGameSystems\":\"All\",\"CoverProximityExceptions\":true,\"SeeThroughFriendlyUnits\":false,\"UnlimitedSplitFire\":false,\"TerrainPieceCount\":20,\"TerrainPointsTotal\":30,\"TerrainPointsPerTurn\":3,\"RandomnessType\":\"Realistic\",\"DiceSeed\":4011,\"TurnStyle\":\"Standard\",\"ShootingMode\":\"OneAtATime\",\"ObjectivePlacementMode\":\"AutoPlaced\",\"TerrainPlacementMode\":\"AutoFromLayout\",\"TerrainLayoutPath\":null,\"TableBackground\":\"Forest\"},\"RoundCount\":1,\"ActivatingUnit\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    }
+  ]
+}

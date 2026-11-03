@@ -1,0 +1,237 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using FDG.ArmyBuilding;
+using FDG.Rules.Definitions;
+using FDG.Rules.Dispatch;
+using FDG.SaveLoad;
+using FdgRaylib.Rendering;
+using NUnit.Framework;
+
+namespace FdgRaylib.Tests;
+
+// #259 — the name -> description lookup behind the Army Forge's rule hover tooltips.
+[TestFixture]
+public class RuleGlossaryTests
+{
+    private static SpecialRuleDefinition Definition(string name, string description) =>
+        new(name, Array.Empty<HookEntry>(), Array.Empty<ActivatedAbility>(), Description: description);
+
+    private static BookFile BookWith(params SpecialRuleDefinition[] definitions) =>
+        new() { Name = "Test Book", RuleDefinitions = new List<SpecialRuleDefinition>(definitions) };
+
+    [Test]
+    public void Describe_CoreRule_ReturnsTheCatalogsDescription()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+        Assert.That(glossary.Describe("Stealth"), Is.EqualTo(CoreRuleCatalog.Stealth.Description));
+        Assert.That(glossary.Describe("Stealth"), Is.Not.Empty);
+    }
+
+    // #424: a re-baked 3.6 book embeds the supplement's Assault, so the hover text is the 3.6 sentence.
+    [Test]
+    public void Describe_Assault_IsThe36Sentence_FromTheShippedSupplement()
+    {
+        string path = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "GdfRuleSupplement.json");
+        RuleGlossary glossary = RuleGlossary.Build(BookRuleSupplement.LoadDefinitions(System.IO.File.ReadAllText(path)));
+
+        Assert.That(glossary.Describe("Assault"), Is.EqualTo("Counts as both a ranged weapon and a melee weapon."));
+        Assert.That(glossary.Tooltip(new SpecialRuleEntry_Core("Assault")), Does.Contain("Counts as both"));
+    }
+
+    // #441 F7: the glossary's text is EnhancedRuleGate.HoverDescription - an Enhanced rule whose OPR text never names
+    // its base ends with "Base rule: X.", X read off the gate (Watchborn's activation helpers fold to Watchborn); one
+    // whose text names its base is the bare description.
+    [Test]
+    public void Describe_EnhancedRuleWhoseTextNeverNamesItsBase_EndsWithTheBaseRuleLine()
+    {
+        string path = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "GdfRuleSupplement.json");
+        IReadOnlyList<SpecialRuleDefinition> definitions = BookRuleSupplement.LoadDefinitions(System.IO.File.ReadAllText(path));
+        RuleGlossary glossary = RuleGlossary.Build(definitions);
+        SpecialRuleDefinition watchborn = definitions.Single(d => d.Name == "Enhanced Watchborn");
+        SpecialRuleDefinition lustbound = definitions.Single(d => d.Name == "Enhanced Lustbound");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(watchborn.Description, Does.Not.Contain("Watchborn"), "the premise: OPR's text says Versatile Attack");
+            Assert.That(glossary.Describe("Enhanced Watchborn"), Is.EqualTo(watchborn.Description + "\nBase rule: Watchborn."));
+            Assert.That(glossary.Tooltip("Enhanced Watchborn"), Does.EndWith("\nBase rule: Watchborn."));
+            Assert.That(glossary.Describe("Enhanced Lustbound"), Is.EqualTo(lustbound.Description), "names Lustbound itself");
+            Assert.That(glossary.Describe("Watchborn"), Is.EqualTo(definitions.Single(d => d.Name == "Watchborn").Description),
+                "only the Enhanced family gets a line");
+        });
+    }
+
+    [Test]
+    public void Describe_BookDefinition_OverridesCoreByName()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith(Definition("Stealth", "This book's own Stealth.")));
+        Assert.That(glossary.Describe("Stealth"), Is.EqualTo("This book's own Stealth."));
+    }
+
+    [Test]
+    public void Describe_FactionRuleFromTheBook_Resolves()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith(Definition("Highborn", "Moves +2\" when Advancing.")));
+        Assert.That(glossary.Describe("Highborn"), Is.EqualTo("Moves +2\" when Advancing."));
+    }
+
+    [Test]
+    public void Describe_NumericEntry_LooksUpTheCanonicalNameNotThePrintableOne()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+        var tough = new SpecialRuleEntry_CoreNumeric("Tough", 3);
+
+        Assert.That(tough.PrintableName, Is.EqualTo("Tough(3)"));
+        Assert.That(glossary.Describe("Tough(3)"), Is.Null, "the printable name is not a catalog key");
+        Assert.That(glossary.Describe(tough), Is.EqualTo(CoreRuleCatalog.Tough.Description));
+    }
+
+    // #441: a text-valued rule (Spawn / Split) hovers with its definition, not the "not enforced" note - the
+    // printable "Spawn(Spores [5])" is no glossary key, the canonical name is.
+    [Test]
+    public void Describe_TextEntry_LooksUpTheCanonicalNameNotThePrintableOne()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith(Definition("Spawn", "Places a new unit.")));
+        var spawn = new SpecialRuleEntry_Text("Spawn", "Spores [5]");
+
+        Assert.That(spawn.PrintableName, Is.EqualTo("Spawn(Spores [5])"));
+        Assert.That(glossary.Describe(spawn), Is.EqualTo("Places a new unit."));
+        Assert.That(glossary.Tooltip(spawn), Is.EqualTo("Spawn(Spores [5])\nPlaces a new unit."));
+    }
+
+    [Test]
+    public void Describe_Alias_FallsThroughToTheRuleItRenames()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+        var alias = new SpecialRuleEntry_Alias("Medical Training", new SpecialRuleEntry_Core("Regeneration"));
+
+        Assert.That(glossary.Describe(alias), Is.EqualTo(CoreRuleCatalog.Regeneration.Description));
+    }
+
+    [Test]
+    public void Describe_Alias_PrefersTheAliassOwnDefinitionWhenTheBookCarriesOne()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(
+            BookWith(Definition("Medical Training", "Battlefield surgery: as Regeneration, but fluffier.")));
+        var alias = new SpecialRuleEntry_Alias("Medical Training", new SpecialRuleEntry_Core("Regeneration"));
+
+        Assert.That(glossary.Describe(alias), Is.EqualTo("Battlefield surgery: as Regeneration, but fluffier."));
+    }
+
+    [Test]
+    public void Describe_UnknownRule_ReturnsNull()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+        Assert.That(glossary.Describe("Repel Ambushers"), Is.Null);
+        Assert.That(glossary.Describe(new SpecialRuleEntry_Core("Repel Ambushers")), Is.Null);
+    }
+
+    [Test]
+    public void Describe_DefinitionWithoutDescription_CountsAsUnknown()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith(Definition("Silent Rule", "")));
+        Assert.That(glossary.Describe("Silent Rule"), Is.Null);
+    }
+
+    // #260: the corpus is inconsistent about casing - the bundled books say "Bane in Melee" where the
+    // catalog says "Bane in melee" - and RuleResolver has matched case-insensitively since #100, so these
+    // rules DO fire in play. The glossary must describe them, not report them as inert.
+    [Test]
+    public void Describe_IsCaseInsensitive_LikeTheEnginesResolver()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+        foreach (string bookSpelling in new[]
+                 {
+                     "Bane in Melee", "Rending in Melee", "Shred in Melee",
+                     "Shred when Shooting", "Unstoppable in Melee",
+                 })
+            Assert.That(glossary.Describe(bookSpelling), Is.Not.Null, bookSpelling);
+    }
+
+    // The guard that keeps the two from drifting apart again: the glossary must be silent exactly when
+    // army load would also fail to resolve the name, so a tooltip never contradicts what the engine does.
+    [Test]
+    public void Describe_IsSilentExactlyWhenTheResolverCannotResolve()
+    {
+        RuleResolver resolver = CoreRuleCatalog.CreateResolver();
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+
+        foreach (string name in new[]
+                 {
+                     "Stealth", "stealth", "STEALTH", "Bane in melee", "Bane in Melee",
+                     "Shred when Shooting", "Repel Ambushers", "Not A Rule At All",
+                 })
+            Assert.That(glossary.Describe(name) is not null, Is.EqualTo(resolver.TryResolve(name, out _)),
+                $"glossary and resolver disagree about '{name}'");
+    }
+
+    [Test]
+    public void Build_BookDefinition_OverridesCoreEvenWhenItsCasingDiffers()
+    {
+        // RegisterOrReplace overrides through the same case-insensitive dictionary at army load, so the
+        // glossary must not end up describing the core rule while the engine runs the book's version.
+        RuleGlossary glossary = RuleGlossary.Build(BookWith(Definition("Bane in Melee", "This book's own.")));
+        Assert.That(glossary.Describe("Bane in melee"), Is.EqualTo("This book's own."));
+    }
+
+    [Test]
+    public void Tooltip_LeadsWithThePrintableName_ThenTheDescription()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+        string tooltip = glossary.Tooltip(new SpecialRuleEntry_CoreNumeric("Tough", 3));
+
+        Assert.That(tooltip, Is.EqualTo($"Tough(3)\n{CoreRuleCatalog.Tough.Description}"));
+    }
+
+    [Test]
+    public void Tooltip_UnknownRule_SaysItIsNotEnforced()
+    {
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+        Assert.That(glossary.Tooltip("Repel Ambushers"),
+            Is.EqualTo($"Repel Ambushers\n{RuleGlossary.UnknownRuleText}"));
+    }
+
+    [Test]
+    public void Empty_ResolvesNothing()
+    {
+        Assert.That(RuleGlossary.Empty.Describe("Stealth"), Is.Null);
+    }
+
+    // The bundled books are the real input: every faction rule they reference should either resolve in the
+    // core catalog or ride along in the book's own definitions. This pins the one book we control by hand.
+    [Test]
+    public void Build_DemoBook_DescribesItsUnitsRules()
+    {
+        BookFile demo = DemoBook.Build();
+        RuleGlossary glossary = RuleGlossary.Build(demo);
+
+        foreach (RosterUnit unit in demo.Units)
+            foreach (SpecialRuleEntry rule in unit.Rules)
+                Assert.That(glossary.Describe(rule), Is.Not.Null, $"no description for '{rule.PrintableName}'");
+    }
+
+    // #397: the Combat Calculator can be pointed at a saved .fdgarmy, which carries embedded rule
+    // definitions but no book. The hovers have to come from those definitions alone.
+    [Test]
+    public void Build_FromBareDefinitions_DescribesThemAndStillKnowsTheCoreRules()
+    {
+        BookFile demo = DemoBook.Build();
+        RuleGlossary glossary = RuleGlossary.Build(demo.RuleDefinitions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(glossary.Describe("Stealth"), Is.Not.Null, "core rules are always known");
+            foreach (SpecialRuleDefinition definition in demo.RuleDefinitions)
+                Assert.That(glossary.Describe(definition.Name), Is.Not.Null,
+                    $"no description for embedded '{definition.Name}'");
+        });
+    }
+
+    [Test]
+    public void Build_FromNoDefinitions_IsStillTheCoreCatalog()
+    {
+        Assert.That(RuleGlossary.Build((IEnumerable<SpecialRuleDefinition>?)null).Describe("Stealth"),
+            Is.Not.Null);
+    }
+}

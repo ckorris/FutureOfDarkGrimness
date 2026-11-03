@@ -1,0 +1,70 @@
+{
+  "name": "Deadly clumps vs Tough(3) + Regeneration (#401). Run with --ai-profile tactician so the AI shoots on its first activation (the default solo bot advances 6.6\" first and forfeits the shot; it then fires in round 2). The AI's Melta Team (4x Deadly(3), AP(4) - no save possible at D5) stands on the only objective and shoots YOUR Brute Squad: three Tough(3) Regeneration models, the third already down to 1 wound. Watch for: 'N failed save(s) become clump(s) of 3', a Regeneration roll of 3 dice PER CLUMP, the Assign Wounds panel reading 'landed / lost' and 'Next: clump k of n', the first clump forced onto the wounded model with '... lost - a Deadly clump does not carry over', and the untouched model staying untouched. Realistic dice, seeded.",
+  "round": 1,
+  "activePlayer": 1,
+  "settings": {
+    "randomness": "Realistic",
+    "diceSeed": 4011
+  },
+  "players": [
+    {
+      "army": "armies/401-RegenBrutes.fdgarmy",
+      "units": [
+        {
+          "unit": "Brute Squad",
+          "models": [
+            [
+              22,
+              30
+            ],
+            [
+              24,
+              30
+            ],
+            [
+              26,
+              30
+            ]
+          ],
+          "woundsDealt": [
+            0,
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/401-DeadlyGunners.fdgarmy",
+      "units": [
+        {
+          "unit": "Melta Team",
+          "models": [
+            [
+              21,
+              18
+            ],
+            [
+              23,
+              18
+            ],
+            [
+              25,
+              18
+            ],
+            [
+              27,
+              18
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    [
+      24,
+      18
+    ]
+  ]
+}
