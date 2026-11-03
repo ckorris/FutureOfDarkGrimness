@@ -143,6 +143,24 @@ public class MainMenuRandomBattleTests
     }
 
     [Test]
+    public void OnlyUnitsThatHoldTheirGround_ShowCasualties()
+    {
+        // Owner, 2026-11-02: faded casualty bases were walking along with a moving unit. Casualties lie where
+        // they fell, so only a unit that never moves has any.
+        int shown = 0;
+        foreach (var (seed, b) in Battles())
+        foreach (HoloUnit u in b.Skirmish.Units)
+        {
+            if (u.Role != EHoloRole.Holds)
+                Assert.That(u.Dead, Is.Zero, $"seed {seed}: {u.Label} ({u.Role}) carries casualties");
+            else if (u.Trail.Count > 0)
+                Assert.Fail($"seed {seed}: {u.Label} holds but has a trail");
+            shown += u.Dead;
+        }
+        Assert.That(shown, Is.GreaterThan(0), "a holding squad still shows its casualties");
+    }
+
+    [Test]
     public void ZeroOneOrTwoMelees_EachTurnUp()
     {
         // Owner, 2026-11-02: "0-2 in every battle".

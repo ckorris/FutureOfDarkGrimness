@@ -10,6 +10,13 @@ battle generator deals 0-2 melees per battle, the existing #448 placement invari
 owner has seen it in the running menu.
 
 ## Notes
+- 2026-11-02 (later still): Owner saw "two models that are faded outlines, that move with the unit". Those are
+  the #448 mockup's casualties (the far side's eight-model squad has two dead, drawn dashed and faint). The
+  random generator kept them whatever role the squad was dealt, so on an advancer, patroller or charger the
+  dead bases walked along with it - pre-existing since #448's random placement, not caused by the melee.
+  Fix: casualties lie where they fell, so a unit dealt any role but Holds has its `Dead` zeroed before
+  placement. Test `OnlyUnitsThatHoldTheirGround_ShowCasualties` (confirmed failing against the unfixed
+  generator: "seed 0: BAT-BR 1 (Charges) carries casualties"). App 4205 green, engine 4624 green.
 - 2026-11-02 (later): Owner played it: "the graphics are hard to see... a unit of 6 fighting a big unit of 1
   ... one tiny little flash popping over and over. Compare to the crazy lasers in a pair that's shooting each
   other. There should be about the same amount of activity. Lots of flashes, bigger, non-uniform." Cause: a

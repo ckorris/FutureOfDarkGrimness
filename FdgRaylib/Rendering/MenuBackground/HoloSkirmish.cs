@@ -23,7 +23,7 @@ internal enum EHoloRole
 /// <summary>
 /// One unit on the menu's war table: a group of round bases sharing one flag. <see cref="Models"/> lists
 /// every base at the unit's FINAL spot; the first <see cref="Dead"/> of them are casualties (drawn faded
-/// and dashed). A single large base is a vehicle. <see cref="Trail"/> is its route, ending at its centre.
+/// and dashed; only a unit that holds has any, since they lie where they fell). A single large base is a vehicle. <see cref="Trail"/> is its route, ending at its centre.
 /// </summary>
 internal sealed record HoloUnit(
     string Label,
@@ -230,6 +230,11 @@ internal sealed class HoloSkirmish
                 if (roles[mine[k]] == EHoloRole.Charges) chargers[side].Add(mine[k]);
             }
         }
+
+        // Casualties lie where they fell, so only a unit that holds its ground all battle shows them; on a
+        // unit that moves they would walk along with it (owner, 2026-11-02).
+        for (int i = 0; i < roster.Count; i++)
+            if (roles[i] != EHoloRole.Holds) roster[i] = roster[i] with { Dead = 0 };
 
         // Would these bases and their paths fit among everything placed so far? A unit that stops (stands)
         // also keeps label room from every standing base and stays off every path.
