@@ -97,24 +97,15 @@ Any games you saved stay wherever you chose to save them; delete those `.fdgsave
 
 ## Importing an army
 
-If you want to use an army from OnePageRules' Army Forge, then open that army. In the top right, click the three dots, followed by Share List, and Share as Link. 
+Build your list on OnePageRules' Army Forge as usual, then open it there. In the top right, click the three dots, followed by Share List, and Share as Link.
 
 <img width="449" height="581" alt="Screenshot from 2026-08-15 15-53-58" src="https://github.com/user-attachments/assets/d3fbf82b-5760-4df4-8529-67c801a717dc" />
 <img width="1219" height="241" alt="Screenshot from 2026-08-15 15-58-12" src="https://github.com/user-attachments/assets/7190af7c-afeb-4d4b-aee3-2babb320e1ec" />
 
 
-Copy the link, then in Future of Dark Grimness, press **Import** on your row in the game lobby (next to Load Army) and paste the link. The list fetches by itself and shows any problems; press Import to play it. Leave "Save a copy to my armies folder" ticked to keep it for next time.
+Copy the link, then in Future of Dark Grimness host or join a game and press **Import** on your row in the lobby. Paste the link: the list fetches by itself, shows anything it had to adjust, and is ready to play when you press Import. Leave "Save a copy to my armies folder" ticked and it will be there under **Load** next time, so each list only needs importing once.
 
-You can also import from the Army Forge screen: press Import in the top right, paste the link, then press Save As and put it in your Armies folder (or Open in Forge to edit it).
-
-<img width="1090" height="442" alt="Screenshot from 2026-08-15 15-59-35" src="https://github.com/user-attachments/assets/150a5b67-9591-4d37-914f-14734689c659" />
-<img width="925" height="651" alt="Screenshot from 2026-08-15 15-59-46" src="https://github.com/user-attachments/assets/feaaa640-31a6-4e59-8d67-6fce54077578" />
-
-
-## Playing your First Game
-
-The best way to try it out is to play a solo game against a bot. Launch the game, open Host, and choose a point amount on the right hand side. Press the button to add a "Tactician Bot. Then load an army for each of you from one of the premade armies in the "Armies" folder. Press Launch, and enjoy!
-
+If you want to change a list inside the game, the Army Forge screen on the main menu opens any imported army (or imports a link itself with its own Import button) and lets you edit it with the full 3.6 army books.
 
 <br>
 
