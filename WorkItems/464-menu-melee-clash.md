@@ -10,6 +10,22 @@ battle generator deals 0-2 melees per battle, the existing #448 placement invari
 owner has seen it in the running menu.
 
 ## Notes
+- 2026-11-02 (later): Owner played it: "the graphics are hard to see... a unit of 6 fighting a big unit of 1
+  ... one tiny little flash popping over and over. Compare to the crazy lasers in a pair that's shooting each
+  other. There should be about the same amount of activity. Lots of flashes, bigger, non-uniform." Cause: a
+  big base met only the one or two squad bases within the old 0.6" touch reach, and each point popped on a
+  fixed beat. Reworked:
+  - `ContactPoints` -> every base within `FightReach` (2") of an enemy base, on either side, fights the
+    nearest one; a spark point midway across each such gap, each pair once, at most 8. A squad round a big
+    base now gets a point per model in reach.
+  - Sparks: each melee has 12 emitters shared over its points (so a 10-model clash is not a white-out and a
+    vehicle clash is not a lone flicker). An emitter's time is cut into 0.16s slots; in half of them it pops
+    one spark at a random moment, living 0.18-0.45s, of random size (mostly small, now and then big), height
+    (0.3-1.5" up), spread (2" along, 0.8" across), 4 or 6 rays, three embers, and a tint (white-hot, or
+    pulled 70% toward either army's colour). Impact flare at every point is bigger (8 rays, 2.4x) and lasts
+    0.5s. Close-up growth now zoom^0.75, clamped to 2.2x.
+  - Tuned by eye with `--menu-preview` frames 0.1s apart (seed 2: a 5-v-10 squad clash and a vehicle-v-5).
+    Bench at 1920x1080: Animated 1.42 ms/frame, Still 0.07. App 4204 green, engine 4624 green.
 - 2026-11-02: Owner asked how hard this would be; assessment given (placement is the work, sparks are
   cheap), then four forks put and answered: (1) "two units designated to move into each other - but do
   whichever is simpler" -> both units move (same cost as a lone charger once the pair is placed together,
@@ -45,6 +61,8 @@ owner has seen it in the running menu.
   clearance is waived for them).
 - Bases in melee keep a 0.15" gap rather than touching exactly, so the "bases never overlap" invariant
   needed no exception.
+- Spark density is budgeted per melee, not per point: per-point emitters made the many-point squad clash a
+  white blob in the overview while the few-point vehicle clash stayed sparse in the close-up.
 - `MeleeGroup` is an int, not a reference to the foe: `HoloUnit` is a record, and a reference cycle would
   send value equality (used by `Distinct` on fights) into infinite recursion.
 

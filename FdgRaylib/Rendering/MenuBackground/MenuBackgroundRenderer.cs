@@ -34,9 +34,14 @@ internal sealed class MenuBackgroundRenderer : IDisposable
     private const float TracerCycle = 0.9f;
     private const float MeasureCycle = 7f, MeasureDraw = 1.2f, MeasureHold = 5.5f, MeasureFade = 6.3f;
 
-    // Melee sparks (#464): each contact point pops about once per SparkCycle (each on its own beat) and
-    // fades over SparkLife of it; the moment two units meet, every point flares for ImpactFlare.
-    private const float SparkCycle = 0.85f, SparkLife = 0.3f, ImpactFlare = 0.45f;
+    // Melee sparks (#464): a melee has MeleeEmitters emitters, shared out over its fighting points (so a
+    // big clash is not a white-out and a small one is not a lone flicker); an emitter's time is cut into
+    // SparkSlot slices and in SparkOdds of them it pops one spark, at a random moment, living
+    // SparkLifeMin..Max. The moment two units meet, every point flares for ImpactFlare. Tuned so a melee
+    // shows about as much going on as two units trading fire (owner, 2026-11-02).
+    private const int MeleeEmitters = 12;
+    private const float SparkSlot = 0.16f, SparkOdds = 0.5f, SparkLifeMin = 0.18f, SparkLifeMax = 0.45f;
+    private const float ImpactFlare = 0.5f;
     private const float SparkInchPx = 16f;   // about an inch's length on the overview, in 1080p pixels
 
     // Separable 9-tap Gaussian folded into 5 bilinear fetches (offsets/weights from the standard
@@ -476,28 +481,54 @@ void main()
             if (phase < 0.12f) Raylib.DrawCircleV(a, 3.5f * ws, Glow(TracerRgb, 0.9f * presence));
         }
 
-        // Melee (#464): a white spark pops where the front ranks touch and fades in a fraction of a
-        // second, each point on its own beat; as the two units meet, every point flares at once.
+        // Melee (#464): as busy as a firefight. Every fighting point flickers irregularly - sparks of random
+        // size, life, height, spread and tint popping at random moments, never on a beat - and as the two
+        // units meet, every point flares at once.
         foreach (HoloMelee melee in e.Melees)
         {
             if (battle < melee.StartsAt) continue;
             float since = battle - melee.StartsAt;
-            float impact = since < ImpactFlare ? 1f - since / ImpactFlare : 0f;
+            int emitters = (int)MathF.Ceiling(MeleeEmitters / (float)melee.Contacts.Count);
             for (int i = 0; i < melee.Contacts.Count; i++)
             {
-                int key = melee.A.MeleeGroup * 31 + i;
-                float beat = SparkCycle * (0.8f + 0.4f * Hash01(key, 0));
-                float t = time / beat + Hash01(key, 1);
-                int pop = (int)MathF.Floor(t);
-                float phase = t - pop;
-                float k = MathF.Max(phase < SparkLife ? 1f - phase / SparkLife : 0f, impact);
-                if (k <= 0f) continue;
-                // Each pop lands a little to one side of the last and turns its rays, so it never stamps.
-                Vector2 along = new(Hash01(key, pop) - 0.5f, (Hash01(key, pop + 7) - 0.5f) * 0.4f);
-                Vector2 at = melee.Contacts[i] + along * 0.5f, here = P(at, 0.5f);
-                // Line widths stay put as the camera zooms; a spark grows a little, or the close-up loses it.
-                float zoom = Math.Clamp(MathF.Sqrt(Vector2.Distance(here, P(at + Vector2.UnitX, 0.5f)) / (SparkInchPx * ws)), 1f, 2f);
-                DrawSpark(here, k, zoom * (impact > 0f ? 1.6f : 1f), Hash01(key, pop + 13) * MathF.PI, ws, presence);
+                Vector2 site = melee.Contacts[i];
+                // Line widths stay put as the camera zooms; sparks grow with it, or the close-up loses them.
+                Vector2 here = P(site, 0.8f);
+                float zoom = Math.Clamp(MathF.Pow(Vector2.Distance(here, P(site + Vector2.UnitX, 0.8f)) / (SparkInchPx * ws), 0.75f), 1f, 2.2f);
+
+                if (since < ImpactFlare)
+                {
+                    float k = 1f - since / ImpactFlare;
+                    DrawSpark(here, k, zoom * 2.4f, Hash01(i, melee.A.MeleeGroup) * MathF.PI, 8, TracerRgb, ws, presence);
+                }
+
+                for (int em = 0; em < emitters; em++)
+                {
+                    int key = (melee.A.MeleeGroup * 64 + i) * 16 + em;
+                    float offset = Hash01(key, -1);
+                    int slot = (int)MathF.Floor(time / SparkSlot + offset);
+                    for (int s = slot - (int)MathF.Ceiling(SparkLifeMax / SparkSlot); s <= slot; s++)
+                    {
+                        int h = s * 8;
+                        if (Hash01(key, h) > SparkOdds) continue;
+                        float born = (s - offset + Hash01(key, h + 1)) * SparkSlot;
+                        float life = SparkLifeMin + (SparkLifeMax - SparkLifeMin) * Hash01(key, h + 2);
+                        float age = time - born;
+                        if (age < 0f || age > life) continue;
+
+                        // Mostly small, now and then a big one; spread along the fight more than across it,
+                        // and up off the table, where the blows land.
+                        float big = Hash01(key, h + 3);
+                        float size = zoom * (0.7f + 1.3f * big * big);
+                        var spread = new Vector2((Hash01(key, h + 4) - 0.5f) * 2f, (Hash01(key, h + 5) - 0.5f) * 0.8f);
+                        float z = 0.3f + 1.2f * Hash01(key, h + 6);
+                        float tint = Hash01(key, h + 7);
+                        Vector3 rgb = tint < 0.35f ? Vector3.Lerp(TracerRgb, melee.A.Army.Rgb, 0.7f)
+                                    : tint < 0.7f ? Vector3.Lerp(TracerRgb, melee.B.Army.Rgb, 0.7f)
+                                    : TracerRgb;
+                        DrawSpark(P(site + spread, z), 1f - age / life, size, tint * 2f * MathF.PI, big > 0.6f ? 6 : 4, rgb, ws, presence);
+                    }
+                }
             }
         }
 
@@ -505,20 +536,23 @@ void main()
             DrawMeasure(m, cam, ws, battle - m.StartsAt, presence);
     }
 
-    /// <summary>One spark: a hot dot and four rays that fly outward as it fades. <paramref name="k"/> is
-    /// how fresh it is, 1 the instant it pops, 0 gone.</summary>
-    private static void DrawSpark(Vector2 at, float k, float size, float angle, float ws, float presence)
+    /// <summary>One spark: a white-hot core, <paramref name="rays"/> rays in <paramref name="rgb"/> flying
+    /// outward as it fades, and three embers thrown past them. <paramref name="k"/> is how fresh it is, 1
+    /// the instant it pops, 0 gone.</summary>
+    private static void DrawSpark(Vector2 at, float k, float size, float angle, int rays, Vector3 rgb, float ws, float presence)
     {
-        Color col = Glow(TracerRgb, k * presence);
-        Raylib.DrawCircleV(at, (2f + 3f * k) * size * ws, col);
-        float outer = (7f + 9f * (1f - k)) * size * ws, inner = outer * 0.4f;
-        for (int r = 0; r < 4; r++)
+        Color hot = Glow(TracerRgb, k * presence), col = Glow(rgb, k * presence);
+        Raylib.DrawCircleV(at, (0.8f + 2.2f * k) * size * ws, hot);
+        float outer = (6f + 12f * (1f - k)) * size * ws, inner = outer * 0.35f;
+        // Flattened vertically: the table is seen at a slant, so the burst lies roughly on it.
+        Vector2 Dir(float a) => new(MathF.Cos(a), MathF.Sin(a) * 0.7f);
+        for (int r = 0; r < rays; r++)
         {
-            float a = angle + r * MathF.PI / 2f;
-            // Flattened vertically: the table is seen at a slant, so the burst lies on it.
-            var dir = new Vector2(MathF.Cos(a), MathF.Sin(a) * 0.7f);
-            Raylib.DrawLineEx(at + dir * inner, at + dir * outer, 2.5f * ws, col);
+            Vector2 dir = Dir(angle + r * 2f * MathF.PI / rays);
+            Raylib.DrawLineEx(at + dir * inner, at + dir * outer, (1.5f + 1.5f * k) * ws, col);
         }
+        for (int ember = 0; ember < 3; ember++)
+            Raylib.DrawCircleV(at + Dir(angle + 0.4f + ember * 2.1f) * outer * 1.45f, 1.3f * size * ws, col);
     }
 
     /// <summary>A repeatable pseudo-random number in [0, 1) for a pair of integers.</summary>

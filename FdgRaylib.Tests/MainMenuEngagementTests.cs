@@ -32,7 +32,7 @@ public class MainMenuEngagementTests
     [Test]
     public void ContactPoints_SitBetweenTouchingBases_OnePerBase_AndNoneForBasesApart()
     {
-        // #464: sparks go where front ranks touch - midway across the gap, each base sparking once.
+        // #464: sparks go where bases fight - midway across the gap to the nearest enemy base, each pair once.
         var near = new[] { new Vector2(0f, -0.6f), new Vector2(1.2f, -0.6f), new Vector2(10f, -0.6f) };
         var far = new[] { new Vector2(0f, 0.6f), new Vector2(1.2f, 0.6f) };
         var points = HoloEngagement.ContactPoints(near, 0.5f, far, 0.5f);
@@ -40,6 +40,18 @@ public class MainMenuEngagementTests
         foreach (Vector2 p in points) Assert.That(p.Y, Is.EqualTo(0f).Within(1e-4f));
         Assert.That(points.Select(p => p.X).OrderBy(x => x), Is.EqualTo(new[] { 0f, 1.2f }).Within(1e-4f));
         Assert.That(HoloEngagement.ContactPoints(near, 0.5f, new[] { new Vector2(0f, 5f) }, 0.5f), Is.Empty);
+    }
+
+    [Test]
+    public void ASquadRoundABigBase_FightsWithEveryModelInReach()
+    {
+        // Owner, 2026-11-02: six models against one big base showed one tiny flash. Every model within
+        // FightReach of the big base fights it, so each gets its own spark point.
+        var squad = Enumerable.Range(-2, 5).Select(i => new Vector2(i * 1.55f, -0.575f)).Append(new Vector2(0.77f, -1.97f)).ToArray();
+        var big = new[] { new Vector2(0f, 2.075f) };
+        var points = HoloEngagement.ContactPoints(squad, 0.5f, big, 2f);
+        Assert.That(points, Has.Count.GreaterThanOrEqualTo(5));
+        Assert.That(points.Distinct().Count(), Is.EqualTo(points.Count));
     }
 
     [Test]

@@ -146,37 +146,42 @@ internal sealed class HoloEngagement
         return melees;
     }
 
-    /// <summary>Most spark points one melee shows: the closest pairs of bases.</summary>
-    public const int MaxContacts = 6;
+    /// <summary>Most spark points one melee shows: the closest fighting pairs.</summary>
+    public const int MaxContacts = 8;
 
-    /// <summary>How close two bases' edges must be to count as touching, inches (the generator stands
-    /// them <see cref="HoloSkirmish.ContactGap"/> apart; a staggered rank sits a little further).</summary>
-    private const float TouchReach = 0.6f;
+    /// <summary>How close a base's edge must come to an enemy base's edge for that model to fight, inches.
+    /// Wider than touching (owner, 2026-11-02: a melee should be as busy as a firefight), so the models
+    /// beside and behind the ones in contact join in - a squad round a big base, a second rank.</summary>
+    public const float FightReach = 2f;
 
     /// <summary>
-    /// Where two units' bases touch: for every pair of bases, one from each, whose edges are within
-    /// <see cref="TouchReach"/>, the point midway across the gap between them - closest pairs first, at
-    /// most <see cref="MaxContacts"/>. Each base of the unit with more bases is used once; a base of the
-    /// other may meet several (a vehicle's big base meets a whole front rank), never one base twice.
+    /// Where two units fight: every base within <see cref="FightReach"/> of an enemy base, on either side,
+    /// fights the nearest one, and the point midway across the gap between them is where it sparks. Each
+    /// pair once, closest first, at most <see cref="MaxContacts"/>.
     /// </summary>
     public static List<Vector2> ContactPoints(IEnumerable<Vector2> a, float ra, IEnumerable<Vector2> b, float rb)
     {
-        var pairs = (
-            from p in a from q in b
-            let gap = Vector2.Distance(p, q) - ra - rb
-            where gap < TouchReach
-            orderby gap
-            select (p, q, gap)).ToList();
-        bool aIsMany = a.Count() >= b.Count();
-        var used = new HashSet<Vector2>();
-        var points = new List<Vector2>();
-        foreach (var (p, q, gap) in pairs)
+        List<Vector2> aa = a.ToList(), bb = b.ToList();
+        var pairs = new List<(Vector2 P, Vector2 Q, float Gap)>();
+        if (aa.Count == 0 || bb.Count == 0) return new List<Vector2>();
+
+        void Fighters(List<Vector2> mine, float rm, List<Vector2> theirs, float rt, bool mineAreA)
         {
-            if (points.Count == MaxContacts) break;
-            if (!used.Add(aIsMany ? p : q)) continue;
-            Vector2 u = Vector2.Normalize(q - p);
-            points.Add(p + u * (ra + MathF.Max(gap, 0f) / 2f));
+            foreach (Vector2 m in mine)
+            {
+                Vector2 t = theirs.MinBy(x => Vector2.DistanceSquared(x, m));
+                float gap = Vector2.Distance(m, t) - rm - rt;
+                if (gap > FightReach) continue;
+                var pair = mineAreA ? (m, t, gap) : (t, m, gap);
+                if (!pairs.Contains(pair)) pairs.Add(pair);
+            }
         }
+        Fighters(aa, ra, bb, rb, mineAreA: true);
+        Fighters(bb, rb, aa, ra, mineAreA: false);
+
+        var points = new List<Vector2>();
+        foreach (var (p, q, gap) in pairs.OrderBy(x => x.Gap).Take(MaxContacts))
+            points.Add(p + Vector2.Normalize(q - p) * (ra + MathF.Max(gap, 0f) / 2f));
         return points;
     }
 

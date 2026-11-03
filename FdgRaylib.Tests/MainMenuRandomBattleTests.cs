@@ -169,8 +169,14 @@ public class MainMenuRandomBattleTests
                 Assert.That(m.A.Trail, Has.Count.GreaterThanOrEqualTo(2), $"{who}: the near unit walks in");
                 Assert.That(m.B.Trail, Has.Count.GreaterThanOrEqualTo(2), $"{who}: and so does the far one");
                 Assert.That(m.Contacts, Is.Not.Empty, $"{who}: nothing touches");
+                // Every spark point sits between two fighting bases, one from each unit.
                 foreach (Vector2 c in m.Contacts)
-                    Assert.That(MathF.Abs(c.Y), Is.LessThan(0.5f), $"{who}: they meet away from the centre line");
+                {
+                    float half = HoloEngagement.FightReach / 2f + 0.01f;
+                    Assert.That(m.A.Alive.Any(p => Vector2.Distance(p, c) - m.A.BaseRadius <= half)
+                                && m.B.Alive.Any(p => Vector2.Distance(p, c) - m.B.BaseRadius <= half), Is.True,
+                        $"{who}: a spark point away from the fight");
+                }
                 // Each front rank's leading edge sits right at the line: in contact, but in its own half.
                 Assert.That(m.A.Models.Max(p => p.Y) + m.A.BaseRadius, Is.InRange(-HoloSkirmish.ContactGap, 0f), who);
                 Assert.That(m.B.Models.Min(p => p.Y) - m.B.BaseRadius, Is.InRange(0f, HoloSkirmish.ContactGap), who);
