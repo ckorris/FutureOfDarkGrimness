@@ -105,6 +105,8 @@ Build your list on OnePageRules' Army Forge as usual, then open it there. In the
 
 Copy the link, then in Future of Dark Grimness host or join a game and press **Import** on your row in the lobby. Paste the link: the list fetches by itself, shows anything it had to adjust, and is ready to play when you press Import. Leave "Save a copy to my armies folder" ticked and it will be there under **Load** next time, so each list only needs importing once.
 
+<img width="1166" height="534" alt="The lobby roster with the Import button circled on a player's row" src="docs/images/LobbyImport.png" />
+
 If you want to change a list inside the game, the Army Forge screen on the main menu opens any imported army (or imports a link itself with its own Import button) and lets you edit it with the full 3.6 army books.
 
 <br>
