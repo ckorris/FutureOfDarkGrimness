@@ -1,6 +1,6 @@
-# 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed) - design fork, blocked on Q3
+# 443 — Terrain 3.6: Dense (build), Unstable (optional); Steep and Climbable out of scope
 
-**Status**: deferred past the 3.6 release (Chris answered Q3 on 2026-10-29: defer). Only the Elevated -> Climbable rename and the new type names may be reserved by #444 if cheap; nothing else is built on this branch.
+**Status**: scoped by Chris 2026-11-02 (post-v0.4.0): build **Dense**; **Unstable** optional, after Dense; **Steep** and **Climbable** are out of scope for good (they model elevation, which this game does not have). Not started.
 **Related**: #415, #002 (terrain placement), #167 (scenario terrain), #268/#301 (terrain palette/modes), #201 (cover rules), #253
 **Branch**: `feature/opr-3.6`. Model/effort: Opus 5.5 / high (after sign-off).
 
@@ -22,21 +22,32 @@ Beginner's Guide v3.6.0 (p.11-12) terrain types, verbatim:
   Difficult + Cover + Dense; Hills = Cover + Steep; Rivers = Difficult / Unstable; Ruins = Cover + Unstable;
   Walls = Climbable; Buildings = Impassable + Sight Blocking.
 
-## The fork (write up before building)
+## Decision (Chris, 2026-11-02) - the fork is closed
 
-- Option A (minimal): rename Elevated -> Climbable in the enum/layout files/UI with a migration for saved
-  layouts; add Dense as a LoS-only type (into/out-of but not through - the LoS code already distinguishes
-  "ends inside" for cover); defer Unstable and Steep.
-- Option B (full): all four, with Unstable needing per-model move-distance tracking through a piece and Steep
-  needing move direction relative to the piece's footprint; new palette entries and scenario schema.
-- Option C: defer all of it to after the 3.6 release (plan default) and only reserve the names.
+The game has no model elevation: terrain is a flat footprint with a height used only for line of sight. Judged per
+type:
 
-Present A/B/C with the effort and the files touched (terrain enum, `TerrainLayoutFile`, scenario schema,
-renderer textures, movement validator, LoS) and stop for Chris's answer to Q3.
+- **Climbable** (3.6's rename of Elevated): going up and over pieces up to 3" tall with a looser coherency at
+  different heights. Nothing to climb on a flat table; pieces over 3" already play as Impassable. **Out of scope.**
+  Do NOT rename the `Elevated` flag: saves and scenarios store terrain types by flag name, nothing reads
+  `Elevated`, so a rename only breaks old files for no gain. Retire it quietly if it ever gets in the way.
+- **Steep** (hills: Difficult onto, open off): needs "onto" vs "off" a slope, i.e. elevation. **Out of scope.**
+- **Unstable** (rivers, ruins: a model moving over 6" into or through the piece counts it as Dangerous): a flat
+  per-model move-distance check the movement validator can do. **Optional, after Dense**, if a playtest misses it.
+- **Dense** (forests: line of sight into and out of the piece, never through it to the far side): not a 3D rule,
+  and the one that changes play for everyone - today a forest is Cover + Difficult and units shoot straight
+  through woods. **Build this.** The LoS code already distinguishes a target that ends inside a piece
+  (`LineOfSightUtilities`), so the new case is "both ends outside, the line crosses the piece" -> blocked.
 
-## Acceptance (after sign-off)
+Scope of the Dense slice: `ETerrainType.Dense` flag; LoS rule + shooting preview parity (the forecast and the
+canvas hover must agree with the resolution); palette entry and `TerrainEffectText`; `Scenarios/README.md`
+schema line; `DefaultTerrainPool` forests gain Dense (3.6 guideline: Forests = Difficult + Cover + Dense);
+movement untouched. Integration tests: into, out of, through, and a piece that only touches the line's edge.
+AI: the Tactician's shot pricing reads the same LoS seam, so it follows for free - confirm with one test.
 
-Per the chosen option; every new type has a movement/LoS integration test and a palette entry.
+## Acceptance
+
+Dense: a unit inside a Dense forest can be shot and can shoot out; two units on opposite sides of it cannot see each other; the shooting forecast, the canvas hover and the resolution agree; the palette offers it and the default forests carry it. Unstable (if built): a model that moves over 6" into or through the piece triggers the Dangerous test, one that moves 6" or less does not.
 
 ## Code anchors (survey 2026-10-29)
 

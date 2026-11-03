@@ -43,7 +43,7 @@ Numbers 415-447 are reserved for the upgrade. Released as v0.4.0 on 2026-11-02 (
 - [ ] 441 — Army Forge + glossary UI for 3.6: built 2026-10-31; awaiting GUI hand-verify and sign-off on forks F1-F9. ([WorkItems/441](WorkItems/441-army-forge-ui-3-6.md))
 - [x] 442 — Tactician AI + Combat Calculator parity with 3.6 (3" melee, Assault threat, Parry/Brace, Cumbersome, Indirect). ([WorkItems/442](WorkItems/442-ai-and-calculator-parity-3-6.md))
   Done 2026-10-30; Assault / Parry / Enhanced halves -> #424 / #423 / #433; owner review asked on D7, D9.
-- [ ] 443 — Terrain 3.6: Dense, Unstable, Steep, Climbable (Elevated renamed). Design fork; blocked on Q3. ([WorkItems/443](WorkItems/443-terrain-3-6.md))
+- [ ] 443 — Terrain 3.6: build Dense (forests block LoS through, not into/out); Unstable optional after it; Steep and Climbable out of scope (no elevation in this game). Scoped by Chris 2026-11-02, not started. ([WorkItems/443](WorkItems/443-terrain-3-6.md))
 - [x] 446 — Dangerous terrain: a unit that activates in Dangerous terrain takes the test first thing in its activation; one test per activation on either trigger. Done 2026-10-30; owner review asked on D1, D2, D3, D4. ([WorkItems/446](WorkItems/446-activate-in-dangerous-terrain.md))
 - [x] 447 — Impact(X) is per model: X dice per living model carrying it that is in melee reach of the target (a joined hero's own Impact adds when in reach), Brace subtracts from the total. Done 2026-10-30; D1 ruled by Chris and rebuilt 2026-11-01; owner review open on D3. ([WorkItems/447](WorkItems/447-impact-per-model.md))
 
