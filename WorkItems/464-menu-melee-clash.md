@@ -1,6 +1,6 @@
 # 464 — Main menu war table: units charge each other into melee
 
-**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Status**: done (closed 2026-11-02, hand-verified by the owner)
 **Related**: #448 (the holographic war-table menu background this extends)
 
 ## Goal
@@ -10,6 +10,7 @@ battle generator deals 0-2 melees per battle, the existing #448 placement invari
 owner has seen it in the running menu.
 
 ## Notes
+- 2026-11-02: Owner: "Perfect! I love it." Closed and merged to master.
 - 2026-11-02 (evening): Three owner asks in a row.
   1. Casualties: a screenshot of a HOLDING unit with its two dashed bases - the owner reads them as a glitch
      wherever they are. The menu now deals no casualties at all (the one mockup slot with `Dead = 2` is 0);
@@ -101,3 +102,10 @@ owner has seen it in the running menu.
   send value equality (used by `Distinct` on fights) into infinite recursion.
 
 ## Outcome
+Shipped: each main-menu battle deals 0-2 melees - a unit a side charging into base contact on the centre
+line, every model within 2" fighting, with irregular, varied, army-tinted sparks budgeted per melee and a
+flare on impact; the camera's close-up visits melees first. Battles keep five or six of eight units in
+combat (one patroller a side, every holder/advancer with a target shooting), the menu no longer deals
+casualty bases, and units are placed on a bare table before the terrain is fitted round them, cutting a
+battle's generation from a ~21 ms median (183 ms worst) to ~5 ms (40 ms worst), with the next battle
+prepared in the background. Nothing deferred.
