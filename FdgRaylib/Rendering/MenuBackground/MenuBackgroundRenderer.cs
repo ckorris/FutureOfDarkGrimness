@@ -34,6 +34,16 @@ internal sealed class MenuBackgroundRenderer : IDisposable
     private const float TracerCycle = 0.9f;
     private const float MeasureCycle = 7f, MeasureDraw = 1.2f, MeasureHold = 5.5f, MeasureFade = 6.3f;
 
+    // Melee sparks (#464): a melee has MeleeEmitters emitters, shared out over its fighting points (so a
+    // big clash is not a white-out and a small one is not a lone flicker); an emitter's time is cut into
+    // SparkSlot slices and in SparkOdds of them it pops one spark, at a random moment, living
+    // SparkLifeMin..Max. The moment two units meet, every point flares for ImpactFlare. Tuned so a melee
+    // shows about as much going on as two units trading fire (owner, 2026-11-02).
+    private const int MeleeEmitters = 12;
+    private const float SparkSlot = 0.16f, SparkOdds = 0.5f, SparkLifeMin = 0.18f, SparkLifeMax = 0.45f;
+    private const float ImpactFlare = 0.5f;
+    private const float SparkInchPx = 16f;   // about an inch's length on the overview, in 1080p pixels
+
     // Separable 9-tap Gaussian folded into 5 bilinear fetches (offsets/weights from the standard
     // linear-sampling derivation). texelStep carries both the direction and the spread. threshold is a
     // bright-pass applied to every tap: only light above it blooms, so the dense faint grid and the
@@ -59,7 +69,12 @@ void main()
     /// and only terrain, rim and labels bloom.</summary>
     private const float BloomThreshold = 0.16f;
 
-    private readonly Random _rng;
+    private readonly Random _rng;       // only ever used by one generation at a time (see _next)
+
+    /// <summary>The next battle, dealt in the background while this one plays: generating one takes tens
+    /// of milliseconds and occasionally a few hundred (it retries until a layout is worth watching), too
+    /// long to spend on the render thread at the moment one battle hands over to the next.</summary>
+    private Task<HoloBattle> _next;
     private HoloTableScene _scene;
     private HoloSkirmish _skirmish;
     private HoloEngagement _engagement;
@@ -90,6 +105,7 @@ void main()
     {
         _rng = seed is { } s ? new Random(s) : new Random();
         (_scene, _skirmish, _engagement, _) = HoloBattle.Generate(_rng);
+        _next = Task.Run(() => HoloBattle.Generate(_rng));
     }
 
     /// <summary>Freezes the animation clock at this many seconds (the offscreen preview); null = live.</summary>
@@ -114,7 +130,9 @@ void main()
     /// <summary>A whole new battle: fresh terrain, pairing, positions, routes and shooting.</summary>
     private void DealNewPairing()
     {
-        (_scene, _skirmish, _engagement, _) = HoloBattle.Generate(_rng);
+        // Normally long finished; if the menu reshuffles straight away, this waits for it once.
+        (_scene, _skirmish, _engagement, _) = _next.Result;
+        _next = Task.Run(() => HoloBattle.Generate(_rng));
         _battleIndex++;
         _stale = true;
     }
@@ -450,7 +468,8 @@ void main()
 
     private static float Frac(float x) => x - MathF.Floor(x);
 
-    /// <summary>Blaster fire along every line of fire whose shooting has started, and the measuring line.</summary>
+    /// <summary>Blaster fire along every line of fire whose shooting has started, sparks where melees
+    /// touch, and the measuring line.</summary>
     private void DrawEngagement(HoloCamera cam, float ws, float time, float battle, float presence)
     {
         Vector2 P(Vector2 p, float z = 0f) => cam.Project(new Vector3(p, z)) * _ss;
@@ -470,8 +489,88 @@ void main()
             if (phase < 0.12f) Raylib.DrawCircleV(a, 3.5f * ws, Glow(TracerRgb, 0.9f * presence));
         }
 
+        // Melee (#464): as busy as a firefight. Every fighting point flickers irregularly - sparks of random
+        // size, life, height, spread and tint popping at random moments, never on a beat - and as the two
+        // units meet, every point flares at once.
+        foreach (HoloMelee melee in e.Melees)
+        {
+            if (battle < melee.StartsAt) continue;
+            float since = battle - melee.StartsAt;
+            int emitters = (int)MathF.Ceiling(MeleeEmitters / (float)melee.Contacts.Count);
+            for (int i = 0; i < melee.Contacts.Count; i++)
+            {
+                Vector2 site = melee.Contacts[i];
+                // Line widths stay put as the camera zooms; sparks grow with it, or the close-up loses them.
+                Vector2 here = P(site, 0.8f);
+                float zoom = Math.Clamp(MathF.Pow(Vector2.Distance(here, P(site + Vector2.UnitX, 0.8f)) / (SparkInchPx * ws), 0.75f), 1f, 2.2f);
+
+                if (since < ImpactFlare)
+                {
+                    float k = 1f - since / ImpactFlare;
+                    DrawSpark(here, k, zoom * 2.4f, Hash01(i, melee.A.MeleeGroup) * MathF.PI, 8, TracerRgb, ws, presence);
+                }
+
+                for (int em = 0; em < emitters; em++)
+                {
+                    int key = (melee.A.MeleeGroup * 64 + i) * 16 + em;
+                    float offset = Hash01(key, -1);
+                    int slot = (int)MathF.Floor(time / SparkSlot + offset);
+                    for (int s = slot - (int)MathF.Ceiling(SparkLifeMax / SparkSlot); s <= slot; s++)
+                    {
+                        int h = s * 8;
+                        if (Hash01(key, h) > SparkOdds) continue;
+                        float born = (s - offset + Hash01(key, h + 1)) * SparkSlot;
+                        float life = SparkLifeMin + (SparkLifeMax - SparkLifeMin) * Hash01(key, h + 2);
+                        float age = time - born;
+                        if (age < 0f || age > life) continue;
+
+                        // Mostly small, now and then a big one; spread along the fight more than across it,
+                        // and up off the table, where the blows land.
+                        float big = Hash01(key, h + 3);
+                        float size = zoom * (0.7f + 1.3f * big * big);
+                        var spread = new Vector2((Hash01(key, h + 4) - 0.5f) * 2f, (Hash01(key, h + 5) - 0.5f) * 0.8f);
+                        float z = 0.3f + 1.2f * Hash01(key, h + 6);
+                        float tint = Hash01(key, h + 7);
+                        Vector3 rgb = tint < 0.35f ? Vector3.Lerp(TracerRgb, melee.A.Army.Rgb, 0.7f)
+                                    : tint < 0.7f ? Vector3.Lerp(TracerRgb, melee.B.Army.Rgb, 0.7f)
+                                    : TracerRgb;
+                        DrawSpark(P(site + spread, z), 1f - age / life, size, tint * 2f * MathF.PI, big > 0.6f ? 6 : 4, rgb, ws, presence);
+                    }
+                }
+            }
+        }
+
         if (e.Measure is { } m && battle >= m.StartsAt)
             DrawMeasure(m, cam, ws, battle - m.StartsAt, presence);
+    }
+
+    /// <summary>One spark: a white-hot core, <paramref name="rays"/> rays in <paramref name="rgb"/> flying
+    /// outward as it fades, and three embers thrown past them. <paramref name="k"/> is how fresh it is, 1
+    /// the instant it pops, 0 gone.</summary>
+    private static void DrawSpark(Vector2 at, float k, float size, float angle, int rays, Vector3 rgb, float ws, float presence)
+    {
+        Color hot = Glow(TracerRgb, k * presence), col = Glow(rgb, k * presence);
+        Raylib.DrawCircleV(at, (0.8f + 2.2f * k) * size * ws, hot);
+        float outer = (6f + 12f * (1f - k)) * size * ws, inner = outer * 0.35f;
+        // Flattened vertically: the table is seen at a slant, so the burst lies roughly on it.
+        Vector2 Dir(float a) => new(MathF.Cos(a), MathF.Sin(a) * 0.7f);
+        for (int r = 0; r < rays; r++)
+        {
+            Vector2 dir = Dir(angle + r * 2f * MathF.PI / rays);
+            Raylib.DrawLineEx(at + dir * inner, at + dir * outer, (1.5f + 1.5f * k) * ws, col);
+        }
+        for (int ember = 0; ember < 3; ember++)
+            Raylib.DrawCircleV(at + Dir(angle + 0.4f + ember * 2.1f) * outer * 1.45f, 1.3f * size * ws, col);
+    }
+
+    /// <summary>A repeatable pseudo-random number in [0, 1) for a pair of integers.</summary>
+    private static float Hash01(int a, int b)
+    {
+        uint h = (uint)a * 0x9E3779B1u ^ (uint)b * 0x85EBCA77u;
+        h ^= h >> 15;
+        h *= 0x2C1B3C6Du;
+        h ^= h >> 12;
+        return (h & 0xFFFFFF) / (float)0x1000000;
     }
 
     /// <summary>The measuring line draws itself out base to base, shows its distance, holds, then fades;

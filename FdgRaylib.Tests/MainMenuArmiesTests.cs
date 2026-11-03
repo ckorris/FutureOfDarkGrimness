@@ -100,7 +100,9 @@ public class MainMenuArmiesTests
         Assert.That(skirmish.Units.Where(u => u.Side == 1).Select(u => u.Label),
             Is.EqualTo(new[] { "ORK 1", "ORK 2", "ORK 3", "ORK 4" }));
         Assert.That(skirmish.Units.Single(u => u.Label == "B-SIST 2").Tag, Is.EqualTo("B-SIST 2 x10"));
-        Assert.That(skirmish.Units.Single(u => u.Label == "ORK 1").Tag, Is.EqualTo("ORK 1 x6"), "two casualties");
+        Assert.That(skirmish.Units.Single(u => u.Label == "ORK 1").Tag, Is.EqualTo("ORK 1 x8"), "no casualties dealt since #464");
+        var wounded = skirmish.Units.Single(u => u.Label == "ORK 1") with { Dead = 2 };
+        Assert.That(wounded.Tag, Is.EqualTo("ORK 1 x6"), "the tag counts the living");
         Assert.That(skirmish.Units.Single(u => u.Label == "ORK 4").Tag, Is.EqualTo("ORK 4"), "a lone vehicle has no count");
     }
 

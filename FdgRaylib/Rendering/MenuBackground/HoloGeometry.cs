@@ -3,6 +3,35 @@ using System.Numerics;
 namespace FdgRaylib.Rendering.MenuBackground;
 
 /// <summary>
+/// Room the terrain must leave (#464): points that must stay outside every outline and more than their
+/// clearance from it, and segments that must keep at least theirs. The menu fits the terrain round the
+/// units with it, so placing units never has to search round terrain.
+/// </summary>
+internal sealed record HoloKeepOut(
+    IReadOnlyList<(Vector2 At, float Clear)> Points,
+    IReadOnlyList<(Vector2 A, Vector2 B, float Clear)> Segments)
+{
+    public static readonly HoloKeepOut None = new(Array.Empty<(Vector2, float)>(), Array.Empty<(Vector2, Vector2, float)>());
+
+    /// <summary>True when the outline leaves every point and segment its room - the bounding circle first,
+    /// the outline itself only when that is close.</summary>
+    public bool Allows(IReadOnlyList<Vector2> poly)
+    {
+        Vector2 c = Vector2.Zero;
+        for (int i = 0; i < poly.Count; i++) c += poly[i];
+        c /= poly.Count;
+        float r = 0f;
+        for (int i = 0; i < poly.Count; i++) r = MathF.Max(r, Vector2.Distance(c, poly[i]));
+
+        foreach (var (at, clear) in Points)
+            if (Vector2.Distance(at, c) - r <= clear && HoloGeometry.PointPolygon(at, poly) <= clear) return false;
+        foreach (var (a, b, clear) in Segments)
+            if (HoloGeometry.PointSegment(c, a, b) - r < clear && HoloGeometry.SegmentPolygon(a, b, poly) < clear) return false;
+        return true;
+    }
+}
+
+/// <summary>
 /// The little bit of 2D geometry the menu's war table needs (#448): point-in-polygon and distances
 /// between points, segments and polygons on the table plane. Shared by the line-of-fire check, the random
 /// terrain layout (pieces kept apart) and the random unit placement (bases kept off terrain).
@@ -64,7 +93,36 @@ internal static class HoloGeometry
         return best;
     }
 
-    /// <summary>True when segment a-b keeps at least <paramref name="pad"/> from every footprint.</summary>
-    public static bool IsClear(Vector2 a, Vector2 b, IEnumerable<HoloFootprint> footprints, float pad) =>
-        footprints.All(fp => SegmentPolygon(a, b, fp.Polygon) >= pad);
+    /// <summary>True when segment a-b keeps at least <paramref name="pad"/> from every footprint. A
+    /// footprint whose bounding circle is already that far away needs no closer look.</summary>
+    public static bool IsClear(Vector2 a, Vector2 b, IEnumerable<HoloFootprint> footprints, float pad)
+    {
+        foreach (HoloFootprint fp in footprints)
+            if (PointSegment(fp.Centre, a, b) - fp.Radius < pad && SegmentPolygon(a, b, fp.Polygon) < pad) return false;
+        return true;
+    }
+
+    /// <summary>True when point p is more than <paramref name="gap"/> from the footprint's outline and
+    /// outside it, checking the bounding circle first.</summary>
+    public static bool IsFarFrom(Vector2 p, HoloFootprint fp, float gap) =>
+        Vector2.Distance(p, fp.Centre) - fp.Radius > gap || PointPolygon(p, fp.Polygon) > gap;
+
+    /// <summary>True when two polygons' bounding circles are more than <paramref name="gap"/> apart, so
+    /// the polygons are too; false means "look closer", not "too close".</summary>
+    public static bool BoundsApart(IReadOnlyList<Vector2> p, IReadOnlyList<Vector2> q, float gap)
+    {
+        (Vector2 cp, float rp) = Bound(p);
+        (Vector2 cq, float rq) = Bound(q);
+        return Vector2.Distance(cp, cq) - rp - rq > gap;
+    }
+
+    private static (Vector2 Centre, float Radius) Bound(IReadOnlyList<Vector2> poly)
+    {
+        Vector2 c = Vector2.Zero;
+        for (int i = 0; i < poly.Count; i++) c += poly[i];
+        c /= poly.Count;
+        float r = 0f;
+        for (int i = 0; i < poly.Count; i++) r = MathF.Max(r, Vector2.Distance(c, poly[i]));
+        return (c, r);
+    }
 }

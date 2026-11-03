@@ -22,8 +22,14 @@ internal readonly record struct HoloFill(Vector3 A, Vector3 B, Vector3 C, Vector
 /// <summary>An inch label on the table rim.</summary>
 internal readonly record struct HoloLabel(Vector3 At, string Text);
 
-/// <summary>A blocking piece's outline on the table plane; a piece can have several (one per ruin leg).</summary>
-internal readonly record struct HoloFootprint(int Piece, IReadOnlyList<Vector2> Polygon);
+/// <summary>A blocking piece's outline on the table plane; a piece can have several (one per ruin leg).
+/// <see cref="Centre"/> and <see cref="Radius"/> are a circle round it, so a distance check can usually
+/// settle "nowhere near" with one subtraction instead of walking the outline (#464: generation cost).</summary>
+internal readonly record struct HoloFootprint(int Piece, IReadOnlyList<Vector2> Polygon)
+{
+    public Vector2 Centre { get; } = Polygon.Aggregate(Vector2.Zero, (a, b) => a + b) / Polygon.Count;
+    public float Radius { get; } = Polygon.Max(v => Vector2.Distance(v, Polygon.Aggregate(Vector2.Zero, (a, b) => a + b) / Polygon.Count));
+}
 
 /// <summary>
 /// The main menu's war table as hologram geometry (#448): a 72"x48" slab with grid, inch ticks and
@@ -104,9 +110,12 @@ internal sealed class HoloTableScene
     /// barricades, each a random size, shape and rotation, dropped where they fit - at least
     /// <see cref="PieceGap"/> from every other piece and an inch inside the table. Largest first, so the
     /// small ones fill the gaps; a piece that finds no room after a couple of hundred tries is left out.
+    /// Every piece also leaves the room <paramref name="keepOut"/> asks for (#464: the menu places its units
+    /// first and fits the terrain round them).
     /// </summary>
-    public static HoloTableScene BuildRandom(Random rng)
+    public static HoloTableScene BuildRandom(Random rng, HoloKeepOut? keepOut = null)
     {
+        keepOut ??= HoloKeepOut.None;
         var scene = new HoloTableScene();
         scene.AddTable();
         var placed = new List<IReadOnlyList<Vector2>>();
@@ -120,7 +129,9 @@ internal sealed class HoloTableScene
                 float yaw = U(0f, 360f);
                 var polys = outline(centre, yaw);
                 bool onTable = polys.All(poly => poly.All(v => MathF.Abs(v.X) < HalfW - 1f && MathF.Abs(v.Y) < HalfD - 1f));
-                if (!onTable || polys.Any(poly => placed.Any(other => HoloGeometry.PolygonPolygon(poly, other) < PieceGap))) continue;
+                if (!onTable || polys.Any(poly => placed.Any(other => !HoloGeometry.BoundsApart(poly, other, PieceGap)
+                                                                      && HoloGeometry.PolygonPolygon(poly, other) < PieceGap))) continue;
+                if (!polys.All(keepOut.Allows)) continue;
                 placed.AddRange(polys);
                 add(centre, yaw);
                 return true;
@@ -444,7 +455,7 @@ internal sealed class HoloTableScene
             var at = centre + new Vector2(MathF.Cos(a), MathF.Sin(a)) * d;
             var size = new Vector3(0.7f + 0.9f * rng.NextSingle(), 0.7f + 0.9f * rng.NextSingle(), 0.4f + 0.8f * rng.NextSingle());
             Vector2[] fp = BoxFootprint(at, size, rng.NextSingle() * 360f);
-            if (placed.Any(other => HoloGeometry.PolygonPolygon(fp, other) < 0.3f)) continue;
+            if (placed.Any(other => !HoloGeometry.BoundsApart(fp, other, 0.3f) && HoloGeometry.PolygonPolygon(fp, other) < 0.3f)) continue;
             placed.Add(fp);
             DrawBox(piece, fp, size.Z, 0.8f);
         }
