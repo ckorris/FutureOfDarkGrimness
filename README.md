@@ -11,14 +11,6 @@ This is a fan project that’s not officially affiliated with OnePageRules.
 
 <br>
 
-## Rules Version: OPR 3.6.0
-
-This release plays the OnePageRules **v3.6.0** core rules, for both Grimdark Future and Age of Fantasy. The Army Forge screen comes with all **48 Grimdark Future and 40 Age of Fantasy** official army books, under their 3.6 names: **Voidspace Stalkers** is new, the Wormhole Daemons of Change / Lust / Plague / War books (Rift Daemons in Age of Fantasy) are now **Daemons of Change / Lust / Plague / War**, and Saurian Starhost is now **Saurian Starhosts**.
-
-**Older files:** army files (`.fdgarmy`) made for 3.5 still load and play, but with 3.6 rules. The lobby shows an amber "built for OPR v3.5.x; it plays with 3.6 rules" notice when one is picked. Army Forge share links import as 3.6 lists, since Army Forge now serves every list with its 3.6 books. Saved games (`.fdgsave`) from earlier versions load too and play with 3.6 rules, keeping the 3.5 armies they were saved with; the resume lobby shows an amber "This save predates the OPR 3.6 upgrade; it plays with 3.6 rules" notice (saves now carry the rules version they were written under, so a save from another ruleset is named the same way). It never blocks the resume, but a fresh game is still the cleaner option.
-
-<br>
-
 ## More than a Virtual Tabletop
 
 <img width="712" height="401" alt="TerrainObjZonePick_small" src="https://github.com/user-attachments/assets/90da9357-68bf-46c4-8ebf-fbb84a56ee9d" />
