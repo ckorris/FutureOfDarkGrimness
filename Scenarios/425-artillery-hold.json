@@ -1,0 +1,28 @@
+{
+  "name": "#425 - Cumbersome menu and move, Indirect Hold-only line of sight, Artillery -1 while unmoved",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "terrain": [
+    { "type": "Blocking", "shape": "Rectangle", "center": [41, 20], "size": [10, 2] },
+    { "type": "Cover", "shape": "Circle", "center": [45, 27], "diameter": 4 }
+  ],
+  "players": [
+    {
+      "army": "armies/425-Battery.fdgarmy",
+      "units": [
+        { "unit": "Field Gun", "models": [[20, 10]] },
+        { "unit": "Mortar Team", "models": [[40, 10], [41.2, 10]] }
+      ]
+    },
+    {
+      "army": "armies/425-Targets.fdgarmy",
+      "units": [
+        { "unit": "Adjacent Grunts", "models": [[20, 13.5]] },
+        { "unit": "Hidden Grunts", "models": [[41, 26]] },
+        { "unit": "Wooded Grunts", "models": [[45, 27]] },
+        { "unit": "Enemy Battery", "models": [[25, 34]] }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+using FDG;
 using FDG.TextInterface;
 
 namespace FdgRaylib.Cli;
@@ -8,7 +9,8 @@ public class CliLogMessageUI : ILogMessageUI
     // players share this single UI, deduplicate by skipping consecutive identical messages.
     private string? _lastMessage;
 
-    public void DisplayLogMessage(string message)
+    // Color is irrelevant on the console; the parameter satisfies the interface.
+    public void DisplayLogMessage(string message, TextColor color)
     {
         if (message == _lastMessage) return;
         _lastMessage = message;

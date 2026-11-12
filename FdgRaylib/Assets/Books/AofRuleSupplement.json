@@ -1,0 +1,2433 @@
+[
+  {
+    "name": "Cursed Undead",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 6
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule takes wounds, roll one die for each. On a 6+ it is ignored."
+  },
+  {
+    "name": "Angelic Blessing",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "isSpell"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 6
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule takes wounds, roll one die for each. If the wound was from a spell, then it is ignored on a 2+. If the wound was not from a spell, and the unit was shot/charged from over 9\"/6\" away, then it is ignored on a 6+ instead."
+  },
+  {
+    "name": "Empyrean Spirit",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have this rule, enemy units shooting/charging them from over 9\"/6\" away get -1 to hit rolls."
+  },
+  {
+    "name": "Ossified",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)."
+  },
+  {
+    "name": "Warden",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)."
+  },
+  {
+    "name": "Bestial",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "reroll",
+          "roll": "Save",
+          "condition": {
+            "kind": "onUnmodifiedValue"
+          }
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When attacking, targets must re-roll unmodified Defense results of 6 when blocking hits from this model's weapons."
+  },
+  {
+    "name": "Lucky",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackingFromOver",
+            "shootInches": 9,
+            "chargeInches": 6
+          },
+          "right": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified result of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)."
+  },
+  {
+    "name": "Royal Warrior",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "unmodifiedRollEquals",
+          "dieValue": 6
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "For each unmodified roll of 6 to hit when attacking, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
+  },
+  {
+    "name": "Great Sergeant",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model gets AP(+2) when attacking."
+  },
+  {
+    "name": "Wave-Step",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "repositionAtActivation",
+          "distance": {
+            "kind": "d3"
+          },
+          "plusInches": 0,
+          "move": true
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is activated, you may move all models with this rule in it by up to D3\"."
+  },
+  {
+    "name": "Royal Legion",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": 4,
+          "minResultInches": 0,
+          "chargeDelta": 2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model gets +4\"/+2\" range when shooting/charging."
+  },
+  {
+    "name": "Drakesworn",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Deployment_OnUnitDeployed",
+        "cost": {
+          "kind": "oncePerGame"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "repositionOnDeploy",
+          "maxInches": 9,
+          "enemyClearanceInches": 9,
+          "exemptEnemyRule": "Vanguard"
+        },
+        "availableWhen": {
+          "kind": "mostModelsHaveThisRule"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "After this model is deployed, it may be placed anywhere fully within 9\" of its position, over 9\" away from non-Vanguard enemy units."
+  },
+  {
+    "name": "Traversal",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveThroughEnemy",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "ignoreEnemyMovementBlock"
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "May move through friendly and enemy units."
+  },
+  {
+    "name": "Ethereal",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Advance"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "TeleportedThisActivation"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Advance",
+          "distanceInches": -6,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Rush"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "TeleportedThisActivation"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Rush",
+          "distanceInches": -6,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Charge"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "TeleportedThisActivation"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": -6,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActionChoice",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "teleport"
+        },
+        "availableWhen": {
+          "kind": "mostModelsHaveThisRule"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Neutral",
+    "description": "Once per activation, before attacking, you may place this model anywhere fully within 6\" of its position. If you do, this model moves -6\" when using Advance, and -6\" when using Rush/Charge until the end of that activation."
+  },
+  {
+    "name": "Unmovable",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "clearTokenOnRoll",
+          "tType": {
+            "id": "Shaken"
+          },
+          "minRoll": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If a unit where most models have this rule is Shaken at the beginning of the round, roll one die. On a 4+, it stops being Shaken."
+  },
+  {
+    "name": "Vale Oath",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "clearTokenOnRoll",
+          "tType": {
+            "id": "Shaken"
+          },
+          "minRoll": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If a unit where most models have this rule is Shaken at the beginning of the round, roll one die. On a 4+, it stops being Shaken."
+  },
+  {
+    "name": "Great Banner",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Banner",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets +1 to Morale Test rolls triggered by shooting/melee once (next time the effect would apply)."
+  },
+  {
+    "name": "Great Musician",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Musician",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which moves +1\" when using move actions once (next time the effect would apply)."
+  },
+  {
+    "name": "Defense Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "statModifier",
+          "roll": "Save",
+          "delta": 1,
+          "lifetimeScope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets +1 to Defense rolls once (next time the effect would apply)."
+  },
+  {
+    "name": "Buccaneer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "distanceGreaterThan",
+            "distanceInches": 9
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When shooting at enemies over 9\" away, this model gets +1 to hit rolls."
+  },
+  {
+    "name": "Vinci Tech (Piercing)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "AP(+1) when shooting/charging enemies over 9\"/6\" away, for this activation."
+  },
+  {
+    "name": "Vinci Tech (Precision)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "+1 to hit rolls when shooting/charging enemies over 9\"/6\" away, for this activation."
+  },
+  {
+    "name": "Vinci Tech",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Vinci Tech (Piercing)",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "always"
+        },
+        "label": "AP(+1)"
+      },
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Vinci Tech (Precision)",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "always"
+        },
+        "label": "+1 to hit"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is activated, pick one effect: until the end of the activation, when shooting/charging enemies over 9\"/6\" away, all models with this rule in it either get AP(+1) or get +1 to hit rolls."
+  },
+  {
+    "name": "Good Fighter",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model gets +1 to hit rolls in melee."
+  },
+  {
+    "name": "Takedown when Shooting",
+    "passive": [
+      {
+        "hookID": "Shooting_OnShootTargetsSelected",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "targetIndividualModel"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model gets Takedown on its weapons when shooting."
+  },
+  {
+    "name": "Wild Veil",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule is targeted by an enemy unit for shooting/charging, that enemy unit gets -4\"/-2\" range to a min. of 6\"."
+  },
+  {
+    "name": "Melee Evasion Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Melee Evasion",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Melee Evasion once (next time the effect would apply)."
+  },
+  {
+    "name": "Piercing Fighting Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Piercing Fighter"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets AP(+1) on their weapons in melee against once (next time the effect would apply)."
+  },
+  {
+    "name": "Rapid Charge Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Rapid Charge"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Rapid Charge against once (next time the effect would apply)."
+  },
+  {
+    "name": "Surge Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Surge"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which friendly units gets Surge on their weapons when attacking against once (next time the effect would apply)."
+  },
+  {
+    "name": "Precision Feat Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit gets +1 to hit rolls."
+  },
+  {
+    "name": "Precision Feat",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerGame"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Precision Feat Boost",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "label": "Precision Feat"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per game, when this unit attacks, you may use this rule so that all models with this rule in it get +1 to hit rolls."
+  },
+  {
+    "name": "Piercing Feat Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit's weapons get AP(+1)."
+  },
+  {
+    "name": "Piercing Feat",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerGame"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Piercing Feat Boost",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "label": "Piercing Feat"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per game, when this unit attacks, you may use this rule so that the weapons of all models with this rule in it get AP(+1)."
+  },
+  {
+    "name": "Destroyer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "attackingFromOver",
+          "shootInches": 9,
+          "chargeInches": 6
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this model shoots/charges enemies over 9\"/6\" away, unmodified results of 1 to block hits from weapons deal 1 extra wound."
+  },
+  {
+    "name": "Brace in Melee",
+    "passive": [
+      {
+        "hookID": "Melee_OnChargeContact",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "countsAsFatiguedInMelee"
+          }
+        },
+        "effect": {
+          "kind": "cancelImpactDice",
+          "dicePerModel": {
+            "kind": "literal",
+            "value": 1
+          }
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model gets Brace(1) on its weapons in melee."
+  },
+  {
+    "name": "Grounded Speed",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Advance"
+          },
+          "right": {
+            "kind": "mostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Advance",
+          "distanceInches": 2,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Rush"
+          },
+          "right": {
+            "kind": "mostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Rush",
+          "distanceInches": 4,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "actionTypeIs",
+            "actionType": "Charge"
+          },
+          "right": {
+            "kind": "mostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          }
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": 4,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit are within 1\" of terrain when activated, this model may move +2\" on Advance, and +4\" on Rush/Charge during this activation."
+  },
+  {
+    "name": "Grounded Protection",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "mostModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "mostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 5
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If a unit where most models have this rule has most of them within 1\" of terrain, when they take wounds roll one die per wound, and on a 5+ it is ignored."
+  },
+  {
+    "name": "Grounded Protection Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Grounded Protection"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Grounded Protection."
+  },
+  {
+    "name": "Reckless Piercing",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "mostModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "RecklessPiercingBoon"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "mostModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "RecklessPiercingExposed"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "grantTokenOnRoll",
+          "tType": {
+            "id": "RecklessPiercingBoon"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "roundEnd"
+          },
+          "minRoll": 2,
+          "onFailure": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "RecklessPiercingExposed"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "roundEnd"
+            }
+          }
+        },
+        "availableWhen": {
+          "kind": "mostModelsHaveThisRule"
+        },
+        "label": "Reckless Piercing"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Neutral",
+    "description": "When a unit where most models have this rule is activated, you may roll one die. On a 2+ their weapons get AP(+1) when attacking until the end of the round, but on a 1 enemy units get AP(+1) on their weapons when attacking them instead."
+  },
+  {
+    "name": "Reckless Piercing Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Reckless Piercing"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Reckless Piercing."
+  },
+  {
+    "name": "Bloodthirsty Fighter",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "addBonusAttack",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "For each unmodified roll of 1 that enemies roll when blocking hits from this model's weapons in melee, this model may roll +1 attack with that weapon. This rule doesn't apply to newly generated attacks."
+  },
+  {
+    "name": "Retreating Strike",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Movement_OnMoveResolved",
+        "cost": {
+          "kind": "oncePerRound"
+        },
+        "targetSelector": {
+          "rangeInches": 3,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "dealAutoWounds",
+          "diceCountPerModel": {
+            "kind": "arg",
+            "index": 0
+          },
+          "successThreshold": 6
+        },
+        "availableWhen": {
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "WasInMeleeThisRound"
+            },
+            "minCount": 1
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            }
+          }
+        },
+        "label": "Retreating Strike"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Once per round, when this unit ends its move within 3\" of enemy units after being in melee, pick one of them and roll X dice for each model with this rule in this unit. For each 6+ the target takes one wound."
+  },
+  {
+    "name": "Piercing Charge Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Piercing Charge",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Piercing Charge once (next time the effect would apply)."
+  },
+  {
+    "name": "Enhanced Wild Veil",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Wild Veil"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6,
+          "chargeDelta": -2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Wild Veil, enemy units shooting/charging it get -8\"/-4\" range to a min. of 6\" from Wild Veil (instead of only -4\"/-2\")."
+  },
+  {
+    "name": "Enhanced Royal Legion",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "unitHasRule",
+          "ruleName": "Royal Legion"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": 4,
+          "minResultInches": 0,
+          "chargeDelta": 2
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Royal Legion, it gets +8\"/+4\" range when shooting/charging from Royal Legion (instead of only +4\"/+2\")."
+  },
+  {
+    "name": "Enhanced Ossified",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Ossified"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Ossified, hits they take count as having AP(-2) from Ossified (instead of only AP(-1))."
+  },
+  {
+    "name": "Enhanced Warden",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Warden"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Warden, hits they take count as having AP(-2) from Warden (instead of only AP(-1))."
+  },
+  {
+    "name": "Enhanced Cursed Undead",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Cursed Undead"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 5
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Cursed Undead, they ignore wounds on rolls of 5-6 from Cursed Undead (instead of only on 6+)."
+  },
+  {
+    "name": "Enhanced Vale Oath",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Vale Oath"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "clearTokenOnRoll",
+          "tType": {
+            "id": "Shaken"
+          },
+          "minRoll": 3
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Vale Oath, they stops being Shaken on rolls of 3+ from Vale Oath (instead of only on 4+)."
+  },
+  {
+    "name": "Enhanced Bestial",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "unitHasRule",
+          "ruleName": "Bestial"
+        },
+        "effect": {
+          "kind": "reroll",
+          "roll": "Save",
+          "condition": {
+            "kind": "onUnmodifiedValue",
+            "minValue": 5
+          }
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Bestial, enemies taking hits from it must re-roll successful unmodified Defense results of 5-6 from Bestial (instead of only results of 6)."
+  },
+  {
+    "name": "Enhanced Wave-Step",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Wave-Step"
+          },
+          "right": {
+            "kind": "mostModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "repositionAtActivation",
+          "distance": {
+            "kind": "d3"
+          },
+          "plusInches": 0,
+          "move": true
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Wave-Step, it may move by up to 2D3\" from Wave-Step (instead of only D3\")."
+  },
+  {
+    "name": "Enhanced Empyrean Spirit",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Empyrean Spirit"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Empyrean Spirit, enemies attacking them always get -1 to hit rolls from Empyrean Spirit (instead of only when shooting/charging from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Angelic Blessing",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Angelic Blessing"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "attackedFromOver",
+                "shootInches": 0,
+                "chargeInches": 0
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackedFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              }
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          }
+        },
+        "effect": {
+          "kind": "ignoreWoundOnRoll",
+          "minRoll": 6
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit have Angelic Blessing, they always ignore shooting/charging wounds on rolls of 6+ from Angelic Blessing (instead of only when shot/charged from over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Lucky",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Lucky"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "attackingFromOver",
+                  "shootInches": 9,
+                  "chargeInches": 6
+                }
+              },
+              "right": {
+                "kind": "isNotSpell"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 6,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Lucky, the target always takes hits on unmodified hit results of 6 from Lucky (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Destroyer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Destroyer"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Destroyer, enemies always take wounds on unmodified results of 1 to block from Destroyer (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Vinci Tech",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Vinci Tech (Piercing)"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackingFromOver",
+                "shootInches": 9,
+                "chargeInches": 6
+              }
+            },
+            "right": {
+              "kind": "isNotSpell"
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Vinci Tech (Precision)"
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackingFromOver",
+              "shootInches": 9,
+              "chargeInches": 6
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Versatile Attack, it always gets either AP(+1) or +1 to hit rolls from Versatile Attack (instead of only when shooting/charging enemies over 9\"/6\" away)."
+  },
+  {
+    "name": "Enhanced Buccaneer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Buccaneer"
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "isMelee"
+                }
+              },
+              "right": {
+                "kind": "distanceGreaterThan",
+                "distanceInches": 9
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Buccaneer, it always gets +1 to hit rolls from Buccaneer (instead of only when shooting over 9\" away)."
+  },
+  {
+    "name": "Enhanced Royal Warrior",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Royal Warrior"
+          },
+          "right": {
+            "kind": "unmodifiedRollHits",
+            "dieValue": 5
+          }
+        },
+        "effect": {
+          "kind": "addExtraHit",
+          "onRollValue": 5,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Royal Warrior, it gets extra attacks on successful unmodified hit results of 5-6 from Royal Warrior (instead of only on 6)."
+  },
+  {
+    "name": "Enhanced Bestial Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Bestial"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Bestial."
+  },
+  {
+    "name": "Enhanced Buccaneer Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Buccaneer"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Buccaneer."
+  },
+  {
+    "name": "Enhanced Destroyer Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Destroyer"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Destroyer."
+  },
+  {
+    "name": "Enhanced Empyrean Spirit Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Empyrean Spirit"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Empyrean Spirit."
+  },
+  {
+    "name": "Enhanced Lucky Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Lucky"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Lucky."
+  },
+  {
+    "name": "Enhanced Ossified Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Ossified"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Ossified."
+  },
+  {
+    "name": "Enhanced Royal Legion Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Royal Legion"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Royal Legion."
+  },
+  {
+    "name": "Enhanced Royal Warrior Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Royal Warrior"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Royal Warrior."
+  },
+  {
+    "name": "Enhanced Vale Oath Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Vale Oath"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Vale Oath."
+  },
+  {
+    "name": "Enhanced Vinci Tech Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Vinci Tech"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Vinci Tech."
+  },
+  {
+    "name": "Enhanced Warden Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Warden"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Warden."
+  },
+  {
+    "name": "Enhanced Wave-Step Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Wave-Step"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Wave-Step."
+  },
+  {
+    "name": "Enhanced Wild Veil Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Enhanced Wild Veil"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Enhanced Wild Veil."
+  },
+  {
+    "name": "Enhanced Angelic Blessing Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Enhanced Angelic Blessing",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Enhanced Angelic Blessing once (next time the effect would apply)."
+  },
+  {
+    "name": "Enhanced Cursed Undead Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Enhanced Cursed Undead",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Enhanced Cursed Undead once (next time the effect would apply)."
+  }
+]

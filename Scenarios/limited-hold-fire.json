@@ -1,0 +1,20 @@
+{
+  "name": "#319 - Hold fire with a Deadly+Limited rocket, then shoot the rifles",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "players": [
+    {
+      "army": "armies/Rocketeers.fdgarmy",
+      "units": [
+        { "unit": "Rocketeers", "models": [[30, 16], [32, 16], [34, 16]] }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        { "unit": "Dummies", "models": [[30, 30], [32, 30], [34, 30], [36, 30], [38, 30]] }
+      ]
+    }
+  ]
+}

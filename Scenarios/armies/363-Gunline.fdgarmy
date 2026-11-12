@@ -1,0 +1,27 @@
+{
+  "name": "Gunline (#363 wall-shadow shooters)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Gunline",
+      "modelCount": 5,
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Long Rifle",
+          "quantity": 5,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

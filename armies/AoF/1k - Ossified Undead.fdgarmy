@@ -1,0 +1,5998 @@
+{
+  "selections": {
+    "name": "Bony Baddies",
+    "bookName": "Ossified Undead",
+    "pointsLimit": 1000,
+    "units": [
+      {
+        "rosterUnitId": "VUZBCgc",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "A4uH0PlWQH",
+            "optionId": "Ovtv7ZzUwV",
+            "count": 1
+          },
+          {
+            "sectionId": "QgKJmnKT",
+            "optionId": "AxS1nfcluL",
+            "count": 1
+          }
+        ],
+        "id": "bm",
+        "joinsUnitId": "g1",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "ubHQDXB",
+        "modelCount": 10,
+        "choices": [
+          {
+            "sectionId": "7N23TI0",
+            "optionId": "sg4y4Fi",
+            "count": 1
+          },
+          {
+            "sectionId": "5obDBoF",
+            "optionId": "-pDoK8v",
+            "count": 1
+          },
+          {
+            "sectionId": "J58_ew2-NV",
+            "optionId": "BSvBGx3DLr",
+            "count": 1
+          }
+        ],
+        "id": "g1",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "NySQofv",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "AmuRwxX5y3",
+            "optionId": "Ev5D7LYtuy",
+            "count": 1
+          },
+          {
+            "sectionId": "TO1dKdYh",
+            "optionId": "MuYUYl7-",
+            "count": 1
+          }
+        ],
+        "id": "herald",
+        "joinsUnitId": "g2",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "ubHQDXB",
+        "modelCount": 10,
+        "choices": [
+          {
+            "sectionId": "7N23TI0",
+            "optionId": "sg4y4Fi",
+            "count": 1
+          },
+          {
+            "sectionId": "5obDBoF",
+            "optionId": "-pDoK8v",
+            "count": 1
+          },
+          {
+            "sectionId": "J58_ew2-NV",
+            "optionId": "BSvBGx3DLr",
+            "count": 1
+          }
+        ],
+        "id": "g2",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "BMbl1hs",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "7NYEy1M",
+            "optionId": "VOsuclL",
+            "count": 1
+          },
+          {
+            "sectionId": "KolAGfkd8B",
+            "optionId": "dsXlh0_NZL",
+            "count": 1
+          }
+        ],
+        "id": "harvester",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "_1EeViZ",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "p8HxxQj",
+            "optionId": "TXV68LQBXh",
+            "count": 1
+          }
+        ],
+        "id": "horror",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "-ZAyU4r",
+        "modelCount": 5,
+        "choices": [],
+        "id": "reapers",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      }
+    ]
+  },
+  "book": {
+    "name": "Ossified Undead",
+    "faction": "Ossified Undead",
+    "version": "OPR v3.6.0",
+    "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+    "license": "CC-BY-SA 4.0",
+    "gameSystem": "age-of-fantasy",
+    "defaultRangedEffectSet": "arrow-loose",
+    "defaultMeleeEffectSet": "blade-standard",
+    "units": [
+      {
+        "id": "vObAD3f",
+        "name": "Great Stalker",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 90,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.968504,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Stalker Blades",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 8,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          },
+          {
+            "kind": "core",
+            "name": "Unpredictable Fighter"
+          },
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "RhfGMGYi",
+            "label": "Replace Stalker Blades",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Stalker Blades"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "vIUqcLrRA2",
+                "label": "Master Ossified Greatsword (A6, AP(1), Bane)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Ossified Greatsword",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "M2MZNkjInI",
+                "label": "Master Ur-Greatfalchion (A6, AP(1), Shred)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Ur-Greatfalchion",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shred"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "HhSnuKmI_X",
+                "label": "Master Bone Greatmace (A6, AP(2), Shatter)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Bone Greatmace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "ZdlxtULL",
+                "label": "Javelins (12\u0022, A3, Assault), Ossified Greatsword (A6, Bane)",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Javelins",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Ossified Greatsword",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "aT1I0mfO6X",
+                "label": "Master Great Weapon (A6, AP(4))",
+                "cost": 30,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "8qQlaW_l",
+            "label": "Replace Ossified Greatsword",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Ossified Greatsword"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "RNLhsZkdld",
+                "label": "Ur-Greatfalchion (A6, Shred)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Ur-Greatfalchion",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shred"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "GWQurPR98r",
+                "label": "Bone Greatmace (A6, AP(1), Shatter)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Greatmace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "3gljaqFt",
+                "label": "Great Weapon (A6, AP(2))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "-l2PgNFd",
+            "label": "Replace Javelins",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Javelins"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "GwAml8dD9p",
+                "label": "Throwing Spikes (9\u0022, A3, Assault, Bane)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Throwing Spikes",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "zzBGhI6D",
+                "label": "Barbed Net (9\u0022, A3, Rending, Assault)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Barbed Net",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "wPOzTOW78B",
+                "label": "Tri-Spike Vanquisher (6\u0022, A1, AP(4), Deadly(3), Assault)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Tri-Spike Vanquisher",
+                    "quantity": 1,
+                    "rangeInches": 6,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "qdUqsPL8",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "Gvnh8osp",
+                "label": "Bone Shaper (Enhanced Ossified Aura)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Bone Shaper",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Enhanced Ossified Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "QfCFx5Aa",
+                "label": "High Liege (Bane in Melee Aura)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "High Liege",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane in Melee Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "Xyc66BSn",
+                "label": "Lord of Bones (Swift Aura)",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Lord of Bones",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Swift Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "SFJQ9BGf",
+                "label": "Artisan of Shards (Regeneration Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Artisan of Shards",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Regeneration Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "a2fE2xHXnE",
+                "label": "Ur-Dead Master (No Retreat Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Ur-Dead Master",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "No Retreat Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "NySQofv",
+        "name": "Herald of Death",
+        "quality": 3,
+        "defense": 4,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 60,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Dual Hand Weapons",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Unpredictable Fighter"
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "AmuRwxX5y3",
+            "label": "Replace Dual Hand Weapons",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dual Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "7F4JQMft2Z",
+                "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Hand Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Parry",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "VfVQqBYlNC",
+                "label": "Master Halberd (A3, AP(1), Rending)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Halberd",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "s9VUlhVZI8",
+                "label": "Master Lance (A3, AP(1), Thrust)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Lance",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Thrust"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "Ev5D7LYtuy",
+                "label": "Master Bone Mace (A3, AP(2), Shatter)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Bone Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "69i3ZPLv3a",
+                "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Spear",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Brace",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "2BnTojulOx",
+                "label": "Master Great Weapon (A3, AP(4))",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "DXahAIy0tA",
+            "label": "Replace Dual Hand Weapons",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dual Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "ekqEpoxX",
+                "label": "Rapid Bow (24\u0022, A3), Strike (A1)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Rapid Bow",
+                    "quantity": 1,
+                    "rangeInches": 24,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  },
+                  {
+                    "name": "Strike",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "iXxMgh8B",
+                "label": "Javelins (12\u0022, A1, Assault), Hand Weapon (A3, Parry(3))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Javelins",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Hand Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Parry",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "rlvZ_EMB",
+            "label": "Replace Hand Weapon",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Hand Weapon"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "unKg78M5",
+                "label": "Halberd (A3, Rending)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Halberd",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "8DvKvDUU",
+                "label": "Lance (A3, Thrust)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Lance",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Thrust"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "DAPJgBen",
+                "label": "Spear (A3, Counter, Brace(1))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Spear",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Brace",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "hfHjWOM_",
+                "label": "Bone Mace (A3, AP(1), Shatter)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "fEgeyJ_9",
+                "label": "Great Weapon (A3, AP(2))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "0O6uuUi2WD",
+            "label": "Replace Javelins",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Javelins"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "3dSUVDcWaS",
+                "label": "Barbed Net (9\u0022, A1, Rending, Assault)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Barbed Net",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "mjZh0ID2LW",
+                "label": "Throwing Spikes (9\u0022, A1, Assault, Bane)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Throwing Spikes",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "GUbtE80pPH",
+            "label": "Replace Rapid Bow",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Rapid Bow"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "MIy4z8HtRa",
+                "label": "Rapid Bone Bow (18\u0022, A3, AP(1), Shatter)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Rapid Bone Bow",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "J3a1tbERda",
+                "label": "Tri-Spike Vanquisher (6\u0022, A1, AP(4), Deadly(3), Assault)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Tri-Spike Vanquisher",
+                    "quantity": 1,
+                    "rangeInches": 6,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "HmX_YsoZ",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "1j7-yi52",
+                "label": "Skeletal Steed (Impact(1), Swift)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Skeletal Steed",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 1
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Swift"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "7oLgQIfs5i",
+                "label": "Great Steed (Impact(3), Swift, Tough(3))",
+                "cost": 55,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Great Steed",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Swift"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "rdy9YhPw",
+                "label": "Bone Chariot (Hooves (A2, AP(1)), Armor(3), Impact(4), Swift, Tough(6))",
+                "cost": 155,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Hooves",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Bone Chariot",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Armor",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 4
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Swift"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 6
+                      }
+                    ],
+                    "weapons": [
+                      {
+                        "name": "Hooves",
+                        "quantity": 1,
+                        "rangeInches": 0,
+                        "attacks": 2,
+                        "armorPenetration": 1,
+                        "specialRules": []
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "TO1dKdYh",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "vYbAWoWK",
+                "label": "Bone Shaper (Enhanced Ossified Aura)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Bone Shaper",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Enhanced Ossified Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "pEMJqaWg",
+                "label": "High Liege (Bane in Melee Aura)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "High Liege",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane in Melee Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "MuYUYl7-",
+                "label": "Lord of Bones (Swift Aura)",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Lord of Bones",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Swift Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "UopVZ4uR",
+                "label": "Spell Reaper (Relentless Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Spell Reaper",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Relentless Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "dl0eQZHgv_",
+                "label": "Ur-Dead Master (No Retreat Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Ur-Dead Master",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "No Retreat Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "VUZBCgc",
+        "name": "Bone Master",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 40,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Dual Hand Weapons",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "0YqJUEQTa0",
+            "label": "Replace Dual Hand Weapons",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dual Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "0BCPjRmXxl",
+                "label": "Master Hand Weapon (A3, AP(1), Parry(3))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Hand Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Parry",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "A7M6NJBP8o",
+                "label": "Master Halberd (A3, AP(1), Rending)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Halberd",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "HW7dHVoTEi",
+                "label": "Master Bone Mace (A3, AP(2), Shatter)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Bone Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "2zD3d9omre",
+                "label": "Master Lance (A3, AP(1), Thrust)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Lance",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Thrust"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "IgqRNTgg1H",
+                "label": "Master Spear (A3, AP(1), Counter, Brace(1))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Spear",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Brace",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "LneyeHSPfY",
+                "label": "Master Great Weapon (A3, AP(4))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Master Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "A4uH0PlWQH",
+            "label": "Replace Dual Hand Weapons",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dual Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "svkx0BhA8M",
+                "label": "Rapid Bow (24\u0022, A3), Strike (A1)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Rapid Bow",
+                    "quantity": 1,
+                    "rangeInches": 24,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  },
+                  {
+                    "name": "Strike",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "i7qkwRk-Ft",
+                "label": "Javelins (12\u0022, A1, Assault), Hand Weapon (A3, Parry(3))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Javelins",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Hand Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Parry",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "Ovtv7ZzUwV",
+                "label": "Soul Master Staff (A2, Spell Amplifier)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Soul Master Staff",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Spell Amplifier"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "Z_SeZKS",
+            "label": "Replace Hand Weapon",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Hand Weapon"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "mOJrnvm",
+                "label": "Halberd (A3, Rending)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Halberd",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "p3ft6Ac",
+                "label": "Lance (A3, Thrust)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Lance",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Thrust"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "7Pf33gJ",
+                "label": "Spear (A3, Counter, Brace(1))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Spear",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Brace",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "g5AQzEKLdT",
+                "label": "Bone Mace (A3, AP(1), Shatter)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "MMNr80n",
+                "label": "Great Weapon (A3, AP(2))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "kUTiZ9kM4d",
+            "label": "Replace Javelins",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Javelins"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "I1YuCyisae",
+                "label": "Barbed Net (9\u0022, A1, Rending, Assault)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Barbed Net",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "uOKSy_73Hl",
+                "label": "Throwing Spikes (9\u0022, A1, Assault, Bane)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Throwing Spikes",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "43KTWr9XhZ",
+            "label": "Replace Rapid Bow",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Rapid Bow"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "suVgP7M8e-",
+                "label": "Rapid Bone Bow (18\u0022, A3, AP(1), Shatter)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Rapid Bone Bow",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "p5ZnIxiz8D",
+                "label": "Tri-Spike Vanquisher (6\u0022, A1, AP(4), Deadly(3), Assault)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Tri-Spike Vanquisher",
+                    "quantity": 1,
+                    "rangeInches": 6,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "_rEPv5v",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "V49hqlG",
+                "label": "Skeletal Steed (Impact(1), Swift)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Skeletal Steed",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 1
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Swift"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "Qo3xEwA",
+                "label": "Bone Throne (Spell Accumulator(2), Tough(3))",
+                "cost": 40,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Bone Throne",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Spell Accumulator",
+                        "numericValue": 2
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "fKTOg6Faoz",
+                "label": "Bone Chariot (Hooves (A2, AP(1)), Armor(3), Impact(4), Swift, Tough(6))",
+                "cost": 135,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Hooves",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Bone Chariot",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Armor",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 4
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Swift"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 6
+                      }
+                    ],
+                    "weapons": [
+                      {
+                        "name": "Hooves",
+                        "quantity": 1,
+                        "rangeInches": 0,
+                        "attacks": 2,
+                        "armorPenetration": 1,
+                        "specialRules": []
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "QgKJmnKT",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "QDpW3S9h",
+                "label": "Bone Shaper (Enhanced Ossified Aura)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Bone Shaper",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Enhanced Ossified Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "wkgiyCxkMs",
+                "label": "Army Trophy Banner (Fear(2))",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Army Trophy Banner",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Fear",
+                        "numericValue": 2
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "fv95-3ro",
+                "label": "Lord of Bones (Swift Aura)",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Lord of Bones",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Swift Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "AxS1nfcluL",
+                "label": "Soul Master (Caster(2))",
+                "cost": 30,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Soul Master",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Caster",
+                        "numericValue": 2
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "EZTJDJWk",
+                "label": "Artisan of Shards (Regeneration Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Artisan of Shards",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Regeneration Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "VCEkR0Y0",
+                "label": "Spell Reaper (Relentless Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Spell Reaper",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Relentless Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ubHQDXB",
+        "name": "Guardians",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 10,
+        "minModels": 10,
+        "maxModels": 10,
+        "basePointCost": 100,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Hand Weapon",
+            "quantity": 10,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Parry",
+                "numericValue": 1
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "7N23TI0",
+            "label": "Upgrade up to three models with one",
+            "variant": "Upgrade",
+            "affects": "Any",
+            "targets": [],
+            "maxApplications": 3,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "sg4y4Fi",
+                "label": "Sergeant",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Sergeant"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "_CKDIWi",
+                "label": "Musician",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Musician"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "4OWC-et",
+                "label": "Banner",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Banner"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "5obDBoF",
+            "label": "Replace all Hand Weapons",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "-pDoK8v",
+                "label": "Halberd (A1, Rending)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Halberd",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "Vw8z-wnaEN",
+                "label": "Bone Mace (A1, AP(1), Shatter)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "oVrHurW",
+                "label": "Spear (A1, Counter, Brace(1))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Spear",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Brace",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "V01fStyBTH",
+                "label": "Great Weapon (A1, AP(2))",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "B8l8wd8",
+            "label": "Replace up to two Hand Weapons",
+            "variant": "Replace",
+            "affects": "Any",
+            "targets": [
+              "Hand Weapons"
+            ],
+            "maxApplications": 2,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "ZHKL0ZYwT9",
+                "label": "Ossified Greatsword (A3, Bane)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Ossified Greatsword",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "4cFbHQM",
+                "label": "Bone Greatmace (A3, AP(1), Shatter)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Greatmace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "J58_ew2-NV",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "BSvBGx3DLr",
+                "label": "Unstoppable Husk (Precision Feat)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Unstoppable Husk",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Precision Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "-ZAyU4r",
+        "name": "Reapers",
+        "quality": 3,
+        "defense": 5,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 110,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 2.047244,
+          "heightInches": 3.543307
+        },
+        "weapons": [
+          {
+            "name": "Dual Hand Weapons",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Ossified"
+          },
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "core",
+            "name": "Stealth"
+          },
+          {
+            "kind": "core",
+            "name": "Infiltrate"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "NP57mP2fGV",
+            "label": "Replace all Dual Hand Weapons",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Dual Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "Q1q4wZ9nZB",
+                "label": "Throwing Spikes (9\u0022, A1, Assault, Bane)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Throwing Spikes",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "_2qNW22n0Q",
+                "label": "Barbed Net (9\u0022, A1, Rending, Assault)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Barbed Net",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "Ep8SL2RyT3",
+            "label": "Replace one Dual Hand Weapons",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dual Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "WF3yU-c7cx",
+                "label": "Tri-Spike Vanquisher (6\u0022, A1, AP(4), Deadly(3), Assault)",
+                "cost": 40,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Tri-Spike Vanquisher",
+                    "quantity": 1,
+                    "rangeInches": 6,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "hXdZ2SZ230",
+            "label": "Upgrade one model with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "liGRKPwXUX",
+                "label": "Smoke Cache (Evasive Aura)",
+                "cost": 40,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Smoke Cache",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Evasive Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "otlq8Mn",
+        "name": "Guardian Archers",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 70,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Bow",
+            "quantity": 5,
+            "rangeInches": 24,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "Strike",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "7N23TI0",
+            "label": "Upgrade up to three models with one",
+            "variant": "Upgrade",
+            "affects": "Any",
+            "targets": [],
+            "maxApplications": 3,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "sg4y4Fi",
+                "label": "Sergeant",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Sergeant"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "_CKDIWi",
+                "label": "Musician",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Musician"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "4OWC-et",
+                "label": "Banner",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Banner"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "J58_ew2-NV",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "BSvBGx3DLr",
+                "label": "Unstoppable Husk (Precision Feat)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Unstoppable Husk",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Precision Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "TzdXqIcRAk",
+            "label": "Replace all Bows",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Bows"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "LacyZMLAv8",
+                "label": "Bone Bow (18\u0022, A1, AP(1), Shatter)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Bow",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "ZETUtpzsLU",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "BP9JDIRp8g",
+                "label": "Ur-Fire Braziers (Bane when Shooting)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Ur-Fire Braziers",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane when Shooting"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gSDuJ2-",
+        "name": "Stalkers",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 120,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.5748031,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Stalker Blades",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Unpredictable Fighter"
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "q0PINz0",
+            "label": "Replace one Stalker Blades",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Stalker Blades"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "VkLpvcTUB9",
+                "label": "Dual Ossified Greatswords (A6, Bane)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Dual Ossified Greatswords",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "ZC844vb1vl",
+                "label": "Dual Ur-Falchions (A6, Shred)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Dual Ur-Falchions",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shred"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "J58_ew2-NV",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "BSvBGx3DLr",
+                "label": "Unstoppable Husk (Precision Feat)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Unstoppable Husk",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Precision Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "LsrSzo-",
+        "name": "Immortals",
+        "quality": 3,
+        "defense": 3,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 200,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.5748031,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Halberd",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 3,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Rending"
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Regeneration"
+          },
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "PsbdJPCt3_",
+            "label": "Replace all Halberds",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Halberds"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "3KT_O8cJx_",
+                "label": "Bone Greatmace (A3, AP(1), Shatter)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Greatmace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "RZeabQQfc5",
+                "label": "Great Weapon (A3, AP(2))",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "6m8JmNI",
+        "name": "Death Riders",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 85,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 1.3779528,
+          "heightInches": 2.3622048
+        },
+        "weapons": [
+          {
+            "name": "Hand Weapon",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Parry",
+                "numericValue": 1
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [
+          {
+            "name": "Trample",
+            "quantity": 5,
+            "rules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Impact",
+                "numericValue": 1
+              }
+            ]
+          }
+        ],
+        "sections": [
+          {
+            "id": "7N23TI0",
+            "label": "Upgrade up to three models with one",
+            "variant": "Upgrade",
+            "affects": "Any",
+            "targets": [],
+            "maxApplications": 3,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "sg4y4Fi",
+                "label": "Sergeant",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Sergeant"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "_CKDIWi",
+                "label": "Musician",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Musician"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "4OWC-et",
+                "label": "Banner",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [
+                  {
+                    "kind": "core",
+                    "name": "Banner"
+                  }
+                ],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "hJBr9cr5FD",
+            "label": "Replace all Hand Weapons and Tramples",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Hand Weapons",
+              "Tramples"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "VWDkeyPlM6",
+                "label": "Lance (A1, Thrust), Trample (Impact(1))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Lance",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Thrust"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Trample",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "hi857vQE7u",
+                "label": "Javelins (12\u0022, A1, Assault), Strike (A1)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Javelins",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Strike",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "VXpVNbJQRP",
+                "label": "Bone Mace (A1, AP(1), Shatter), Trample (Impact(1))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Trample",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "rDc0UxDIUR",
+                "label": "Great Weapon (A1, AP(2)), Trample (Impact(1))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Trample",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "J58_ew2-NV",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "BSvBGx3DLr",
+                "label": "Unstoppable Husk (Precision Feat)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Unstoppable Husk",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Precision Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "_1EeViZ",
+        "name": "Skeleton Horror",
+        "quality": 3,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 155,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 2.3622048,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Dual Hand Weapons",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 8,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 1
+          },
+          {
+            "kind": "core",
+            "name": "Flying"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "p8HxxQj",
+            "label": "Replace Dual Hand Weapons",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dual Hand Weapons"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "ONOhh5Z_g3",
+                "label": "Halberd (A6, Rending)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Halberd",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "FmJ6CrnhkA",
+                "label": "Bone Greatmace (A6, AP(1), Shatter)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Greatmace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "TXV68LQBXh",
+                "label": "Great Weapon (A6, AP(2))",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Weapon",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "9qje8iAd",
+            "label": "Upgrade with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "l_8j8nQ-",
+                "label": "Ur-Dead Nightmare (Furious Mark)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Ur-Dead Nightmare",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Furious Mark"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "BMbl1hs",
+        "name": "Harvester Beast",
+        "quality": 4,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 280,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 2.7559056,
+          "heightInches": 4.133858
+        },
+        "weapons": [
+          {
+            "name": "Sickle Arms",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 8,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Bane"
+              }
+            ]
+          },
+          {
+            "name": "Stomp",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 1,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 2
+          },
+          {
+            "kind": "core",
+            "name": "Regeneration"
+          },
+          {
+            "kind": "core",
+            "name": "Slow"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 12
+          },
+          {
+            "kind": "core",
+            "name": "Ossified"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "7NYEy1M",
+            "label": "Replace Sickle Arm",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Sickle Arm"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "VOsuclL",
+                "label": "Mace Arms (A8, AP(2))",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Mace Arms",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 8,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "KolAGfkd8B",
+            "label": "Replace Stomp",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Stomp"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "dsXlh0_NZL",
+                "label": "Spiked Tail (A1, AP(4), Deadly(3))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Spiked Tail",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "uIJeNE5",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "D1DfyYoFDq",
+                "label": "Spew Death (6\u0022, A1, Blast(3), Reliable, Assault, Bane)",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Spew Death",
+                    "quantity": 1,
+                    "rangeInches": 6,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Reliable"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Bane"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "2aDrOHgMOP",
+                "label": "Bone Pile (Regeneration Buff)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Bone Pile",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Regeneration Buff"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "9qje8iAd",
+            "label": "Upgrade with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "l_8j8nQ-",
+                "label": "Ur-Dead Nightmare (Furious Mark)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Ur-Dead Nightmare",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Furious Mark"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "6SLtgCn",
+        "name": "Bone Chariot",
+        "quality": 4,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 125,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 2.7559056,
+          "heightInches": 4.133858
+        },
+        "weapons": [
+          {
+            "name": "Bow Crew",
+            "quantity": 1,
+            "rangeInches": 24,
+            "attacks": 6,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "Hooves",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 1,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Ossified"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "yT0sGW_NxK",
+            "label": "Replace Bow Crew",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Bow Crew"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "WTiRh7Ofec",
+                "label": "Bone Mace Crew (A3, AP(1), Shatter), Chariot Shock (Impact(4))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Mace Crew",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Chariot Shock",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 4
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "BrOFLU23Wa",
+                "label": "Javelin Crew (12\u0022, A6, Assault)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Javelin Crew",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 6,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Assault"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "cHrg06lTUL",
+                "label": "Bone Bow Crew (18\u0022, A6, AP(1), Shatter)",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Bow Crew",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "7wHQr3l",
+        "name": "Crawler Catapult",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 95,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 4.8031497,
+          "heightInches": 6.2992125
+        },
+        "weapons": [
+          {
+            "name": "Dread Cauldron",
+            "quantity": 1,
+            "rangeInches": 24,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Blast",
+                "numericValue": 3
+              },
+              {
+                "kind": "core",
+                "name": "Indirect"
+              },
+              {
+                "kind": "core",
+                "name": "Bane"
+              }
+            ]
+          },
+          {
+            "name": "Crew",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 3,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Ossified"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Artillery"
+          },
+          {
+            "kind": "core",
+            "name": "Cumbersome"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "vC1L-eC",
+            "label": "Replace Dread Cauldron",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dread Cauldron"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "QcdSOByqUv",
+                "label": "Bone Cauldron (24\u0022, A6, AP(1), Indirect, Shatter)",
+                "cost": 50,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bone Cauldron",
+                    "quantity": 1,
+                    "rangeInches": 24,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Indirect"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Shatter"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "wE5-9azGcb",
+                "label": "Skull Thrower (36\u0022, A2, AP(1), Blast(3), Indirect)",
+                "cost": 60,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Skull Thrower",
+                    "quantity": 1,
+                    "rangeInches": 36,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Indirect"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "Xfc1as3XyF",
+                "label": "Great Skull Thrower (36\u0022, A2, AP(2), Deadly(3), Indirect)",
+                "cost": 100,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Skull Thrower",
+                    "quantity": 1,
+                    "rangeInches": 36,
+                    "attacks": 2,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Indirect"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "ruleDefinitions": [
+      {
+        "name": "Spell Accumulator",
+        "passive": [
+          {
+            "hookID": "Round_OnRoundStart",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "grantToken",
+              "tType": {
+                "id": "AccumulatorTokens"
+              },
+              "count": {
+                "kind": "arg",
+                "index": 0
+              },
+              "clear": {
+                "kind": "manualOnly"
+              },
+              "maxTotal": 6
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          },
+          {
+            "hookID": "Lifecycle_OnCapabilityQuery",
+            "condition": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "Shaken"
+                },
+                "minCount": 1
+              }
+            },
+            "effect": {
+              "kind": "enableSpellLending",
+              "pool": {
+                "id": "AccumulatorTokens"
+              },
+              "rangeInches": 12
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 1,
+        "valence": "Positive",
+        "description": "Gets X accumulator tokens at the start of each round, but can\u0027t hold more than 6 tokens at once. Casters from other friendly units within 12\u0022 may spend this model\u0027s accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
+      },
+      {
+        "name": "Infiltrate",
+        "passive": [
+          {
+            "hookID": "Deployment_OnPreDeploymentSelect",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "deferDeployment",
+              "timing": "LaterRound",
+              "placementRangeInches": 3,
+              "minArrivalRound": 2,
+              "mandatoryArrival": false,
+              "enemyClearanceInches": 0
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Counts as having Ambush, but may be deployed anywhere over 3\u0022 away from enemy unit."
+      },
+      {
+        "name": "Shatter",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            },
+            "effect": {
+              "kind": "perHitSaveModifier",
+              "onRollValue": 6,
+              "delta": -3
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Weapon",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "For each unmodified result of 6 to hit, those hits get AP(\u002B3)."
+      },
+      {
+        "name": "Regeneration Buff",
+        "passive": [],
+        "activated": [
+          {
+            "triggerHook": "Activation_OnBeforeAttackAction",
+            "cost": {
+              "kind": "oncePerActivation"
+            },
+            "targetSelector": {
+              "rangeInches": 12,
+              "minCount": 1,
+              "maxCount": 1,
+              "targetAffinity": "Friend",
+              "requireLineOfSight": false,
+              "requiredToken": null,
+              "singleModel": false,
+              "requiredRule": null,
+              "maxCountFromArgument": false
+            },
+            "effect": {
+              "kind": "addRule",
+              "ruleName": "Regeneration",
+              "scope": "NextTrigger"
+            },
+            "availableWhen": {
+              "kind": "always"
+            },
+            "label": ""
+          }
+        ],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets Regeneration once (next time the effect would apply)."
+      },
+      {
+        "name": "Swift",
+        "passive": [
+          {
+            "hookID": "Movement_OnMoveThroughTerrain",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "ignoreTerrainEffects",
+              "scope": "DifficultOnly"
+            },
+            "lifetime": "ThisActivation",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model may ignore the Slow rule."
+      },
+      {
+        "name": "Swift Aura",
+        "passive": [
+          {
+            "hookID": "Lifecycle_OnUnitCreated",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "aura",
+              "ruleName": "Swift"
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model and its unit get Swift."
+      },
+      {
+        "name": "Furious Mark",
+        "passive": [],
+        "activated": [
+          {
+            "triggerHook": "Activation_OnBeforeAttackAction",
+            "cost": {
+              "kind": "oncePerActivation"
+            },
+            "targetSelector": {
+              "rangeInches": 18,
+              "minCount": 1,
+              "maxCount": 1,
+              "targetAffinity": "Foe",
+              "requireLineOfSight": true,
+              "requiredToken": null,
+              "singleModel": false,
+              "requiredRule": null,
+              "maxCountFromArgument": false
+            },
+            "effect": {
+              "kind": "markTarget",
+              "ruleName": "Furious"
+            },
+            "availableWhen": {
+              "kind": "always"
+            },
+            "label": ""
+          }
+        ],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which friendly units gets Furious against once (next time the effect would apply)."
+      },
+      {
+        "name": "Banner",
+        "passive": [
+          {
+            "hookID": "Morale_OnPreMoraleTest",
+            "condition": {
+              "kind": "moraleTestFromShootingOrMelee"
+            },
+            "effect": {
+              "kind": "rollModifier",
+              "rollKind": "Morale",
+              "delta": 1
+            },
+            "lifetime": "ThisActivation",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model and its unit get \u002B1 to Morale Test rolls triggered by shooting or melee."
+      },
+      {
+        "name": "Musician",
+        "passive": [
+          {
+            "hookID": "Movement_OnMoveActionDeclared",
+            "condition": {
+              "kind": "actionTypeIs",
+              "actionType": "Advance"
+            },
+            "effect": {
+              "kind": "movementBonus",
+              "actionType": "Advance",
+              "distanceInches": 1,
+              "minResultInches": 0
+            },
+            "lifetime": "ThisActivation",
+            "seat": "Actor"
+          },
+          {
+            "hookID": "Movement_OnMoveActionDeclared",
+            "condition": {
+              "kind": "actionTypeIs",
+              "actionType": "Rush"
+            },
+            "effect": {
+              "kind": "movementBonus",
+              "actionType": "Rush",
+              "distanceInches": 1,
+              "minResultInches": 0
+            },
+            "lifetime": "ThisActivation",
+            "seat": "Actor"
+          },
+          {
+            "hookID": "Movement_OnMoveActionDeclared",
+            "condition": {
+              "kind": "actionTypeIs",
+              "actionType": "Charge"
+            },
+            "effect": {
+              "kind": "movementBonus",
+              "actionType": "Charge",
+              "distanceInches": 1,
+              "minResultInches": 0
+            },
+            "lifetime": "ThisActivation",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model and its unit move \u002B1\u0022 when using move actions."
+      },
+      {
+        "name": "Sergeant",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "rollModifier",
+              "rollKind": "Save",
+              "delta": -1
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Weapon",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model gets AP(\u002B1) when attacking."
+      },
+      {
+        "name": "Armor",
+        "passive": [
+          {
+            "hookID": "Lifecycle_OnUnitCreated",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "setDefense",
+              "defense": {
+                "kind": "arg",
+                "index": 0
+              }
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 1,
+        "valence": "Positive",
+        "description": "Counts as having Defense X\u002B."
+      },
+      {
+        "name": "No Retreat Aura",
+        "passive": [
+          {
+            "hookID": "Lifecycle_OnUnitCreated",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "aura",
+              "ruleName": "No Retreat"
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model and its unit get No Retreat."
+      },
+      {
+        "name": "Assault",
+        "passive": [
+          {
+            "hookID": "Lifecycle_OnCapabilityQuery",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "enableMeleeUse"
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Weapon",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Counts as both a ranged weapon and a melee weapon."
+      },
+      {
+        "name": "Ossified",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "mostModelsHaveThisRule"
+            },
+            "effect": {
+              "kind": "reduceArmorPenetration",
+              "amount": 1
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Subject"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)."
+      },
+      {
+        "name": "Precision Feat",
+        "passive": [],
+        "activated": [
+          {
+            "triggerHook": "Activation_OnActivationStart",
+            "cost": {
+              "kind": "oncePerGame"
+            },
+            "targetSelector": {
+              "rangeInches": 0,
+              "minCount": 1,
+              "maxCount": 1,
+              "targetAffinity": "Self",
+              "requireLineOfSight": false,
+              "requiredToken": null,
+              "singleModel": false,
+              "requiredRule": null,
+              "maxCountFromArgument": false
+            },
+            "effect": {
+              "kind": "addRule",
+              "ruleName": "Precision Feat Boost",
+              "scope": "ThisActivation"
+            },
+            "availableWhen": {
+              "kind": "mostModelsHaveThisRule"
+            },
+            "label": "Precision Feat"
+          }
+        ],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Once per game, when this unit attacks, you may use this rule so that all models with this rule in it get \u002B1 to hit rolls."
+      },
+      {
+        "name": "Enhanced Ossified",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "and",
+              "left": {
+                "kind": "unitHasRule",
+                "ruleName": "Ossified"
+              },
+              "right": {
+                "kind": "mostModelsHaveThisRule"
+              }
+            },
+            "effect": {
+              "kind": "reduceArmorPenetration",
+              "amount": 1
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Subject"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "If most models in this unit have Ossified, hits they take count as having AP(-2) from Ossified (instead of only AP(-1))."
+      },
+      {
+        "name": "Enhanced Ossified Aura",
+        "passive": [
+          {
+            "hookID": "Lifecycle_OnUnitCreated",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "aura",
+              "ruleName": "Enhanced Ossified"
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model and its unit get Enhanced Ossified."
+      },
+      {
+        "name": "No Retreat",
+        "passive": [
+          {
+            "hookID": "Morale_OnMoraleTestComplete",
+            "condition": {
+              "kind": "mostModelsHaveThisRule"
+            },
+            "effect": {
+              "kind": "passFailedMoraleTest",
+              "selfWoundOnRollAtMost": 3
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "When a unit where most models have this rule fails a Morale Test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can\u0027t be ignored."
+      },
+      {
+        "name": "Precision Feat Boost",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollModifier",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "rollModifier",
+              "rollKind": "Hit",
+              "delta": 1
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This unit gets \u002B1 to hit rolls."
+      }
+    ],
+    "spells": [
+      {
+        "name": "Rapid Ossification",
+        "threshold": 1,
+        "target": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null,
+          "maxCountFromArgument": false
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Enhanced Ossified",
+          "scope": "NextTrigger"
+        }
+      },
+      {
+        "name": "Deep Fracture",
+        "threshold": 1,
+        "target": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": true,
+          "requiredRule": null,
+          "maxCountFromArgument": false
+        },
+        "effect": {
+          "kind": "dealHits",
+          "count": 2,
+          "withRules": [],
+          "armorPenetration": 1
+        }
+      },
+      {
+        "name": "Soul Enslaver",
+        "threshold": 2,
+        "target": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 2,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null,
+          "maxCountFromArgument": false
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Furious"
+        }
+      },
+      {
+        "name": "Bone Breaker",
+        "threshold": 2,
+        "target": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null,
+          "maxCountFromArgument": false
+        },
+        "effect": {
+          "kind": "dealHits",
+          "count": 4,
+          "withRules": [],
+          "armorPenetration": 0
+        }
+      },
+      {
+        "name": "Drain Spirit",
+        "threshold": 3,
+        "target": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 3,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null,
+          "maxCountFromArgument": false
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Unstoppable in melee",
+          "scope": "NextTrigger"
+        }
+      },
+      {
+        "name": "Shattering Blast",
+        "threshold": 3,
+        "target": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null,
+          "maxCountFromArgument": false
+        },
+        "effect": {
+          "kind": "dealHits",
+          "count": 6,
+          "withRules": [
+            "Shatter"
+          ],
+          "armorPenetration": 1
+        }
+      }
+    ]
+  },
+  "name": "Bony Baddies",
+  "faction": "Ossified Undead",
+  "pointsLimit": 1000,
+  "gameSystem": "age-of-fantasy",
+  "units": [
+    {
+      "name": "Bone Master",
+      "id": "bm",
+      "joinsUnitId": "g1",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Ossified"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 2
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Soul Master Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "spectral-touch",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Spell Amplifier"
+            }
+          ]
+        }
+      ],
+      "pointCost": 85
+    },
+    {
+      "name": "Guardians",
+      "id": "g1",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "core",
+          "name": "Ossified"
+        },
+        {
+          "kind": "core",
+          "name": "Precision Feat"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Halberd",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Halberd (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
+        }
+      ],
+      "pointCost": 115
+    },
+    {
+      "name": "Herald of Death",
+      "id": "herald",
+      "joinsUnitId": "g2",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Unpredictable Fighter"
+        },
+        {
+          "kind": "core",
+          "name": "Ossified"
+        },
+        {
+          "kind": "core",
+          "name": "Swift Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Master Bone Mace",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shatter"
+            }
+          ]
+        }
+      ],
+      "pointCost": 95
+    },
+    {
+      "name": "Guardians",
+      "id": "g2",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "core",
+          "name": "Ossified"
+        },
+        {
+          "kind": "core",
+          "name": "Precision Feat"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Halberd",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Halberd (Sergeant)",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            },
+            {
+              "kind": "core",
+              "name": "Sergeant"
+            }
+          ]
+        }
+      ],
+      "pointCost": 115
+    },
+    {
+      "name": "Harvester Beast",
+      "id": "harvester",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Ossified"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Mace Arms",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 8,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": []
+        },
+        {
+          "name": "Spiked Tail",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "spear-pierce",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 305
+    },
+    {
+      "name": "Skeleton Horror",
+      "id": "horror",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Ossified"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Great Weapon",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 2,
+          "effectSet": "great-weapon-smash",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 175
+    },
+    {
+      "name": "Reapers",
+      "id": "reapers",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "quality": 3,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Ossified"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Infiltrate"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dual Hand Weapons",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 110
+    }
+  ],
+  "defaultRangedEffectSet": "arrow-loose",
+  "defaultMeleeEffectSet": "blade-standard",
+  "ruleDefinitions": [
+    {
+      "name": "Spell Accumulator",
+      "passive": [
+        {
+          "hookID": "Round_OnRoundStart",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "AccumulatorTokens"
+            },
+            "count": {
+              "kind": "arg",
+              "index": 0
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 6
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            }
+          },
+          "effect": {
+            "kind": "enableSpellLending",
+            "pool": {
+              "id": "AccumulatorTokens"
+            },
+            "rangeInches": 12
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Gets X accumulator tokens at the start of each round, but can\u0027t hold more than 6 tokens at once. Casters from other friendly units within 12\u0022 may spend this model\u0027s accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
+    },
+    {
+      "name": "Infiltrate",
+      "passive": [
+        {
+          "hookID": "Deployment_OnPreDeploymentSelect",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "deferDeployment",
+            "timing": "LaterRound",
+            "placementRangeInches": 3,
+            "minArrivalRound": 2,
+            "mandatoryArrival": false,
+            "enemyClearanceInches": 0
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as having Ambush, but may be deployed anywhere over 3\u0022 away from enemy unit."
+    },
+    {
+      "name": "Shatter",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          },
+          "effect": {
+            "kind": "perHitSaveModifier",
+            "onRollValue": 6,
+            "delta": -3
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "For each unmodified result of 6 to hit, those hits get AP(\u002B3)."
+    },
+    {
+      "name": "Regeneration Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Regeneration",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets Regeneration once (next time the effect would apply)."
+    },
+    {
+      "name": "Swift",
+      "passive": [
+        {
+          "hookID": "Movement_OnMoveThroughTerrain",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreTerrainEffects",
+            "scope": "DifficultOnly"
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model may ignore the Slow rule."
+    },
+    {
+      "name": "Swift Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Swift"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Swift."
+    },
+    {
+      "name": "Furious Mark",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "markTarget",
+            "ruleName": "Furious"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which friendly units gets Furious against once (next time the effect would apply)."
+    },
+    {
+      "name": "Banner",
+      "passive": [
+        {
+          "hookID": "Morale_OnPreMoraleTest",
+          "condition": {
+            "kind": "moraleTestFromShootingOrMelee"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Morale",
+            "delta": 1
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get \u002B1 to Morale Test rolls triggered by shooting or melee."
+    },
+    {
+      "name": "Musician",
+      "passive": [
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "actionTypeIs",
+            "actionType": "Advance"
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Advance",
+            "distanceInches": 1,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "actionTypeIs",
+            "actionType": "Rush"
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Rush",
+            "distanceInches": 1,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "actionTypeIs",
+            "actionType": "Charge"
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Charge",
+            "distanceInches": 1,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit move \u002B1\u0022 when using move actions."
+    },
+    {
+      "name": "Sergeant",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model gets AP(\u002B1) when attacking."
+    },
+    {
+      "name": "Armor",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "setDefense",
+            "defense": {
+              "kind": "arg",
+              "index": 0
+            }
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Counts as having Defense X\u002B."
+    },
+    {
+      "name": "No Retreat Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "No Retreat"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get No Retreat."
+    },
+    {
+      "name": "Assault",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableMeleeUse"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as both a ranged weapon and a melee weapon."
+    },
+    {
+      "name": "Ossified",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "mostModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "reduceArmorPenetration",
+            "amount": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When units where most models have this rule take hits, those hits count as having AP(-1), to a min. of AP(0)."
+    },
+    {
+      "name": "Precision Feat",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null,
+            "maxCountFromArgument": false
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Precision Feat Boost",
+            "scope": "ThisActivation"
+          },
+          "availableWhen": {
+            "kind": "mostModelsHaveThisRule"
+          },
+          "label": "Precision Feat"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, when this unit attacks, you may use this rule so that all models with this rule in it get \u002B1 to hit rolls."
+    },
+    {
+      "name": "Enhanced Ossified",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Ossified"
+            },
+            "right": {
+              "kind": "mostModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "reduceArmorPenetration",
+            "amount": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If most models in this unit have Ossified, hits they take count as having AP(-2) from Ossified (instead of only AP(-1))."
+    },
+    {
+      "name": "Enhanced Ossified Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Enhanced Ossified"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Enhanced Ossified."
+    },
+    {
+      "name": "No Retreat",
+      "passive": [
+        {
+          "hookID": "Morale_OnMoraleTestComplete",
+          "condition": {
+            "kind": "mostModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "passFailedMoraleTest",
+            "selfWoundOnRollAtMost": 3
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When a unit where most models have this rule fails a Morale Test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can\u0027t be ignored."
+    },
+    {
+      "name": "Precision Feat Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This unit gets \u002B1 to hit rolls."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Rapid Ossification",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Enhanced Ossified",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Deep Fracture",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": true,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [],
+        "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Soul Enslaver",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "markTarget",
+        "ruleName": "Furious"
+      }
+    },
+    {
+      "name": "Bone Breaker",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 4,
+        "withRules": [],
+        "armorPenetration": 0
+      }
+    },
+    {
+      "name": "Drain Spirit",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Unstoppable in melee",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Shattering Blast",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null,
+        "maxCountFromArgument": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 6,
+        "withRules": [
+          "Shatter"
+        ],
+        "armorPenetration": 1
+      }
+    }
+  ],
+  "unattributedPoints": 0
+}

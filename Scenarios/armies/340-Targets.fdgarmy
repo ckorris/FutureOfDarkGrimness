@@ -1,0 +1,63 @@
+{
+  "name": "Sniper Targets (#340 enemies)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Left Guards",
+      "modelCount": 4,
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Popgun",
+          "quantity": 4,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Center Guards",
+      "modelCount": 4,
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Popgun",
+          "quantity": 4,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Right Guards",
+      "modelCount": 4,
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Popgun",
+          "quantity": 4,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

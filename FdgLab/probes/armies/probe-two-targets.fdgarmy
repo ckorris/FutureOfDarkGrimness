@@ -1,0 +1,31 @@
+{
+  "name": "Probe Two Targets (signal army: a paper squad that can still move and a fat one that already has)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Paper Runner",
+      "modelCount": 3,
+      "quality": 6,
+      "defense": 6,
+      "specialRules": [],
+      "weapons": [
+        { "name": "Fists", "quantity": 1, "rangeInches": 0, "attacks": 1, "armorPenetration": 0, "specialRules": [] }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Fat Holder",
+      "modelCount": 10,
+      "quality": 6,
+      "defense": 6,
+      "specialRules": [],
+      "weapons": [
+        { "name": "Fists", "quantity": 1, "rangeInches": 0, "attacks": 1, "armorPenetration": 0, "specialRules": [] }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

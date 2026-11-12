@@ -1,0 +1,27 @@
+{
+  "name": "Mire Raiders (#446 probe opponents)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Mire Raiders",
+      "modelCount": 3,
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [ { "name": "Rifle", "quantity": 3, "rangeInches": 24, "attacks": 1, "armorPenetration": 0, "specialRules": [] } ],
+      "pointCost": 0
+    },
+    {
+      "name": "Watchers",
+      "modelCount": 5,
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [ { "name": "Rifle", "quantity": 5, "rangeInches": 24, "attacks": 1, "armorPenetration": 0, "specialRules": [] } ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

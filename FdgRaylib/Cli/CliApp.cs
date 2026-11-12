@@ -1,7 +1,9 @@
 using FDG;
+using FDG.Ai;
 using FDG.Data;
 using FDG.GameModel;
 using FDG.Players;
+using FDG.Replay;
 using FDG.SaveLoad;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
@@ -17,21 +19,40 @@ public class CliApp
     private readonly bool _headless;
     private readonly int _slowDelayMs;
 
+    // #193 --seed: seeds dice, decisive rolls, objective auto-placement, and each AI player's stream.
+    private readonly int? _diceSeed;
+
+    // #191 --ai-profile: which AI drives the computer slots (solo-rules baseline or the Tactician).
+    private readonly EAiProfile _aiProfile;
+
+    // #457 --no-replay: false runs the game unrecorded (no recorder, no .fdgreplay) - for batch runs where
+    // throughput matters more than a replay.
+    private readonly bool _record;
+
     // Initialized by Prepare(); used by RunAsync().
     private LocalMessageBus? _messageBus;
     private GameDataStore? _gameDataStore;
     private FDGGame_AsLocal? _localGame;
+    private FDGGame_AsLocal? _aiGame;
 
     public ITableState? TableState => _localGame?.TableState;
+
+    /// <summary>The running game's recording, once RunAsync/RunScenarioAsync has built the server; Program.cs
+    /// writes it to Replays/ when the run ends or crashes (#452). Null under --no-replay (#457).</summary>
+    public IReplaySource? Replay { get; private set; }
     public GameLog? Log { get; private set; }
 
     // Filled during CreatePlayerSlots(); read by the renderer at draw time.
     public Dictionary<PlayerID, Color> PlayerColors { get; } = new();
 
-    public CliApp(bool headless, int slowDelayMs = 0)
+    public CliApp(bool headless, int slowDelayMs = 0, int? diceSeed = null,
+        EAiProfile aiProfile = EAiProfile.SoloRules, bool record = true)
     {
         _headless = headless;
         _slowDelayMs = slowDelayMs;
+        _diceSeed = diceSeed;
+        _aiProfile = aiProfile;
+        _record = record;
     }
 
     // Creates the local game instance (and thus TableState) without any user prompts.
@@ -53,13 +74,14 @@ public class CliApp
         Console.WriteLine("=== FDG Raylib ===");
         string modeDesc = _headless ? "headless CLI" : "CLI + Raylib";
         if (_slowDelayMs > 0) modeDesc += $" (slow mode: {_slowDelayMs}ms)";
+        if (!_record) modeDesc += " (not recorded: --no-replay)";
         Console.WriteLine($"Mode: {modeDesc}");
         Console.WriteLine();
 
         var playerSlots = CreatePlayerSlots();
 
-        foreach (var slot in playerSlots)
-            _localGame!.AddLocalPlayerID(slot.PlayerID);
+        // Player 1 — human (CLI)
+        _localGame!.AddLocalPlayerID(playerSlots[0].PlayerID);
 
         ILogMessageUI logUI = Log != null
             ? new GuiLogMessageUI(Log)
@@ -73,29 +95,109 @@ public class CliApp
             logMessageUI:          logUI,
             playerMessageUI:       new CliPlayerMessageUI(),
             stageResolverRegistry: resolverRegistry,
-            tempVisualDrawer:      new CliTempVisualDrawer(),
+            presentationSink:      null, // headless: beats emitted but not rendered
             outstandingTaskDisplay: null);
 
-        foreach (var slot in playerSlots)
-        {
-            var controller = new LocalPlayerController(slot.Name, slot.PlayerID, _localGame);
-            slot.AssignPlayerController(controller);
-        }
+        // Name the controllers explicitly: reading playerSlots[i].Name here returns the "[Empty]"
+        // placeholder, since the controller that supplies the real name isn't assigned yet.
+        var humanController = new LocalPlayerController("Player 1", playerSlots[0].PlayerID, _localGame);
+        playerSlots[0].AssignPlayerController(humanController);
 
         var gameSettings = GameSettings.GetDefault();
         gameSettings.RandomnessType = ERandomnessType.Realistic;
+        gameSettings.ObjectivePlacementMode = EObjectivePlacementMode.AutoPlaced;
+        gameSettings.DiceSeed = _diceSeed;
+        // #450 D5: without --seed, pick one now - before the AI player below is built - so the bot derives
+        // its stream from the same seed the dice use and the replay's recorded seed reproduces both.
+        gameSettings = gameSettings.WithConcreteSeed();
+
+        // Player 2 — computer (profile per --ai-profile; solo-rules by default)
+        _aiGame = new FDGGame_AsLocal(_gameDataStore!, _messageBus!);
+        var aiController = AiProfileFactory.CreateController(_aiProfile,
+            "Player 2 (AI)", playerSlots[1].PlayerID, _aiGame, gameSettings.DiceSeed, playerSlots[1].SlotID);
+        playerSlots[1].AssignPlayerController(aiController);
 
         var gameEnded = new TaskCompletionSource();
-        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
+        // #450: record the game; Program.cs writes it once the run ends (#452). --no-replay: no recorder (#457).
+        ReplayRecorder? replay = _record ? new ReplayRecorder() : null;
+        _localGame.AttachReplay(replay);
+        Replay = replay;
+        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots, replay: replay);
+        // #168: army loads just ran inside the server build - flush their buffered rule warnings
+        // into this mode's log as the aggregated summary (headless keeps the stdout fallback).
+        if (Log != null)
+            RuleLoadWarnings.AttachLog(Log);
+        server.OnGameCompleted += PrintGameResult;
         server.OnGameEnded += result =>
         {
-            logUI.DisplayLogMessage($"Game ended: {result}");
+            logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
             gameEnded.TrySetResult();
         };
 
         Console.WriteLine("Game started.");
         await gameEnded.Task;
     }
+
+    /// <summary>
+    /// #167 --scenario: resumes an already-populated store (a compiled scenario or a loaded save)
+    /// headless, lobby-free: slot 0 drives via the CLI resolvers, every other saved slot is AI.
+    /// --all-ai makes slot 0 AI too (observation runs); --log-decisions interleaves each planning
+    /// AI's Choose Action narration into stdout as "[ai N] ..." lines (FdgLab's flag, here).
+    /// <paramref name="priorReplay"/> is the save's replay (#453), which this run's recording continues.
+    /// </summary>
+    public async Task RunScenarioAsync(GameDataStore loadedStore, bool allAi = false,
+        bool logDecisions = false, byte[]? priorReplay = null)
+    {
+        Console.WriteLine("=== FDG Raylib - scenario ===");
+
+        var parts = ScenarioLauncher.BuildResume(loadedStore, _diceSeed, _aiProfile, allAi,
+            logDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null,
+            logSink: allAi ? Console.WriteLine : null);
+        _messageBus = parts.Bus;
+        _gameDataStore = parts.Store;
+        _localGame = parts.HumanGame;
+
+        ILogMessageUI logUI = new CliLogMessageUI();
+        if (!allAi)
+        {
+            // A human on slot 0: the human game owns the log/chat endpoint and the CLI resolvers.
+            // With --all-ai the human game owns NO player, and AssignInterfaces would throw building
+            // the chat endpoint - the narrative arrives through slot 0's controller logSink instead.
+            IStageResolverRegistry resolverRegistry = BuildResolverRegistry();
+            if (_slowDelayMs > 0)
+                resolverRegistry = new SlowModeResolverRegistry(resolverRegistry, _slowDelayMs);
+
+            _localGame.AssignInterfaces(
+                logMessageUI:          logUI,
+                playerMessageUI:       new CliPlayerMessageUI(),
+                stageResolverRegistry: resolverRegistry,
+                presentationSink:      null,
+                outstandingTaskDisplay: null);
+        }
+
+        var gameEnded = new TaskCompletionSource();
+        // #450; #453 continues the save's. --no-replay (#457): none, and the save's replay is left behind.
+        ReplayRecorder? replay = _record ? ReplayRecorder.Continue(priorReplay) : null;
+        _localGame.AttachReplay(replay);
+        Replay = replay;
+        var server = new FDGServer(parts.Store, parts.Bus, parts.Slots, replay: replay); // resume constructor
+        server.OnGameCompleted += PrintGameResult;
+        server.OnGameEnded += result =>
+        {
+            logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
+            gameEnded.TrySetResult();
+        };
+
+        Console.WriteLine("Scenario resumed.");
+        await gameEnded.Task;
+    }
+
+    /// <summary>
+    /// #192: the one machine-readable line a headless run emits. Automated verification (smoke tests,
+    /// FdgLab benchmarks) keys off the "Game result:" prefix, so keep it single-line and stable.
+    /// </summary>
+    private static void PrintGameResult(GameResult result) =>
+        Console.WriteLine($"Game result: {result.ToSummaryLine()}");
 
     private PlayerSlot[] CreatePlayerSlots()
     {

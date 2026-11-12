@@ -1,0 +1,37 @@
+{
+  "name": "Regenerating Brutes (#401 signal army)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Brute Squad",
+      "modelCount": 3,
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Club",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

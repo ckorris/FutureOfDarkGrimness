@@ -1,0 +1,73 @@
+{
+  "name": "Deadly clumps into a unit WITHOUT Tough (#401). Run with --ai-profile tactician. The AI's Melta Team (4x Deadly(3), AP(4) - no save possible at D5) stands on the only objective and shoots YOUR Grunt Squad: five 1-wound Regeneration models. Each clump can only ever kill one grunt, so the Assign Wounds panel should look exactly like a plain volley - '0 / N wounds assigned', no clump strip, no explanation - while the log still shows 'N failed save(s) become clump(s) of 3', a Regeneration roll of 3 dice PER CLUMP (a grunt survives only by ignoring all three), and '... lost - a Deadly clump does not carry over'. Realistic dice, seeded.",
+  "round": 1,
+  "activePlayer": 1,
+  "settings": {
+    "randomness": "Realistic",
+    "diceSeed": 4011
+  },
+  "players": [
+    {
+      "army": "armies/401-RegenGrunts.fdgarmy",
+      "units": [
+        {
+          "unit": "Grunt Squad",
+          "models": [
+            [
+              20,
+              30
+            ],
+            [
+              22,
+              30
+            ],
+            [
+              24,
+              30
+            ],
+            [
+              26,
+              30
+            ],
+            [
+              28,
+              30
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/401-DeadlyGunners.fdgarmy",
+      "units": [
+        {
+          "unit": "Melta Team",
+          "models": [
+            [
+              21,
+              18
+            ],
+            [
+              23,
+              18
+            ],
+            [
+              25,
+              18
+            ],
+            [
+              27,
+              18
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    [
+      24,
+      18
+    ]
+  ]
+}

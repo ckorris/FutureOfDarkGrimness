@@ -39,10 +39,56 @@ public static class ZoneRenderer
                 Raylib.DrawCircleLines((int)cx, (int)cy, pr, outline);
                 break;
 
+            case CompositeZone comp:
+                foreach (var part in comp.Parts)
+                    DrawFilled(part, scale, originX, originY, tableH, fill, outline, outlineThickness);
+                break;
+
+            // #197 P17c: Reinforcement's arrival band - four non-overlapping border rectangles.
+            case TableEdgeBandZone band:
+                foreach (var part in band.Bands)
+                    DrawFilled(part, scale, originX, originY, tableH, fill, outline, outlineThickness);
+                break;
+
+            case RotatedZoneWrapper wRect when wRect.Inner is RectangularZone rr:
+                DrawRotatedRect_Raylib(rr, wRect.AngleDegrees, wRect.Pivot, scale, originX, originY, tableH, fill, outline);
+                break;
+
+            case RotatedZoneWrapper wOther:
+                // Flatten via Primitives() (handles rotated composites / nested wrappers).
+                foreach (var prim in ((IZone)wOther).Primitives())
+                    DrawFilled(prim, scale, originX, originY, tableH, fill, outline, outlineThickness);
+                break;
+
             default:
                 //Unknown zone shape — skip. Add a case here when a new IZone is introduced.
                 break;
         }
+    }
+
+    private static void DrawRotatedRect_Raylib(RectangularZone r, float angleDeg, Float2 pivot,
+        float scale, int originX, int originY, float tableH, Color fill, Color outline)
+    {
+        Vector2 ToPx(Float2 p)
+            => new(originX + p.X * scale, originY + (tableH - p.Y) * scale);
+
+        Float2[] corners =
+        {
+            new(r.Left, r.Bottom),
+            new(r.Right, r.Bottom),
+            new(r.Right, r.Top),
+            new(r.Left, r.Top),
+        };
+
+        Vector2[] px = new Vector2[4];
+        for (int i = 0; i < 4; i++)
+            px[i] = ToPx(ZoneExtensions.RotateAround(corners[i], pivot, angleDeg));
+
+        // Raylib doesn't have a generic filled-quad; split into two triangles.
+        Raylib.DrawTriangle(px[0], px[1], px[2], fill);
+        Raylib.DrawTriangle(px[0], px[2], px[3], fill);
+        for (int i = 0; i < 4; i++)
+            Raylib.DrawLineV(px[i], px[(i + 1) % 4], outline);
     }
 
     public static void DrawFilled(IZone shape, ImDrawListPtr drawList,
@@ -64,6 +110,49 @@ public static class ZoneRenderer
                 drawList.AddCircleFilled(center, pr, fillColor, CircleSegments);
                 drawList.AddCircle(center, pr, outlineColor, CircleSegments, outlineThickness);
                 break;
+
+            case CompositeZone comp:
+                foreach (var part in comp.Parts)
+                    DrawFilled(part, drawList, scale, originX, originY, tableH, fillColor, outlineColor, outlineThickness);
+                break;
+
+            // #197 P17c: Reinforcement's arrival band - four non-overlapping border rectangles.
+            case TableEdgeBandZone band:
+                foreach (var part in band.Bands)
+                    DrawFilled(part, drawList, scale, originX, originY, tableH, fillColor, outlineColor, outlineThickness);
+                break;
+
+            case RotatedZoneWrapper wRect when wRect.Inner is RectangularZone rr:
+                DrawRotatedRect_ImGui(rr, wRect.AngleDegrees, wRect.Pivot, drawList, scale, originX, originY, tableH, fillColor, outlineColor, outlineThickness);
+                break;
+
+            case RotatedZoneWrapper wOther:
+                foreach (var prim in ((IZone)wOther).Primitives())
+                    DrawFilled(prim, drawList, scale, originX, originY, tableH, fillColor, outlineColor, outlineThickness);
+                break;
         }
+    }
+
+    private static void DrawRotatedRect_ImGui(RectangularZone r, float angleDeg, Float2 pivot,
+        ImDrawListPtr drawList, float scale, int originX, int originY, float tableH,
+        uint fillColor, uint outlineColor, float outlineThickness)
+    {
+        Vector2 ToPx(Float2 p)
+            => new(originX + p.X * scale, originY + (tableH - p.Y) * scale);
+
+        Float2[] corners =
+        {
+            new(r.Left, r.Bottom),
+            new(r.Right, r.Bottom),
+            new(r.Right, r.Top),
+            new(r.Left, r.Top),
+        };
+
+        Vector2[] px = new Vector2[4];
+        for (int i = 0; i < 4; i++)
+            px[i] = ToPx(ZoneExtensions.RotateAround(corners[i], pivot, angleDeg));
+
+        drawList.AddQuadFilled(px[0], px[1], px[2], px[3], fillColor);
+        drawList.AddQuad(px[0], px[1], px[2], px[3], outlineColor, outlineThickness);
     }
 }

@@ -1,0 +1,69 @@
+{
+  "name": "S2 Probe Blob",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Warriors A",
+      "modelCount": 11,
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Warriors B",
+      "modelCount": 11,
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "APC",
+      "modelCount": 1,
+      "quality": 4,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Hull Gun",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

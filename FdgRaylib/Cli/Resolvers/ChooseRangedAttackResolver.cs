@@ -12,29 +12,94 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
         var attackerUnit = request.AttackingUnit.GetValue();
         Console.WriteLine();
         Console.WriteLine($"--- Shoot: {attackerUnit.Name} ---");
-        Console.WriteLine("  Choose a weapon and target. Models out of range/LOS cannot contribute.");
+        // #371: under Declare First a choice AIMS the weapon and comes straight back for the next one -
+        // say so, or the repeated prompt reads as the menu ignoring the answer.
+        Console.WriteLine(request.DeclareFirst
+            ? "  Aim a weapon at a target. Nothing is rolled until every weapon has been aimed."
+            : "  Choose a weapon and target. Models out of range/LOS cannot contribute.");
+
+        // #371: what this unit has already committed to, in firing order - the fact the next target
+        // choice depends on, since shots aimed at a unit an earlier weapon wipes out are lost.
+        if (request.Declarations.Count > 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("  Already declared (fires in this order):");
+            for (int i = 0; i < request.Declarations.Count; i++)
+            {
+                DeclaredShot shot = request.Declarations[i];
+                Console.WriteLine($"    {i + 1}. {shot.Copies}x {shot.Weapon.Name} -> " +
+                    shot.TargetUnit.GetValue().Name);
+            }
+        }
         Console.WriteLine();
 
-        var options = new List<(string label, RangedAttackChoice choice)>();
+        var options = new List<(string label, RangedAttackChoice? choice)>();
 
         foreach (var weaponOption in request.WeaponOptions)
         {
-            string weaponStats = weaponOption.Weapon.GetWeaponNameAndStats();
+            // #368: prefixed with the copy count ("3x Rifle - 24\", A1, AP0"), the datasheet convention the
+            // melee weapon menu already uses. CopiesRemaining is the pool this firing draws from.
+            string weaponStats = weaponOption.Weapon.GetWeaponNameAndStats(weaponOption.CopiesRemaining);
+            // #042/#052: attribute any cover-/LoS-ignore to the responsible rule, so the player sees why a
+            // blocked or in-cover unit is still a normal target (e.g. "(Indirect ignores line of sight)").
+            weaponStats += SightRuleLabel.Parenthetical(
+                weaponOption.CoverIgnoreRule, weaponOption.LineOfSightIgnoreRule);
+            // #319: firing a once-per-game weapon spends it for good, and the player may decline it
+            // (hold fire, below) - so say which state it is in on every line that offers it.
+            if (weaponOption.LimitedRule != null)
+            {
+                weaponStats += weaponOption.LimitedAlreadyFired
+                    ? $"  [{weaponOption.LimitedRule}: already fired this game]"
+                    : $"  [{weaponOption.LimitedRule}: ONCE PER GAME - firing spends it]";
+            }
+            // #340: a Takedown weapon aims one copy at a time, so say how many are still waiting and that
+            // firing this line spends exactly one of them - otherwise the weapon coming back for another
+            // pass reads as a bug.
+            if (weaponOption.AimedIndividuallyRule != null && weaponOption.CopiesRemaining > 1)
+            {
+                weaponStats += $"  [{weaponOption.AimedIndividuallyRule}: {weaponOption.CopiesRemaining} left, " +
+                    "fires 1 - each picks its own target]";
+            }
             foreach (var targetStats in weaponOption.WeaponTargetStats)
             {
                 int canShoot = targetStats.modelsThatCanShoot.Count;
                 int cannotShoot = targetStats.modelsWithWeaponThatCannotShoot.Count;
                 var targetUnit = targetStats.TargetUnit.GetValue();
-                int targetModels = targetUnit.ModelBindings.Count;
+                // #158: count the target's LIVING models — dead ones aren't shootable.
+                int targetModels = targetUnit.ModelBindings.Count(mb => mb.GetValue().GetIsAlive());
 
-                string label = $"{weaponStats}  →  {targetUnit.Name} ({targetModels} models, {canShoot} shooters in range";
+                string label = $"{weaponStats}  ->  {targetUnit.Name}";
+                // #325: the effective thresholds for this pairing (AP, cover and rule modifiers already
+                // folded by the engine's forecast), so the numbers are comparable across lines.
+                if (targetStats.Forecast != null)
+                    label += $"  [hit {targetStats.Forecast.HitRollNeeded}+, save {targetStats.Forecast.SaveRollNeeded}+]";
+                label += $" ({targetModels} models, {canShoot} shooters in range";
+                // #345: how much of the volley actually fires. Only said when part of it is held back -
+                // the number the player cannot otherwise see until the dice are already rolled.
+                if (targetStats.Forecast is { AttacksPotential: > 0 } forecast
+                    && forecast.AttacksFiring < forecast.AttacksPotential)
+                {
+                    label += $", {forecast.AttacksFiring}/{forecast.AttacksPotential} attacks";
+                }
                 if (cannotShoot > 0)
                     label += $", {cannotShoot} out of range";
+                // #387: a rule, grant or mark moved the range off the weapon's printed number.
+                string rangeFact = FdgRaylib.Rendering.RangeDeltaText.RowFact(
+                    weaponOption.Weapon.RangeInches, targetStats.EffectiveRangeInches);
+                if (rangeFact.Length > 0)
+                    label += $", {rangeFact}";
+                // #042 Blast/Indirect/Takedown: when the weapon ignores cover the +1 doesn't apply, so show
+                // it as ignored rather than a penalty.
                 if (targetStats.HasCover)
-                    label += ", Cover";
+                    label += weaponOption.IgnoresCover ? ", Cover (ignored)" : ", Cover";
                 label += ")";
 
-                options.Add((label, new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit)));
+                bool selectable = targetStats.UnselectableReason == null && canShoot > 0;
+                if (targetStats.UnselectableReason != null)
+                    label += $"  [unavailable: {targetStats.UnselectableReason}]";
+
+                options.Add((label,
+                    selectable ? new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit) : null));
             }
         }
 
@@ -42,23 +107,115 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             throw new InvalidOperationException("ChooseRangedAttackRequest had no valid options.");
 
         for (int i = 0; i < options.Count; i++)
-            Console.WriteLine($"  [{i + 1}] {options[i].label}");
+        {
+            string prefix = options[i].choice != null ? $"  [{i + 1}]" : "  [-]";
+            Console.WriteLine($"{prefix} {options[i].label}");
+        }
 
-        Console.WriteLine($"  [0] Back");
+        // #319: hold fire - decline one weapon for this shoot action without firing it. Listed per weapon
+        // that can still fire, since that is the only case where declining changes anything; a Limited
+        // weapon says what holding fire preserves.
+        var holdFireWeapons = request.WeaponOptions
+            .Where(wo => wo.WeaponTargetStats.Any(ts =>
+                ts.UnselectableReason == null && ts.modelsThatCanShoot.Count > 0))
+            .ToList();
+        for (int i = 0; i < holdFireWeapons.Count; i++)
+        {
+            var wo = holdFireWeapons[i];
+            string keeps = wo.LimitedRule != null
+                ? $" (keeps its {wo.LimitedRule} once-per-game shot)"
+                : "";
+            // #340: holding fire drops EVERY unfired copy of a one-at-a-time weapon, not just the next one.
+            string copies = wo.AimedIndividuallyRule != null && wo.CopiesRemaining > 1
+                ? $" (all {wo.CopiesRemaining} remaining)"
+                : "";
+            Console.WriteLine($"  [h{i + 1}] Hold fire: {wo.Weapon.Name}{copies} - do not fire it this action{keeps}");
+        }
+
+        // #308/#319: exactly one exit, and the engine says which. Back (nothing fired) rewinds to Choose
+        // Action; Done (something fired) ends the shoot action with the remaining weapons unfired.
+        if (request.AllowCancel)
+            Console.WriteLine($"  [0] Back");
+        else if (request.AllowStopShooting)
+        {
+            // #371: under Declare First this stops DECLARING - what is already aimed still gets rolled.
+            string plural = holdFireWeapons.Count != 1 ? "s" : "";
+            Console.WriteLine(request.DeclareFirst
+                ? $"  [0] Done declaring - leave {holdFireWeapons.Count} weapon{plural} unaimed and roll " +
+                  $"the {request.Declarations.Count} already declared"
+                : $"  [0] Done shooting - end the action with {holdFireWeapons.Count} weapon{plural} unfired");
+        }
+
+        // First selectable option, for EOF default.
+        int firstSelectable = options.FindIndex(o => o.choice != null);
 
         while (true)
         {
             Console.Write("Choice: ");
             string? input = Console.ReadLine()?.Trim();
-            // EOF default: first option (keeps piped-input scripts working).
-            if (input == null) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[0].choice));
+            // EOF default: first selectable option (keeps piped-input scripts working).
+            if (input == null)
+            {
+                if (firstSelectable < 0) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
+                return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[firstSelectable].choice!));
+            }
+            if (input.StartsWith("h", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(input.AsSpan(1), out int holdIndex))
+            {
+                if (holdIndex >= 1 && holdIndex <= holdFireWeapons.Count)
+                {
+                    return Task.FromResult<CancellableResult<RangedAttackChoice>>(
+                        new Selected<RangedAttackChoice>(
+                            RangedAttackChoice.HoldFire(holdFireWeapons[holdIndex - 1].Weapon)));
+                }
+                Console.WriteLine("  No such weapon to hold fire with.");
+                continue;
+            }
             if (int.TryParse(input, out int choice))
             {
-                if (choice == 0) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
+                if (choice == 0 && (request.AllowCancel || request.AllowStopShooting))
+                {
+                    // #319 (user sign-off): ending the action with loaded weapons asks first. Backing out
+                    // before anything has fired costs nothing, so it does not.
+                    if (request.AllowStopShooting && !ConfirmStopShooting(holdFireWeapons))
+                        continue;
+                    return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
+                }
                 if (choice >= 1 && choice <= options.Count)
-                    return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[choice - 1].choice));
+                {
+                    var picked = options[choice - 1].choice;
+                    if (picked != null)
+                        return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(picked));
+                    Console.WriteLine("  That option is unavailable.");
+                    continue;
+                }
             }
-            Console.WriteLine($"  Enter 0 (Back) or a number between 1 and {options.Count}.");
+            string exit = request.AllowCancel ? "0 (Back), " : request.AllowStopShooting ? "0 (Done), " : "";
+            string hold = holdFireWeapons.Count > 0 ? $"h1-h{holdFireWeapons.Count} (hold fire), " : "";
+            Console.WriteLine($"  Enter {exit}{hold}or a number between 1 and {options.Count}.");
         }
+    }
+
+    // #319: names what the shoot action is giving up before it ends. EOF answers "yes" - a piped script
+    // that asked to stop shooting means it, and re-prompting forever is the one wrong answer here.
+    private static bool ConfirmStopShooting(List<WeaponOption> unfired)
+    {
+        Console.WriteLine();
+        if (unfired.Count > 0)
+        {
+            Console.WriteLine($"  Ending the shoot action leaves {unfired.Count} weapon" +
+                $"{(unfired.Count != 1 ? "s" : "")} unfired this turn:");
+            foreach (var wo in unfired)
+            {
+                Console.WriteLine(wo.LimitedRule != null
+                    ? $"    - {wo.Weapon.Name} (keeps its {wo.LimitedRule} once-per-game shot)"
+                    : $"    - {wo.Weapon.Name}");
+            }
+        }
+        Console.Write("  End the shoot action? [y/N]: ");
+        string? answer = Console.ReadLine()?.Trim();
+        if (answer == null) return true;
+        return answer.Equals("y", StringComparison.OrdinalIgnoreCase)
+            || answer.Equals("yes", StringComparison.OrdinalIgnoreCase);
     }
 }

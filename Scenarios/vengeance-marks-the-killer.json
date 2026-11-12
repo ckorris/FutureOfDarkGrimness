@@ -1,0 +1,64 @@
+{
+  "name": "Vengeance: the Executioners wipe out the Honor-Bound Warriors, which places a Targeted (hit) marker on the Executioners. The AI's Plain Warriors (Quality 6+) then shoot them back and should need 5+, not 6+. Plain Warriors carry no Vengeance, so killing THEM marks nothing.",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Realistic",
+    "diceSeed": 42
+  },
+  "players": [
+    {
+      "army": "armies/VengeanceKillers.fdgarmy",
+      "units": [
+        {
+          "unit": "Executioners",
+          "models": [
+            [
+              22,
+              20
+            ],
+            [
+              23,
+              20
+            ],
+            [
+              24,
+              20
+            ],
+            [
+              25,
+              20
+            ],
+            [
+              26,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/HonorBound.fdgarmy",
+      "units": [
+        {
+          "unit": "Honor-Bound Warriors",
+          "models": [
+            [
+              24,
+              28
+            ]
+          ]
+        },
+        {
+          "unit": "Plain Warriors",
+          "models": [
+            [
+              30,
+              28
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

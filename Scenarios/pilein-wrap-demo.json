@@ -1,0 +1,30 @@
+{
+  "name": "#330 pile-in demo - charge the block, watch defenders wrap around the charger (wall blocks the WSW arc)",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "objectives": [[8, 24], [40, 24]],
+  "terrain": [
+    { "type": "Impassible", "shape": "Rectangle", "center": [22.2, 24.0], "size": [1.6, 0.3], "heightInches": 2 }
+  ],
+  "players": [
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        { "unit": "Tough Dummy", "models": [[24, 22]], "facing": [0, 1] },
+        { "unit": "Dummies", "models": [[20, 8], [21.2, 8], [22.4, 8], [23.6, 8], [24.8, 8]], "facing": [0, 1] }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [[22.8, 25.5], [24, 25.5], [25.2, 25.5], [23.4, 26.7], [24.6, 26.7]],
+          "facing": [0, -1]
+        },
+        { "unit": "Tough Dummy", "models": [[24, 40]], "facing": [0, -1] }
+      ]
+    }
+  ]
+}
